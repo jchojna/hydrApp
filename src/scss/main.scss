@@ -1,5 +1,8 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:500,700&display=swap');
+
 @import "normalize";
 @import "variables";
+@import "mixins";
 @import "helpers";
 
 
@@ -12,4 +15,70 @@ html {
 }
 
 body {
+  font-family: 'Roboto', Arial, sans-serif;
+  font-weight: medium;
+  color: #fff;
+}
+
+.app {
+  @include flex-center;
+  height: 100%;
+  width: 100%;
+  min-height: 100vh;
+  background-color: $color-background;
+
+  &__container {
+    @include flex-center;
+    width: 60%;
+    max-width: 1200px;
+    flex-direction: column;
+  }
+
+  &__button {
+    border: none;
+    background: none;
+    padding: 12px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 0.875rem;
+
+    &--add {
+      font-size: 1.125rem;
+      background-color: #fff;
+      color: #000;
+      border-radius: 4px;
+      margin-bottom: 30px;
+      min-width: 200px;
+      box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    }
+  }
+}
+
+.glass {
+  @include flex-center;
+  position: relative;
+
+
+  &__svg {
+    width: 100%;
+    max-height: 400px;
+    margin-bottom: 48px;
+  }
+
+  &__fill {
+    fill: $color-water;
+  }
+
+  &__outline {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 10px;
+  }
+
+  &__counter {
+    margin: 0;
+    text-align: center;
+    font-size: 7rem;
+    position: absolute;
+  }
 }
