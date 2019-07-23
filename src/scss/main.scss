@@ -1,21 +1,22 @@
-@import url('https://fonts.googleapis.com/css?family=Roboto:500,700&display=swap');
+@import url("https://fonts.googleapis.com/css?family=Roboto:500,700&display=swap");
 
 @import "normalize";
 @import "variables";
 @import "mixins";
 @import "helpers";
 
-
 html {
   box-sizing: border-box;
 }
 
-*, *:before, *:after {
+*,
+*:before,
+*:after {
   box-sizing: inherit;
 }
 
 body {
-  font-family: 'Roboto', Arial, sans-serif;
+  font-family: "Roboto", Arial, sans-serif;
   font-weight: medium;
   color: #fff;
 }
@@ -35,21 +36,34 @@ body {
   }
 
   &__button {
-    border: none;
     background: none;
+    border: none;
+    border-radius: 4px;
     padding: 12px;
+    min-width: 200px;
     color: #fff;
     cursor: pointer;
     font-size: 0.875rem;
+    transition: box-shadow $time-hover-effect, background-color $time-hover-effect;
 
     &--add {
       font-size: 1.125rem;
       background-color: #fff;
       color: #000;
-      border-radius: 4px;
       margin-bottom: 30px;
-      min-width: 200px;
       box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+      
+
+      &:hover {
+        box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.5);
+      }
+    }
+
+    &--remove {
+
+      &:hover {
+        background-color: $color-water;
+      }
     }
   }
 }
@@ -57,7 +71,6 @@ body {
 .glass {
   @include flex-center;
   position: relative;
-
 
   &__svg {
     width: 100%;
