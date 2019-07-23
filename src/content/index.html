@@ -30,7 +30,21 @@
     <link rel="stylesheet" href="css/main.css" />
   </head>
   <body>
-    <h1>hydrApp</h1>
+    <main class="app">
+      <h1 class="app__heading visuallyhidden">hydrApp</h1>
+      <img
+        src="assets/icons/icon-512x512.png"
+        alt="glass containing water"
+        class="app__glass"
+      />
+      <p class="app__counter app__counter--js"></p>
+      <button class="app__button app__button--add app__button--js-add">
+        Add glass
+      </button>
+      <button class="app__button app__button--js-remove">
+        Remove glass
+      </button>
+    </main>
 
     <script src="js/main.js"></script>
   </body>
