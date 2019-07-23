@@ -20,7 +20,7 @@ const getGlassAmount = () => {
   if (localStorage.getItem('glassCounter')) {
     return parseInt(localStorage.getItem('glassCounter'));
   } else {
-    localStorage.setItem('glassCounter', glassCounter);
+    localStorage.setItem('glassCounter', 0);
     return 0;
   }
 }
