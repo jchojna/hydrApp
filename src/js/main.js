@@ -16,11 +16,18 @@ const addGlassButton = document.querySelector('.app__button--js-add');
 const removeGlassButton = document.querySelector('.app__button--js-remove');
 const glassCounterContainer = document.querySelector('.glass__counter--js');
 
+const getCurrentDateKey = () => {
+  const date = new Date().toISOString().slice(0,10);
+  const prefix = 'hydrApp-';
+  return prefix.concat(date);
+}
+
 const getGlassAmount = () => {
-  if (localStorage.getItem('glassCounter')) {
-    return parseInt(localStorage.getItem('glassCounter'));
+  const dateKey = getCurrentDateKey();
+  if (localStorage.getItem(dateKey)) {
+    return parseInt(localStorage.getItem(dateKey));
   } else {
-    localStorage.setItem('glassCounter', 0);
+    localStorage.setItem(dateKey, 0);
     return 0;
   }
 }
@@ -30,6 +37,7 @@ const updateCounter = (value) => {
 }
 
 const handleCounter = (command) => {
+  const dateKey = getCurrentDateKey();
   let glassCounter = getGlassAmount();
   if (command === 'up') {
     glassCounter === 99 ? false : glassCounter++;
@@ -37,7 +45,7 @@ const handleCounter = (command) => {
   if (command === 'down') {
     glassCounter === 0 ? false : glassCounter--;
   }
-  localStorage.setItem('glassCounter', glassCounter);
+  localStorage.setItem(dateKey, glassCounter);
   updateCounter(glassCounter);
 }
 
