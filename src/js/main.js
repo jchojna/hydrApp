@@ -12,9 +12,9 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-const addGlassButton = document.querySelector('.app__button--js-add');
-const removeGlassButton = document.querySelector('.app__button--js-remove');
-const glassCounterContainer = document.querySelector('.glass__counter--js');
+const addGlass = document.querySelector('.app__button--js-add');
+const removeGlass = document.querySelector('.app__button--js-remove');
+const counter = document.querySelector('.glass__counter--js');
 
 const getCurrentDateKey = () => {
   const date = new Date().toISOString().slice(0,10);
@@ -22,7 +22,7 @@ const getCurrentDateKey = () => {
   return prefix.concat(date);
 }
 
-const getGlassAmount = () => {
+/* const getGlassAmount = () => {
   const dateKey = getCurrentDateKey();
   if (localStorage.getItem(dateKey)) {
     return parseInt(localStorage.getItem(dateKey));
@@ -30,13 +30,15 @@ const getGlassAmount = () => {
     localStorage.setItem(dateKey, 0);
     return 0;
   }
-}
+} */
 
-const updateCounter = (value) => {
-  glassCounterContainer.innerHTML = value;
-}
+/* const updateCounter = (value) => {
+  counter.innerHTML = value;
+} */
 
-const handleCounter = (command) => {
+
+
+/* const handleCounter = (command) => {
   const dateKey = getCurrentDateKey();
   let glassCounter = getGlassAmount();
   if (command === 'up') {
@@ -47,8 +49,37 @@ const handleCounter = (command) => {
   }
   localStorage.setItem(dateKey, glassCounter);
   updateCounter(glassCounter);
+} */
+
+//updateCounter(getGlassAmount());
+
+const setCounter = () => {
+  const key = getCurrentDateKey();
+
+  if ( !localStorage.getItem(key) ) {
+    localStorage.setItem(key, '0');
+  };
+
+  counter.innerHTML = localStorage.getItem(key);
 }
 
-updateCounter(getGlassAmount());
-addGlassButton.addEventListener('click', () => handleCounter('up'));
-removeGlassButton.addEventListener('click', () => handleCounter('down'));
+const updateCounter = (e) => {
+  const key = getCurrentDateKey();
+  const value = parseInt(localStorage.getItem(key));
+  let newValue;
+
+  if (e.target === addGlass) {
+    value < 100 ? newValue = value + 1 : newValue = 100;
+
+  } else if (e.target === removeGlass) {
+    value > 0 ? newValue = value - 1 : newValue = 0;
+  }
+
+  localStorage.setItem(key, newValue);
+  counter.innerHTML = newValue;
+}
+
+
+setCounter();
+addGlass.addEventListener('click', updateCounter);
+removeGlass.addEventListener('click', updateCounter);
