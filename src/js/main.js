@@ -12,65 +12,83 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+/********** VARIABLES **********/
+
 const addGlass = document.querySelector('.app__button--js-add');
 const removeGlass = document.querySelector('.app__button--js-remove');
 const counter = document.querySelector('.glass__counter--js');
 
-const getCurrentDateKey = () => {
-  const date = new Date().toISOString().slice(0,10);
+/********** FUNCTIONS **********/
+
+const setDateKey = (obj) => {
   const prefix = 'hydrApp-';
+  const date = obj.toISOString().slice(0,10);
   return prefix.concat(date);
 }
 
-/* const getGlassAmount = () => {
-  const dateKey = getCurrentDateKey();
-  if (localStorage.getItem(dateKey)) {
-    return parseInt(localStorage.getItem(dateKey));
-  } else {
-    localStorage.setItem(dateKey, 0);
-    return 0;
-  }
-} */
-
-/* const updateCounter = (value) => {
-  counter.innerHTML = value;
-} */
+const setNewKeyValue = (key, value) => {
+  if ( !localStorage.getItem(key) ) {
+    localStorage.setItem(key, value);
+  };
+}
 
 
-
-/* const handleCounter = (command) => {
-  const dateKey = getCurrentDateKey();
-  let glassCounter = getGlassAmount();
-  if (command === 'up') {
-    glassCounter === 99 ? false : glassCounter++;
-  }
-  if (command === 'down') {
-    glassCounter === 0 ? false : glassCounter--;
-  }
-  localStorage.setItem(dateKey, glassCounter);
-  updateCounter(glassCounter);
-} */
-
-//updateCounter(getGlassAmount());
 
 const setCounter = () => {
-  const key = getCurrentDateKey();
+  let date = new Date();
+  let dateKey = setDateKey(date);
+  const regex = /hydrApp-/;
 
-  if ( !localStorage.getItem(key) ) {
-    localStorage.setItem(key, '0');
-  };
+  setNewKeyValue(dateKey, 0);
 
-  counter.innerHTML = localStorage.getItem(key);
+
+
+
+  // create array of hydrApp localstorage keys
+  const hydrappKeys = Object
+    .keys(localStorage)
+    .filter(key => regex.test(key));
+
+  const sortedDates = hydrappKeys
+    .map(key => key.match(/[0-9]/g)
+    .join(''))
+    .sort((a,b) => a - b);
+  const oldestKey = sortedDates[0];
+
+  // add missing dates
+  if ( hydrappKeys.length > 1 ) {
+
+    while (setDateKey(date).match(/[0-9]/g).join('') !== oldestKey) {
+      date.setDate( date.getDate() - 1 );
+      const prevDateKey = setDateKey(date);
+      setNewKeyValue(prevDateKey, 0);
+    }
+
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  counter.innerHTML = localStorage.getItem(dateKey);
 }
 
 const updateCounter = (e) => {
-  const key = getCurrentDateKey();
+  const key = setDateKey(new Date());
   const value = parseInt(localStorage.getItem(key));
   let newValue;
 
   if (e.target === addGlass) {
     value < 100 ? newValue = value + 1 : newValue = 100;
-
   } else if (e.target === removeGlass) {
     value > 0 ? newValue = value - 1 : newValue = 0;
   }
