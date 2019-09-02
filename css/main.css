@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css?family=Roboto:500,700&display=swap");
+@import url("https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap");
 /*! normalize.css v8.0.1 | MIT License | github.com/necolas/normalize.css */
 /* Document
    ========================================================================== */
@@ -377,7 +377,8 @@ body {
   height: 100%;
   width: 100%;
   min-height: 100vh;
-  background-color: #3767AD; }
+  background-color: #3767AD;
+  padding: 1rem; }
   .app__container {
     display: -webkit-box;
     display: -ms-flexbox;
@@ -390,6 +391,7 @@ body {
             align-items: center;
     width: 60%;
     max-width: 1200px;
+    margin-top: 6rem;
     -webkit-box-orient: vertical;
     -webkit-box-direction: normal;
         -ms-flex-direction: column;
@@ -449,6 +451,32 @@ body {
     position: absolute; }
 
 .history {
-  border: 1px solid #000; }
+  width: 100%;
+  max-width: 500px;
+  font-weight: 400;
+  margin: 2rem 0; }
+  .history__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%; }
+  .history__item {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    -webkit-box-pack: justify;
+        -ms-flex-pack: justify;
+            justify-content: space-between;
+    padding: 0.5rem 1rem; }
+    .history__item:nth-child(even) {
+      background-color: rgba(255, 255, 255, 0.05); }
+    .history__item:not(:last-child) {
+      border-bottom: 1px solid #ccc; }
 
 /*# sourceMappingURL=main.css.map */
