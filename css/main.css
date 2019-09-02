@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap");
+@import url("https://fonts.googleapis.com/css?family=Roboto:300,500,700&display=swap");
 /*! normalize.css v8.0.1 | MIT License | github.com/necolas/normalize.css */
 /* Document
    ========================================================================== */
@@ -414,13 +414,17 @@ body {
       font-size: 1.125rem;
       background-color: #fff;
       color: #000;
-      margin-bottom: 30px;
+      margin-bottom: 2rem;
       -webkit-box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
               box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); }
       .app__button--add:hover {
         -webkit-box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.5);
                 box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.5); }
-    .app__button--remove:hover {
+    .app__button--remove {
+      margin-bottom: 1rem; }
+      .app__button--remove:hover {
+        background-color: #2196f3; }
+    .app__button--archive:hover {
       background-color: #2196f3; }
 
 .glass {
@@ -450,17 +454,25 @@ body {
     font-size: 7rem;
     position: absolute; }
 
-.history {
+.archive {
   width: 100%;
   max-width: 500px;
-  font-weight: 400;
-  margin: 2rem 0; }
-  .history__list {
+  font-weight: 300;
+  margin: 0;
+  overflow: hidden;
+  height: 0;
+  -webkit-transition: margin 1s, height 1s;
+  -o-transition: margin 1s, height 1s;
+  transition: margin 1s, height 1s; }
+  .archive--visible {
+    margin: 2rem 0; }
+  .archive__list {
     list-style: none;
     padding: 0;
     margin: 0;
-    width: 100%; }
-  .history__item {
+    width: 100%;
+    height: auto; }
+  .archive__item {
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
@@ -473,10 +485,14 @@ body {
     -webkit-box-pack: justify;
         -ms-flex-pack: justify;
             justify-content: space-between;
-    padding: 0.5rem 1rem; }
-    .history__item:nth-child(even) {
+    padding: 0.4rem 1rem; }
+    .archive__item:nth-child(even) {
       background-color: rgba(255, 255, 255, 0.05); }
-    .history__item:not(:last-child) {
+    .archive__item:not(:last-child) {
       border-bottom: 1px solid #ccc; }
+  .archive__key {
+    margin: 0; }
+  .archive__value {
+    margin: 0; }
 
 /*# sourceMappingURL=main.css.map */
