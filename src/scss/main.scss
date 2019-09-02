@@ -23,6 +23,7 @@ body {
 
 .app {
   @include flex-center;
+  flex-direction: column;
   height: 100%;
   width: 100%;
   min-height: 100vh;
@@ -94,4 +95,11 @@ body {
     font-size: 7rem;
     position: absolute;
   }
+}
+
+.history {
+
+  border: 1px solid #000;
+
+  
 }
