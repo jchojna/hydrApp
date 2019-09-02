@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css?family=Roboto:500,700&display=swap");
+@import url("https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap");
 
 @import "normalize";
 @import "variables";
@@ -28,11 +28,13 @@ body {
   width: 100%;
   min-height: 100vh;
   background-color: $color-background;
+  padding: 1rem;
 
   &__container {
     @include flex-center;
     width: 60%;
     max-width: 1200px;
+    margin-top: 6rem;
     flex-direction: column;
   }
 
@@ -98,8 +100,30 @@ body {
 }
 
 .history {
+  width: 100%;
+  max-width: 500px;
+  font-weight: 400;
+  margin: 2rem 0;
 
-  border: 1px solid #000;
+  &__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    
+  }
 
-  
+  &__item {
+    @include flex-center;
+    justify-content: space-between;
+    padding: 0.5rem 1rem;
+
+    &:nth-child(even) {
+      background-color: rgba($color: #fff, $alpha: 0.05);
+    }
+
+    &:not(:last-child) {
+      border-bottom: 1px solid $color-grey;
+    }
+  }
 }

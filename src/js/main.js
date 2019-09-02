@@ -55,10 +55,13 @@ const setCounter = () => {
 
   // autocomplete missing keys
   if ( hydrappKeys.length > 1 ) {
-    while (setDateKey(date) !== oldestKey) {
+    let limit = 0; // for tests to avoid loop error
+
+    while (setDateKey(date) !== oldestKey && limit < 50) {
       date.setDate( date.getDate() - 1 );
       const prevDateKey = setDateKey(date);
       setNewKeyValue(prevDateKey, 0);
+      limit++;
     }
   }
   counter.innerHTML = localStorage.getItem(dateKey);
@@ -69,9 +72,15 @@ const setHistory = () => {
 
   for (const key of hydrappKeys) {
     const value = localStorage.getItem(key);
+    const date = key
+      .replace('hydrApp-','')
+      .split('-')
+      .reverse()
+      .join(' ');
+
     historyList.innerHTML += `
-    <li>
-      <span>${key}</span>
+    <li class="history__item">
+      <span>${date}</span>
       <span>${value}</span>
     </li>
     `;
