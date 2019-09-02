@@ -17,7 +17,9 @@ if ('serviceWorker' in navigator) {
 const addGlass = document.querySelector('.app__button--js-add');
 const removeGlass = document.querySelector('.app__button--js-remove');
 const counter = document.querySelector('.glass__counter--js');
-const historyList = document.querySelector('.history__list--js');
+const archive = document.querySelector('.archive--js');
+const archiveList = document.querySelector('.archive__list--js');
+const archiveButton = document.querySelector('.app__button--js-archive');
 
 /********** FUNCTIONS **********/
 
@@ -67,7 +69,7 @@ const setCounter = () => {
   counter.innerHTML = localStorage.getItem(dateKey);
 }
 
-const setHistory = () => {
+const setArchive = () => {
   const hydrappKeys = getHydrappKeys();
 
   for (const key of hydrappKeys) {
@@ -78,8 +80,8 @@ const setHistory = () => {
       .reverse()
       .join(' ');
 
-    historyList.innerHTML += `
-    <li class="history__item">
+    archiveList.innerHTML += `
+    <li class="archive__item">
       <span>${date}</span>
       <span>${value}</span>
     </li>
@@ -103,8 +105,24 @@ const updateCounter = (e) => {
   counter.innerHTML = newValue;
 }
 
+const toggleArchive = (e) => {
+  const listHeight = archiveList.clientHeight;
+  console.log(listHeight);
+
+  if (archive.classList.contains('archive--visible')) {
+    archive.classList.remove('archive--visible');
+    archive.style.height = 0;
+    e.target.textContent = "Show archive";
+  } else {
+    archive.classList.add('archive--visible');
+    archive.style.height = listHeight + "px";
+    e.target.textContent = "Hide archive";
+  }
+}
+
 
 setCounter();
-setHistory();
+setArchive();
 addGlass.addEventListener('click', updateCounter);
 removeGlass.addEventListener('click', updateCounter);
+archiveButton.addEventListener('click', toggleArchive);
