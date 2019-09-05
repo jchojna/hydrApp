@@ -461,7 +461,6 @@ body {
   margin: 0;
   overflow: hidden;
   height: 0;
-  height: auto;
   -webkit-transition: margin 1s, height 1s;
   -o-transition: margin 1s, height 1s;
   transition: margin 1s, height 1s; }
