@@ -21,6 +21,11 @@ const archive = document.querySelector('.archive--js');
 const archiveList = document.querySelector('.archive__list--js');
 const archiveButton = document.querySelector('.app__button--js-archive');
 
+const baseClassname = "indicator__section indicator__section--js";
+const lowLevelClassname = `${baseClassname} indicator__section--low`;
+const mediumLevelClassname = `${baseClassname} indicator__section--medium`;
+const highLevelClassname = `${baseClassname} indicator__section--high`;
+
 /********** FUNCTIONS **********/
 
 // create hydrApp date key
@@ -69,6 +74,24 @@ const setCounter = () => {
   counter.innerHTML = localStorage.getItem(dateKey);
 }
 
+const setIndicators = (id, value) => {
+  const indicators = document.querySelectorAll(`.indicator--js-${id} .indicator__section--js`);
+
+  if (value >= 6) {
+    for (const indicator of indicators) {
+      indicator.className = highLevelClassname;
+    }
+  } else if (value >= 3) {
+    indicators[0].className = mediumLevelClassname;
+    indicators[1].className = mediumLevelClassname;
+    indicators[2].className = baseClassname;
+  } else {
+    indicators[0].className = lowLevelClassname;
+    indicators[1].className = baseClassname;
+    indicators[2].className = baseClassname;
+  }
+}
+
 const setArchive = () => {
   const hydrappKeys = getHydrappKeys();
 
@@ -79,15 +102,22 @@ const setArchive = () => {
       .split('-')
       .reverse()
       .join(' ');
-
+    const dateHash = date.replace(/\s/g,'');
+    
     archiveList.innerHTML += `
     <li class="archive__item">
-      <span>${date}</span>
-      <span>${value}</span>
+      <p class="archive__date">${date}</p>
+      <p class="archive__value archive__value--js">${value}</p>
+      <div class="indicator indicator--js-${dateHash}">
+        <div class="${baseClassname}"></div>
+        <div class="${baseClassname}"></div>
+        <div class="${baseClassname}"></div>
+      </div>
     </li>
     `;
-  }
 
+    setIndicators(dateHash, value);
+  }
 }
 
 const updateCounter = (e) => {
@@ -103,11 +133,23 @@ const updateCounter = (e) => {
 
   localStorage.setItem(key, newValue);
   counter.innerHTML = newValue;
+  
+  // updating archive newest entry value
+  const lastArchiveValue = document.querySelectorAll('.archive__value--js');
+  lastArchiveValue[0].innerHTML = newValue;
+
+  // updating archive newest entry indicator
+  const dateHash = new Date()
+    .toISOString()
+    .slice(0,10)
+    .split('-')
+    .reverse()
+    .join('');
+  setIndicators(dateHash, newValue);
 }
 
 const toggleArchive = (e) => {
   const listHeight = archiveList.clientHeight;
-  console.log(listHeight);
 
   if (archive.classList.contains('archive--visible')) {
     archive.classList.remove('archive--visible');
