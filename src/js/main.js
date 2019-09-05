@@ -79,19 +79,44 @@ const setArchive = () => {
       .split('-')
       .reverse()
       .join(' ');
+    const dateHash = date.replace(/\s/g,'');
+    
+    const baseClassname = "indicator__section indicator__section--js";
+    const lowLevelClassname = `${baseClassname} indicator__section--low`;
+    const mediumLevelClassname = `${baseClassname} indicator__section--medium`;
+    const highLevelClassname = `${baseClassname} indicator__section--high`;
 
     archiveList.innerHTML += `
     <li class="archive__item">
       <p class="archive__date">${date}</p>
       <p class="archive__value">${value}</p>
-      <div class="indicator">
-        <div class="indicator__section"></div>
-        <div class="indicator__section"></div>
-        <div class="indicator__section"></div>
+      <div class="indicator indicator--js-${dateHash}">
+        <div class="${baseClassname}"></div>
+        <div class="${baseClassname}"></div>
+        <div class="${baseClassname}"></div>
       </div>
     </li>
     `;
+
+    const indicators = document.querySelectorAll(`.indicator--js-${dateHash} .indicator__section--js`);
+
+    if (value >= 6) {
+      for (const indicator of indicators) {
+        indicator.className = highLevelClassname;
+      }
+    } else if (value >= 3) {
+      indicators[0].className = mediumLevelClassname;
+      indicators[1].className = mediumLevelClassname;
+      indicators[2].className = baseClassname;
+    } else {
+      indicators[0].className = lowLevelClassname;
+      indicators[1].className = baseClassname;
+      indicators[2].className = baseClassname;
+    }
   }
+}
+
+const setIndicators = () => {
 
 }
 
@@ -128,6 +153,7 @@ const toggleArchive = (e) => {
 
 setCounter();
 setArchive();
+setIndicators();
 addGlass.addEventListener('click', updateCounter);
 removeGlass.addEventListener('click', updateCounter);
 archiveButton.addEventListener('click', toggleArchive);
