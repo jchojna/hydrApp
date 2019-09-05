@@ -82,8 +82,13 @@ const setArchive = () => {
 
     archiveList.innerHTML += `
     <li class="archive__item">
-      <span>${date}</span>
-      <span>${value}</span>
+      <p class="archive__date">${date}</p>
+      <p class="archive__value">${value}</p>
+      <div class="indicator">
+        <div class="indicator__section indicator__section--low"></div>
+        <div class="indicator__section indicator__section--medium"></div>
+        <div class="indicator__section indicator__section--high"></div>
+      </div>
     </li>
     `;
   }

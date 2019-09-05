@@ -114,6 +114,7 @@ body {
   margin: 0;
   overflow: hidden;
   height: 0;
+  height: auto; // DELETE AFTER TESTS
   transition: margin 1s, height 1s;
 
   &--visible {
@@ -142,13 +143,16 @@ body {
     }
   }
 
-  &__key {
-
+  &__date {
     margin: 0;
   }
   
   &__value {
-
     margin: 0;
   }
+}
+
+.indicator {
+  display: flex;
+
 }
