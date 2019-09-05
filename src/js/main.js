@@ -21,6 +21,11 @@ const archive = document.querySelector('.archive--js');
 const archiveList = document.querySelector('.archive__list--js');
 const archiveButton = document.querySelector('.app__button--js-archive');
 
+const baseClassname = "indicator__section indicator__section--js";
+const lowLevelClassname = `${baseClassname} indicator__section--low`;
+const mediumLevelClassname = `${baseClassname} indicator__section--medium`;
+const highLevelClassname = `${baseClassname} indicator__section--high`;
+
 /********** FUNCTIONS **********/
 
 // create hydrApp date key
@@ -69,6 +74,24 @@ const setCounter = () => {
   counter.innerHTML = localStorage.getItem(dateKey);
 }
 
+const setIndicators = (id, value) => {
+  const indicators = document.querySelectorAll(`.indicator--js-${id} .indicator__section--js`);
+
+  if (value >= 6) {
+    for (const indicator of indicators) {
+      indicator.className = highLevelClassname;
+    }
+  } else if (value >= 3) {
+    indicators[0].className = mediumLevelClassname;
+    indicators[1].className = mediumLevelClassname;
+    indicators[2].className = baseClassname;
+  } else {
+    indicators[0].className = lowLevelClassname;
+    indicators[1].className = baseClassname;
+    indicators[2].className = baseClassname;
+  }
+}
+
 const setArchive = () => {
   const hydrappKeys = getHydrappKeys();
 
@@ -81,11 +104,6 @@ const setArchive = () => {
       .join(' ');
     const dateHash = date.replace(/\s/g,'');
     
-    const baseClassname = "indicator__section indicator__section--js";
-    const lowLevelClassname = `${baseClassname} indicator__section--low`;
-    const mediumLevelClassname = `${baseClassname} indicator__section--medium`;
-    const highLevelClassname = `${baseClassname} indicator__section--high`;
-
     archiveList.innerHTML += `
     <li class="archive__item">
       <p class="archive__date">${date}</p>
@@ -98,21 +116,7 @@ const setArchive = () => {
     </li>
     `;
 
-    const indicators = document.querySelectorAll(`.indicator--js-${dateHash} .indicator__section--js`);
-
-    if (value >= 6) {
-      for (const indicator of indicators) {
-        indicator.className = highLevelClassname;
-      }
-    } else if (value >= 3) {
-      indicators[0].className = mediumLevelClassname;
-      indicators[1].className = mediumLevelClassname;
-      indicators[2].className = baseClassname;
-    } else {
-      indicators[0].className = lowLevelClassname;
-      indicators[1].className = baseClassname;
-      indicators[2].className = baseClassname;
-    }
+    setIndicators(dateHash, value);
   }
 }
 
@@ -130,8 +134,18 @@ const updateCounter = (e) => {
   localStorage.setItem(key, newValue);
   counter.innerHTML = newValue;
   
+  // updating archive newest entry value
   const lastArchiveValue = document.querySelectorAll('.archive__value--js');
   lastArchiveValue[0].innerHTML = newValue;
+
+  // updating archive newest entry indicator
+  const dateHash = new Date()
+    .toISOString()
+    .slice(0,10)
+    .split('-')
+    .reverse()
+    .join('');
+  setIndicators(dateHash, newValue);
 }
 
 const toggleArchive = (e) => {

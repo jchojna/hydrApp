@@ -114,7 +114,6 @@ body {
   margin: 0;
   overflow: hidden;
   height: 0;
-  height: auto; // DELETE AFTER TESTS
   transition: margin 1s, height 1s;
 
   &--visible {
