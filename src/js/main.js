@@ -89,7 +89,7 @@ const setArchive = () => {
     archiveList.innerHTML += `
     <li class="archive__item">
       <p class="archive__date">${date}</p>
-      <p class="archive__value">${value}</p>
+      <p class="archive__value archive__value--js">${value}</p>
       <div class="indicator indicator--js-${dateHash}">
         <div class="${baseClassname}"></div>
         <div class="${baseClassname}"></div>
@@ -116,10 +116,6 @@ const setArchive = () => {
   }
 }
 
-const setIndicators = () => {
-
-}
-
 const updateCounter = (e) => {
   const key = setDateKey(new Date());
   const value = parseInt(localStorage.getItem(key));
@@ -133,11 +129,13 @@ const updateCounter = (e) => {
 
   localStorage.setItem(key, newValue);
   counter.innerHTML = newValue;
+  
+  const lastArchiveValue = document.querySelectorAll('.archive__value--js');
+  lastArchiveValue[0].innerHTML = newValue;
 }
 
 const toggleArchive = (e) => {
   const listHeight = archiveList.clientHeight;
-  console.log(listHeight);
 
   if (archive.classList.contains('archive--visible')) {
     archive.classList.remove('archive--visible');
@@ -153,7 +151,6 @@ const toggleArchive = (e) => {
 
 setCounter();
 setArchive();
-setIndicators();
 addGlass.addEventListener('click', updateCounter);
 removeGlass.addEventListener('click', updateCounter);
 archiveButton.addEventListener('click', toggleArchive);
