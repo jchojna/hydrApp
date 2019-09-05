@@ -85,9 +85,9 @@ const setArchive = () => {
       <p class="archive__date">${date}</p>
       <p class="archive__value">${value}</p>
       <div class="indicator">
-        <div class="indicator__section indicator__section--low"></div>
-        <div class="indicator__section indicator__section--medium"></div>
-        <div class="indicator__section indicator__section--high"></div>
+        <div class="indicator__section"></div>
+        <div class="indicator__section"></div>
+        <div class="indicator__section"></div>
       </div>
     </li>
     `;

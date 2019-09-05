@@ -167,5 +167,17 @@ body {
     &:not(:last-child) {
       margin-right: 0.3rem;
     }
+
+    &--low {
+      background-color: $color-low;
+    }
+
+    &--medium {
+      background-color: $color-medium;
+    }
+
+    &--high {
+      background-color: $color-high;
+    }
   }
 }
