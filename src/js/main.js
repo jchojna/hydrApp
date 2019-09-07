@@ -4,7 +4,7 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
     navigator.serviceWorker.register('serviceworker.js').then(function(registration) {
       // Registration was successful
-      console.log('ServiceWorker registration successful with scope: ', registration.scope);
+      //console.log('ServiceWorker registration successful with scope: ', registration.scope);
     }, function(err) {
       // registration failed :(
       console.log('ServiceWorker registration failed: ', err);
@@ -48,17 +48,22 @@ const getHydrappKeys = () => {
   return Object
   .keys(localStorage)
   .filter(key => regex.test(key))
-  .sort((a,b) => a<b);
+  .sort()
+  .reverse();
 }
 
 const setCounter = () => {
-  let date = new Date();
-  let dateKey = setDateKey(date);
+  const date = new Date();
+  const timeZoneOffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
+  const localDate = (new Date(Date.now() - timeZoneOffset));
+  let dateKey = setDateKey(localDate);
+  console.log(dateKey);
 
   setNewKeyValue(dateKey, 0);
 
   const hydrappKeys = getHydrappKeys();
   const oldestKey = hydrappKeys[hydrappKeys.length-1];
+  console.log(oldestKey);
 
   // autocomplete missing keys
   if ( hydrappKeys.length > 1 ) {

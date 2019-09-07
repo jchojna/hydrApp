@@ -114,6 +114,7 @@ body {
   margin: 0;
   overflow: hidden;
   height: 0;
+  height: 100%;
   transition: margin 1s, height 1s;
 
   &--visible {
