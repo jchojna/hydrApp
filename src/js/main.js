@@ -4,7 +4,7 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
     navigator.serviceWorker.register('serviceworker.js').then(function(registration) {
       // Registration was successful
-      console.log('ServiceWorker registration successful with scope: ', registration.scope);
+      //console.log('ServiceWorker registration successful with scope: ', registration.scope);
     }, function(err) {
       // registration failed :(
       console.log('ServiceWorker registration failed: ', err);
@@ -48,48 +48,39 @@ const getHydrappKeys = () => {
   return Object
   .keys(localStorage)
   .filter(key => regex.test(key))
-  .sort((a,b) => a<b);
+  .sort()
+  .reverse();
 }
 
+const getOffsetedDate = () => {
+  const timeZoneOffset = (new Date()).getTimezoneOffset() * 60000;
+  return (new Date(Date.now() - timeZoneOffset));
+}
+
+
 const setCounter = () => {
-  let date = new Date();
-  let dateKey = setDateKey(date);
+  const offsetedDate = getOffsetedDate();
+  let dateKey = setDateKey(offsetedDate);
+  console.log(`newest key: ${dateKey}`);
 
   setNewKeyValue(dateKey, 0);
 
   const hydrappKeys = getHydrappKeys();
   const oldestKey = hydrappKeys[hydrappKeys.length-1];
+  console.log(`oldest key: ${oldestKey}`);
 
-  // autocomplete missing keys
+  // autocomplete missing keys in localstorage
   if ( hydrappKeys.length > 1 ) {
     let limit = 0; // for tests to avoid loop error
 
-    while (setDateKey(date) !== oldestKey && limit < 50) {
-      date.setDate( date.getDate() - 1 );
-      const prevDateKey = setDateKey(date);
+    while (setDateKey(offsetedDate) !== oldestKey && limit < 50) {
+      offsetedDate.setDate( offsetedDate.getDate() - 1 );
+      const prevDateKey = setDateKey(offsetedDate);
       setNewKeyValue(prevDateKey, 0);
       limit++;
     }
   }
   counter.innerHTML = localStorage.getItem(dateKey);
-}
-
-const setIndicators = (id, value) => {
-  const indicators = document.querySelectorAll(`.indicator--js-${id} .indicator__section--js`);
-
-  if (value >= 6) {
-    for (const indicator of indicators) {
-      indicator.className = highLevelClassname;
-    }
-  } else if (value >= 3) {
-    indicators[0].className = mediumLevelClassname;
-    indicators[1].className = mediumLevelClassname;
-    indicators[2].className = baseClassname;
-  } else {
-    indicators[0].className = lowLevelClassname;
-    indicators[1].className = baseClassname;
-    indicators[2].className = baseClassname;
-  }
 }
 
 const setArchive = () => {
@@ -120,8 +111,27 @@ const setArchive = () => {
   }
 }
 
+const setIndicators = (id, value) => {
+  const indicators = document.querySelectorAll(`.indicator--js-${id} .indicator__section--js`);
+
+  if (value >= 6) {
+    for (const indicator of indicators) {
+      indicator.className = highLevelClassname;
+    }
+  } else if (value >= 3) {
+    indicators[0].className = mediumLevelClassname;
+    indicators[1].className = mediumLevelClassname;
+    indicators[2].className = baseClassname;
+  } else {
+    indicators[0].className = lowLevelClassname;
+    indicators[1].className = baseClassname;
+    indicators[2].className = baseClassname;
+  }
+}
+
 const updateCounter = (e) => {
-  const key = setDateKey(new Date());
+  const offsetedDate = getOffsetedDate();
+  const key = setDateKey(offsetedDate);
   const value = parseInt(localStorage.getItem(key));
   let newValue;
 
@@ -135,11 +145,11 @@ const updateCounter = (e) => {
   counter.innerHTML = newValue;
   
   // updating archive newest entry value
-  const lastArchiveValue = document.querySelectorAll('.archive__value--js');
-  lastArchiveValue[0].innerHTML = newValue;
+  const newestArchiveValue = document.querySelector('.archive__value--js');
+  newestArchiveValue.innerHTML = newValue;
 
   // updating archive newest entry indicator
-  const dateHash = new Date()
+  const dateHash = offsetedDate
     .toISOString()
     .slice(0,10)
     .split('-')
@@ -161,7 +171,6 @@ const toggleArchive = (e) => {
     e.target.textContent = "Hide archive";
   }
 }
-
 
 setCounter();
 setArchive();
