@@ -52,14 +52,14 @@ const getHydrappKeys = () => {
   .reverse();
 }
 
-
+const getOffsetedDate = () => {
+  const timeZoneOffset = (new Date()).getTimezoneOffset() * 60000;
+  return (new Date(Date.now() - timeZoneOffset));
+}
 
 
 const setCounter = () => {
-  const timeZoneOffset = (new Date()).getTimezoneOffset() * 60000;
-  const offsetedDate = (new Date(Date.now() - timeZoneOffset));
-  console.log(`local date: ${offsetedDate}`);
-
+  const offsetedDate = getOffsetedDate();
   let dateKey = setDateKey(offsetedDate);
   console.log(`newest key: ${dateKey}`);
 
@@ -111,12 +111,6 @@ const setArchive = () => {
   }
 }
 
-
-
-
-
-
-
 const setIndicators = (id, value) => {
   const indicators = document.querySelectorAll(`.indicator--js-${id} .indicator__section--js`);
 
@@ -136,7 +130,8 @@ const setIndicators = (id, value) => {
 }
 
 const updateCounter = (e) => {
-  const key = setDateKey(new Date());
+  const offsetedDate = getOffsetedDate();
+  const key = setDateKey(offsetedDate);
   const value = parseInt(localStorage.getItem(key));
   let newValue;
 
@@ -150,11 +145,11 @@ const updateCounter = (e) => {
   counter.innerHTML = newValue;
   
   // updating archive newest entry value
-  const lastArchiveValue = document.querySelectorAll('.archive__value--js');
-  lastArchiveValue[0].innerHTML = newValue;
+  const newestArchiveValue = document.querySelector('.archive__value--js');
+  newestArchiveValue.innerHTML = newValue;
 
   // updating archive newest entry indicator
-  const dateHash = new Date()
+  const dateHash = offsetedDate
     .toISOString()
     .slice(0,10)
     .split('-')
@@ -176,7 +171,6 @@ const toggleArchive = (e) => {
     e.target.textContent = "Hide archive";
   }
 }
-
 
 setCounter();
 setArchive();
