@@ -52,49 +52,35 @@ const getHydrappKeys = () => {
   .reverse();
 }
 
+
+
+
 const setCounter = () => {
-  const date = new Date();
-  const timeZoneOffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
-  const localDate = (new Date(Date.now() - timeZoneOffset));
-  let dateKey = setDateKey(localDate);
-  console.log(dateKey);
+  const timeZoneOffset = (new Date()).getTimezoneOffset() * 60000;
+  const offsetedDate = (new Date(Date.now() - timeZoneOffset));
+  console.log(`local date: ${offsetedDate}`);
+
+  let dateKey = setDateKey(offsetedDate);
+  console.log(`newest key: ${dateKey}`);
 
   setNewKeyValue(dateKey, 0);
 
   const hydrappKeys = getHydrappKeys();
   const oldestKey = hydrappKeys[hydrappKeys.length-1];
-  console.log(oldestKey);
+  console.log(`oldest key: ${oldestKey}`);
 
-  // autocomplete missing keys
+  // autocomplete missing keys in localstorage
   if ( hydrappKeys.length > 1 ) {
     let limit = 0; // for tests to avoid loop error
 
-    while (setDateKey(date) !== oldestKey && limit < 50) {
-      date.setDate( date.getDate() - 1 );
-      const prevDateKey = setDateKey(date);
+    while (setDateKey(offsetedDate) !== oldestKey && limit < 50) {
+      offsetedDate.setDate( offsetedDate.getDate() - 1 );
+      const prevDateKey = setDateKey(offsetedDate);
       setNewKeyValue(prevDateKey, 0);
       limit++;
     }
   }
   counter.innerHTML = localStorage.getItem(dateKey);
-}
-
-const setIndicators = (id, value) => {
-  const indicators = document.querySelectorAll(`.indicator--js-${id} .indicator__section--js`);
-
-  if (value >= 6) {
-    for (const indicator of indicators) {
-      indicator.className = highLevelClassname;
-    }
-  } else if (value >= 3) {
-    indicators[0].className = mediumLevelClassname;
-    indicators[1].className = mediumLevelClassname;
-    indicators[2].className = baseClassname;
-  } else {
-    indicators[0].className = lowLevelClassname;
-    indicators[1].className = baseClassname;
-    indicators[2].className = baseClassname;
-  }
 }
 
 const setArchive = () => {
@@ -122,6 +108,30 @@ const setArchive = () => {
     `;
 
     setIndicators(dateHash, value);
+  }
+}
+
+
+
+
+
+
+
+const setIndicators = (id, value) => {
+  const indicators = document.querySelectorAll(`.indicator--js-${id} .indicator__section--js`);
+
+  if (value >= 6) {
+    for (const indicator of indicators) {
+      indicator.className = highLevelClassname;
+    }
+  } else if (value >= 3) {
+    indicators[0].className = mediumLevelClassname;
+    indicators[1].className = mediumLevelClassname;
+    indicators[2].className = baseClassname;
+  } else {
+    indicators[0].className = lowLevelClassname;
+    indicators[1].className = baseClassname;
+    indicators[2].className = baseClassname;
   }
 }
 
