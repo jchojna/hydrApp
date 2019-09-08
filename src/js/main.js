@@ -203,31 +203,28 @@ const toggleArchive = (e) => {
 
 const handleItemEdit = (e) => {
   const itemIndex = e.target.index;
-  const editGroup = editGroups[itemIndex];
-  const editButton = editButtons[itemIndex];
   const archiveItem = archiveItems[itemIndex];
+  const editButton = editButtons[itemIndex];
+  const editGroup = editGroups[itemIndex];
+  const decreaseButton = decreaseButtons[itemIndex];
+  const increaseButton = increaseButtons[itemIndex];
+  const cancelButton = cancelButtons[itemIndex];
+  const saveButton = saveButtons[itemIndex];
+  
+  const toggleItemEdit = () => {
+    archiveItem.classList.toggle('archive__item--on-top');
+    editButton.classList.toggle('edition__edit--hidden');
+    editGroup.classList.toggle('edition__group--visible');
+    pageOverlay.classList.toggle('page-overlay--visible');
+    cancelButton.removeEventListener('click', toggleItemEdit);
+  }
+  
+  toggleItemEdit();
 
-  archiveItem.classList.toggle('archive__item--on-top');
-  editButton.classList.toggle('edition__edit--hidden');
-  editGroup.classList.toggle('edition__group--visible');
-  pageOverlay.classList.toggle('page-overlay--visible');
+
+
+  cancelButton.addEventListener('click', toggleItemEdit);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 setCounter();
 setArchive();
