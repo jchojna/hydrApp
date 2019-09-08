@@ -86,29 +86,35 @@ const setCounter = () => {
 const setArchive = () => {
   const hydrappKeys = getHydrappKeys();
 
-  for (let i = 1; i < hydrappKeys.length; i++) {
-    const key = hydrappKeys[i];
-    const value = localStorage.getItem(key);
-    const date = key
-      .replace('hydrApp-','')
-      .split('-')
-      .reverse()
-      .join(' ');
-    const dateHash = date.replace(/\s/g,'');
-    
+  if (hydrappKeys.length === 1) {
     archiveList.innerHTML += `
-    <li class="archive__item">
-      <p class="archive__date">${date}</p>
-      <p class="archive__value archive__value--js">${value}</p>
-      <div class="indicator indicator--js-${dateHash}">
-        <div class="${baseClassname}"></div>
-        <div class="${baseClassname}"></div>
-        <div class="${baseClassname}"></div>
-      </div>
-    </li>
-    `;
-
-    setIndicators(dateHash, value);
+      <li class="archive__item archive__item--empty">No history yet...</li>
+      `;
+  } else {
+    for (let i = 1; i < hydrappKeys.length; i++) {
+      const key = hydrappKeys[i];
+      const value = localStorage.getItem(key);
+      const date = key
+        .replace('hydrApp-','')
+        .split('-')
+        .reverse()
+        .join(' ');
+      const dateHash = date.replace(/\s/g,'');
+      
+      archiveList.innerHTML += `
+      <li class="archive__item">
+        <p class="archive__date">${date}</p>
+        <p class="archive__value archive__value--js">${value}</p>
+        <div class="indicator indicator--js-${dateHash}">
+          <div class="${baseClassname}"></div>
+          <div class="${baseClassname}"></div>
+          <div class="${baseClassname}"></div>
+        </div>
+      </li>
+      `;
+  
+      setIndicators(dateHash, value);
+    }
   }
 }
 

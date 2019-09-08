@@ -136,6 +136,12 @@ body {
     align-items: center;
     padding: 0.4rem 1rem;
 
+    &--empty {
+      text-align: center;
+      font-style: italic;
+      @include flex-center;
+    }
+
     &:nth-child(even) {
       background-color: rgba($color: #fff, $alpha: 0.05);
     }
