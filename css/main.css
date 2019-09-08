@@ -1,3 +1,4 @@
+@import url("https://use.fontawesome.com/releases/v5.8.2/css/all.css");
 @import url("https://fonts.googleapis.com/css?family=Roboto:300,500,700&display=swap");
 /*! normalize.css v8.0.1 | MIT License | github.com/necolas/normalize.css */
 /* Document
@@ -360,6 +361,18 @@ body {
   font-weight: medium;
   color: #fff; }
 
+.page-overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  visibility: hidden; }
+  .page-overlay--visible {
+    visibility: visible; }
+
 .app {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -476,21 +489,86 @@ body {
   .archive__item {
     display: -ms-grid;
     display: grid;
-    -ms-grid-columns: 1fr (auto)[2];
-    grid-template-columns: 1fr repeat(2, auto);
+    -ms-grid-columns: 1fr (auto)[3];
+    grid-template-columns: 1fr repeat(3, auto);
     grid-column-gap: 1rem;
     -webkit-box-align: center;
         -ms-flex-align: center;
             align-items: center;
-    padding: 0.4rem 1rem; }
+    padding: 0.4rem 1rem;
+    border: 1px solid transparent; }
+    .archive__item--empty {
+      text-align: center;
+      font-style: italic;
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-pack: center;
+          -ms-flex-pack: center;
+              justify-content: center;
+      -webkit-box-align: center;
+          -ms-flex-align: center;
+              align-items: center; }
     .archive__item:nth-child(even) {
       background-color: rgba(255, 255, 255, 0.05); }
     .archive__item:not(:last-child) {
       border-bottom: 1px solid #ccc; }
+  .archive .archive__item--on-top {
+    background-color: #122239;
+    position: relative;
+    z-index: 1;
+    border-color: #fff; }
   .archive__date {
     margin: 0; }
   .archive__value {
     margin: 0; }
+
+.button {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  width: 20px;
+  height: 20px; }
+
+.edition {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center; }
+  .edition__edit--hidden {
+    display: none; }
+  .edition__icon {
+    color: #fff;
+    pointer-events: none; }
+  .edition__group {
+    display: none; }
+    .edition__group--visible {
+      display: -ms-grid;
+      display: grid;
+      -ms-grid-columns: (1fr)[4];
+      grid-template-columns: repeat(4, 1fr);
+      -webkit-column-gap: 5px;
+         -moz-column-gap: 5px;
+              column-gap: 5px; }
+  .edition__decrease, .edition__increase {
+    -webkit-transform: scale(1.5);
+        -ms-transform: scale(1.5);
+            transform: scale(1.5); }
 
 .indicator {
   display: -webkit-box;
@@ -500,7 +578,7 @@ body {
     display: block;
     background-color: #ccc;
     width: 0.3rem;
-    height: 1rem;
+    height: 20px;
     border-radius: 1rem; }
     .indicator__section:not(:last-child) {
       margin-right: 0.3rem; }
