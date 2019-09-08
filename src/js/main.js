@@ -86,7 +86,8 @@ const setCounter = () => {
 const setArchive = () => {
   const hydrappKeys = getHydrappKeys();
 
-  for (const key of hydrappKeys) {
+  for (let i = 1; i < hydrappKeys.length; i++) {
+    const key = hydrappKeys[i];
     const value = localStorage.getItem(key);
     const date = key
       .replace('hydrApp-','')
@@ -144,10 +145,6 @@ const updateCounter = (e) => {
   localStorage.setItem(key, newValue);
   counter.innerHTML = newValue;
   
-  // updating archive newest entry value
-  const newestArchiveValue = document.querySelector('.archive__value--js');
-  newestArchiveValue.innerHTML = newValue;
-
   // updating archive newest entry indicator
   const dateHash = offsetedDate
     .toISOString()
