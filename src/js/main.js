@@ -22,6 +22,8 @@ const archive = document.querySelector('.archive--js');
 const archiveList = document.querySelector('.archive__list--js');
 const archiveButton = document.querySelector('.app__button--js-archive');
 
+const counterMaxValue = 100;
+
 const baseClassname = "indicator__section indicator__section--js";
 const lowLevelClassname = `${baseClassname} indicator__section--low`;
 const mediumLevelClassname = `${baseClassname} indicator__section--medium`;
@@ -103,9 +105,11 @@ const setArchive = () => {
       const dateHash = date.replace(/\s/g,'');
       
       archiveList.innerHTML += `
-      <li class="archive__item archive__item--js">
+      <li class="archive__item archive__item--js ${key}">
         <p class="archive__date">${date}</p>
-        <p class="archive__value archive__value--js">${value}</p>
+        <p class="archive__value archive__value--js">
+          ${value}
+        </p>
         <div class="edition">
           <button class="button edition__edit edition__edit--js">
             <i class="edition__icon far fa-edit"></i>
@@ -163,7 +167,7 @@ const updateCounter = (e) => {
   let newValue;
 
   if (e.target === addGlass) {
-    value < 100 ? newValue = value + 1 : newValue = 100;
+    value < counterMaxValue ? newValue = value + 1 : newValue = counterMaxValue;
   } else if (e.target === removeGlass) {
     value > 0 ? newValue = value - 1 : newValue = 0;
   }
@@ -210,6 +214,17 @@ const handleItemEdit = (e) => {
   const increaseButton = increaseButtons[itemIndex];
   const cancelButton = cancelButtons[itemIndex];
   const saveButton = saveButtons[itemIndex];
+  const archiveValue = archiveValues[itemIndex];
+
+  const itemClassName = e.target.parentElement.parentElement.className;
+  const hydrAppKey = itemClassName
+    .split(' ')
+    .filter(key => /hydrApp/.test(key))
+    .toString();
+
+
+
+  
   
   const toggleItemEdit = () => {
     archiveItem.classList.toggle('archive__item--on-top');
@@ -217,14 +232,42 @@ const handleItemEdit = (e) => {
     editGroup.classList.toggle('edition__group--visible');
     pageOverlay.classList.toggle('page-overlay--visible');
     cancelButton.removeEventListener('click', toggleItemEdit);
+    pageOverlay.removeEventListener('click', toggleItemEdit);
   }
-  
+
+  const decreaseValue = () => {   // ZOPTYMALIZOWAC Z UPDATE COUNTER
+    let value = localStorage.getItem(hydrAppKey);
+    value > 0 ? value-- : false;
+    localStorage.setItem(hydrAppKey, value);
+    archiveValue.textContent = value;
+  }
+
+  const increaseValue = () => {   // ZOPTYMALIZOWAC Z UPDATE COUNTER
+    let value = localStorage.getItem(hydrAppKey);
+    value < counterMaxValue ? value++ : false;
+    localStorage.setItem(hydrAppKey, value);
+    archiveValue.textContent = value;
+  }
+
   toggleItemEdit();
 
 
-
   cancelButton.addEventListener('click', toggleItemEdit);
+  pageOverlay.addEventListener('click', toggleItemEdit);
+  decreaseButton.addEventListener('click', decreaseValue);
+  increaseButton.addEventListener('click', increaseValue);
 }
+
+
+
+
+
+
+
+
+
+
+
 
 setCounter();
 setArchive();
@@ -236,6 +279,7 @@ const decreaseButtons = document.querySelectorAll('.edition__decrease--js');
 const increaseButtons = document.querySelectorAll('.edition__increase--js');
 const cancelButtons = document.querySelectorAll('.edition__cancel--js');
 const saveButtons = document.querySelectorAll('.edition__save--js');
+const archiveValues = document.querySelectorAll('.archive__value--js');
 
 addGlass.addEventListener('click', updateCounter);
 removeGlass.addEventListener('click', updateCounter);
