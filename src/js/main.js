@@ -14,12 +14,12 @@ if ('serviceWorker' in navigator) {
 
 /********** VARIABLES **********/
 
+const pageOverlay = document.querySelector('.page-overlay--js');
 const addGlass = document.querySelector('.app__button--js-add');
 const removeGlass = document.querySelector('.app__button--js-remove');
 const counter = document.querySelector('.glass__counter--js');
 const archive = document.querySelector('.archive--js');
 const archiveList = document.querySelector('.archive__list--js');
-
 const archiveButton = document.querySelector('.app__button--js-archive');
 
 const baseClassname = "indicator__section indicator__section--js";
@@ -195,18 +195,44 @@ const toggleArchive = (e) => {
   }
 }
 
+
+
+
+
+
+
 const handleItemEdit = (e) => {
   const itemIndex = e.target.index;
   const editGroup = editGroups[itemIndex];
   const editButton = editButtons[itemIndex];
+  const archiveItem = archiveItems[itemIndex];
+
+  archiveItem.classList.toggle('archive__item--on-top');
   editButton.classList.toggle('edition__edit--hidden');
   editGroup.classList.toggle('edition__group--visible');
+  pageOverlay.classList.toggle('page-overlay--visible');
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 setCounter();
 setArchive();
 
-//const archiveItems = document.querySelectorAll('.archive__item--js');
+const archiveItems = document.querySelectorAll('.archive__item--js');
 const editButtons = document.querySelectorAll('.edition__edit--js');
 const editGroups = document.querySelectorAll('.edition__group--js');
 const decreaseButtons = document.querySelectorAll('.edition__decrease--js');

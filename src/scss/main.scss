@@ -22,6 +22,21 @@ body {
   color: #fff;
 }
 
+.page-overlay {
+  background-color: rgba($color: #000, $alpha: 0.5);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  visibility: hidden;
+
+  &--visible {
+    visibility: visible;
+  }
+}
+
 .app {
   @include flex-center;
   flex-direction: column;
@@ -136,6 +151,7 @@ body {
     grid-column-gap: 1rem;
     align-items: center;
     padding: 0.4rem 1rem;
+    border: 1px solid transparent;
 
     &--empty {
       text-align: center;
@@ -146,10 +162,17 @@ body {
     &:nth-child(even) {
       background-color: rgba($color: #fff, $alpha: 0.05);
     }
-
+    
     &:not(:last-child) {
       border-bottom: 1px solid $color-grey;
     }
+  }
+
+  & &__item--on-top { // overriding higher specificity selectors
+    background-color: darken($color-background, 30%);
+    position: relative;
+    z-index: 1;
+    border-color: #fff;
   }
 
   &__date {
