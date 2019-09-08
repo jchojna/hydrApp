@@ -175,16 +175,25 @@ body {
   @include flex-center;
 
   &__edit {
+
+    &--hidden {
+      display: none;
+    }
   }
 
   &__icon {
     color: #fff;
+    pointer-events: none;
   }
 
   &__group {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    column-gap: 5px;
+    display: none;
+
+    &--visible {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      column-gap: 5px;
+    }
   }
 
   &__decrease,

@@ -19,6 +19,7 @@ const removeGlass = document.querySelector('.app__button--js-remove');
 const counter = document.querySelector('.glass__counter--js');
 const archive = document.querySelector('.archive--js');
 const archiveList = document.querySelector('.archive__list--js');
+
 const archiveButton = document.querySelector('.app__button--js-archive');
 
 const baseClassname = "indicator__section indicator__section--js";
@@ -102,14 +103,14 @@ const setArchive = () => {
       const dateHash = date.replace(/\s/g,'');
       
       archiveList.innerHTML += `
-      <li class="archive__item">
+      <li class="archive__item archive__item--js">
         <p class="archive__date">${date}</p>
         <p class="archive__value archive__value--js">${value}</p>
         <div class="edition">
           <button class="button edition__edit edition__edit--js">
             <i class="edition__icon far fa-edit"></i>
           </button>
-          <div class="edition__group">
+          <div class="edition__group edition__group--js">
             <button class="button edition__decrease edition__decrease--js">
               <i class="edition__icon fas fa-caret-left"></i>
             </button>
@@ -194,8 +195,31 @@ const toggleArchive = (e) => {
   }
 }
 
+const handleItemEdit = (e) => {
+  const itemIndex = e.target.index;
+  const editGroup = editGroups[itemIndex];
+  const editButton = editButtons[itemIndex];
+  editButton.classList.toggle('edition__edit--hidden');
+  editGroup.classList.toggle('edition__group--visible');
+}
+
 setCounter();
 setArchive();
+
+//const archiveItems = document.querySelectorAll('.archive__item--js');
+const editButtons = document.querySelectorAll('.edition__edit--js');
+const editGroups = document.querySelectorAll('.edition__group--js');
+const decreaseButtons = document.querySelectorAll('.edition__decrease--js');
+const increaseButtons = document.querySelectorAll('.edition__increase--js');
+const cancelButtons = document.querySelectorAll('.edition__cancel--js');
+const saveButtons = document.querySelectorAll('.edition__save--js');
+
 addGlass.addEventListener('click', updateCounter);
 removeGlass.addEventListener('click', updateCounter);
 archiveButton.addEventListener('click', toggleArchive);
+
+for (let i = 0; i < editButtons.length; i++) {
+  const editButton = editButtons[i];
+  editButton.index = i;
+  editButton.addEventListener('click', handleItemEdit);
+}
