@@ -106,9 +106,23 @@ const setArchive = () => {
         <p class="archive__date">${date}</p>
         <p class="archive__value archive__value--js">${value}</p>
         <div class="edition">
-          <button class="edition__edit">
+          <button class="button edition__edit edition__edit--js">
             <i class="edition__icon far fa-edit"></i>
           </button>
+          <div class="edition__group">
+            <button class="button edition__decrease edition__decrease--js">
+              <i class="edition__icon fas fa-caret-left"></i>
+            </button>
+            <button class="button edition__increase edition__increase--js">
+              <i class="edition__icon fas fa-caret-right"></i>
+            </button>
+            <button class="button edition__cancel edition__cancel--js">
+              <i class="edition__icon fas fa-undo"></i>
+            </button>
+            <button class="button edition__save edition__save--js">
+              <i class="edition__icon far fa-save"></i>
+            </button>
+          </div>
         </div>
         <div class="indicator indicator--js-${dateHash}">
           <div class="${baseClassname}"></div>

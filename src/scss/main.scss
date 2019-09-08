@@ -22,6 +22,13 @@ body {
   color: #fff;
 }
 
+.button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
 .app {
   @include flex-center;
   flex-direction: column;
@@ -162,16 +169,36 @@ body {
 }
 
 .edition {
+  @include flex-center;
 
   &__edit {
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
+    @include flex-center;
   }
 
   &__icon {
     color: #fff;
+  }
+
+  &__group {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    column-gap:5px;
+  }
+
+  &__decrease {
+    @include flex-center;
+  }
+  
+  &__increase {
+    @include flex-center;
+  }
+  
+  &__cancel {
+    @include flex-center;
+  }
+  
+  &__save {
+    @include flex-center;
   }
 }
 
