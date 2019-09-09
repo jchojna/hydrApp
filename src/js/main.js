@@ -55,6 +55,14 @@ const getHydrappKeys = () => {
   .reverse();
 }
 
+const getDateID = (date) => {
+  return date
+    .replace('hydrApp-','')
+    .split('-')
+    .reverse()
+    .join('');
+}
+
 const getOffsetedDate = () => {
   const timeZoneOffset = (new Date()).getTimezoneOffset() * 60000;
   return (new Date(Date.now() - timeZoneOffset));
@@ -102,7 +110,7 @@ const setArchive = () => {
         .split('-')
         .reverse()
         .join(' ');
-      const dateHash = date.replace(/\s/g,'');
+      const dateID = date.replace(/\s/g,'');
       
       archiveList.innerHTML += `
       <li class="archive__item archive__item--js ${key}">
@@ -129,7 +137,7 @@ const setArchive = () => {
             </button>
           </div>
         </div>
-        <div class="indicator indicator--js-${dateHash}">
+        <div class="indicator indicator--js-${dateID}">
           <div class="${baseClassname}"></div>
           <div class="${baseClassname}"></div>
           <div class="${baseClassname}"></div>
@@ -137,7 +145,7 @@ const setArchive = () => {
       </li>
       `;
   
-      setIndicators(dateHash, value);
+      setIndicators(dateID, value);
     }
   }
 }
@@ -176,13 +184,13 @@ const updateCounter = (e) => {
   counter.innerHTML = newValue;
   
   // updating archive newest entry indicator
-  const dateHash = offsetedDate
+  const dateID = offsetedDate
     .toISOString()
     .slice(0,10)
     .split('-')
     .reverse()
     .join('');
-  setIndicators(dateHash, newValue);
+  setIndicators(dateID, newValue);
 }
 
 const toggleArchive = (e) => {
@@ -221,7 +229,7 @@ const handleItemEdit = (e) => {
     .split(' ')
     .filter(key => /hydrApp/.test(key))
     .toString();
-
+  const dateID = getDateID(hydrAppKey);
 
 
   
@@ -233,31 +241,28 @@ const handleItemEdit = (e) => {
     pageOverlay.classList.toggle('page-overlay--visible');
     cancelButton.removeEventListener('click', toggleItemEdit);
     pageOverlay.removeEventListener('click', toggleItemEdit);
-    decreaseButton.removeEventListener('click', decreaseValue);
-    increaseButton.removeEventListener('click', increaseValue);
+    decreaseButton.removeEventListener('click', updateValue);
+    increaseButton.removeEventListener('click', updateValue);
   }
 
-  const decreaseValue = () => {   // ZOPTYMALIZOWAC Z UPDATE COUNTER
+  const updateValue = (e) => {   // ZOPTYMALIZOWAC Z UPDATE COUNTER
     let value = localStorage.getItem(hydrAppKey);
-    value > 0 ? value-- : false;
+    if (e.target === decreaseButton) {
+      value > 0 ? value-- : false;
+    } else {
+      value < counterMaxValue ? value++ : false;
+    }
     localStorage.setItem(hydrAppKey, value);
     archiveValue.textContent = value;
-  }
-
-  const increaseValue = () => {   // ZOPTYMALIZOWAC Z UPDATE COUNTER
-    let value = localStorage.getItem(hydrAppKey);
-    value < counterMaxValue ? value++ : false;
-    localStorage.setItem(hydrAppKey, value);
-    archiveValue.textContent = value;
+    setIndicators(dateID, value);
   }
 
   toggleItemEdit();
 
-
   cancelButton.addEventListener('click', toggleItemEdit);
   pageOverlay.addEventListener('click', toggleItemEdit);
-  decreaseButton.addEventListener('click', decreaseValue);
-  increaseButton.addEventListener('click', increaseValue);
+  decreaseButton.addEventListener('click', updateValue);
+  increaseButton.addEventListener('click', updateValue);
 }
 
 
