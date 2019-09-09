@@ -474,10 +474,9 @@ body {
   margin: 0;
   overflow: hidden;
   height: 0;
-  height: 100%;
-  -webkit-transition: margin 1s, height 1s;
-  -o-transition: margin 1s, height 1s;
-  transition: margin 1s, height 1s; }
+  -webkit-transition: margin 0.5s, height 0.5s;
+  -o-transition: margin 0.5s, height 0.5s;
+  transition: margin 0.5s, height 0.5s; }
   .archive--visible {
     margin: 2rem 0; }
   .archive__list {
