@@ -130,8 +130,7 @@ body {
   margin: 0;
   overflow: hidden;
   height: 0;
-  height: 100%;
-  transition: margin 1s, height 1s;
+  transition: margin 0.5s, height 0.5s;
 
   &--visible {
     margin: 2rem 0;

@@ -207,12 +207,6 @@ const toggleArchive = (e) => {
   }
 }
 
-
-
-
-
-
-
 const handleItemEdit = (e) => {
   const itemIndex = e.target.index;
   const archiveItem = archiveItems[itemIndex];
@@ -223,6 +217,7 @@ const handleItemEdit = (e) => {
   const cancelButton = cancelButtons[itemIndex];
   const saveButton = saveButtons[itemIndex];
   const archiveValue = archiveValues[itemIndex];
+  const lastValue = archiveValue.textContent;
 
   const itemClassName = e.target.parentElement.parentElement.className;
   const hydrAppKey = itemClassName
@@ -231,50 +226,49 @@ const handleItemEdit = (e) => {
     .toString();
   const dateID = getDateID(hydrAppKey);
 
-
-  
-  
-  const toggleItemEdit = () => {
+  const toggleItemDisplay = () => {
     archiveItem.classList.toggle('archive__item--on-top');
     editButton.classList.toggle('edition__edit--hidden');
     editGroup.classList.toggle('edition__group--visible');
     pageOverlay.classList.toggle('page-overlay--visible');
-    cancelButton.removeEventListener('click', toggleItemEdit);
-    pageOverlay.removeEventListener('click', toggleItemEdit);
+  }
+    
+  const exitEditMode = () => {
+    toggleItemDisplay();
+    const lastValue = localStorage.getItem(hydrAppKey);
+    archiveValue.textContent = lastValue;
+    setIndicators(dateID, lastValue);
+    // removing all event listeners
+    cancelButton.removeEventListener('click', exitEditMode);
+    pageOverlay.removeEventListener('click', exitEditMode);
     decreaseButton.removeEventListener('click', updateValue);
     increaseButton.removeEventListener('click', updateValue);
+    saveButton.removeEventListener('click', saveValue)
   }
 
   const updateValue = (e) => {   // ZOPTYMALIZOWAC Z UPDATE COUNTER
-    let value = localStorage.getItem(hydrAppKey);
+    let value = archiveValue.textContent;
     if (e.target === decreaseButton) {
       value > 0 ? value-- : false;
     } else {
       value < counterMaxValue ? value++ : false;
     }
-    localStorage.setItem(hydrAppKey, value);
     archiveValue.textContent = value;
     setIndicators(dateID, value);
   }
 
-  toggleItemEdit();
+  const saveValue = () => {
+    localStorage.setItem(hydrAppKey, archiveValue.textContent);
+    exitEditMode();
+  }
 
-  cancelButton.addEventListener('click', toggleItemEdit);
-  pageOverlay.addEventListener('click', toggleItemEdit);
+  toggleItemDisplay();
+  cancelButton.addEventListener('click', exitEditMode);
+  pageOverlay.addEventListener('click', exitEditMode);
   decreaseButton.addEventListener('click', updateValue);
   increaseButton.addEventListener('click', updateValue);
+  saveButton.addEventListener('click', saveValue);
 }
-
-
-
-
-
-
-
-
-
-
-
 
 setCounter();
 setArchive();
