@@ -233,6 +233,8 @@ const handleItemEdit = (e) => {
     pageOverlay.classList.toggle('page-overlay--visible');
     cancelButton.removeEventListener('click', toggleItemEdit);
     pageOverlay.removeEventListener('click', toggleItemEdit);
+    decreaseButton.removeEventListener('click', decreaseValue);
+    increaseButton.removeEventListener('click', increaseValue);
   }
 
   const decreaseValue = () => {   // ZOPTYMALIZOWAC Z UPDATE COUNTER
