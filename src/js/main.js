@@ -116,20 +116,30 @@ const setArchive = () => {
         </p>
         <div class="edition">
           <button class="button edition__edit edition__edit--js">
-            <i class="edition__icon far fa-edit"></i>
+            <svg class="edition__svg edition__svg--edit">
+              <use href="assets/svg/icons.svg#edit-mode"></use>
+            </svg>
           </button>
           <div class="edition__group edition__group--js">
             <button class="button edition__decrease edition__decrease--js">
-              <i class="edition__icon fas fa-caret-left"></i>
+              <svg class="edition__svg edition__svg--decrease">
+                <use href="assets/svg/icons.svg#left-arrow"></use>
+              </svg>
             </button>
             <button class="button edition__increase edition__increase--js">
-              <i class="edition__icon fas fa-caret-right"></i>
+              <svg class="edition__svg edition__svg--increase">
+                <use href="assets/svg/icons.svg#right-arrow"></use>
+              </svg>
             </button>
             <button class="button edition__cancel edition__cancel--js">
-              <i class="edition__icon fas fa-undo"></i>
+              <svg class="edition__svg edition__svg--cancel">
+                <use href="assets/svg/icons.svg#back-arrow"></use>
+              </svg>
             </button>
             <button class="button edition__save edition__save--js">
-              <i class="edition__icon far fa-save"></i>
+              <svg class="edition__svg edition__svg--save">
+                <use href="assets/svg/icons.svg#save-icon"></use>
+              </svg>
             </button>
           </div>
         </div>

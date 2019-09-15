@@ -203,8 +203,10 @@ body {
     }
   }
 
-  &__icon {
-    color: #fff;
+  &__svg {
+    width: 100%;
+    height: 100%;
+    fill: #fff;
     pointer-events: none;
   }
 
@@ -216,11 +218,6 @@ body {
       grid-template-columns: repeat(4, 1fr);
       column-gap: 5px;
     }
-  }
-
-  &__decrease,
-  &__increase {
-    transform: scale(1.5);
   }
 }
 
