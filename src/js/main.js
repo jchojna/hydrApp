@@ -180,21 +180,18 @@ const setArchive = () => {
 }
 //////////////////////////////////////////////////////////////// SET INDICATORS
 const setIndicators = (id, value) => {
-  const indicators = document.querySelectorAll(`.indicator--js-${id} .indicator__section--js`);
 
-  if (value >= 6) {
-    for (const indicator of indicators) {
-      indicator.className = highLevelClassname;
-    }
-  } else if (value >= 3) {
-    indicators[0].className = mediumLevelClassname;
-    indicators[1].className = mediumLevelClassname;
-    indicators[2].className = baseClassname;
-  } else {
-    indicators[0].className = lowLevelClassname;
-    indicators[1].className = baseClassname;
-    indicators[2].className = baseClassname;
+  value > 7 ? value = 7 : false;
+
+  const indicators = document.querySelector(`.indicator--js-${id}`).children;
+  const indicator = document.querySelector(`.indicator--js-${id} .indicator__svg--js-${value}`);
+  
+  for (const indicator of indicators) {
+    indicator.classList.contains('indicator__svg--visible')
+    ? indicator.classList.remove('indicator__svg--visible')
+    : false
   }
+  indicator.classList.add('indicator__svg--visible');
 }
 //////////////////////////////////////////////////////////////// UPDATE COUNTER
 const updateCounter = (e) => {
@@ -222,7 +219,7 @@ const updateCounter = (e) => {
   setIndicators(dateID, newValue);
 }
 //////////////////////////////////////////////////////////////// TOGGLE ARCHIVE
-const toggleArchive = (e) => {
+const toggleArchive = () => {
   archive.classList.toggle('archive--visible');
 }
 ////////////////////////////////////////////////////////////// HANDLE ITEM EDIT
