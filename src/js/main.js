@@ -20,7 +20,7 @@ const removeGlass = document.querySelector('.app__button--js-remove');
 const counter = document.querySelector('.glass__counter--js');
 const archive = document.querySelector('.archive--js');
 const archiveList = document.querySelector('.archive__list--js');
-const archiveButton = document.querySelector('.app__button--js-archive');
+const archiveButton = document.querySelector('.navigation__button--js-archive');
 
 const counterMaxValue = 100;
 

@@ -35,7 +35,18 @@
     <div class="page-overlay page-overlay--js"></div>
     <!-- HYDRAPP -->
     <main class="app">
-      <h1 class="app__heading visuallyhidden">hydrApp</h1>
+      <header>
+        <h1 class="app__heading visuallyhidden">hydrApp</h1>
+        <nav class="navigation">
+          <ul class="navigation__list">
+            <li class="navigation__item">
+              <button class="navigation__button navigation__button--archive navigation__button--js-archive">
+                Show archive
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </header>
       <div class="app__container">
         <section class="glass">
           <h2 class="glass__heading visuallyhidden">Glass of water</h2>
@@ -58,11 +69,9 @@
         </button>
       </div>
       <section class="archive archive--js">
+        <h2 class="archive__heading visuallyhidden">History</h2>
         <ul class="archive__list archive__list--js"></ul>
       </section>
-      <button class="app__button app__button--archive app__button--js-archive">
-        Show archive
-      </button>
     </main>
 
     <script src="js/main.js"></script>
