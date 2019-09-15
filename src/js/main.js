@@ -98,48 +98,28 @@ const setArchive = () => {
           ${value}
         </p>
         <div class="edition">
-          <button class="
-            button
-            edition__button
-            edition__button--edit
-            edition__button--js-edit">
+          <button class="button edition__button edition__button--edit edition__button--js-edit">
             <svg class="edition__svg edition__svg--edit">
               <use href="assets/svg/icons.svg#edit-mode"></use>
             </svg>
           </button>
           <div class="edition__group edition__group--js">
-            <button class="
-              button
-              edition__button
-              edition__button--decrease
-              edition__button--js-decrease">
+            <button class="button edition__button edition__button--decrease edition__button--js-decrease">
               <svg class="edition__svg edition__svg--decrease">
                 <use href="assets/svg/icons.svg#left-arrow"></use>
               </svg>
             </button>
-            <button class="
-              button
-              edition__button
-              edition__button--increase
-              edition__button--js-increase">
+            <button class="button edition__button edition__button--increase edition__button--js-increase">
               <svg class="edition__svg edition__svg--increase">
                 <use href="assets/svg/icons.svg#right-arrow"></use>
               </svg>
             </button>
-            <button class="
-              button
-              edition__button
-              edition__button--cancel
-              edition__button--js-cancel">
+            <button class="button edition__button edition__button--cancel edition__button--js-cancel">
               <svg class="edition__svg edition__svg--cancel">
                 <use href="assets/svg/icons.svg#back-arrow"></use>
               </svg>
             </button>
-            <button class="
-              button
-              edition__button
-              edition__button--save
-              edition__button--js-save">
+            <button class="button edition__button edition__button--save edition__button--js-save">
               <svg class="edition__svg edition__svg--save">
                 <use href="assets/svg/icons.svg#save-icon"></use>
               </svg>
@@ -147,6 +127,7 @@ const setArchive = () => {
           </div>
         </div>
         <div class="indicator indicator--js-${dateID}">
+        
           <svg class="indicator__svg indicator__svg--emo-1 indicator__svg--js-0">
             <use href="assets/svg/icons.svg#emoticon-0"></use>
           </svg>
@@ -234,7 +215,6 @@ const handleItemEdit = (e) => {
   const saveButton = saveButtons[itemIndex];
   const archiveValue = archiveValues[itemIndex];
   const lastValue = archiveValue.textContent;
-
   const itemClassName = e.target.parentElement.parentElement.className;
   const hydrAppKey = itemClassName
     .split(' ')
@@ -276,7 +256,7 @@ const handleItemEdit = (e) => {
   }
   ////////////////////////////////////////////// SAVE VALUE << HANDLE ITEM EDIT
   const saveValue = () => {
-    localStorage.setItem(hydrAppKey, archiveValue.textContent);
+    localStorage.setItem(hydrAppKey, parseInt(archiveValue.textContent));
     exitEditMode();
   }
   ////////////////////////////////////////// FUNCTION CALLS << HANDLE ITEM EDIT
