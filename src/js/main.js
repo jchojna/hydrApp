@@ -226,10 +226,11 @@ const handleItemEdit = (e) => {
 
   ///////////////////////////////////// TOGGLE ITEM DISPLAY << HANDLE ITEM EDIT
   const toggleItemDisplay = () => {
+    archive.classList.toggle('archive--on-top');
     archiveItem.classList.toggle('archive__item--on-top');
     editButton.classList.toggle('edition__button--hidden');
     editGroup.classList.toggle('edition__group--visible');
-    pageOverlay.classList.toggle('page-overlay--visible');
+    pageOverlay.classList.toggle('archive__overlay--visible');
   }
   ////////////////////////////////////////// EXIT EDIT MODE << HANDLE ITEM EDIT
   const exitEditMode = () => {
@@ -270,7 +271,7 @@ const handleItemEdit = (e) => {
 } ///////////////////////////////////////////////////// END OF HANDLE ITEM EDIT
 
 ///////////////////////////////////////////////////////////////////// VARIABLES
-const pageOverlay = document.querySelector('.page-overlay--js');
+const pageOverlay = document.querySelector('.archive__overlay--js');
 const addGlass = document.querySelector('.app__button--js-add');
 const removeGlass = document.querySelector('.app__button--js-remove');
 const counter = document.querySelector('.glass__counter--js');
