@@ -91,7 +91,7 @@ const setArchive = () => {
         .join(' ');
       const dateID = date.replace(/\s/g,'');
       
-      archiveList.innerHTML += `
+      /* archiveList.innerHTML += `
       <li class="archive__item archive__item--js ${key}">
         <p class="archive__date">${date}</p>
         <p class="archive__value archive__value--js">
@@ -155,7 +155,58 @@ const setArchive = () => {
         </div>
       </li>
       `;
-      setIndicators(dateID, value);
+      setIndicators(dateID, value); */
+
+      let indicators = "";
+      for (let i = 0; i < 8; i++) {
+        indicators += `
+        <svg class="indicator__svg indicator__svg--emo-${i+1} indicator__svg--js-${i}">
+          <use href="assets/svg/icons.svg#emoticon-${i}"></use>
+        </svg>
+        `
+      }
+
+      archiveList.innerHTML += `
+      <li class="archive__item archive__item--js ${key}">
+        <p class="archive__date">${date}</p>
+        <p class="archive__value archive__value--js">
+          ${value}
+        </p>
+        <div class="edition">
+          <button class="button edition__button edition__button--edit edition__button--js-edit">
+            <svg class="edition__svg edition__svg--edit">
+              <use href="assets/svg/icons.svg#edit-mode"></use>
+            </svg>
+          </button>
+          <div class="edition__group edition__group--js">
+            <button class="button edition__button edition__button--decrease edition__button--js-decrease">
+              <svg class="edition__svg edition__svg--decrease">
+                <use href="assets/svg/icons.svg#left-arrow"></use>
+              </svg>
+            </button>
+            <button class="button edition__button edition__button--increase edition__button--js-increase">
+              <svg class="edition__svg edition__svg--increase">
+                <use href="assets/svg/icons.svg#right-arrow"></use>
+              </svg>
+            </button>
+            <button class="button edition__button edition__button--cancel edition__button--js-cancel">
+              <svg class="edition__svg edition__svg--cancel">
+                <use href="assets/svg/icons.svg#back-arrow"></use>
+              </svg>
+            </button>
+            <button class="button edition__button edition__button--save edition__button--js-save">
+              <svg class="edition__svg edition__svg--save">
+                <use href="assets/svg/icons.svg#save-icon"></use>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="indicator indicator--js-${dateID}">
+          ${indicators}
+        </div>
+      </li>
+      `
+      setIndicators(dateID, value);      
     }
   }
 }
