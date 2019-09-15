@@ -1,5 +1,6 @@
 "use strict";
 
+//////////////////////////////////////////////////////////////// SERVICE WORKER
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
     navigator.serviceWorker.register('serviceworker.js').then(function(registration) {
@@ -12,8 +13,7 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-/********** VARIABLES **********/
-
+///////////////////////////////////////////////////////////////////// VARIABLES
 const pageOverlay = document.querySelector('.page-overlay--js');
 const addGlass = document.querySelector('.app__button--js-add');
 const removeGlass = document.querySelector('.app__button--js-remove');
@@ -29,24 +29,21 @@ const lowLevelClassname = `${baseClassname} indicator__section--low`;
 const mediumLevelClassname = `${baseClassname} indicator__section--medium`;
 const highLevelClassname = `${baseClassname} indicator__section--high`;
 
-/********** FUNCTIONS **********/
-
-// create hydrApp date key
+///////////////////////////////////////////////////////////////////// FUNCTIONS
+/////////////////////////////////////////////////////// CREATE HYDRAPP DATE KEY
 const setDateKey = (obj) => {
   const prefix = 'hydrApp-';
   const date = obj.toISOString().slice(0,10);
   return prefix.concat(date);
 }
-
-// create key value pair in localStorage
+//////////////////////////////////////// CREATE KEY VALUE PAIR IN LOCAL STORAGE
 const setNewKeyValue = (key, value) => {
   if ( !localStorage.getItem(key) ) {
     localStorage.setItem(key, value);
   };
 }
-
+//////////////////////////////////// CREATE ARRAY OF HYDRAPP LOCAL STORAGE KEYS
 const getHydrappKeys = () => {
-  // create array of hydrApp localStorage keys
   const regex = /hydrApp-/;
   return Object
   .keys(localStorage)
@@ -54,7 +51,7 @@ const getHydrappKeys = () => {
   .sort()
   .reverse();
 }
-
+/////////////////////////////////////////////////////////////////// GET DATE ID
 const getDateID = (date) => {
   return date
     .replace('hydrApp-','')
@@ -62,13 +59,12 @@ const getDateID = (date) => {
     .reverse()
     .join('');
 }
-
+///////////////////////////////////////////////////////////// GET OFFSETED DATE
 const getOffsetedDate = () => {
   const timeZoneOffset = (new Date()).getTimezoneOffset() * 60000;
   return (new Date(Date.now() - timeZoneOffset));
 }
-
-
+/////////////////////////////////////////////////////////////////// SET COUNTER
 const setCounter = () => {
   const offsetedDate = getOffsetedDate();
   let dateKey = setDateKey(offsetedDate);
@@ -93,7 +89,7 @@ const setCounter = () => {
   }
   counter.innerHTML = localStorage.getItem(dateKey);
 }
-
+/////////////////////////////////////////////////////////////////// SET ARCHIVE
 const setArchive = () => {
   const hydrappKeys = getHydrappKeys();
 
@@ -144,12 +140,11 @@ const setArchive = () => {
         </div>
       </li>
       `;
-  
       setIndicators(dateID, value);
     }
   }
 }
-
+//////////////////////////////////////////////////////////////// SET INDICATORS
 const setIndicators = (id, value) => {
   const indicators = document.querySelectorAll(`.indicator--js-${id} .indicator__section--js`);
 
@@ -167,7 +162,7 @@ const setIndicators = (id, value) => {
     indicators[2].className = baseClassname;
   }
 }
-
+//////////////////////////////////////////////////////////////// UPDATE COUNTER
 const updateCounter = (e) => {
   const offsetedDate = getOffsetedDate();
   const key = setDateKey(offsetedDate);
@@ -192,7 +187,7 @@ const updateCounter = (e) => {
     .join('');
   setIndicators(dateID, newValue);
 }
-
+//////////////////////////////////////////////////////////////// TOGGLE ARCHIVE
 const toggleArchive = (e) => {
   const listHeight = archiveList.clientHeight;
 
@@ -206,7 +201,7 @@ const toggleArchive = (e) => {
     e.target.textContent = "Hide archive";
   }
 }
-
+////////////////////////////////////////////////////////////// HANDLE ITEM EDIT
 const handleItemEdit = (e) => {
   const itemIndex = e.target.index;
   const archiveItem = archiveItems[itemIndex];
@@ -226,13 +221,14 @@ const handleItemEdit = (e) => {
     .toString();
   const dateID = getDateID(hydrAppKey);
 
+  ///////////////////////////////////// TOGGLE ITEM DISPLAY << HANDLE ITEM EDIT
   const toggleItemDisplay = () => {
     archiveItem.classList.toggle('archive__item--on-top');
     editButton.classList.toggle('edition__edit--hidden');
     editGroup.classList.toggle('edition__group--visible');
     pageOverlay.classList.toggle('page-overlay--visible');
   }
-    
+  ////////////////////////////////////////// EXIT EDIT MODE << HANDLE ITEM EDIT
   const exitEditMode = () => {
     toggleItemDisplay();
     const lastValue = localStorage.getItem(hydrAppKey);
@@ -245,7 +241,7 @@ const handleItemEdit = (e) => {
     increaseButton.removeEventListener('click', updateValue);
     saveButton.removeEventListener('click', saveValue)
   }
-
+  //////////////////////////////////////////// UPDATE VALUE << HANDLE ITEM EDIT
   const updateValue = (e) => {   // ZOPTYMALIZOWAC Z UPDATE COUNTER
     let value = archiveValue.textContent;
     if (e.target === decreaseButton) {
@@ -256,23 +252,23 @@ const handleItemEdit = (e) => {
     archiveValue.textContent = value;
     setIndicators(dateID, value);
   }
-
+  ////////////////////////////////////////////// SAVE VALUE << HANDLE ITEM EDIT
   const saveValue = () => {
     localStorage.setItem(hydrAppKey, archiveValue.textContent);
     exitEditMode();
   }
-
+  ////////////////////////////////////////// FUNCTION CALLS << HANDLE ITEM EDIT
   toggleItemDisplay();
   cancelButton.addEventListener('click', exitEditMode);
   pageOverlay.addEventListener('click', exitEditMode);
   decreaseButton.addEventListener('click', updateValue);
   increaseButton.addEventListener('click', updateValue);
   saveButton.addEventListener('click', saveValue);
-}
-
+} ///////////////////////////////////////////////////// END OF HANDLE ITEM EDIT
+//////////////////////////////////////////////////////////////// FUNCTION CALLS
 setCounter();
 setArchive();
-
+///////////////////////////////////////////////////////////////////// VARIABLES
 const archiveItems = document.querySelectorAll('.archive__item--js');
 const editButtons = document.querySelectorAll('.edition__edit--js');
 const editGroups = document.querySelectorAll('.edition__group--js');
@@ -281,11 +277,10 @@ const increaseButtons = document.querySelectorAll('.edition__increase--js');
 const cancelButtons = document.querySelectorAll('.edition__cancel--js');
 const saveButtons = document.querySelectorAll('.edition__save--js');
 const archiveValues = document.querySelectorAll('.archive__value--js');
-
+/////////////////////////////////////////////////////////////// EVENT LISTENERS
 addGlass.addEventListener('click', updateCounter);
 removeGlass.addEventListener('click', updateCounter);
 archiveButton.addEventListener('click', toggleArchive);
-
 for (let i = 0; i < editButtons.length; i++) {
   const editButton = editButtons[i];
   editButton.index = i;
