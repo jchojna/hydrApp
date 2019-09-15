@@ -115,28 +115,28 @@ const setArchive = () => {
           ${value}
         </p>
         <div class="edition">
-          <button class="button edition__edit edition__edit--js">
+          <button class="edition__button edition__button--edit edition__button--js-edit">
             <svg class="edition__svg edition__svg--edit">
               <use href="assets/svg/icons.svg#edit-mode"></use>
             </svg>
           </button>
           <div class="edition__group edition__group--js">
-            <button class="button edition__decrease edition__decrease--js">
+            <button class="edition__button edition__button--decrease edition__button--js-decrease">
               <svg class="edition__svg edition__svg--decrease">
                 <use href="assets/svg/icons.svg#left-arrow"></use>
               </svg>
             </button>
-            <button class="button edition__increase edition__increase--js">
+            <button class="edition__button edition__button--increase edition__button--js-increase">
               <svg class="edition__svg edition__svg--increase">
                 <use href="assets/svg/icons.svg#right-arrow"></use>
               </svg>
             </button>
-            <button class="button edition__cancel edition__cancel--js">
+            <button class="edition__button edition__button--cancel edition__button--js-cancel">
               <svg class="edition__svg edition__svg--cancel">
                 <use href="assets/svg/icons.svg#back-arrow"></use>
               </svg>
             </button>
-            <button class="button edition__save edition__save--js">
+            <button class="edition__button edition__button--save edition__button--js-save">
               <svg class="edition__svg edition__svg--save">
                 <use href="assets/svg/icons.svg#save-icon"></use>
               </svg>
@@ -234,7 +234,7 @@ const handleItemEdit = (e) => {
   ///////////////////////////////////// TOGGLE ITEM DISPLAY << HANDLE ITEM EDIT
   const toggleItemDisplay = () => {
     archiveItem.classList.toggle('archive__item--on-top');
-    editButton.classList.toggle('edition__edit--hidden');
+    editButton.classList.toggle('edition__button--hidden');
     editGroup.classList.toggle('edition__group--visible');
     pageOverlay.classList.toggle('page-overlay--visible');
   }
@@ -280,12 +280,12 @@ setCounter();
 setArchive();
 ///////////////////////////////////////////////////////////////////// VARIABLES
 const archiveItems = document.querySelectorAll('.archive__item--js');
-const editButtons = document.querySelectorAll('.edition__edit--js');
+const editButtons = document.querySelectorAll('.edition__button--js-edit');
 const editGroups = document.querySelectorAll('.edition__group--js');
-const decreaseButtons = document.querySelectorAll('.edition__decrease--js');
-const increaseButtons = document.querySelectorAll('.edition__increase--js');
-const cancelButtons = document.querySelectorAll('.edition__cancel--js');
-const saveButtons = document.querySelectorAll('.edition__save--js');
+const decreaseButtons = document.querySelectorAll('.edition__button--js-decrease');
+const increaseButtons = document.querySelectorAll('.edition__button--js-increase');
+const cancelButtons = document.querySelectorAll('.edition__button--js-cancel');
+const saveButtons = document.querySelectorAll('.edition__button--js-save');
 const archiveValues = document.querySelectorAll('.archive__value--js');
 /////////////////////////////////////////////////////////////// EVENT LISTENERS
 addGlass.addEventListener('click', updateCounter);

@@ -95,6 +95,21 @@ body {
   }
 }
 
+.navigation {
+
+  &__list {
+    list-style-type: none;
+  }
+
+  &__item {
+
+  }
+
+  &__button {
+
+  }
+}
+
 .glass {
   @include flex-center;
   position: relative;
@@ -183,20 +198,17 @@ body {
   }
 }
 
-.button {
-  @include flex-center;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  width: $size-archive-buttons;
-  height: $size-archive-buttons;
-}
-
 .edition {
   @include flex-center;
 
-  &__edit {
+  &__button {
+    @include flex-center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    width: $size-archive-buttons;
+    height: $size-archive-buttons;
 
     &--hidden {
       display: none;
