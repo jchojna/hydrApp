@@ -17,7 +17,7 @@
   }
 
   &--on-top {
-    z-index: 1;
+    z-index: 2;
   }
 
   &__overlay {
@@ -28,6 +28,7 @@
     right: 0;
     bottom: 0;
     visibility: hidden;
+    z-index: 1;
 
     &--visible {
       visibility: visible;
@@ -134,11 +135,23 @@
     bottom: 0;
     height: 100%;
     width: 100%;
-    height: $size-archive-buttons;
+    fill: $color-emoticon-low;
+    opacity: 0;
     visibility: hidden;
-    fill: #fff;
+    transition: opacity 1s;
+    
+
+    @for $i from 1 to 9 {
+      &--emo-#{$i} {
+        $reverse: 9-$i;
+        $red: 27*$reverse;
+        $green: 25*$i;
+        fill: rgb(10+$red, 40+$green, 20);
+      }
+    }
 
     &--visible {
+      opacity: 1;
       visibility: visible;
     }
   }

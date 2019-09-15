@@ -147,28 +147,28 @@ const setArchive = () => {
           </div>
         </div>
         <div class="indicator indicator--js-${dateID}">
-          <svg class="indicator__svg indicator__svg--js-0">
+          <svg class="indicator__svg indicator__svg--emo-1 indicator__svg--js-0">
             <use href="assets/svg/icons.svg#emoticon-0"></use>
           </svg>
-          <svg class="indicator__svg indicator__svg--js-1">
+          <svg class="indicator__svg indicator__svg--emo-2 indicator__svg--js-1">
             <use href="assets/svg/icons.svg#emoticon-1"></use>
           </svg>
-          <svg class="indicator__svg indicator__svg--js-2">
+          <svg class="indicator__svg indicator__svg--emo-3 indicator__svg--js-2">
             <use href="assets/svg/icons.svg#emoticon-2"></use>
           </svg>
-          <svg class="indicator__svg indicator__svg--js-3">
+          <svg class="indicator__svg indicator__svg--emo-4 indicator__svg--js-3">
             <use href="assets/svg/icons.svg#emoticon-3"></use>
           </svg>
-          <svg class="indicator__svg indicator__svg--js-4">
+          <svg class="indicator__svg indicator__svg--emo-5 indicator__svg--js-4">
             <use href="assets/svg/icons.svg#emoticon-4"></use>
           </svg>
-          <svg class="indicator__svg indicator__svg--js-5">
+          <svg class="indicator__svg indicator__svg--emo-6 indicator__svg--js-5">
             <use href="assets/svg/icons.svg#emoticon-5"></use>
           </svg>
-          <svg class="indicator__svg indicator__svg--js-6">
+          <svg class="indicator__svg indicator__svg--emo-7 indicator__svg--js-6">
             <use href="assets/svg/icons.svg#emoticon-6"></use>
           </svg>
-          <svg class="indicator__svg indicator__svg--js-7">
+          <svg class="indicator__svg indicator__svg--emo-8 indicator__svg--js-7">
             <use href="assets/svg/icons.svg#emoticon-7"></use>
           </svg>
         </div>
