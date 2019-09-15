@@ -147,9 +147,30 @@ const setArchive = () => {
           </div>
         </div>
         <div class="indicator indicator--js-${dateID}">
-          <div class="${baseClassname}"></div>
-          <div class="${baseClassname}"></div>
-          <div class="${baseClassname}"></div>
+          <svg class="indicator__svg indicator__svg--emo-1 indicator__svg--js-0">
+            <use href="assets/svg/icons.svg#emoticon-0"></use>
+          </svg>
+          <svg class="indicator__svg indicator__svg--emo-2 indicator__svg--js-1">
+            <use href="assets/svg/icons.svg#emoticon-1"></use>
+          </svg>
+          <svg class="indicator__svg indicator__svg--emo-3 indicator__svg--js-2">
+            <use href="assets/svg/icons.svg#emoticon-2"></use>
+          </svg>
+          <svg class="indicator__svg indicator__svg--emo-4 indicator__svg--js-3">
+            <use href="assets/svg/icons.svg#emoticon-3"></use>
+          </svg>
+          <svg class="indicator__svg indicator__svg--emo-5 indicator__svg--js-4">
+            <use href="assets/svg/icons.svg#emoticon-4"></use>
+          </svg>
+          <svg class="indicator__svg indicator__svg--emo-6 indicator__svg--js-5">
+            <use href="assets/svg/icons.svg#emoticon-5"></use>
+          </svg>
+          <svg class="indicator__svg indicator__svg--emo-7 indicator__svg--js-6">
+            <use href="assets/svg/icons.svg#emoticon-6"></use>
+          </svg>
+          <svg class="indicator__svg indicator__svg--emo-8 indicator__svg--js-7">
+            <use href="assets/svg/icons.svg#emoticon-7"></use>
+          </svg>
         </div>
       </li>
       `;
@@ -159,21 +180,18 @@ const setArchive = () => {
 }
 //////////////////////////////////////////////////////////////// SET INDICATORS
 const setIndicators = (id, value) => {
-  const indicators = document.querySelectorAll(`.indicator--js-${id} .indicator__section--js`);
 
-  if (value >= 6) {
-    for (const indicator of indicators) {
-      indicator.className = highLevelClassname;
-    }
-  } else if (value >= 3) {
-    indicators[0].className = mediumLevelClassname;
-    indicators[1].className = mediumLevelClassname;
-    indicators[2].className = baseClassname;
-  } else {
-    indicators[0].className = lowLevelClassname;
-    indicators[1].className = baseClassname;
-    indicators[2].className = baseClassname;
+  value > 7 ? value = 7 : false;
+
+  const indicators = document.querySelector(`.indicator--js-${id}`).children;
+  const indicator = document.querySelector(`.indicator--js-${id} .indicator__svg--js-${value}`);
+  
+  for (const indicator of indicators) {
+    indicator.classList.contains('indicator__svg--visible')
+    ? indicator.classList.remove('indicator__svg--visible')
+    : false
   }
+  indicator.classList.add('indicator__svg--visible');
 }
 //////////////////////////////////////////////////////////////// UPDATE COUNTER
 const updateCounter = (e) => {
@@ -201,7 +219,7 @@ const updateCounter = (e) => {
   setIndicators(dateID, newValue);
 }
 //////////////////////////////////////////////////////////////// TOGGLE ARCHIVE
-const toggleArchive = (e) => {
+const toggleArchive = () => {
   archive.classList.toggle('archive--visible');
 }
 ////////////////////////////////////////////////////////////// HANDLE ITEM EDIT
