@@ -63,9 +63,6 @@
 
   &__button {
     @include flex-center;
-    background: none;
-    border: none;
-    cursor: pointer;
     padding: 0;
     width: $size-archive-buttons;
     height: $size-archive-buttons;

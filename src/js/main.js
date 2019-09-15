@@ -115,28 +115,28 @@ const setArchive = () => {
           ${value}
         </p>
         <div class="edition">
-          <button class="edition__button edition__button--edit edition__button--js-edit">
+          <button class="button edition__button edition__button--edit edition__button--js-edit">
             <svg class="edition__svg edition__svg--edit">
               <use href="assets/svg/icons.svg#edit-mode"></use>
             </svg>
           </button>
           <div class="edition__group edition__group--js">
-            <button class="edition__button edition__button--decrease edition__button--js-decrease">
+            <button class="button edition__button edition__button--decrease edition__button--js-decrease">
               <svg class="edition__svg edition__svg--decrease">
                 <use href="assets/svg/icons.svg#left-arrow"></use>
               </svg>
             </button>
-            <button class="edition__button edition__button--increase edition__button--js-increase">
+            <button class="button edition__button edition__button--increase edition__button--js-increase">
               <svg class="edition__svg edition__svg--increase">
                 <use href="assets/svg/icons.svg#right-arrow"></use>
               </svg>
             </button>
-            <button class="edition__button edition__button--cancel edition__button--js-cancel">
+            <button class="button edition__button edition__button--cancel edition__button--js-cancel">
               <svg class="edition__svg edition__svg--cancel">
                 <use href="assets/svg/icons.svg#back-arrow"></use>
               </svg>
             </button>
-            <button class="edition__button edition__button--save edition__button--js-save">
+            <button class="button edition__button edition__button--save edition__button--js-save">
               <svg class="edition__svg edition__svg--save">
                 <use href="assets/svg/icons.svg#save-icon"></use>
               </svg>
