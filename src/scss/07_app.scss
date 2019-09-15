@@ -8,11 +8,20 @@
   background-color: $color-background;
   padding: 1rem;
 
+  &__header {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100%;
+    z-index: 1;
+  }
+
   &__container {
     @include flex-center;
     width: 60%;
+    height: 100%;
     max-width: 1200px;
-    margin-top: 6rem;
+    margin-top: 4rem;
     flex-direction: column;
   }
 
@@ -57,15 +66,24 @@
 .navigation {
 
   &__list {
+    @include flex-center;
+    justify-content: flex-end;
     list-style-type: none;
+    margin: 0;
+    padding: 0.5rem;
   }
 
   &__item {
-
   }
 
   &__button {
+    color: #fff;
+    padding: 0.5rem;
+    border: 2px solid transparent;
 
+    &:hover {
+      border-bottom-color: #fff;
+    }
   }
 }
 ///////////////////////////////////////////////////////////////////////// GLASS

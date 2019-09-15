@@ -12,23 +12,6 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
-
-///////////////////////////////////////////////////////////////////// VARIABLES
-const pageOverlay = document.querySelector('.page-overlay--js');
-const addGlass = document.querySelector('.app__button--js-add');
-const removeGlass = document.querySelector('.app__button--js-remove');
-const counter = document.querySelector('.glass__counter--js');
-const archive = document.querySelector('.archive--js');
-const archiveList = document.querySelector('.archive__list--js');
-const archiveButton = document.querySelector('.navigation__button--js-archive');
-
-const counterMaxValue = 100;
-
-const baseClassname = "indicator__section indicator__section--js";
-const lowLevelClassname = `${baseClassname} indicator__section--low`;
-const mediumLevelClassname = `${baseClassname} indicator__section--medium`;
-const highLevelClassname = `${baseClassname} indicator__section--high`;
-
 ///////////////////////////////////////////////////////////////////// FUNCTIONS
 /////////////////////////////////////////////////////// CREATE HYDRAPP DATE KEY
 const setDateKey = (obj) => {
@@ -115,28 +98,48 @@ const setArchive = () => {
           ${value}
         </p>
         <div class="edition">
-          <button class="button edition__button edition__button--edit edition__button--js-edit">
+          <button class="
+            button
+            edition__button
+            edition__button--edit
+            edition__button--js-edit">
             <svg class="edition__svg edition__svg--edit">
               <use href="assets/svg/icons.svg#edit-mode"></use>
             </svg>
           </button>
           <div class="edition__group edition__group--js">
-            <button class="button edition__button edition__button--decrease edition__button--js-decrease">
+            <button class="
+              button
+              edition__button
+              edition__button--decrease
+              edition__button--js-decrease">
               <svg class="edition__svg edition__svg--decrease">
                 <use href="assets/svg/icons.svg#left-arrow"></use>
               </svg>
             </button>
-            <button class="button edition__button edition__button--increase edition__button--js-increase">
+            <button class="
+              button
+              edition__button
+              edition__button--increase
+              edition__button--js-increase">
               <svg class="edition__svg edition__svg--increase">
                 <use href="assets/svg/icons.svg#right-arrow"></use>
               </svg>
             </button>
-            <button class="button edition__button edition__button--cancel edition__button--js-cancel">
+            <button class="
+              button
+              edition__button
+              edition__button--cancel
+              edition__button--js-cancel">
               <svg class="edition__svg edition__svg--cancel">
                 <use href="assets/svg/icons.svg#back-arrow"></use>
               </svg>
             </button>
-            <button class="button edition__button edition__button--save edition__button--js-save">
+            <button class="
+              button
+              edition__button
+              edition__button--save
+              edition__button--js-save">
               <svg class="edition__svg edition__svg--save">
                 <use href="assets/svg/icons.svg#save-icon"></use>
               </svg>
@@ -199,17 +202,7 @@ const updateCounter = (e) => {
 }
 //////////////////////////////////////////////////////////////// TOGGLE ARCHIVE
 const toggleArchive = (e) => {
-  const listHeight = archiveList.clientHeight;
-
-  if (archive.classList.contains('archive--visible')) {
-    archive.classList.remove('archive--visible');
-    archive.style.height = 0;
-    e.target.textContent = "Show archive";
-  } else {
-    archive.classList.add('archive--visible');
-    archive.style.height = listHeight + "px";
-    e.target.textContent = "Hide archive";
-  }
+  archive.classList.toggle('archive--visible');
 }
 ////////////////////////////////////////////////////////////// HANDLE ITEM EDIT
 const handleItemEdit = (e) => {
@@ -275,7 +268,23 @@ const handleItemEdit = (e) => {
   increaseButton.addEventListener('click', updateValue);
   saveButton.addEventListener('click', saveValue);
 } ///////////////////////////////////////////////////// END OF HANDLE ITEM EDIT
-//////////////////////////////////////////////////////////////// FUNCTION CALLS
+
+///////////////////////////////////////////////////////////////////// VARIABLES
+const pageOverlay = document.querySelector('.page-overlay--js');
+const addGlass = document.querySelector('.app__button--js-add');
+const removeGlass = document.querySelector('.app__button--js-remove');
+const counter = document.querySelector('.glass__counter--js');
+const archive = document.querySelector('.archive--js');
+const archiveList = document.querySelector('.archive__list--js');
+const archiveButton = document.querySelector('.navigation__button--js-archive');
+
+const counterMaxValue = 100;
+
+const baseClassname = "indicator__section indicator__section--js";
+const lowLevelClassname = `${baseClassname} indicator__section--low`;
+const mediumLevelClassname = `${baseClassname} indicator__section--medium`;
+const highLevelClassname = `${baseClassname} indicator__section--high`;
+//////////////////////////////////////////////////////// INITIAL FUNCTION CALLS
 setCounter();
 setArchive();
 ///////////////////////////////////////////////////////////////////// VARIABLES
