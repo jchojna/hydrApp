@@ -9,7 +9,7 @@
   font-weight: 300;
   display: none;
   visibility: hidden;
-  padding: 4rem 1rem 1rem;
+  padding-top: 4rem;
 
   &--visible {
     display: flex;
@@ -21,7 +21,7 @@
   }
 
   &__overlay {
-    background-color: rgba($color: #000, $alpha: 0.5);
+    background-color: rgba($color: #000, $alpha: 0.3);
     position: fixed;
     top: 0;
     left: 0;
@@ -29,19 +29,28 @@
     bottom: 0;
     visibility: hidden;
     z-index: 1;
+    opacity: 0;
+    transition: opacity $time-edit-mode, visibility 0s $time-edit-mode;
 
     &--visible {
+      opacity: 1;
       visibility: visible;
+      transition: opacity $time-edit-mode, visibility $time-edit-mode;
     }
   }
 
   &__list {
     list-style: none;
-    padding: 0;
+    padding: 1rem;
     margin: 0;
     width: 100%;
     height: 100%;
     overflow: auto;
+
+    &::after {
+      content: "";
+      padding: 0.5rem;
+    }
   }
 
   &__item {
@@ -49,8 +58,10 @@
     grid-template-columns: 1fr repeat(3, auto);
     grid-column-gap: 0.5rem;
     align-items: center;
-    padding: 0.4rem 0;
-    border: 1px solid transparent;
+    padding: 0.4rem;
+    border-top: 1px solid transparent;
+    border-bottom: 1px solid transparent;
+    transition: box-shadow $time-edit-mode;
 
     &--empty {
       text-align: center;
@@ -68,10 +79,11 @@
   }
 
   & &__item--on-top { // overriding higher specificity selectors
-    background-color: darken($color-background, 30%);
+    box-shadow: 0 0 30px rgba($color: #000, $alpha: 0.3);
+    background-color: $color-background;
     position: relative;
-    z-index: 1;
     border-color: #fff;
+    z-index: 1;
   }
 
   &__date {
@@ -79,12 +91,18 @@
   }
   
   &__value {
-    margin: 0;
     @include flex-center;
-    width: $size-archive-buttons;
-    height: $size-archive-buttons;
+    margin: 0;
+    font-weight: bold;
+    width: $size-xs-archive-buttons;
+    height: $size-xs-archive-buttons;
     border: 2px solid #fff;
     border-radius: 50%;
+
+    @media only screen and (min-width: $media-sm) {
+      width: $size-sm-archive-buttons;
+      height: $size-sm-archive-buttons;
+    }
   }
 }
 ////////////////////////////////////////////////////////////////// EDITION MODE
@@ -94,11 +112,16 @@
   &__button {
     @include flex-center;
     padding: 0;
-    width: $size-archive-buttons;
-    height: $size-archive-buttons;
+    width: $size-xs-archive-buttons;
+    height: $size-xs-archive-buttons;
 
     &--hidden {
       display: none;
+    }
+
+    @media only screen and (min-width: $media-sm) {
+      width: $size-sm-archive-buttons;
+      height: $size-sm-archive-buttons;
     }
   }
 
@@ -123,8 +146,14 @@
 .indicator {
   @include flex-center;
   position: relative;
-  width: $size-archive-buttons;
-  height: $size-archive-buttons;
+  width: $size-xs-archive-buttons;
+  height: $size-xs-archive-buttons;
+  overflow: hidden;
+
+  @media only screen and (min-width: $media-sm) {
+    width: $size-sm-archive-buttons;
+    height: $size-sm-archive-buttons;
+  }
 
   &__svg {
     @include flex-center;
@@ -138,7 +167,8 @@
     fill: $color-emoticon-low;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 1s;
+    transform: translateX(100%);
+    transition: opacity $time-edit-mode, transform $time-edit-mode;
     
 
     @for $i from 1 to 9 {
@@ -153,6 +183,7 @@
     &--visible {
       opacity: 1;
       visibility: visible;
+      transform: translateX(0);
     }
   }
 }
