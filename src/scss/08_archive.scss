@@ -56,7 +56,7 @@
   &__item {
     display: grid;
     grid-template-columns: 1fr repeat(3, auto);
-    grid-column-gap: 0.5rem;
+    grid-column-gap: $edit-group-col-gap;
     align-items: center;
     padding: 0.4rem;
     border-top: 1px solid transparent;
@@ -114,9 +114,23 @@
     padding: 0;
     width: $size-xs-archive-buttons;
     height: $size-xs-archive-buttons;
+    opacity: 0;
+    visibility: hidden;
+
+    &--active {
+      visibility: visible;
+      opacity: 1;
+      transition: opacity 1s;
+      z-index: 1;
+    }
+
+    &--edit {
+      position: absolute;
+    }
 
     &--hidden {
-      display: none;
+      visibility: hidden;
+      opacity: 0;
     }
 
     @media only screen and (min-width: $media-sm) {
@@ -133,12 +147,17 @@
   }
 
   &__group {
-    display: none;
+    display: grid;
+    grid-template-columns: repeat($edit-group-cols, 1fr);
+    column-gap: $edit-group-col-gap;
+    overflow: hidden;
+    width: $size-xs-archive-buttons;
+    transition: width 1s;
 
     &--visible {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      column-gap: 5px;
+      $icons-width: $edit-group-cols * $size-xs-archive-buttons;
+      $gaps-width: ($edit-group-cols - 1) * $edit-group-col-gap;
+      width: $icons-width + $gaps-width;
     }
   }
 }

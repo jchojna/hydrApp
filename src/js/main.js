@@ -91,79 +91,12 @@ const setArchive = () => {
         .join(' ');
       const dateID = date.replace(/\s/g,'');
       
-      /* archiveList.innerHTML += `
-      <li class="archive__item archive__item--js ${key}">
-        <p class="archive__date">${date}</p>
-        <p class="archive__value archive__value--js">
-          ${value}
-        </p>
-        <div class="edition">
-          <button class="button edition__button edition__button--edit edition__button--js-edit">
-            <svg class="edition__svg edition__svg--edit">
-              <use href="assets/svg/icons.svg#edit-mode"></use>
-            </svg>
-          </button>
-          <div class="edition__group edition__group--js">
-            <button class="button edition__button edition__button--decrease edition__button--js-decrease">
-              <svg class="edition__svg edition__svg--decrease">
-                <use href="assets/svg/icons.svg#left-arrow"></use>
-              </svg>
-            </button>
-            <button class="button edition__button edition__button--increase edition__button--js-increase">
-              <svg class="edition__svg edition__svg--increase">
-                <use href="assets/svg/icons.svg#right-arrow"></use>
-              </svg>
-            </button>
-            <button class="button edition__button edition__button--cancel edition__button--js-cancel">
-              <svg class="edition__svg edition__svg--cancel">
-                <use href="assets/svg/icons.svg#back-arrow"></use>
-              </svg>
-            </button>
-            <button class="button edition__button edition__button--save edition__button--js-save">
-              <svg class="edition__svg edition__svg--save">
-                <use href="assets/svg/icons.svg#save-icon"></use>
-              </svg>
-            </button>
-          </div>
-        </div>
-        <div class="indicator indicator--js-${dateID}">
-        
-          <svg class="indicator__svg indicator__svg--emo-1 indicator__svg--js-0">
-            <use href="assets/svg/icons.svg#emoticon-0"></use>
-          </svg>
-          <svg class="indicator__svg indicator__svg--emo-2 indicator__svg--js-1">
-            <use href="assets/svg/icons.svg#emoticon-1"></use>
-          </svg>
-          <svg class="indicator__svg indicator__svg--emo-3 indicator__svg--js-2">
-            <use href="assets/svg/icons.svg#emoticon-2"></use>
-          </svg>
-          <svg class="indicator__svg indicator__svg--emo-4 indicator__svg--js-3">
-            <use href="assets/svg/icons.svg#emoticon-3"></use>
-          </svg>
-          <svg class="indicator__svg indicator__svg--emo-5 indicator__svg--js-4">
-            <use href="assets/svg/icons.svg#emoticon-4"></use>
-          </svg>
-          <svg class="indicator__svg indicator__svg--emo-6 indicator__svg--js-5">
-            <use href="assets/svg/icons.svg#emoticon-5"></use>
-          </svg>
-          <svg class="indicator__svg indicator__svg--emo-7 indicator__svg--js-6">
-            <use href="assets/svg/icons.svg#emoticon-6"></use>
-          </svg>
-          <svg class="indicator__svg indicator__svg--emo-8 indicator__svg--js-7">
-            <use href="assets/svg/icons.svg#emoticon-7"></use>
-          </svg>
-        </div>
-      </li>
-      `;
-      setIndicators(dateID, value); */
-
       let indicators = "";
       for (let i = 0; i < 8; i++) {
         indicators += `
         <svg class="indicator__svg indicator__svg--emo-${i+1} indicator__svg--js-${i}">
           <use href="assets/svg/icons.svg#emoticon-${i}"></use>
-        </svg>
-        `
+        </svg>`
       }
 
       archiveList.innerHTML += `
@@ -173,12 +106,12 @@ const setArchive = () => {
           ${value}
         </p>
         <div class="edition">
-          <button class="button edition__button edition__button--edit edition__button--js-edit">
-            <svg class="edition__svg edition__svg--edit">
-              <use href="assets/svg/icons.svg#edit-mode"></use>
-            </svg>
-          </button>
           <div class="edition__group edition__group--js">
+            <button class="button edition__button edition__button--active edition__button--edit edition__button--js-edit">
+              <svg class="edition__svg edition__svg--edit">
+                <use href="assets/svg/icons.svg#edit-mode"></use>
+              </svg>
+            </button>
             <button class="button edition__button edition__button--decrease edition__button--js-decrease">
               <svg class="edition__svg edition__svg--decrease">
                 <use href="assets/svg/icons.svg#left-arrow"></use>
@@ -204,9 +137,8 @@ const setArchive = () => {
         <div class="indicator indicator--js-${dateID}">
           ${indicators}
         </div>
-      </li>
-      `
-      setIndicators(dateID, value);      
+      </li>`
+      setIndicators(dateID, value);
     }
   }
 }
@@ -267,19 +199,23 @@ const handleItemEdit = (e) => {
   const archiveValue = archiveValues[itemIndex];
   const lastValue = archiveValue.textContent;
   const itemClassName = e.target.parentElement.parentElement.className;
+
   const hydrAppKey = itemClassName
     .split(' ')
     .filter(key => /hydrApp/.test(key))
     .toString();
   const dateID = getDateID(hydrAppKey);
-
   ///////////////////////////////////// TOGGLE ITEM DISPLAY << HANDLE ITEM EDIT
   const toggleItemDisplay = () => {
     archive.classList.toggle('archive--on-top');
     archiveItem.classList.toggle('archive__item--on-top');
+    pageOverlay.classList.toggle('archive__overlay--visible');
+    
+    for (const editButton of editGroup.children) {
+      editButton.classList.toggle('edition__button--active');
+    }
     editButton.classList.toggle('edition__button--hidden');
     editGroup.classList.toggle('edition__group--visible');
-    pageOverlay.classList.toggle('archive__overlay--visible');
   }
   ////////////////////////////////////////// EXIT EDIT MODE << HANDLE ITEM EDIT
   const exitEditMode = () => {
@@ -287,6 +223,7 @@ const handleItemEdit = (e) => {
     const lastValue = localStorage.getItem(hydrAppKey);
     archiveValue.textContent = lastValue;
     setIndicators(dateID, lastValue);
+
     // removing all event listeners
     cancelButton.removeEventListener('click', exitEditMode);
     pageOverlay.removeEventListener('click', exitEditMode);
@@ -346,6 +283,7 @@ const increaseButtons = document.querySelectorAll('.edition__button--js-increase
 const cancelButtons = document.querySelectorAll('.edition__button--js-cancel');
 const saveButtons = document.querySelectorAll('.edition__button--js-save');
 const archiveValues = document.querySelectorAll('.archive__value--js');
+//////////////////////////////////////////////////////////////// FUNCTION CALLS
 /////////////////////////////////////////////////////////////// EVENT LISTENERS
 addGlass.addEventListener('click', updateCounter);
 removeGlass.addEventListener('click', updateCounter);
