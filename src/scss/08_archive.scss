@@ -107,7 +107,19 @@
 }
 ////////////////////////////////////////////////////////////////// EDITION MODE
 .edition {
-  @include flex-center;
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat($edit-group-cols, 1fr);
+  column-gap: $edit-group-col-gap;
+  overflow: hidden;
+  width: $size-xs-archive-buttons;
+  transition: width $time-edit-buttons;
+
+  &--visible {
+    $icons-width: $edit-group-cols * $size-xs-archive-buttons;
+    $gaps-width: ($edit-group-cols - 1) * $edit-group-col-gap;
+    width: $icons-width + $gaps-width;
+  }
 
   &__button {
     @include flex-center;
@@ -116,26 +128,16 @@
     height: $size-xs-archive-buttons;
     opacity: 0;
     visibility: hidden;
+    transition: opacity $time-edit-buttons, visibility 0s $time-edit-buttons;
 
-    &--active {
+    &--visible {
       visibility: visible;
       opacity: 1;
-      transition: opacity 1s;
-      z-index: 1;
+      transition: opacity $time-edit-buttons, visibility 0s;
     }
 
     &--edit {
       position: absolute;
-    }
-
-    &--hidden {
-      visibility: hidden;
-      opacity: 0;
-    }
-
-    @media only screen and (min-width: $media-sm) {
-      width: $size-sm-archive-buttons;
-      height: $size-sm-archive-buttons;
     }
   }
 
@@ -146,18 +148,21 @@
     pointer-events: none;
   }
 
-  &__group {
-    display: grid;
-    grid-template-columns: repeat($edit-group-cols, 1fr);
-    column-gap: $edit-group-col-gap;
-    overflow: hidden;
-    width: $size-xs-archive-buttons;
-    transition: width 1s;
+  @media only screen and (min-width: $media-sm) {
 
-    &--visible {
-      $icons-width: $edit-group-cols * $size-xs-archive-buttons;
-      $gaps-width: ($edit-group-cols - 1) * $edit-group-col-gap;
-      width: $icons-width + $gaps-width;
+    & {
+      width: $size-sm-archive-buttons;
+
+      &--visible {
+        $icons-width: $edit-group-cols * $size-sm-archive-buttons;
+        $gaps-width: ($edit-group-cols - 1) * $edit-group-col-gap;
+        width: $icons-width + $gaps-width;
+      }
+
+      &__button {
+        width: $size-sm-archive-buttons;
+        height: $size-sm-archive-buttons;
+      }
     }
   }
 }
