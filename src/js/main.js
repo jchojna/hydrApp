@@ -219,45 +219,49 @@ const handleItemEdit = (e) => {
     const lastValue = localStorage.getItem(hydrAppKey);
     archiveValue.textContent = lastValue;
     setIndicators(dateID, lastValue);
+    archive.removeEventListener('click', handleEdition);
+  }
+  ////////////////////////////////////////// HANDLE EDITION << HANDLE ITEM EDIT
+  const handleEdition = (e) => {
+    const self = e.target;
+    let value = parseInt(archiveValue.textContent);
 
-    // removing all event listeners
-    cancelButton.removeEventListener('click', exitEditMode);
-    pageOverlay.removeEventListener('click', exitEditMode);
-    decreaseButton.removeEventListener('click', updateValue);
-    increaseButton.removeEventListener('click', updateValue);
-    saveButton.removeEventListener('click', saveValue)
-  }
-  //////////////////////////////////////////// UPDATE VALUE << HANDLE ITEM EDIT
-  const updateValue = (e) => {   // ZOPTYMALIZOWAC Z UPDATE COUNTER
-    let value = archiveValue.textContent;
-    if (e.target === decreaseButton) {
-      value > 0 ? value-- : false;
-    } else {
-      value < counterMaxValue ? value++ : false;
+    switch (self) {
+
+      case decreaseButton:
+        value > 0 ? value-- : false;
+        archiveValue.textContent = value;
+        setIndicators(dateID, value);
+      break;
+      
+      case increaseButton:
+        value < counterMaxValue ? value++ : false;
+        archiveValue.textContent = value;
+        setIndicators(dateID, value);
+      break;
+
+      case pageOverlay:
+      case cancelButton:
+        exitEditMode();
+      break;
+
+      case saveButton:
+        localStorage.setItem(hydrAppKey, parseInt(archiveValue.textContent));
+        exitEditMode();
+      break;
     }
-    archiveValue.textContent = value;
-    setIndicators(dateID, value);
-  }
-  ////////////////////////////////////////////// SAVE VALUE << HANDLE ITEM EDIT
-  const saveValue = () => {
-    localStorage.setItem(hydrAppKey, parseInt(archiveValue.textContent));
-    exitEditMode();
   }
   ////////////////////////////////////////// FUNCTION CALLS << HANDLE ITEM EDIT
   toggleItemDisplay();
-  cancelButton.addEventListener('click', exitEditMode);
-  pageOverlay.addEventListener('click', exitEditMode);
-  decreaseButton.addEventListener('click', updateValue);
-  increaseButton.addEventListener('click', updateValue);
-  saveButton.addEventListener('click', saveValue);
+  archive.addEventListener('click', handleEdition);
 } ///////////////////////////////////////////////////// END OF HANDLE ITEM EDIT
 
 ///////////////////////////////////////////////////////////////////// VARIABLES
-const pageOverlay = document.querySelector('.archive__overlay--js');
 const addGlass = document.querySelector('.app__button--js-add');
 const removeGlass = document.querySelector('.app__button--js-remove');
 const counter = document.querySelector('.glass__counter--js');
 const archive = document.querySelector('.archive--js');
+const pageOverlay = document.querySelector('.archive__overlay--js');
 const archiveList = document.querySelector('.archive__list--js');
 const archiveButton = document.querySelector('.navigation__button--js-archive');
 
