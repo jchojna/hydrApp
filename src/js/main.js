@@ -284,6 +284,7 @@ const archiveValues = document.querySelectorAll('.archive__value--js');
 addGlass.addEventListener('click', updateCounter);
 removeGlass.addEventListener('click', updateCounter);
 archiveButton.addEventListener('click', toggleArchive);
+
 for (let i = 0; i < editButtons.length; i++) {
   const editButton = editButtons[i];
   editButton.index = i;

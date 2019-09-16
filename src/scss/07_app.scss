@@ -14,6 +14,7 @@
     right: 0;
     width: 100%;
     z-index: 1;
+    padding: 1rem;
   }
 
   &__container {
@@ -70,7 +71,7 @@
     justify-content: flex-end;
     list-style-type: none;
     margin: 0;
-    padding: 0.5rem;
+    padding: 0;
   }
 
   &__item {
@@ -83,6 +84,31 @@
 
     &:hover {
       border-bottom-color: #fff;
+    }
+  }
+}
+////////////////////////////////////////////////////////////////////////// LOGO
+.logo {
+  flex-grow: 1;
+
+  &__link {
+    @include flex-center;
+    position: relative;
+    max-width: 120px;
+  }
+
+  &__svg {
+    fill: $color-water;
+    width: 100%;
+    height: 100%;
+
+    &--color {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      fill: #fff;
     }
   }
 }
