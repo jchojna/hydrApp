@@ -178,7 +178,6 @@ const updateCounter = (e) => {
     .split('-')
     .reverse()
     .join('');
-  setIndicators(dateID, newValue);
 }
 //////////////////////////////////////////////////////////////// TOGGLE ARCHIVE
 const toggleArchive = () => {
