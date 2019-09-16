@@ -219,33 +219,43 @@ const handleItemEdit = (e) => {
     const lastValue = localStorage.getItem(hydrAppKey);
     archiveValue.textContent = lastValue;
     setIndicators(dateID, lastValue);
+
     archive.removeEventListener('click', handleEdition);
+    archive.removeEventListener('keydown', handleEdition);
   }
   ////////////////////////////////////////// HANDLE EDITION << HANDLE ITEM EDIT
   const handleEdition = (e) => {
-    const self = e.target;
+    const self = e.keyCode || e.target;
     let value = parseInt(archiveValue.textContent);
 
     switch (self) {
 
+      case 37:
       case decreaseButton:
+        e.preventDefault();
         value > 0 ? value-- : false;
         archiveValue.textContent = value;
         setIndicators(dateID, value);
       break;
       
+      case 39:
       case increaseButton:
+        e.preventDefault();
         value < counterMaxValue ? value++ : false;
         archiveValue.textContent = value;
         setIndicators(dateID, value);
       break;
 
+      case 27:
       case pageOverlay:
       case cancelButton:
+        e.preventDefault();
         exitEditMode();
       break;
 
+      case 13:
       case saveButton:
+        e.preventDefault();
         localStorage.setItem(hydrAppKey, parseInt(archiveValue.textContent));
         exitEditMode();
       break;
@@ -254,6 +264,7 @@ const handleItemEdit = (e) => {
   ////////////////////////////////////////// FUNCTION CALLS << HANDLE ITEM EDIT
   toggleItemDisplay();
   archive.addEventListener('click', handleEdition);
+  archive.addEventListener('keydown', handleEdition);
 } ///////////////////////////////////////////////////// END OF HANDLE ITEM EDIT
 
 ///////////////////////////////////////////////////////////////////// VARIABLES
