@@ -194,6 +194,7 @@ const toggleArchive = () => {
 
     let firstIndexToLoad = itemArray.findIndex(elem => !elem.classList.contains('archive__item--visible'));
     let heights = 0;
+    let scrollOffset = archiveList.scrollTop;
     
     while (true) {
       
@@ -202,9 +203,11 @@ const toggleArchive = () => {
         const item = itemArray[firstIndexToLoad];
         item.classList.add('archive__item--visible');
         heights += item.offsetHeight;
+        scrollOffset += item.offsetHeight;
   
         if (heights >= archiveListHeight - item.offsetHeight) {
-          return false
+          archiveList.scrollTop = scrollOffset;
+          return false;
         } else {
           firstIndexToLoad++;
         }
@@ -213,6 +216,7 @@ const toggleArchive = () => {
 
         loadMoreButton.classList.add('archive__button--hidden');
         loadMoreButton.removeEventListener('click', loadMore);
+        archiveList.scrollTop = scrollOffset;
         return false;
 
       }
