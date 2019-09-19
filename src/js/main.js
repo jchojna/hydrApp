@@ -183,6 +183,11 @@ const updateCounter = (e) => {
 const toggleArchive = () => {
   archive.classList.toggle('archive--visible');
 
+  loadMoreButton.classList.remove('archive__button--hidden');
+  for (const archiveItem of archiveItems) {
+    archiveItem.classList.remove('archive__item--visible');
+  }
+
   ///////////////////////////////////////////////// LOAD MORE << TOGGLE ARCHIVE
   const loadMore = () => {
     
@@ -195,37 +200,38 @@ const toggleArchive = () => {
     let firstIndexToLoad = itemArray.findIndex(elem => !elem.classList.contains('archive__item--visible'));
     let heights = 0;
     let scrollOffset = archiveList.scrollTop;
-    
     while (true) {
       
       if (firstIndexToLoad < itemArray.length) {
-
+        
         const item = itemArray[firstIndexToLoad];
         item.classList.add('archive__item--visible');
         heights += item.offsetHeight;
         scrollOffset += item.offsetHeight;
-  
-        if (heights >= archiveListHeight - item.offsetHeight) {
+        
+        if (heights <= archiveListHeight - item.offsetHeight) {
+          firstIndexToLoad++;
+        } else {
           archiveList.scrollTop = scrollOffset;
           return false;
-        } else {
-          firstIndexToLoad++;
         }
 
       } else {
-
+        archiveList.scrollTop = scrollOffset;
         loadMoreButton.classList.add('archive__button--hidden');
         loadMoreButton.removeEventListener('click', loadMore);
-        archiveList.scrollTop = scrollOffset;
         return false;
-
       }
     }
   }
   //////////////////////////////////////////// FUNCTION CALLS << TOGGLE ARCHIVE
-  archive.classList.contains('archive--visible') ? loadMore() : false;
+  if (archive.classList.contains('archive--visible')) {
+    loadMore();
+    loadMoreButton.addEventListener('click', loadMore);
+  } else {
+    loadMoreButton.removeEventListener('click', loadMore);
+  }
   /////////////////////////////////////////// EVENT LISTENERS << TOGGLE ARCHIVE
-  loadMoreButton.addEventListener('click', loadMore);
 }
 ///////////////////////////////////////////////////////// END OF TOGGLE ARCHIVE
 ///////////////////////////////////////////////////////////////////////////////
