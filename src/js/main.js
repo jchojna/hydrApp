@@ -179,9 +179,29 @@ const updateCounter = (e) => {
     .reverse()
     .join('');
 }
+///////////////////////////////////////////////////////////////////// LOAD MORE
+const loadMore = () => {
+  
+  const itemsArray = [...archiveItems];
+  const itemsHeights = itemsArray.map(elem => elem.offsetHeight);
+  const allEqual = itemsHeights.every( elem => elem === itemsHeights[0]);
+  const archiveListHeight = archiveList.clientHeight;
+  
+  if (allEqual) { 
+    const itemHeight = itemsHeights[0];
+    let itemsAmountToLoad = Math.floor(archiveListHeight/itemHeight);
+    
+    if (itemsAmountToLoad < itemsArray.length) {
+      for (let i = itemsAmountToLoad; i < itemsArray.length; i++) {
+        archiveItems[i].classList.add('archive__item--hidden');
+      }
+    }
+  }
+}
 //////////////////////////////////////////////////////////////// TOGGLE ARCHIVE
 const toggleArchive = () => {
   archive.classList.toggle('archive--visible');
+  archive.classList.contains('archive--visible') ? loadMore() : false;
 }
 ////////////////////////////////////////////////////////////// HANDLE ITEM EDIT
 const handleItemEdit = (e) => {
