@@ -31,11 +31,35 @@
     <link rel="stylesheet" href="css/main.css" />
   </head>
   <body>
-    <!-- PAGE OVERLAY -->
-    <div class="page-overlay page-overlay--js"></div>
     <!-- HYDRAPP -->
     <main class="app">
-      <h1 class="app__heading visuallyhidden">hydrApp</h1>
+      <header class="app__header">
+        <h1 class="app__heading visuallyhidden">hydrApp</h1>
+        <nav class="navigation">
+          <ul class="navigation__list">
+            <li class="logo">
+              <a class="logo__link" href="index.html">
+                <svg class="logo__svg" viewBox="0 0 512 135">
+                  <use href="assets/svg/icons.svg#logo-white"></use>
+                </svg>
+                <svg class="logo__svg logo__svg--color" viewBox="0 0 512 135">
+                  <use href="assets/svg/icons.svg#logo-color"></use>
+                </svg>
+              </a>
+            </li>
+            <li class="navigation__item">
+              <button class="button navigation__button navigation__button--stats navigation__button--js-stats">
+                Stats
+              </button>
+            </li>
+            <li class="navigation__item">
+              <button class="button navigation__button navigation__button--archive navigation__button--js-archive">
+                Archive
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </header>
       <div class="app__container">
         <section class="glass">
           <h2 class="glass__heading visuallyhidden">Glass of water</h2>
@@ -50,19 +74,21 @@
           </svg>
           <p class="glass__counter glass__counter--js"></p>
         </section>
-        <button class="app__button app__button--add app__button--js-add">
+        <button class="button app__button app__button--add app__button--js-add">
           Add glass
         </button>
-        <button class="app__button app__button--remove app__button--js-remove">
+        <button class="button app__button app__button--remove app__button--js-remove">
           Remove glass
         </button>
       </div>
       <section class="archive archive--js">
+        <h2 class="archive__heading visuallyhidden">History</h2>
+        <div class="archive__overlay archive__overlay--js"></div>
         <ul class="archive__list archive__list--js"></ul>
+        <button class="button archive__button archive__button--load-more archive__button--js-load-more">
+          Load more
+        </button>
       </section>
-      <button class="app__button app__button--archive app__button--js-archive">
-        Show archive
-      </button>
     </main>
 
     <script src="js/main.js"></script>
