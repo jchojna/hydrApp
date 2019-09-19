@@ -179,30 +179,52 @@ const updateCounter = (e) => {
     .reverse()
     .join('');
 }
-///////////////////////////////////////////////////////////////////// LOAD MORE
-const loadMore = () => {
-  
-  const itemsArray = [...archiveItems];
-  const itemsHeights = itemsArray.map(elem => elem.offsetHeight);
-  const allEqual = itemsHeights.every( elem => elem === itemsHeights[0]);
-  const archiveListHeight = archiveList.clientHeight;
-  
-  if (allEqual) { 
-    const itemHeight = itemsHeights[0];
-    let itemsAmountToLoad = Math.floor(archiveListHeight/itemHeight);
-    
-    if (itemsAmountToLoad < itemsArray.length) {
-      for (let i = itemsAmountToLoad; i < itemsArray.length; i++) {
-        archiveItems[i].classList.add('archive__item--hidden');
-      }
-    }
-  }
-}
 //////////////////////////////////////////////////////////////// TOGGLE ARCHIVE
 const toggleArchive = () => {
   archive.classList.toggle('archive--visible');
+
+  ///////////////////////////////////////////////// LOAD MORE << TOGGLE ARCHIVE
+  const loadMore = () => {
+    
+    // const allEqual = itemsHeights.every( elem => elem === itemsHeights[0]);
+    // const itemsHeights = itemsArray.map(elem => elem.offsetHeight);
+    
+    const itemArray = [...archiveItems];
+    const archiveListHeight = archiveList.clientHeight;
+
+    let firstIndexToLoad = itemArray.findIndex(elem => !elem.classList.contains('archive__item--visible'));
+    let heights = 0;
+    
+    while (true) {
+      
+      if (firstIndexToLoad < itemArray.length) {
+
+        const item = itemArray[firstIndexToLoad];
+        item.classList.add('archive__item--visible');
+        heights += item.offsetHeight;
+  
+        if (heights >= archiveListHeight - item.offsetHeight) {
+          return false
+        } else {
+          firstIndexToLoad++;
+        }
+
+      } else {
+
+        loadMoreButton.classList.add('archive__button--hidden');
+        loadMoreButton.removeEventListener('click', loadMore);
+        return false;
+
+      }
+    }
+  }
+  //////////////////////////////////////////// FUNCTION CALLS << TOGGLE ARCHIVE
   archive.classList.contains('archive--visible') ? loadMore() : false;
+  /////////////////////////////////////////// EVENT LISTENERS << TOGGLE ARCHIVE
+  loadMoreButton.addEventListener('click', loadMore);
 }
+///////////////////////////////////////////////////////// END OF TOGGLE ARCHIVE
+///////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////// HANDLE ITEM EDIT
 const handleItemEdit = (e) => {
   const itemIndex = e.target.index;
@@ -287,6 +309,7 @@ const handleItemEdit = (e) => {
   archive.addEventListener('keydown', handleEdition);
 } ///////////////////////////////////////////////////// END OF HANDLE ITEM EDIT
 
+///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////// VARIABLES
 const addGlass = document.querySelector('.app__button--js-add');
 const removeGlass = document.querySelector('.app__button--js-remove');
@@ -295,6 +318,7 @@ const archive = document.querySelector('.archive--js');
 const pageOverlay = document.querySelector('.archive__overlay--js');
 const archiveList = document.querySelector('.archive__list--js');
 const archiveButton = document.querySelector('.navigation__button--js-archive');
+const loadMoreButton = document.querySelector('.archive__button--js-load-more');
 
 const counterMaxValue = 100;
 
