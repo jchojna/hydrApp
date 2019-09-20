@@ -213,6 +213,7 @@ const toggleArchive = () => {
           firstIndexToLoad++;
         } else {
           archiveList.scrollTop = scrollOffset;
+          archiveList.style.height = heights + 'px';
           return false;
         }
 
