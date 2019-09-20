@@ -179,17 +179,11 @@ const updateCounter = (e) => {
     .reverse()
     .join('');
 }
-//////////////////////////////////////////////////////////////// TOGGLE ARCHIVE
-const toggleArchive = () => {
-  archive.classList.toggle('archive--visible');
+////////////////////////////////////////////////////////////////// SHOW ARCHIVE
+const showArchive = () => {
 
-  loadMoreButton.classList.remove('archive__button--hidden');
-  for (const archiveItem of archiveItems) {
-    archiveItem.classList.remove('archive__item--visible');
-  }
-
-  ///////////////////////////////////////////////// LOAD MORE << TOGGLE ARCHIVE
-  const loadMore = () => {
+  /////////////////////////////////////////////////// LOAD MORE << SHOW ARCHIVE
+  const loadMoreItems = () => {
     
     // const allEqual = itemsHeights.every( elem => elem === itemsHeights[0]);
     // const itemsHeights = itemsArray.map(elem => elem.offsetHeight);
@@ -202,8 +196,8 @@ const toggleArchive = () => {
     let scrollOffset = archiveList.scrollTop;
     while (true) {
       
-      if (firstIndexToLoad < itemArray.length) {
-        
+      if (firstIndexToLoad < itemArray.length && firstIndexToLoad >= 0) {
+        console.log(firstIndexToLoad);
         const item = itemArray[firstIndexToLoad];
         item.classList.add('archive__item--visible');
         heights += item.offsetHeight;
@@ -220,21 +214,47 @@ const toggleArchive = () => {
       } else {
         archiveList.scrollTop = scrollOffset;
         loadMoreButton.classList.add('archive__button--hidden');
-        loadMoreButton.removeEventListener('click', loadMore);
+        loadMoreButton.removeEventListener('click', loadMoreItems);
         return false;
       }
     }
   }
-  //////////////////////////////////////////// FUNCTION CALLS << TOGGLE ARCHIVE
-  if (archive.classList.contains('archive--visible')) {
-    loadMore();
-    loadMoreButton.addEventListener('click', loadMore);
-  } else {
-    loadMoreButton.removeEventListener('click', loadMore);
+  //////////////////////////////////////////////// ADD NEW ITEM << SHOW ARCHIVE
+  var addNewItem = () => {
+
+    console.log('add new');
+
+
   }
-  /////////////////////////////////////////// EVENT LISTENERS << TOGGLE ARCHIVE
+  //////////////////////////////////////////////// ADD NEW ITEM << SHOW ARCHIVE
+  var closeArchive = () => {
+
+    archive.classList.remove('archive--visible');
+
+    loadMoreButton.classList.remove('archive__button--hidden');
+    for (const archiveItem of archiveItems) {
+      archiveItem.classList.remove('archive__item--visible');
+    }
+
+    addNewButton.removeEventListener('click', addNewItem);
+    loadMoreButton.removeEventListener('click', loadMoreItems);
+    archiveButton.removeEventListener('click', closeArchive);
+    archiveButton.addEventListener('click', showArchive);
+
+  }
+  ////////////////////////////////////////////// FUNCTION CALLS << SHOW ARCHIVE
+
+  ///////////////////////////////////////////// EVENT LISTENERS << SHOW ARCHIVE
+
+  archive.classList.add('archive--visible')
+  loadMoreItems();
+  
+  archiveButton.removeEventListener('click', showArchive);
+  archiveButton.addEventListener('click', closeArchive);
+  addNewButton.addEventListener('click', addNewItem);
+  loadMoreButton.addEventListener('click', loadMoreItems);
 }
-///////////////////////////////////////////////////////// END OF TOGGLE ARCHIVE
+/////////////////////////////////////////////////////////// END OF SHOW ARCHIVE
 ///////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////// HANDLE ITEM EDIT
 const handleItemEdit = (e) => {
@@ -325,13 +345,17 @@ const handleItemEdit = (e) => {
 const addGlass = document.querySelector('.app__button--js-add');
 const removeGlass = document.querySelector('.app__button--js-remove');
 const counter = document.querySelector('.glass__counter--js');
+
 const archive = document.querySelector('.archive--js');
 const pageOverlay = document.querySelector('.archive__overlay--js');
 const archiveList = document.querySelector('.archive__list--js');
 const archiveButton = document.querySelector('.navigation__button--js-archive');
 const loadMoreButton = document.querySelector('.archive__button--js-load-more');
+const addNewButton = document.querySelector('.archive__button--add-new');
 
-const counterMaxValue = 100;
+const statsButton = document.querySelector('.navigation__button--js-stats');
+
+const counterMaxValue = 99;
 
 const baseClassname = "indicator__section indicator__section--js";
 const lowLevelClassname = `${baseClassname} indicator__section--low`;
@@ -353,7 +377,7 @@ const archiveValues = document.querySelectorAll('.archive__value--js');
 /////////////////////////////////////////////////////////////// EVENT LISTENERS
 addGlass.addEventListener('click', updateCounter);
 removeGlass.addEventListener('click', updateCounter);
-archiveButton.addEventListener('click', toggleArchive);
+archiveButton.addEventListener('click', showArchive);
 
 for (let i = 0; i < editButtons.length; i++) {
   const editButton = editButtons[i];
