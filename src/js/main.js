@@ -89,6 +89,7 @@ const setArchive = () => {
         .split('-')
         .reverse()
         .join(' ');
+
       const dateID = date.replace(/\s/g,'');
       
       let indicators = "";
@@ -99,44 +100,53 @@ const setArchive = () => {
         </svg>`
       }
 
-      archiveList.innerHTML += `
-      <li class="archive__item archive__item--js ${key}">
-        <p class="archive__date">${date}</p>
-        <p class="archive__value archive__value--js">
-          ${value}
-        </p>
-        <div class="edition edition--js">
-          <button class="button edition__button edition__button--visible edition__button--edit edition__button--js-edit">
-            <svg class="edition__svg edition__svg--edit">
-              <use href="assets/svg/icons.svg#edit-mode"></use>
-            </svg>
-          </button>
-          <button class="button edition__button edition__button--decrease edition__button--js-decrease">
-            <svg class="edition__svg edition__svg--decrease">
-              <use href="assets/svg/icons.svg#left-arrow"></use>
-            </svg>
-          </button>
-          <button class="button edition__button edition__button--increase edition__button--js-increase">
-            <svg class="edition__svg edition__svg--increase">
-              <use href="assets/svg/icons.svg#right-arrow"></use>
-            </svg>
-          </button>
-          <button class="button edition__button edition__button--cancel edition__button--js-cancel">
-            <svg class="edition__svg edition__svg--cancel">
-              <use href="assets/svg/icons.svg#back-arrow"></use>
-            </svg>
-          </button>
-          <button class="button edition__button edition__button--save edition__button--js-save">
-            <svg class="edition__svg edition__svg--save">
-              <use href="assets/svg/icons.svg#save-icon"></use>
-            </svg>
-          </button>
-        </div>
-        <div class="indicator indicator--js-${dateID}">
-          ${indicators}
-        </div>
-      </li>`
-      setIndicators(dateID, value);
+      const item = `
+        <li class="archive__item archive__item--js ${key}">
+          <p class="archive__date">${date}</p>
+          <p class="archive__value archive__value--js">
+            ${value}
+          </p>
+          <div class="edition edition--js">
+            <button class="button edition__button edition__button--visible edition__button--edit edition__button--js-edit">
+              <svg class="edition__svg edition__svg--edit">
+                <use href="assets/svg/icons.svg#edit-mode"></use>
+              </svg>
+            </button>
+            <button class="button edition__button edition__button--decrease edition__button--js-decrease">
+              <svg class="edition__svg edition__svg--decrease">
+                <use href="assets/svg/icons.svg#left-arrow"></use>
+              </svg>
+            </button>
+            <button class="button edition__button edition__button--increase edition__button--js-increase">
+              <svg class="edition__svg edition__svg--increase">
+                <use href="assets/svg/icons.svg#right-arrow"></use>
+              </svg>
+            </button>
+            <button class="button edition__button edition__button--cancel edition__button--js-cancel">
+              <svg class="edition__svg edition__svg--cancel">
+                <use href="assets/svg/icons.svg#back-arrow"></use>
+              </svg>
+            </button>
+            <button class="button edition__button edition__button--save edition__button--js-save">
+              <svg class="edition__svg edition__svg--save">
+                <use href="assets/svg/icons.svg#save-icon"></use>
+              </svg>
+            </button>
+          </div>
+          <div class="indicator indicator--js-${dateID}">
+            ${indicators}
+          </div>
+        </li>
+      `
+      
+      const archiveItems = document.querySelectorAll('.archive__item--js');
+      const itemArray = [...archiveItems];
+      const filteredArray = itemArray.filter(elem => elem.classList.contains(`${key}`));
+
+      if (filteredArray.length === 0) {
+        archiveList.innerHTML += item;
+        setIndicators(dateID, value);
+      }
     }
   }
 }
@@ -187,7 +197,8 @@ const showArchive = () => {
     
     // const allEqual = itemsHeights.every( elem => elem === itemsHeights[0]);
     // const itemsHeights = itemsArray.map(elem => elem.offsetHeight);
-    
+
+    const archiveItems = document.querySelectorAll('.archive__item--js');
     const itemArray = [...archiveItems];
     const archiveListHeight = archiveList.clientHeight;
 
@@ -197,7 +208,6 @@ const showArchive = () => {
     while (true) {
       
       if (firstIndexToLoad < itemArray.length && firstIndexToLoad >= 0) {
-        console.log(firstIndexToLoad);
         const item = itemArray[firstIndexToLoad];
         item.classList.add('archive__item--visible');
         heights += item.offsetHeight;
@@ -221,34 +231,52 @@ const showArchive = () => {
   }
   //////////////////////////////////////////////// ADD NEW ITEM << SHOW ARCHIVE
   var addNewItem = () => {
+    
+    const offsetedDate = getOffsetedDate();
 
-    console.log('add new');
+    const hydrappKeys = getHydrappKeys();
+    const oldestKey = hydrappKeys[hydrappKeys.length-1];
+    let limit = 0; // for tests to avoid loop error
 
+    while (true) {
+      offsetedDate.setDate(offsetedDate.getDate() - 1);
+      limit++;
+      
+      if (setDateKey(offsetedDate) === oldestKey) {
 
+        offsetedDate.setDate(offsetedDate.getDate() - 1);
+        const prevDateKey = setDateKey(offsetedDate);
+        setNewKeyValue(prevDateKey, 0);
+        loadMoreButton.classList.add('archive__button--hidden');
+        setArchive();
+        const archiveItems = document.querySelectorAll('.archive__item--js');
+        for (const archiveItem of archiveItems) {
+          archiveItem.classList.add('archive__item--visible');
+        }
+
+        return;
+      }
+    }
   }
   //////////////////////////////////////////////// ADD NEW ITEM << SHOW ARCHIVE
-  var closeArchive = () => {
-
+  const closeArchive = () => {
     archive.classList.remove('archive--visible');
 
     loadMoreButton.classList.remove('archive__button--hidden');
+
+    const archiveItems = document.querySelectorAll('.archive__item--js');
     for (const archiveItem of archiveItems) {
       archiveItem.classList.remove('archive__item--visible');
     }
-
     addNewButton.removeEventListener('click', addNewItem);
     loadMoreButton.removeEventListener('click', loadMoreItems);
     archiveButton.removeEventListener('click', closeArchive);
     archiveButton.addEventListener('click', showArchive);
-
   }
   ////////////////////////////////////////////// FUNCTION CALLS << SHOW ARCHIVE
-
-  ///////////////////////////////////////////// EVENT LISTENERS << SHOW ARCHIVE
-
   archive.classList.add('archive--visible')
   loadMoreItems();
-  
+  ///////////////////////////////////////////// EVENT LISTENERS << SHOW ARCHIVE
   archiveButton.removeEventListener('click', showArchive);
   archiveButton.addEventListener('click', closeArchive);
   addNewButton.addEventListener('click', addNewItem);
@@ -365,7 +393,7 @@ const highLevelClassname = `${baseClassname} indicator__section--high`;
 setCounter();
 setArchive();
 ///////////////////////////////////////////////////////////////////// VARIABLES
-const archiveItems = document.querySelectorAll('.archive__item--js');
+let archiveItems = document.querySelectorAll('.archive__item--js');
 const editButtons = document.querySelectorAll('.edition__button--js-edit');
 const editSections = document.querySelectorAll('.edition--js');
 const decreaseButtons = document.querySelectorAll('.edition__button--js-decrease');
