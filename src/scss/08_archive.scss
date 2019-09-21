@@ -44,7 +44,7 @@
 
   &__list {
     list-style: none;
-    padding: 0 1rem;
+    padding: 0 $layout-xs-sm-padding;
     margin: 0;
     margin-top: 1rem;
     width: 100%;
@@ -109,13 +109,19 @@
     }
   }
 
+  &__buttons {
+    width: 100%;
+    padding: $layout-xs-sm-padding;
+    @include flex-center;
+    justify-content: space-between;
+  }
+
   &__button {
     padding: 0.6rem 1rem;
     border-radius: 4px;
     color: #fff;
     font-size: 1rem;
     transition: background-color $time-hover-effect;
-    margin: 1rem 0;
     visibility: visible;
 
     &--hidden {
@@ -124,6 +130,14 @@
 
     &:hover {
       background-color: $color-water;
+    }
+
+    &--add-new {
+
+      &:hover {
+        
+        background-color: $color-low;
+      }
     }
   }
 }
