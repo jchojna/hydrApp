@@ -12,6 +12,11 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
+
+// F1 /////////////////////////////////////////////////////// GLOBAL VARIABLES 
+
+const hydrappArray = [];
+
 // F1 ////////////////////////////////////////////////////////////// FUNCTIONS 
 
 // F1 //////////////////////////////////////////////// CREATE HYDRAPP DATE KEY 
@@ -43,17 +48,37 @@ const getDateID = (date) => {
     .reverse()
     .join('');
 }
+// F1 //////////////////////////////////////////////////// GET DATE 00 00 0000 
+const getDateTitle = (date) => {
+  return date
+    .replace('hydrApp-','')
+    .split('-')
+    .reverse()
+    .join(' ');
+}
 // F1 ////////////////////////////////////////////////////// GET OFFSETED DATE 
 const getOffsetedDate = () => {
   const timeZoneOffset = (new Date()).getTimezoneOffset() * 60000;
   return (new Date(Date.now() - timeZoneOffset));
 }
 // F1 ////////////////////////////////////////////////// GET DATE MATCHING KEY 
-const getDateofKey = () => {
-
-
-
-  
+const getDateOfKey = (key) => {
+  const date = new Date();
+  while (setDateKey(date) !== key) {
+    date.setDate(date.getDate() - 1);
+  }
+  return date;
+}
+// F1 //////////////////////////////////////////////////////////// SET COUNTER 
+const getIndicators = () => {
+  let indicators = '';
+  for (let i = 0; i < 8; i++) {
+    indicators += `
+    <svg class="indicator__svg indicator__svg--emo-${i+1} indicator__svg--js-${i}">
+      <use href="assets/svg/icons.svg#emoticon-${i}"></use>
+    </svg>`
+  }
+  return indicators;
 }
 // F1 //////////////////////////////////////////////////////////// SET COUNTER 
 const setCounter = () => {
@@ -83,8 +108,6 @@ const setCounter = () => {
 // F1 //////////////////////////////////////////////////////////// SET ARCHIVE 
 const setArchive = () => {
   const hydrappKeys = getHydrappKeys();
-  var hydrappArray = [];
-  const date = new Date();
 
   if (hydrappKeys.length === 1) {
     archiveList.innerHTML += `
@@ -97,57 +120,15 @@ const setArchive = () => {
       const entry = {};
       entry.key = hydrappKeys[i];
       entry.value = localStorage.getItem(entry.key);
-      //entry.date = 
-
-
-      hydrappArray.push(entry);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      /* const date = key
-        .replace('hydrApp-','')
-        .split('-')
-        .reverse()
-        .join(' '); */
-
-      //const dateID = date.replace(/\s/g,'');
-      
-      /* let indicators = "";
-      for (let i = 0; i < 8; i++) {
-        indicators += `
-        <svg class="indicator__svg indicator__svg--emo-${i+1} indicator__svg--js-${i}">
-          <use href="assets/svg/icons.svg#emoticon-${i}"></use>
-        </svg>`
-      } */
-
-      /* const item = `
-        <li class="archive__item archive__item--js ${key}">
-          <p class="archive__date">${date}</p>
+      entry.date = getDateOfKey(entry.key);
+      entry.title = getDateTitle(entry.key);
+      entry.dateID = entry.title.replace(/\s/g,'');
+      entry.indicators = getIndicators();
+      entry.html = `
+        <li class="archive__item archive__item--js ${entry.key}">
+          <p class="archive__date">${entry.title}</p>
           <p class="archive__value archive__value--js">
-            ${value}
+            ${entry.value}
           </p>
           <div class="edition edition--js">
             <button class="button edition__button edition__button--visible edition__button--edit edition__button--js-edit">
@@ -176,12 +157,14 @@ const setArchive = () => {
               </svg>
             </button>
           </div>
-          <div class="indicator indicator--js-${dateID}">
-            ${indicators}
+          <div class="indicator indicator--js-${entry.dateID}">
+            ${entry.indicators}
           </div>
         </li>
-      ` */
-      
+      `
+      //setIndicators(entry.dateID, entry.value);
+      archiveList.innerHTML += entry.html;
+
       //const archiveItems = document.querySelectorAll('.archive__item--js');
       //const itemArray = [...archiveItems];
       //const filteredArray = itemArray.filter(elem => elem.classList.contains(`${key}`));
@@ -190,6 +173,7 @@ const setArchive = () => {
         archiveList.innerHTML += item;
         setIndicators(dateID, value);
       } */
+      hydrappArray.push(entry);
     }
     console.log(hydrappArray);
   }
@@ -454,6 +438,7 @@ const increaseButtons = document.querySelectorAll('.edition__button--js-increase
 const cancelButtons = document.querySelectorAll('.edition__button--js-cancel');
 const saveButtons = document.querySelectorAll('.edition__button--js-save');
 const archiveValues = document.querySelectorAll('.archive__value--js');
+
 
 // F1 ///////////////////////////////////////////////////////// FUNCTION CALLS 
 
