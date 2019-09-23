@@ -222,7 +222,6 @@ const updateCounter = (e) => {
     .reverse()
     .join('');
 }
-
 // F1 /////////////////////////////////////////////////////////// SHOW ARCHIVE 
 const showArchive = () => {
   // F2 //////////////////////////////////////////// LOAD MORE << SHOW ARCHIVE 
@@ -262,18 +261,18 @@ const showArchive = () => {
       }
     }
   }
-
   // F2 /////////////////////////////////////////////////////// HANDLE ITEM EDIT 
+
   const handleItemEdit = (e) => {
     const itemIndex = e.target.index;
-    const archiveItem = archiveItems[itemIndex];
-    const editButton = editButtons[itemIndex];
-    const editSection = editSections[itemIndex];
-    const decreaseButton = decreaseButtons[itemIndex];
-    const increaseButton = increaseButtons[itemIndex];
-    const cancelButton = cancelButtons[itemIndex];
-    const saveButton = saveButtons[itemIndex];
-    const archiveValue = archiveValues[itemIndex];
+    const archiveItem = document.querySelectorAll('.archive__item--js')[itemIndex];
+    const editSection = document.querySelectorAll('.edition--js')[itemIndex];
+    const decreaseButton = document.querySelectorAll('.edition__button--js-decrease')[itemIndex];
+    const increaseButton = document.querySelectorAll('.edition__button--js-increase')[itemIndex];
+    const cancelButton = document.querySelectorAll('.edition__button--js-cancel')[itemIndex];
+    const saveButton = document.querySelectorAll('.edition__button--js-save')[itemIndex];
+    const archiveValue = document.querySelectorAll('.archive__value--js')[itemIndex];
+
     const lastValue = archiveValue.textContent;
     const itemClassName = e.target.parentElement.parentElement.className;
 
@@ -282,7 +281,9 @@ const showArchive = () => {
       .filter(key => /hydrApp/.test(key))
       .toString();
     const dateID = getDateID(hydrAppKey);
+
     // F3 ////////////////////////////// TOGGLE ITEM DISPLAY << HANDLE ITEM EDIT 
+
     const toggleItemDisplay = () => {
       archive.classList.toggle('archive--on-top');
       archiveItem.classList.toggle('archive__item--on-top');
@@ -294,6 +295,7 @@ const showArchive = () => {
       editSection.classList.toggle('edition--visible');
     }
     // F3 /////////////////////////////////// EXIT EDIT MODE << HANDLE ITEM EDIT 
+
     const exitEditMode = () => {
       toggleItemDisplay();
       const lastValue = localStorage.getItem(hydrAppKey);
@@ -304,6 +306,7 @@ const showArchive = () => {
       archive.removeEventListener('keydown', handleEdition);
     }
     // F3 /////////////////////////////////// HANDLE EDITION << HANDLE ITEM EDIT 
+
     const handleEdition = (e) => {
       const self = e.keyCode || e.target;
       let value = parseInt(archiveValue.textContent);
@@ -351,6 +354,7 @@ const showArchive = () => {
   // F2 ////////////////////////////////////////////// END OF HANDLE ITEM EDIT 
 
   // F2 ///////////////////////////////////////// ADD NEW ITEM << SHOW ARCHIVE 
+  
   const addNewItem = () => {
 
     lastEntryDate.setDate(lastEntryDate.getDate() - 1);
@@ -367,70 +371,13 @@ const showArchive = () => {
     archiveList.insertAdjacentHTML('beforeend', newEntryHtml);
     archiveList.lastElementChild.classList.add('archive__item--visible');
     setIndicators(entry.dateID, entry.value);
-    const editButtons = document.querySelectorAll('.edition__button--js-edit');
 
-    /* for (let i = 0; i < editButtons.length; i++) {
-      const editButton = editButtons[i];
-      editButton.index = i;
-      editButton.removeEventListener('click', handleItemEdit);
-      editButton.addEventListener('click', handleItemEdit);
-    } */
+    editButtons = document.querySelectorAll('.edition__button--js-edit');
+    const index = editButtons.length - 1;
+    const newEditButton = editButtons[index];
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-    /* const offsetedDate = getOffsetedDate();
-
-    const hydrappKeys = getHydrappKeys();
-    const oldestKey = hydrappKeys[hydrappKeys.length-1];
-    let limit = 0; // for tests to avoid loop error
-
-    while (true) {
-      offsetedDate.setDate(offsetedDate.getDate() - 1);
-      limit++;
-      
-      if (setDateKey(offsetedDate) === oldestKey) {
-
-        offsetedDate.setDate(offsetedDate.getDate() - 1);
-        const prevDateKey = setDateKey(offsetedDate);
-        setNewKeyValue(prevDateKey, 0);
-        loadMoreButton.classList.add('archive__button--hidden');
-        setArchive();
-        const archiveItems = document.querySelectorAll('.archive__item--js');
-        for (const archiveItem of archiveItems) {
-          archiveItem.classList.add('archive__item--visible');
-        }
-
-        return;
-      }
-    } */
+    newEditButton.index = index;
+    newEditButton.addEventListener('click', handleItemEdit);
   }
   // F2 ///////////////////////////////////////// ADD NEW ITEM << SHOW ARCHIVE 
   const closeArchive = () => {
@@ -445,8 +392,17 @@ const showArchive = () => {
     addNewButton.removeEventListener('click', addNewItem);
     loadMoreButton.removeEventListener('click', loadMoreItems);
     archiveButton.removeEventListener('click', closeArchive);
+
+    for (const editButton of editButtons) {
+      editButton.removeEventListener('click', handleItemEdit);
+    }
+
     archiveButton.addEventListener('click', showArchive);
   }
+  // F2 //////////////////////////////////////////// VARIABLES << SHOW ARCHIVE 
+
+  let editButtons = document.querySelectorAll('.edition__button--js-edit');
+
   // F2 /////////////////////////////////////// FUNCTION CALLS << SHOW ARCHIVE 
 
   archive.classList.add('archive--visible')
@@ -497,16 +453,6 @@ setCounter();
 setArchive();
 
 // F1 ////////////////////////////////////////////////////////////// VARIABLES 
-
-let archiveItems = document.querySelectorAll('.archive__item--js');
-const editButtons = document.querySelectorAll('.edition__button--js-edit');
-const editSections = document.querySelectorAll('.edition--js');
-const decreaseButtons = document.querySelectorAll('.edition__button--js-decrease');
-const increaseButtons = document.querySelectorAll('.edition__button--js-increase');
-const cancelButtons = document.querySelectorAll('.edition__button--js-cancel');
-const saveButtons = document.querySelectorAll('.edition__button--js-save');
-const archiveValues = document.querySelectorAll('.archive__value--js');
-
 
 // F1 ///////////////////////////////////////////////////////// FUNCTION CALLS 
 
