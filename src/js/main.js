@@ -16,6 +16,8 @@ if ('serviceWorker' in navigator) {
 // F1 /////////////////////////////////////////////////////// GLOBAL VARIABLES 
 
 const hydrappArray = [];
+const lastEntryDate = new Date();
+const entry = {};
 
 // F1 ////////////////////////////////////////////////////////////// FUNCTIONS 
 
@@ -62,13 +64,13 @@ const getOffsetedDate = () => {
   return (new Date(Date.now() - timeZoneOffset));
 }
 // F1 ////////////////////////////////////////////////// GET DATE MATCHING KEY 
-const getDateOfKey = (key) => {
+/* const getDateOfKey = (key) => {
   const date = new Date();
   while (setDateKey(date) !== key) {
     date.setDate(date.getDate() - 1);
   }
   return date;
-}
+} */
 // F1 //////////////////////////////////////////////////////////// SET COUNTER 
 const getIndicators = () => {
   let indicators = '';
@@ -105,10 +107,51 @@ const setCounter = () => {
   }
   counter.innerHTML = localStorage.getItem(dateKey);
 }
+// F1 ///////////////////////////////////////////////////////// GET ENTRY HTML 
+const getEntryHtml = (key, title, value, dateID, indicators) => {
+  return `
+    <li class="archive__item archive__item--js ${key}">
+      <p class="archive__date">${title}</p>
+      <p class="archive__value archive__value--js">
+        ${value}
+      </p>
+      <div class="edition edition--js">
+        <button class="button edition__button edition__button--visible edition__button--edit edition__button--js-edit">
+          <svg class="edition__svg edition__svg--edit">
+            <use href="assets/svg/icons.svg#edit-mode"></use>
+          </svg>
+        </button>
+        <button class="button edition__button edition__button--decrease edition__button--js-decrease">
+          <svg class="edition__svg edition__svg--decrease">
+            <use href="assets/svg/icons.svg#left-arrow"></use>
+          </svg>
+        </button>
+        <button class="button edition__button edition__button--increase edition__button--js-increase">
+          <svg class="edition__svg edition__svg--increase">
+            <use href="assets/svg/icons.svg#right-arrow"></use>
+          </svg>
+        </button>
+        <button class="button edition__button edition__button--cancel edition__button--js-cancel">
+          <svg class="edition__svg edition__svg--cancel">
+            <use href="assets/svg/icons.svg#back-arrow"></use>
+          </svg>
+        </button>
+        <button class="button edition__button edition__button--save edition__button--js-save">
+          <svg class="edition__svg edition__svg--save">
+            <use href="assets/svg/icons.svg#save-icon"></use>
+          </svg>
+        </button>
+      </div>
+      <div class="indicator indicator--js-${dateID}">
+        ${indicators}
+      </div>
+    </li>
+  `
+}
 // F1 //////////////////////////////////////////////////////////// SET ARCHIVE 
 const setArchive = () => {
   const hydrappKeys = getHydrappKeys();
-
+  
   if (hydrappKeys.length === 1) {
     archiveList.innerHTML += `
       <li class="archive__item archive__item--empty">No history yet...</li>
@@ -117,54 +160,16 @@ const setArchive = () => {
 
     for (let i = 1; i < hydrappKeys.length; i++) {
 
-      const entry = {};
       entry.key = hydrappKeys[i];
       entry.value = localStorage.getItem(entry.key);
-      entry.date = getDateOfKey(entry.key);
       entry.title = getDateTitle(entry.key);
       entry.dateID = entry.title.replace(/\s/g,'');
       entry.indicators = getIndicators();
-      entry.html = `
-        <li class="archive__item archive__item--js ${entry.key}">
-          <p class="archive__date">${entry.title}</p>
-          <p class="archive__value archive__value--js">
-            ${entry.value}
-          </p>
-          <div class="edition edition--js">
-            <button class="button edition__button edition__button--visible edition__button--edit edition__button--js-edit">
-              <svg class="edition__svg edition__svg--edit">
-                <use href="assets/svg/icons.svg#edit-mode"></use>
-              </svg>
-            </button>
-            <button class="button edition__button edition__button--decrease edition__button--js-decrease">
-              <svg class="edition__svg edition__svg--decrease">
-                <use href="assets/svg/icons.svg#left-arrow"></use>
-              </svg>
-            </button>
-            <button class="button edition__button edition__button--increase edition__button--js-increase">
-              <svg class="edition__svg edition__svg--increase">
-                <use href="assets/svg/icons.svg#right-arrow"></use>
-              </svg>
-            </button>
-            <button class="button edition__button edition__button--cancel edition__button--js-cancel">
-              <svg class="edition__svg edition__svg--cancel">
-                <use href="assets/svg/icons.svg#back-arrow"></use>
-              </svg>
-            </button>
-            <button class="button edition__button edition__button--save edition__button--js-save">
-              <svg class="edition__svg edition__svg--save">
-                <use href="assets/svg/icons.svg#save-icon"></use>
-              </svg>
-            </button>
-          </div>
-          <div class="indicator indicator--js-${entry.dateID}">
-            ${entry.indicators}
-          </div>
-        </li>
-      `
-      //setIndicators(entry.dateID, entry.value);
+      entry.html = getEntryHtml(entry.key, entry.title, entry.value, entry.dateID, entry.indicators);
       archiveList.innerHTML += entry.html;
-
+      lastEntryDate.setDate(lastEntryDate.getDate() - 1);
+      setIndicators(entry.dateID, entry.value);
+      
       //const archiveItems = document.querySelectorAll('.archive__item--js');
       //const itemArray = [...archiveItems];
       //const filteredArray = itemArray.filter(elem => elem.classList.contains(`${key}`));
@@ -189,7 +194,7 @@ const setIndicators = (id, value) => {
   for (const indicator of indicators) {
     indicator.classList.contains('indicator__svg--visible')
     ? indicator.classList.remove('indicator__svg--visible')
-    : false
+    : false;
   }
   indicator.classList.add('indicator__svg--visible');
 }
@@ -257,10 +262,151 @@ const showArchive = () => {
       }
     }
   }
+
+  // F2 /////////////////////////////////////////////////////// HANDLE ITEM EDIT 
+  const handleItemEdit = (e) => {
+    const itemIndex = e.target.index;
+    const archiveItem = archiveItems[itemIndex];
+    const editButton = editButtons[itemIndex];
+    const editSection = editSections[itemIndex];
+    const decreaseButton = decreaseButtons[itemIndex];
+    const increaseButton = increaseButtons[itemIndex];
+    const cancelButton = cancelButtons[itemIndex];
+    const saveButton = saveButtons[itemIndex];
+    const archiveValue = archiveValues[itemIndex];
+    const lastValue = archiveValue.textContent;
+    const itemClassName = e.target.parentElement.parentElement.className;
+
+    const hydrAppKey = itemClassName
+      .split(' ')
+      .filter(key => /hydrApp/.test(key))
+      .toString();
+    const dateID = getDateID(hydrAppKey);
+    // F3 ////////////////////////////// TOGGLE ITEM DISPLAY << HANDLE ITEM EDIT 
+    const toggleItemDisplay = () => {
+      archive.classList.toggle('archive--on-top');
+      archiveItem.classList.toggle('archive__item--on-top');
+      pageOverlay.classList.toggle('archive__overlay--visible');
+      
+      for (const editButton of editSection.children) {
+        editButton.classList.toggle('edition__button--visible');
+      }
+      editSection.classList.toggle('edition--visible');
+    }
+    // F3 /////////////////////////////////// EXIT EDIT MODE << HANDLE ITEM EDIT 
+    const exitEditMode = () => {
+      toggleItemDisplay();
+      const lastValue = localStorage.getItem(hydrAppKey);
+      archiveValue.textContent = lastValue;
+      setIndicators(dateID, lastValue);
+
+      archive.removeEventListener('click', handleEdition);
+      archive.removeEventListener('keydown', handleEdition);
+    }
+    // F3 /////////////////////////////////// HANDLE EDITION << HANDLE ITEM EDIT 
+    const handleEdition = (e) => {
+      const self = e.keyCode || e.target;
+      let value = parseInt(archiveValue.textContent);
+
+      switch (self) {
+
+        case 37:
+        case decreaseButton:
+          e.preventDefault();
+          value > 0 ? value-- : false;
+          archiveValue.textContent = value;
+          setIndicators(dateID, value);
+        break;
+        
+        case 39:
+        case increaseButton:
+          e.preventDefault();
+          value < counterMaxValue ? value++ : false;
+          archiveValue.textContent = value;
+          setIndicators(dateID, value);
+        break;
+
+        case 27:
+        case pageOverlay:
+        case cancelButton:
+          e.preventDefault();
+          exitEditMode();
+        break;
+
+        case 13:
+        case saveButton:
+          e.preventDefault();
+          localStorage.setItem(hydrAppKey, parseInt(archiveValue.textContent));
+          exitEditMode();
+        break;
+      }
+    }
+    // F3 ///////////////////////////////// FUNCTION CALLS << HANDLE ITEM EDIT 
+
+    toggleItemDisplay();
+    archive.addEventListener('click', handleEdition);
+    archive.addEventListener('keydown', handleEdition);
+
+  }
+  // F2 ////////////////////////////////////////////// END OF HANDLE ITEM EDIT 
+
   // F2 ///////////////////////////////////////// ADD NEW ITEM << SHOW ARCHIVE 
-  var addNewItem = () => {
+  const addNewItem = () => {
+
+    lastEntryDate.setDate(lastEntryDate.getDate() - 1);
+    const newEntryKey = setDateKey(lastEntryDate);
+    setNewKeyValue(newEntryKey, 0);
     
-    const offsetedDate = getOffsetedDate();
+    entry.key = newEntryKey;
+    entry.value = localStorage.getItem(entry.key);
+    entry.title = getDateTitle(entry.key);
+    entry.dateID = entry.title.replace(/\s/g,'');
+    entry.indicators = getIndicators();
+    
+    const newEntryHtml = getEntryHtml(entry.key, entry.title, entry.value, entry.dateID, entry.indicators);
+    archiveList.insertAdjacentHTML('beforeend', newEntryHtml);
+    archiveList.lastElementChild.classList.add('archive__item--visible');
+    setIndicators(entry.dateID, entry.value);
+    const editButtons = document.querySelectorAll('.edition__button--js-edit');
+
+    /* for (let i = 0; i < editButtons.length; i++) {
+      const editButton = editButtons[i];
+      editButton.index = i;
+      editButton.removeEventListener('click', handleItemEdit);
+      editButton.addEventListener('click', handleItemEdit);
+    } */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    /* const offsetedDate = getOffsetedDate();
 
     const hydrappKeys = getHydrappKeys();
     const oldestKey = hydrappKeys[hydrappKeys.length-1];
@@ -284,122 +430,44 @@ const showArchive = () => {
 
         return;
       }
-    }
+    } */
   }
   // F2 ///////////////////////////////////////// ADD NEW ITEM << SHOW ARCHIVE 
   const closeArchive = () => {
     archive.classList.remove('archive--visible');
+    loadMoreButton.classList.remove('archive__button--hidden');
 
-    //loadMoreButton.classList.remove('archive__button--hidden');
-
-    /* const archiveItems = document.querySelectorAll('.archive__item--js');
+    const archiveItems = document.querySelectorAll('.archive__item--js');
     for (const archiveItem of archiveItems) {
       archiveItem.classList.remove('archive__item--visible');
-    } */
-    //addNewButton.removeEventListener('click', addNewItem);
-    //loadMoreButton.removeEventListener('click', loadMoreItems);
+    }
+
+    addNewButton.removeEventListener('click', addNewItem);
+    loadMoreButton.removeEventListener('click', loadMoreItems);
     archiveButton.removeEventListener('click', closeArchive);
     archiveButton.addEventListener('click', showArchive);
   }
   // F2 /////////////////////////////////////// FUNCTION CALLS << SHOW ARCHIVE 
 
   archive.classList.add('archive--visible')
-  //loadMoreItems();
+  loadMoreItems();
 
   // F2 ////////////////////////////////////// EVENT LISTENERS << SHOW ARCHIVE 
 
   archiveButton.removeEventListener('click', showArchive);
   archiveButton.addEventListener('click', closeArchive);
-  //addNewButton.addEventListener('click', addNewItem);
-  //loadMoreButton.addEventListener('click', loadMoreItems);
+  loadMoreButton.addEventListener('click', loadMoreItems);
+  addNewButton.addEventListener('click', addNewItem);
+
+  for (let i = 0; i < editButtons.length; i++) {
+    const editButton = editButtons[i];
+    editButton.index = i;
+    editButton.addEventListener('click', handleItemEdit);
+  }
 }
 // F1 //////////////////////////////////////////////////// END OF SHOW ARCHIVE 
 
-// F1 /////////////////////////////////////////////////////// HANDLE ITEM EDIT 
-const handleItemEdit = (e) => {
-  const itemIndex = e.target.index;
-  const archiveItem = archiveItems[itemIndex];
-  const editButton = editButtons[itemIndex];
-  const editSection = editSections[itemIndex];
-  const decreaseButton = decreaseButtons[itemIndex];
-  const increaseButton = increaseButtons[itemIndex];
-  const cancelButton = cancelButtons[itemIndex];
-  const saveButton = saveButtons[itemIndex];
-  const archiveValue = archiveValues[itemIndex];
-  const lastValue = archiveValue.textContent;
-  const itemClassName = e.target.parentElement.parentElement.className;
 
-  const hydrAppKey = itemClassName
-    .split(' ')
-    .filter(key => /hydrApp/.test(key))
-    .toString();
-  const dateID = getDateID(hydrAppKey);
-  // F2 ////////////////////////////// TOGGLE ITEM DISPLAY << HANDLE ITEM EDIT 
-  const toggleItemDisplay = () => {
-    archive.classList.toggle('archive--on-top');
-    archiveItem.classList.toggle('archive__item--on-top');
-    pageOverlay.classList.toggle('archive__overlay--visible');
-    
-    for (const editButton of editSection.children) {
-      editButton.classList.toggle('edition__button--visible');
-    }
-    editSection.classList.toggle('edition--visible');
-  }
-  // F2 /////////////////////////////////// EXIT EDIT MODE << HANDLE ITEM EDIT 
-  const exitEditMode = () => {
-    toggleItemDisplay();
-    const lastValue = localStorage.getItem(hydrAppKey);
-    archiveValue.textContent = lastValue;
-    setIndicators(dateID, lastValue);
-
-    archive.removeEventListener('click', handleEdition);
-    archive.removeEventListener('keydown', handleEdition);
-  }
-  // F2 /////////////////////////////////// HANDLE EDITION << HANDLE ITEM EDIT 
-  const handleEdition = (e) => {
-    const self = e.keyCode || e.target;
-    let value = parseInt(archiveValue.textContent);
-
-    switch (self) {
-
-      case 37:
-      case decreaseButton:
-        e.preventDefault();
-        value > 0 ? value-- : false;
-        archiveValue.textContent = value;
-        setIndicators(dateID, value);
-      break;
-      
-      case 39:
-      case increaseButton:
-        e.preventDefault();
-        value < counterMaxValue ? value++ : false;
-        archiveValue.textContent = value;
-        setIndicators(dateID, value);
-      break;
-
-      case 27:
-      case pageOverlay:
-      case cancelButton:
-        e.preventDefault();
-        exitEditMode();
-      break;
-
-      case 13:
-      case saveButton:
-        e.preventDefault();
-        localStorage.setItem(hydrAppKey, parseInt(archiveValue.textContent));
-        exitEditMode();
-      break;
-    }
-  }
-  // F2 /////////////////////////////////// FUNCTION CALLS << HANDLE ITEM EDIT 
-
-  toggleItemDisplay();
-  archive.addEventListener('click', handleEdition);
-  archive.addEventListener('keydown', handleEdition);
-}
-// F1 //////////////////////////////////////////////// END OF HANDLE ITEM EDIT 
 
 // F1 ////////////////////////////////////////////////////////////// VARIABLES 
 
@@ -447,9 +515,3 @@ const archiveValues = document.querySelectorAll('.archive__value--js');
 addGlass.addEventListener('click', updateCounter);
 removeGlass.addEventListener('click', updateCounter);
 archiveButton.addEventListener('click', showArchive);
-
-for (let i = 0; i < editButtons.length; i++) {
-  const editButton = editButtons[i];
-  editButton.index = i;
-  editButton.addEventListener('click', handleItemEdit);
-}
