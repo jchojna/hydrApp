@@ -357,11 +357,15 @@ const showArchive = () => {
   // F2 ///////////////////////////////////// REMOVE LAST ITEM << SHOW ARCHIVE 
 
   const removeLastItem = () => {
-    const lastItemKey = hydrappArray[hydrappArray.length - 1].key;
-    hydrappArray.pop();
-    localStorage.removeItem(lastItemKey);
-    lastEntryDate.setDate(lastEntryDate.getDate() + 1);
-    archiveList.removeChild(archiveList.lastElementChild);
+
+    if (hydrappArray.length) {
+      const lastItemKey = hydrappArray[hydrappArray.length - 1].key;
+      hydrappArray.pop();
+      localStorage.removeItem(lastItemKey);
+      lastEntryDate.setDate(lastEntryDate.getDate() + 1);
+      archiveList.removeChild(archiveList.lastElementChild);
+      console.log('total height:', hydrappArray[hydrappArray.length - 1].totalHeight);
+    }
   }
   // F2 //////////////////////////////////////// CLOSE ARCHIVE << SHOW ARCHIVE 
 
