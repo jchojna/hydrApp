@@ -364,7 +364,10 @@ const showArchive = () => {
       localStorage.removeItem(lastItemKey);
       lastEntryDate.setDate(lastEntryDate.getDate() + 1);
       archiveList.removeChild(archiveList.lastElementChild);
-      console.log('total height:', hydrappArray[hydrappArray.length - 1].totalHeight);
+
+      hydrappArray.length === 0
+      ? removeButton.classList.remove('archive__button--visible')
+      : false;
     }
   }
   // F2 //////////////////////////////////////// CLOSE ARCHIVE << SHOW ARCHIVE 

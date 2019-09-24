@@ -122,10 +122,10 @@
     color: #fff;
     font-size: 1rem;
     transition: background-color $time-hover-effect;
-    visibility: visible;
+    visibility: hidden;
 
-    &--hidden {
-      visibility: hidden;
+    &--visible {
+      visibility: visible;
     }
 
     &:hover {
@@ -133,6 +133,8 @@
     }
 
     &--add-new {
+      visibility: visible;
+
       &:hover {
         background-color: $color-high;
       }
