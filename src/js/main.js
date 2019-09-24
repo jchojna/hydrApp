@@ -320,12 +320,14 @@ const showArchive = () => {
 
           item.classList.add('archive__item--visible');
           viewportHeight += item.offsetHeight;
+
           hydrappArray[i].itemHeight = item.offsetHeight;
           hydrappArray[i].totalHeight = i;
-
+          archiveList.scrollTop = hydrappArray[i].totalHeight;
+          
           if (viewportHeight > archiveListHeight - item.offsetHeight) {
-
-            archiveList.style.height = hydrappArray[i].totalHeight + 'px';
+            
+            archiveList.style.height = viewportHeight + 'px';
             loadMoreButton.classList.add('archive__button--visible');
             break;
           }
@@ -396,14 +398,10 @@ const showArchive = () => {
       lastEntryDate.setDate(lastEntryDate.getDate() + 1);
       archiveList.removeChild(archiveList.lastElementChild);
       const itemsTotalHeight = hydrappArray[hydrappArray.length - 1].totalHeight;
-      
-      console.log('archiveListHeight', archiveListHeight);
-      console.log('itemsTotalHeight', itemsTotalHeight);
+
       if (itemsTotalHeight <= archiveListHeight && itemsTotalHeight > 0) {
-        console.log('test');
         loadMoreButton.classList.remove('archive__button--visible');
       }
-
       if (hydrappArray.length === 1) {
         removeButton.classList.remove('archive__button--visible');
       }
