@@ -151,19 +151,24 @@ const setLocalStorage = () => {
 // F1 ///////////////////////////////////////////////////////// UPDATE COUNTER 
 
 const updateCounter = (e) => {
+  const self = e.target;
   const offsetedDate = getOffsetedDate();
   const key = setDateKey(offsetedDate);
   const value = parseInt(localStorage.getItem(key));
   let newValue;
 
-  if (e.target === addGlass) {
-    value < counterMaxValue ? newValue = value + 1 : newValue = counterMaxValue;
-  } else if (e.target === removeGlass) {
-    value > 0 ? newValue = value - 1 : newValue = 0;
+  if (self === addGlass || self === removeGlass) {
+    switch (self) {
+      case addGlass:
+        value < counterMaxValue ? newValue = value + 1 : newValue = counterMaxValue;
+        break;
+      case removeGlass:
+        value > 0 ? newValue = value - 1 : newValue = 0;
+        break;
+    }
+    localStorage.setItem(key, newValue);
+    counter.innerHTML = newValue;
   }
-
-  localStorage.setItem(key, newValue);
-  counter.innerHTML = newValue;
 }
 // F1 //////////////////////////////////////////////////////////// SET ARCHIVE 
 
@@ -394,6 +399,7 @@ const showArchive = () => {
 
 //////////////////////////////////////////////////////////////////// VARIABLES 
 
+const appContainer = document.querySelector('.app__container--js');
 const addGlass = document.querySelector('.app__button--js-add');
 const removeGlass = document.querySelector('.app__button--js-remove');
 const counter = document.querySelector('.glass__counter--js');
@@ -415,6 +421,5 @@ setArchive();
 
 ////////////////////////////////////////////////////////////// EVENT LISTENERS 
 
-addGlass.addEventListener('click', updateCounter);                                // ! to merge
-removeGlass.addEventListener('click', updateCounter);                             // ! to merge
+appContainer.addEventListener('click', updateCounter);
 archiveButton.addEventListener('click', showArchive);
