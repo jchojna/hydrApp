@@ -354,6 +354,15 @@ const showArchive = () => {
     newEditButton.index = currentIndex;
     newEditButton.addEventListener('click', handleItemEdit);
   }
+  // F2 ///////////////////////////////////// REMOVE LAST ITEM << SHOW ARCHIVE 
+
+  const removeLastItem = () => {
+    const lastItemKey = hydrappArray[hydrappArray.length - 1].key;
+    hydrappArray.pop();
+    localStorage.removeItem(lastItemKey);
+    lastEntryDate.setDate(lastEntryDate.getDate() + 1);
+    archiveList.removeChild(archiveList.lastElementChild);
+  }
   // F2 //////////////////////////////////////// CLOSE ARCHIVE << SHOW ARCHIVE 
 
   const closeArchive = () => {
@@ -366,6 +375,7 @@ const showArchive = () => {
     }
 
     addNewButton.removeEventListener('click', addNewItem);
+    removeButton.removeEventListener('click', removeLastItem);
     loadMoreButton.removeEventListener('click', loadMoreItems);
     archiveButton.removeEventListener('click', closeArchive);
 
@@ -390,6 +400,7 @@ const showArchive = () => {
   archiveButton.addEventListener('click', closeArchive);
   loadMoreButton.addEventListener('click', loadMoreItems);
   addNewButton.addEventListener('click', addNewItem);
+  removeButton.addEventListener('click', removeLastItem);
 
   for (let i = 0; i < editButtons.length; i++) {
     const editButton = editButtons[i];
@@ -413,6 +424,7 @@ const archiveList = document.querySelector('.archive__list--js');
 const archiveButton = document.querySelector('.navigation__button--js-archive');
 const loadMoreButton = document.querySelector('.archive__button--js-load-more');
 const addNewButton = document.querySelector('.archive__button--add-new');
+const removeButton = document.querySelector('.archive__button--remove')
 
 const statsButton = document.querySelector('.navigation__button--js-stats');
 

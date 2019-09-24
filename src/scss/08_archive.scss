@@ -133,9 +133,13 @@
     }
 
     &--add-new {
-
       &:hover {
-        
+        background-color: $color-high;
+      }
+    }
+    
+    &--remove {
+      &:hover {
         background-color: $color-low;
       }
     }
