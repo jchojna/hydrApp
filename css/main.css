@@ -636,6 +636,21 @@ body {
       .archive__value {
         width: 30px;
         height: 30px; } }
+  .archive__buttons {
+    width: 100%;
+    padding: 1rem;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    -webkit-box-pack: justify;
+        -ms-flex-pack: justify;
+            justify-content: space-between; }
   .archive__button {
     padding: 0.6rem 1rem;
     border-radius: 4px;
@@ -644,12 +659,15 @@ body {
     -webkit-transition: background-color 0.2s;
     -o-transition: background-color 0.2s;
     transition: background-color 0.2s;
-    margin: 1rem 0;
     visibility: visible; }
     .archive__button--hidden {
       visibility: hidden; }
     .archive__button:hover {
       background-color: #2196f3; }
+    .archive__button--add-new:hover {
+      background-color: #59f012; }
+    .archive__button--remove:hover {
+      background-color: #dd4b1e; }
 
 .edition {
   position: relative;
