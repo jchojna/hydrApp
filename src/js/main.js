@@ -334,12 +334,14 @@ const showArchive = () => {
 
   const addNewItem = () => {
 
+    // set date object for a new entry
+    lastEntryDate.setDate(lastEntryDate.getDate() - 1);
     const newEntryKey = setDateKey(lastEntryDate);
     setNewKeyValue(newEntryKey, 0);
+    // create new object for array
     const newEntry = new Entry(newEntryKey);
     hydrappArray.push(newEntry);
     const currentIndex = hydrappArray.length - 1;
-    lastEntryDate.setDate(lastEntryDate.getDate() - 1);
     archiveList.insertAdjacentHTML('beforeend', hydrappArray[currentIndex].html);
     setIndicators(hydrappArray[currentIndex].ID, hydrappArray[currentIndex].value);
     
