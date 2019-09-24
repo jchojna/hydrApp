@@ -28,11 +28,12 @@ for (let i = 0; i < 8; i++) {
 }
 
 class Entry {
-  constructor(key) {
+  constructor(key, height) {                                                // ! IF HEIGHT NEEDED ?
     this.key = key;
     this.getValue = key;
     this.getTitle = key;
     this.getID = key;
+    this.itemHeight = height;
 
     this.html = `
       <li class="archive__item archive__item--js ${this.key}">
@@ -91,6 +92,12 @@ class Entry {
   }
   set getID(date) {
     this.ID = date.replace('hydrApp-','').split('-').reverse().join('');
+  }
+  get totalHeight() {
+    return this._totalHeight;
+  }
+  set totalHeight(amount) {
+    this._totalHeight = amount * this.itemHeight;
   }
 }
 
@@ -174,24 +181,24 @@ const updateCounter = (e) => {
 
 const setArchive = () => {
   const hydrappKeys = getHydrappKeys();
-  
-  if (hydrappKeys.length === 1) {
-    archiveList.innerHTML += `
-      <li class="archive__item archive__item--empty">No history yet...</li>
-      `;
+  const emptyArchive = `
+  <li class="archive__item archive__item--empty">No history yet...</li>
+  `;
+  archiveList.innerHTML += emptyArchive;
 
-  } else {
+  if (hydrappKeys.length) {
 
-    for (let i = 1; i < hydrappKeys.length; i++) {
+    for (let i = 0; i < hydrappKeys.length; i++) {
 
-      const newEntry = new Entry(hydrappKeys[i]);
+      const newEntry = new Entry(hydrappKeys[i], 0);
+      newEntry.totalHeight = i;
       archiveList.innerHTML += newEntry.html;
       lastEntryDate.setDate(lastEntryDate.getDate() - 1);
       setIndicators(newEntry.ID, newEntry.value);
       hydrappArray.push(newEntry);
     }
-    console.log('hydrappArray', hydrappArray);
   }
+  console.log('hydrappArray', hydrappArray);
 }
 // F1 ///////////////////////////////////////////////////////// SET INDICATORS 
 
@@ -298,34 +305,31 @@ const showArchive = () => {
   const loadMoreItems = () => {
     
     const archiveItems = document.querySelectorAll('.archive__item--js');
-    const itemArray = [...archiveItems];
     const archiveListHeight = archiveList.clientHeight;
+    let viewportHeight = 0;
 
-    let firstIndexToLoad = itemArray.findIndex(elem => !elem.classList.contains('archive__item--visible'));
-    let heights = 0;
-    let scrollOffset = archiveList.scrollTop;
+    if (hydrappArray.length > 1) {
 
-    while (true) {
-      
-      if (firstIndexToLoad < itemArray.length && firstIndexToLoad >= 0) {
-        const item = itemArray[firstIndexToLoad];
-        item.classList.add('archive__item--visible');
-        heights += item.offsetHeight;
-        scrollOffset += item.offsetHeight;
-        
-        if (heights <= archiveListHeight - item.offsetHeight) {
-          firstIndexToLoad++;
-        } else {
-          archiveList.scrollTop = scrollOffset;
-          archiveList.style.height = heights + 'px';
-          return false;
+      removeButton.classList.add('archive__button--visible');
+
+      for (let i = 1; i < archiveItems.length; i++) {
+
+        const item = archiveItems[i];
+
+        if (!item.classList.contains('archive__item--visible')) {
+
+          item.classList.add('archive__item--visible');
+          viewportHeight += item.offsetHeight;
+          hydrappArray[i].itemHeight = item.offsetHeight;
+          hydrappArray[i].totalHeight = i;
+
+          if (viewportHeight > archiveListHeight - item.offsetHeight) {
+
+            archiveList.style.height = hydrappArray[i].totalHeight + 'px';
+            loadMoreButton.classList.add('archive__button--visible');
+            break;
+          }
         }
-
-      } else {
-        archiveList.scrollTop = scrollOffset;
-        loadMoreButton.classList.add('archive__button--hidden');
-        loadMoreButton.removeEventListener('click', loadMoreItems);
-        return false;
       }
     }
   }
@@ -338,6 +342,7 @@ const showArchive = () => {
     lastEntryDate.setDate(lastEntryDate.getDate() - 1);
     const newEntryKey = setDateKey(lastEntryDate);
     setNewKeyValue(newEntryKey, 0);
+
     // create new object for array
     const newEntry = new Entry(newEntryKey);
     hydrappArray.push(newEntry);
@@ -345,29 +350,63 @@ const showArchive = () => {
     archiveList.insertAdjacentHTML('beforeend', hydrappArray[currentIndex].html);
     setIndicators(hydrappArray[currentIndex].ID, hydrappArray[currentIndex].value);
     
-    for (const item of archiveList.children) {
+    
+    for (let i = 0; i < archiveList.children.length; i++) {
+      const item = archiveList.children[i];
       item.classList.add('archive__item--visible');
+
+      //hydrappArray[i].totalHeight = hydrappArray[i-1].totalHeight + item.offsetHeight;
+      hydrappArray[i].totalHeight = 50;
+      console.log('total height:', hydrappArray[hydrappArray.length - 1].totalHeight);
     }
+    
+    const lastItemHeigh = archiveList.lastElementChild.offsetHeight;
+    console.log('lastItemHeigh: ', lastItemHeigh);
+
+
+
+
+
+
+
+
+
+
+
+
 
     editButtons = document.querySelectorAll('.edition__button--js-edit');
     const newEditButton = editButtons[currentIndex];
     newEditButton.index = currentIndex;
     newEditButton.addEventListener('click', handleItemEdit);
+
+    console.log('total height:', hydrappArray[hydrappArray.length - 1].totalHeight);
   }
   // F2 ///////////////////////////////////// REMOVE LAST ITEM << SHOW ARCHIVE 
 
   const removeLastItem = () => {
 
-    if (hydrappArray.length) {
+    const archiveListHeight = archiveList.clientHeight;
+
+    if (hydrappArray.length > 1) {
+      
       const lastItemKey = hydrappArray[hydrappArray.length - 1].key;
       hydrappArray.pop();
       localStorage.removeItem(lastItemKey);
       lastEntryDate.setDate(lastEntryDate.getDate() + 1);
       archiveList.removeChild(archiveList.lastElementChild);
+      const itemsTotalHeight = hydrappArray[hydrappArray.length - 1].totalHeight;
+      
+      console.log('archiveListHeight', archiveListHeight);
+      console.log('itemsTotalHeight', itemsTotalHeight);
+      if (itemsTotalHeight <= archiveListHeight && itemsTotalHeight > 0) {
+        console.log('test');
+        loadMoreButton.classList.remove('archive__button--visible');
+      }
 
-      hydrappArray.length === 0
-      ? removeButton.classList.remove('archive__button--visible')
-      : false;
+      if (hydrappArray.length === 1) {
+        removeButton.classList.remove('archive__button--visible');
+      }
     }
   }
   // F2 //////////////////////////////////////// CLOSE ARCHIVE << SHOW ARCHIVE 
@@ -391,6 +430,22 @@ const showArchive = () => {
     }
 
     archiveButton.addEventListener('click', showArchive);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   }
   ////////////////////////////////////////////////// VARIABLES << SHOW ARCHIVE 
 
