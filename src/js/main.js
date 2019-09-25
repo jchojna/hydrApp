@@ -133,6 +133,12 @@ const getOffsetedDate = () => {
   const timeZoneOffset = (new Date()).getTimezoneOffset() * 60000;
   return (new Date(Date.now() - timeZoneOffset));
 }
+// F1 /////////////////////////////////////////////////// GET OFFSETED DATE OF 
+
+const getOffsetedDateOf = (date) => {
+  const timeZoneOffset = (new Date()).getTimezoneOffset() * 60000;
+  return new Date(date - timeZoneOffset);
+}
 // F1 //////////////////////////////////////////////////////////// SET COUNTER 
 
 const setLocalStorage = () => {
@@ -331,6 +337,8 @@ const showArchive = () => {
             loadMoreButton.classList.add('archive__button--visible');
             break;
           }
+        } else {
+          loadMoreButton.classList.remove('archive__button--visible');
         }
       }
     }
@@ -340,49 +348,33 @@ const showArchive = () => {
 
   const addNewItem = () => {
 
-    // set date object for a new entry
-    lastEntryDate.setDate(lastEntryDate.getDate() - 1);
-    const newEntryKey = setDateKey(lastEntryDate);
+    const newEntryKey = setDateKey(getOffsetedDateOf(lastEntryDate));
     setNewKeyValue(newEntryKey, 0);
 
-    // create new object for array
     const newEntry = new Entry(newEntryKey);
     hydrappArray.push(newEntry);
+    lastEntryDate.setDate(lastEntryDate.getDate() - 1);
     const currentIndex = hydrappArray.length - 1;
     archiveList.insertAdjacentHTML('beforeend', hydrappArray[currentIndex].html);
     setIndicators(hydrappArray[currentIndex].ID, hydrappArray[currentIndex].value);
-    
-    
-    for (let i = 0; i < archiveList.children.length; i++) {
+
+    for (let i = 2; i < archiveList.children.length; i++) {
       const item = archiveList.children[i];
-      item.classList.add('archive__item--visible');
-
-      //hydrappArray[i].totalHeight = hydrappArray[i-1].totalHeight + item.offsetHeight;
-      hydrappArray[i].totalHeight = 50;
-      console.log('total height:', hydrappArray[hydrappArray.length - 1].totalHeight);
+      if (!item.classList.contains('archive__item--visible')) {
+        item.classList.add('archive__item--visible');
+      }
     }
-    
-    const lastItemHeigh = archiveList.lastElementChild.offsetHeight;
-    console.log('lastItemHeigh: ', lastItemHeigh);
-
-
-
-
-
-
-
-
-
-
-
-
+    hydrappArray[currentIndex].itemHeight = archiveList.lastElementChild.offsetHeight;
+    hydrappArray[currentIndex].totalHeight = currentIndex;
 
     editButtons = document.querySelectorAll('.edition__button--js-edit');
     const newEditButton = editButtons[currentIndex];
     newEditButton.index = currentIndex;
     newEditButton.addEventListener('click', handleItemEdit);
-
-    console.log('total height:', hydrappArray[hydrappArray.length - 1].totalHeight);
+    
+    console.log('item height: ', hydrappArray[currentIndex].itemHeight);
+    console.log('total height: ', hydrappArray[currentIndex].totalHeight);
+    
   }
   // F2 ///////////////////////////////////// REMOVE LAST ITEM << SHOW ARCHIVE 
 
@@ -428,22 +420,6 @@ const showArchive = () => {
     }
 
     archiveButton.addEventListener('click', showArchive);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   }
   ////////////////////////////////////////////////// VARIABLES << SHOW ARCHIVE 
 
