@@ -364,6 +364,11 @@ const showArchive = () => {
         item.classList.add('archive__item--visible');
       }
     }
+
+    if (!removeButton.classList.contains('archive__button--visible')) {
+      removeButton.classList.add('archive__button--visible');
+    }
+
     hydrappArray[currentIndex].itemHeight = archiveList.lastElementChild.offsetHeight;
     hydrappArray[currentIndex].totalHeight = currentIndex;
     archiveList.scrollTop = hydrappArray[currentIndex].totalHeight;
