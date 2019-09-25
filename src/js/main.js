@@ -183,18 +183,6 @@ const updateCounter = (e) => {
     counter.innerHTML = newValue;
   }
 }
-// F1 /////////////////////////////////////////////// ADJUST LAST ITEM OF LIST 
-
-const handleLastItem = (list) => {
-
-  const lastItem = list.lastElementChild;
-  const lastItemValueNode = lastItem.querySelector('.archive__value--js');
-  const removeItemButton = document.createElement('button');
-
-  removeItemButton.textContent = 'REMOVE';
-  lastItem.classList.add('archive__item--removable');
-  lastItem.insertBefore(removeItemButton, lastItemValueNode);
-}
 // F1 //////////////////////////////////////////////////////////// SET ARCHIVE 
 
 const setArchive = () => {
@@ -215,7 +203,6 @@ const setArchive = () => {
       setIndicators(newEntry.ID, newEntry.value);
       hydrappArray.push(newEntry);
     }
-    handleLastItem(archiveList);
   }
   console.log('hydrappArray', hydrappArray);
 }
@@ -320,6 +307,28 @@ const showArchive = () => {
 
   } // F2 //////////////////////////////////////////// END OF HANDLE ITEM EDIT 
   
+  // F2 //////////////////////////////////////////// CREATE REMOVE ITEM BUTTON 
+  
+  const createRemoveItemButton = () => {
+  
+    const removeItemButton = document.createElement('button');
+    removeItemButton.textContent = 'REMOVE';
+    removeItemButton.className = 'button archive__button archive__button--visible archive__button--remove archive__button--js-remove';
+    removeItemButton.addEventListener('click', removeLastItem);
+    return removeItemButton;
+  }
+  // F2 ///////////////////////////////////////////// ADJUST LAST ITEM OF LIST 
+  
+  const handleArchiveLastItem = () => {
+  
+    const lastItem = archiveList.lastElementChild;
+    const lastItemValueNode = lastItem.querySelector('.archive__value--js');
+    const removeItemButton = createRemoveItemButton();
+  
+    lastItem.classList.add('archive__item--removable');
+    lastItem.insertBefore(removeItemButton, lastItemValueNode);
+  }
+  
   // F2 //////////////////////////////////////////// LOAD MORE << SHOW ARCHIVE 
 
   const loadMoreItems = () => {
@@ -358,6 +367,7 @@ const showArchive = () => {
           loadMoreButton.classList.remove('archive__button--visible');
         }
       }
+      handleArchiveLastItem();
     }
   }
 
@@ -376,6 +386,8 @@ const showArchive = () => {
     const currentIndex = hydrappArray.length - 1;
     archiveList.insertAdjacentHTML('beforeend', hydrappArray[currentIndex].html);
     setIndicators(hydrappArray[currentIndex].ID, hydrappArray[currentIndex].value);
+    
+    handleArchiveLastItem();
     
     for (let i = 2; i < archiveList.children.length; i++) {
       const item = archiveList.children[i];
