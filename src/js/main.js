@@ -324,22 +324,30 @@ const showArchive = () => {
   
     const lastItem = archiveList.lastElementChild;
     const lastItemValueNode = lastItem.querySelector('.archive__value--js');
-    const removeItemButton = createRemoveItemButton();
+
+    if (!removeItemButton) {
+      removeItemButton = createRemoveItemButton();
+    }    
 
     const previousItem = archiveList.lastElementChild.previousElementSibling;
     const previousRemoveButton = previousItem.querySelector('.archive__button--js-remove');
+    const lastRemoveButton = lastItem.querySelector('.archive__button--js-remove');
 
     if (previousRemoveButton) {
+      previousItem.classList.remove('archive__item--removable');
       previousItem.removeChild(previousRemoveButton);
     }
-    lastItem.classList.add('archive__item--removable');
-    lastItem.insertBefore(removeItemButton, lastItemValueNode);
+
+    if (!lastRemoveButton) {
+
+      lastItem.classList.add('archive__item--removable');
+      lastItem.insertBefore(removeItemButton, lastItemValueNode);
+    }
   }
   
   // F2 //////////////////////////////////////////// LOAD MORE << SHOW ARCHIVE 
 
   const loadMoreItems = () => {
-    
     const archiveItems = document.querySelectorAll('.archive__item--js');
     const archiveListHeight = archiveList.clientHeight;
     let viewportHeight = 0;
@@ -348,8 +356,6 @@ const showArchive = () => {
       archiveList.firstElementChild.classList.add('archive__item--visible');
 
     } else if (hydrappArray.length > 1) {
-
-      removeButton.classList.add('archive__button--visible');
 
       for (let i = 1; i < archiveItems.length; i++) {
 
@@ -405,10 +411,6 @@ const showArchive = () => {
         viewportHeight += item.offsetHeight;
       }
     }
-
-    if (!removeButton.classList.contains('archive__button--visible')) {
-      removeButton.classList.add('archive__button--visible');
-    }
     
     if (loadMoreButton.classList.contains('archive__button--visible')) {
       loadMoreButton.classList.remove('archive__button--visible');
@@ -452,7 +454,6 @@ const showArchive = () => {
       }
 
       if (hydrappArray.length === 1) {
-        removeButton.classList.remove('archive__button--visible');
         archiveList.firstElementChild.classList.add('archive__item--visible');
       }
 
@@ -471,7 +472,6 @@ const showArchive = () => {
     }
 
     addNewButton.removeEventListener('click', addNewItem);
-    removeButton.removeEventListener('click', removeLastItem);
     loadMoreButton.removeEventListener('click', loadMoreItems);
     archiveButton.removeEventListener('click', closeArchive);
 
@@ -484,6 +484,7 @@ const showArchive = () => {
   ////////////////////////////////////////////////// VARIABLES << SHOW ARCHIVE 
 
   let editButtons = document.querySelectorAll('.edition__button--js-edit');
+  let removeItemButton = document.querySelector('.archive__button--js-remove');
 
   ///////////////////////////////////////////// FUNCTION CALLS << SHOW ARCHIVE 
 
@@ -496,7 +497,6 @@ const showArchive = () => {
   archiveButton.addEventListener('click', closeArchive);
   loadMoreButton.addEventListener('click', loadMoreItems);
   addNewButton.addEventListener('click', addNewItem);
-  removeButton.addEventListener('click', removeLastItem);
 
   for (let i = 0; i < editButtons.length; i++) {
     const editButton = editButtons[i];
@@ -520,7 +520,6 @@ const archiveList = document.querySelector('.archive__list--js');
 const archiveButton = document.querySelector('.navigation__button--js-archive');
 const loadMoreButton = document.querySelector('.archive__button--js-load-more');
 const addNewButton = document.querySelector('.archive__button--add-new');
-const removeButton = document.querySelector('.archive__button--remove')
 
 const statsButton = document.querySelector('.navigation__button--js-stats');
 
