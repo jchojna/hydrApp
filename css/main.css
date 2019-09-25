@@ -543,21 +543,21 @@ body {
   -webkit-transform: translateY(-100%);
       -ms-transform: translateY(-100%);
           transform: translateY(-100%);
-  -webkit-transition: visibility 0s 0.5s, -webkit-transform 0.5s;
-  transition: visibility 0s 0.5s, -webkit-transform 0.5s;
-  -o-transition: transform 0.5s, visibility 0s 0.5s;
-  transition: transform 0.5s, visibility 0s 0.5s;
-  transition: transform 0.5s, visibility 0s 0.5s, -webkit-transform 0.5s; }
+  -webkit-transition: visibility 0s 0.5s, -webkit-transform 0.5s ease-in;
+  transition: visibility 0s 0.5s, -webkit-transform 0.5s ease-in;
+  -o-transition: transform 0.5s ease-in, visibility 0s 0.5s;
+  transition: transform 0.5s ease-in, visibility 0s 0.5s;
+  transition: transform 0.5s ease-in, visibility 0s 0.5s, -webkit-transform 0.5s ease-in; }
   .archive--visible {
     visibility: visible;
     -webkit-transform: translateY(0);
         -ms-transform: translateY(0);
             transform: translateY(0);
-    -webkit-transition: visibility 0s, -webkit-transform 0.5s;
-    transition: visibility 0s, -webkit-transform 0.5s;
-    -o-transition: transform 0.5s, visibility 0s;
-    transition: transform 0.5s, visibility 0s;
-    transition: transform 0.5s, visibility 0s, -webkit-transform 0.5s; }
+    -webkit-transition: visibility 0s, -webkit-transform 0.5s cubic-bezier(0.18, 1.1, 0.74, 1.16);
+    transition: visibility 0s, -webkit-transform 0.5s cubic-bezier(0.18, 1.1, 0.74, 1.16);
+    -o-transition: transform 0.5s cubic-bezier(0.18, 1.1, 0.74, 1.16), visibility 0s;
+    transition: transform 0.5s cubic-bezier(0.18, 1.1, 0.74, 1.16), visibility 0s;
+    transition: transform 0.5s cubic-bezier(0.18, 1.1, 0.74, 1.16), visibility 0s, -webkit-transform 0.5s cubic-bezier(0.18, 1.1, 0.74, 1.16); }
   .archive--on-top {
     z-index: 2; }
   .archive__overlay {
