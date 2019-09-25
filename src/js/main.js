@@ -366,6 +366,7 @@ const showArchive = () => {
     }
     hydrappArray[currentIndex].itemHeight = archiveList.lastElementChild.offsetHeight;
     hydrappArray[currentIndex].totalHeight = currentIndex;
+    archiveList.scrollTop = hydrappArray[currentIndex].totalHeight;
 
     editButtons = document.querySelectorAll('.edition__button--js-edit');
     const newEditButton = editButtons[currentIndex];
