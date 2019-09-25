@@ -368,6 +368,10 @@ const showArchive = () => {
     if (!removeButton.classList.contains('archive__button--visible')) {
       removeButton.classList.add('archive__button--visible');
     }
+    
+    if (loadMoreButton.classList.contains('archive__button--visible')) {
+      loadMoreButton.classList.remove('archive__button--visible');
+    }
 
     if (currentIndex === 1) {
       archiveList.firstElementChild.classList.remove('archive__item--visible');
