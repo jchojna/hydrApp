@@ -312,8 +312,13 @@ const showArchive = () => {
   const createRemoveItemButton = () => {
   
     const removeItemButton = document.createElement('button');
-    removeItemButton.textContent = 'REMOVE';
     removeItemButton.className = 'button archive__button archive__button--visible archive__button--remove archive__button--js-remove';
+    removeItemButton.innerHTML = `
+    <svg class="archive__svg">
+      <use href="assets/svg/icons.svg#remove-icon"></use>
+    </svg>
+    `
+
     removeItemButton.addEventListener('click', removeLastItem);
 
     return removeItemButton;
