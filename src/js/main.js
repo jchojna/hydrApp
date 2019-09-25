@@ -243,6 +243,7 @@ const showArchive = () => {
       archive.classList.toggle('archive--on-top');
       archiveItem.classList.toggle('archive__item--on-top');
       pageOverlay.classList.toggle('archive__overlay--visible');
+      removeItemButton.classList.remove('remove-button--visible');
       
       for (const editButton of editSection.children) {
         editButton.classList.toggle('edition__button--visible');
@@ -255,6 +256,7 @@ const showArchive = () => {
       toggleItemDisplay();
       archiveValue.textContent = hydrappArray[itemIndex].value;
       setIndicators(hydrappArray[itemIndex].ID, hydrappArray[itemIndex].value);
+      removeItemButton.classList.add('remove-button--visible');
 
       archive.removeEventListener('click', handleEdition);
       archive.removeEventListener('keydown', handleEdition);
