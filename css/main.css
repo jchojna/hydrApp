@@ -392,6 +392,7 @@ body {
     right: 0;
     width: 100%;
     z-index: 1;
+    background-color: #3767AD;
     padding: 1rem; }
   .app__container {
     display: -webkit-box;
@@ -524,7 +525,9 @@ body {
   width: 100%;
   background-color: #3767AD;
   font-weight: 300;
-  display: none;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
   visibility: hidden;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
@@ -536,12 +539,25 @@ body {
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
-  padding-top: 4rem; }
+  padding-top: 4rem;
+  -webkit-transform: translateY(-100%);
+      -ms-transform: translateY(-100%);
+          transform: translateY(-100%);
+  -webkit-transition: visibility 0s 0.5s, -webkit-transform 0.5s;
+  transition: visibility 0s 0.5s, -webkit-transform 0.5s;
+  -o-transition: transform 0.5s, visibility 0s 0.5s;
+  transition: transform 0.5s, visibility 0s 0.5s;
+  transition: transform 0.5s, visibility 0s 0.5s, -webkit-transform 0.5s; }
   .archive--visible {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    visibility: visible; }
+    visibility: visible;
+    -webkit-transform: translateY(0);
+        -ms-transform: translateY(0);
+            transform: translateY(0);
+    -webkit-transition: visibility 0s, -webkit-transform 0.5s;
+    transition: visibility 0s, -webkit-transform 0.5s;
+    -o-transition: transform 0.5s, visibility 0s;
+    transition: transform 0.5s, visibility 0s;
+    transition: transform 0.5s, visibility 0s, -webkit-transform 0.5s; }
   .archive--on-top {
     z-index: 2; }
   .archive__overlay {
@@ -588,21 +604,16 @@ body {
     -o-transition: box-shadow 0.2s;
     transition: box-shadow 0.2s;
     transition: box-shadow 0.2s, -webkit-box-shadow 0.2s; }
+    .archive__item--empty {
+      display: none;
+      text-align: center;
+      font-style: italic; }
+    .archive__item--removable {
+      -ms-grid-columns: 1fr (auto)[4];
+      grid-template-columns: 1fr repeat(4, auto); }
     .archive__item--visible {
       display: -ms-grid;
       display: grid; }
-    .archive__item--empty {
-      text-align: center;
-      font-style: italic;
-      display: -webkit-box;
-      display: -ms-flexbox;
-      display: flex;
-      -webkit-box-pack: center;
-          -ms-flex-pack: center;
-              justify-content: center;
-      -webkit-box-align: center;
-          -ms-flex-align: center;
-              align-items: center; }
     .archive__item:nth-child(even) {
       background-color: rgba(255, 255, 255, 0.05); }
     .archive__item:not(:last-child) {
@@ -659,15 +670,15 @@ body {
     -webkit-transition: background-color 0.2s;
     -o-transition: background-color 0.2s;
     transition: background-color 0.2s;
-    visibility: visible; }
-    .archive__button--hidden {
-      visibility: hidden; }
+    visibility: hidden; }
+    .archive__button--visible {
+      visibility: visible; }
     .archive__button:hover {
       background-color: #2196f3; }
-    .archive__button--add-new:hover {
-      background-color: #59f012; }
-    .archive__button--remove:hover {
-      background-color: #dd4b1e; }
+    .archive__button--add-new {
+      visibility: visible; }
+      .archive__button--add-new:hover {
+        background-color: #59f012; }
 
 .edition {
   position: relative;
@@ -793,5 +804,31 @@ body {
       -webkit-transform: translateX(0);
           -ms-transform: translateX(0);
               transform: translateX(0); }
+
+.remove-button {
+  display: none;
+  fill: #fff;
+  padding: 0;
+  width: 25px;
+  height: 25px;
+  -webkit-transition: fill 0.2s;
+  -o-transition: fill 0.2s;
+  transition: fill 0.2s; }
+  .remove-button--visible {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center; }
+  .remove-button:hover {
+    fill: #dd4b1e; }
+  .remove-button__svg {
+    width: 100%;
+    height: 100%;
+    pointer-events: none; }
 
 /*# sourceMappingURL=main.css.map */
