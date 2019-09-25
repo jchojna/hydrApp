@@ -1,0 +1,279 @@
+/////////////////////////////////////////////////////////////////////// ARCHIVE
+.archive {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: $color-background;
+  font-weight: 300;
+  display: flex;
+  visibility: hidden;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding-top: 4rem;
+  transform: translateY(-100%);
+  transition: transform 0.5s ease-in, visibility 0s 0.5s;
+
+  &--visible {
+    visibility: visible;
+    transform: translateY(0);
+    transition: transform 0.5s cubic-bezier(.18,1.1,.74,1.16), visibility 0s;
+  }
+
+  &--on-top {
+    z-index: 2;
+  }
+
+  &__overlay {
+    background-color: rgba($color: #000, $alpha: 0.3);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    visibility: hidden;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity $time-edit-mode, visibility 0s $time-edit-mode;
+
+    &--visible {
+      opacity: 1;
+      visibility: visible;
+      transition: opacity $time-edit-mode, visibility $time-edit-mode;
+    }
+  }
+
+  &__list {
+    list-style: none;
+    padding: 0 $layout-xs-sm-padding;
+    margin: 0;
+    margin-top: 1rem;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    scroll-behavior: smooth;
+  }
+
+  &__item {
+    display: none;
+    grid-template-columns: 1fr repeat(3, auto);
+    grid-column-gap: $edit-group-col-gap;
+    align-items: center;
+    padding: 0.4rem;
+    border-top: 1px solid transparent;
+    border-bottom: 1px solid transparent;
+    transition: box-shadow $time-edit-mode;
+
+    &--empty {
+      display: none;
+      text-align: center;
+      font-style: italic;
+    }
+
+    &--removable {
+      grid-template-columns: 1fr repeat(4, auto);
+    }
+    
+    &--visible {
+      display: grid;
+    }
+
+    &:nth-child(even) {
+      background-color: rgba($color: #fff, $alpha: 0.05);
+    }
+    
+    &:not(:last-child) {
+      border-bottom: 1px solid $color-grey;
+    }
+  }
+
+  & &__item--on-top { // overriding higher specificity selectors
+    box-shadow: 0 0 30px rgba($color: #000, $alpha: 0.3);
+    background-color: $color-background;
+    position: relative;
+    border-color: #fff;
+    z-index: 1;
+  }
+
+  &__date {
+    margin: 0;
+  }
+  
+  &__value {
+    @include flex-center;
+    margin: 0;
+    font-weight: bold;
+    width: $size-xs-archive-buttons;
+    height: $size-xs-archive-buttons;
+    border: 2px solid #fff;
+    border-radius: 50%;
+
+    @media only screen and (min-width: $media-sm) {
+      width: $size-sm-archive-buttons;
+      height: $size-sm-archive-buttons;
+    }
+  }
+
+  &__buttons {
+    width: 100%;
+    padding: $layout-xs-sm-padding;
+    @include flex-center;
+    justify-content: space-between;
+  }
+
+  &__button {
+    padding: 0.6rem 1rem;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 1rem;
+    transition: background-color $time-hover-effect;
+    visibility: hidden;
+
+    &--visible {
+      visibility: visible;
+    }
+
+    &:hover {
+      background-color: $color-water;
+    }
+
+    &--add-new {
+      visibility: visible;
+
+      &:hover {
+        background-color: $color-high;
+      }
+    }
+  }
+}
+////////////////////////////////////////////////////////////////// EDITION MODE
+.edition {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat($edit-group-cols, 1fr);
+  column-gap: $edit-group-col-gap;
+  overflow: hidden;
+  width: $size-xs-archive-buttons;
+  transition: width $time-edit-buttons;
+
+  &--visible {
+    $icons-width: $edit-group-cols * $size-xs-archive-buttons;
+    $gaps-width: ($edit-group-cols - 1) * $edit-group-col-gap;
+    width: $icons-width + $gaps-width;
+  }
+
+  &__button {
+    @include flex-center;
+    padding: 0;
+    width: $size-xs-archive-buttons;
+    height: $size-xs-archive-buttons;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity $time-edit-buttons, visibility 0s $time-edit-buttons;
+
+    &--visible {
+      visibility: visible;
+      opacity: 1;
+      transition: opacity $time-edit-buttons, visibility 0s;
+    }
+
+    &--edit {
+      position: absolute;
+    }
+  }
+
+  &__svg {
+    width: 100%;
+    height: 100%;
+    fill: #fff;
+    pointer-events: none;
+  }
+
+  @media only screen and (min-width: $media-sm) {
+
+    & {
+      width: $size-sm-archive-buttons;
+
+      &--visible {
+        $icons-width: $edit-group-cols * $size-sm-archive-buttons;
+        $gaps-width: ($edit-group-cols - 1) * $edit-group-col-gap;
+        width: $icons-width + $gaps-width;
+      }
+
+      &__button {
+        width: $size-sm-archive-buttons;
+        height: $size-sm-archive-buttons;
+      }
+    }
+  }
+}
+//////////////////////////////////////////////////////////////////// INDICATORS
+.indicator {
+  @include flex-center;
+  position: relative;
+  width: $size-xs-archive-buttons;
+  height: $size-xs-archive-buttons;
+  overflow: hidden;
+
+  @media only screen and (min-width: $media-sm) {
+    width: $size-sm-archive-buttons;
+    height: $size-sm-archive-buttons;
+  }
+
+  &__svg {
+    @include flex-center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 100%;
+    width: 100%;
+    fill: $color-emoticon-low;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(100%);
+    transition: opacity $time-edit-mode, transform $time-edit-mode;
+    
+
+    @for $i from 1 to 9 {
+      &--emo-#{$i} {
+        $reverse: 9-$i;
+        $red: 27*$reverse;
+        $green: 25*$i;
+        fill: rgb(10+$red, 40+$green, 20);
+      }
+    }
+
+    &--visible {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(0);
+    }
+  }
+}
+
+.remove-button {
+  display: none;
+  fill: #fff;
+  padding: 0;
+  width: $size-xs-archive-buttons;
+  height: $size-xs-archive-buttons;
+  transition: fill $time-hover-effect;
+
+  &--visible {
+    @include flex-center;
+  }
+
+  &:hover {
+    fill: $color-low;
+  }
+
+  &__svg {
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+}

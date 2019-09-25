@@ -1,0 +1,22 @@
+html {
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+body {
+  font-family: "Roboto", Arial, sans-serif;
+  font-weight: medium;
+  color: #fff;
+}
+
+.button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}

@@ -1,0 +1,136 @@
+//////////////////////////////////////////////////////////// MAIN APP INTERFACE
+.app {
+  @include flex-center;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  min-height: 100vh;
+  background-color: $color-background;
+  padding: 1rem;
+
+  &__header {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100%;
+    z-index: 1;
+    background-color: $color-background;
+    padding: $layout-xs-sm-padding;
+  }
+
+  &__container {
+    @include flex-center;
+    width: 60%;
+    height: 100%;
+    max-width: 1200px;
+    margin-top: 4rem;
+    flex-direction: column;
+  }
+
+  &__button {
+    border-radius: 4px;
+    padding: 12px;
+    min-width: 200px;
+    color: #fff;
+    font-size: 0.875rem;
+    transition: box-shadow $time-hover-effect, background-color $time-hover-effect;
+
+    &--add {
+      font-size: 1.125rem;
+      background-color: #fff;
+      color: #000;
+      margin-bottom: 2rem;
+      box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+      
+
+      &:hover {
+        box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.5);
+      }
+    }
+
+    &--remove {
+      margin-bottom: 1rem;
+
+      &:hover {
+        background-color: $color-water;
+      }
+    }
+  }
+}
+//////////////////////////////////////////////////////////////////// NAVIGATION
+.navigation {
+
+  &__list {
+    @include flex-center;
+    justify-content: flex-end;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  &__item {
+  }
+
+  &__button {
+    color: #fff;
+    padding: 0.5rem;
+    border: 2px solid transparent;
+
+    &:hover {
+      border-bottom-color: #fff;
+    }
+  }
+}
+////////////////////////////////////////////////////////////////////////// LOGO
+.logo {
+  flex-grow: 1;
+
+  &__link {
+    @include flex-center;
+    position: relative;
+    max-width: 120px;
+  }
+
+  &__svg {
+    fill: $color-water;
+    width: 100%;
+    height: 100%;
+
+    &--color {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      fill: #fff;
+    }
+  }
+}
+///////////////////////////////////////////////////////////////////////// GLASS
+.glass {
+  @include flex-center;
+  position: relative;
+
+  &__svg {
+    width: 100%;
+    max-height: 400px;
+    margin-bottom: 48px;
+  }
+
+  &__fill {
+    fill: $color-water;
+  }
+
+  &__outline {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 10px;
+  }
+
+  &__counter {
+    margin: 0;
+    text-align: center;
+    font-size: 7rem;
+    position: absolute;
+  }
+}
