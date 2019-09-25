@@ -183,6 +183,18 @@ const updateCounter = (e) => {
     counter.innerHTML = newValue;
   }
 }
+// F1 /////////////////////////////////////////////// ADJUST LAST ITEM OF LIST 
+
+const handleLastItem = (list) => {
+
+  const lastItem = list.lastElementChild;
+  const lastItemValueNode = lastItem.querySelector('.archive__value--js');
+  const removeItemButton = document.createElement('button');
+
+  removeItemButton.textContent = 'REMOVE';
+  lastItem.classList.add('archive__item--removable');
+  lastItem.insertBefore(removeItemButton, lastItemValueNode);
+}
 // F1 //////////////////////////////////////////////////////////// SET ARCHIVE 
 
 const setArchive = () => {
@@ -203,6 +215,7 @@ const setArchive = () => {
       setIndicators(newEntry.ID, newEntry.value);
       hydrappArray.push(newEntry);
     }
+    handleLastItem(archiveList);
   }
   console.log('hydrappArray', hydrappArray);
 }
@@ -398,12 +411,7 @@ const showArchive = () => {
     editButtons = document.querySelectorAll('.edition__button--js-edit');
     const newEditButton = editButtons[currentIndex];
     newEditButton.index = currentIndex;
-    newEditButton.addEventListener('click', handleItemEdit);
-    
-    console.log('viewportHeight', viewportHeight);
-    console.log('item height: ', hydrappArray[currentIndex].itemHeight);
-    console.log('total height: ', hydrappArray[currentIndex].totalHeight);
-    
+    newEditButton.addEventListener('click', handleItemEdit);    
   }
   // F2 ///////////////////////////////////// REMOVE LAST ITEM << SHOW ARCHIVE 
 

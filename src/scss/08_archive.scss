@@ -70,7 +70,14 @@
     &--empty {
       text-align: center;
       font-style: italic;
-      @include flex-center;
+    }
+
+    &--removable {
+      grid-template-columns: 1fr repeat(4, auto);
+    }
+    
+    &--visible {
+      display: grid;
     }
 
     &:nth-child(even) {
