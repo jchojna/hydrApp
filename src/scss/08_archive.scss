@@ -7,16 +7,19 @@
   width: 100%;
   background-color: $color-background;
   font-weight: 300;
-  display: none;
+  display: flex;
   visibility: hidden;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
   padding-top: 4rem;
+  transform: translateY(-100%);
+  transition: transform 0.5s, visibility 0s 0.5s;
 
   &--visible {
-    display: flex;
     visibility: visible;
+    transform: translateY(0);
+    transition: transform 0.5s, visibility 0s;
   }
 
   &--on-top {
