@@ -314,7 +314,10 @@ const showArchive = () => {
     const archiveListHeight = archiveList.clientHeight;
     let viewportHeight = 0;
 
-    if (hydrappArray.length > 1) {
+    if (hydrappArray.length === 1) {
+      archiveList.firstElementChild.classList.add('archive__item--visible');
+
+    } else if (hydrappArray.length > 1) {
 
       removeButton.classList.add('archive__button--visible');
 
