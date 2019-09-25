@@ -402,6 +402,7 @@ const showArchive = () => {
       }
       if (hydrappArray.length === 1) {
         removeButton.classList.remove('archive__button--visible');
+        archiveList.firstElementChild.classList.add('archive__item--visible');
       }
     }
   }
