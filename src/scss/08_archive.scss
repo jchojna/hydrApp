@@ -63,11 +63,8 @@
     border-bottom: 1px solid transparent;
     transition: box-shadow $time-edit-mode;
 
-    &--visible {
-      display: grid;
-    }
-
     &--empty {
+      display: none;
       text-align: center;
       font-style: italic;
     }

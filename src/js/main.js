@@ -315,6 +315,7 @@ const showArchive = () => {
     removeItemButton.textContent = 'REMOVE';
     removeItemButton.className = 'button archive__button archive__button--visible archive__button--remove archive__button--js-remove';
     removeItemButton.addEventListener('click', removeLastItem);
+
     return removeItemButton;
   }
   // F2 ///////////////////////////////////////////// ADJUST LAST ITEM OF LIST 
@@ -324,7 +325,13 @@ const showArchive = () => {
     const lastItem = archiveList.lastElementChild;
     const lastItemValueNode = lastItem.querySelector('.archive__value--js');
     const removeItemButton = createRemoveItemButton();
-  
+
+    const previousItem = archiveList.lastElementChild.previousElementSibling;
+    const previousRemoveButton = previousItem.querySelector('.archive__button--js-remove');
+
+    if (previousRemoveButton) {
+      previousItem.removeChild(previousRemoveButton);
+    }
     lastItem.classList.add('archive__item--removable');
     lastItem.insertBefore(removeItemButton, lastItemValueNode);
   }
@@ -443,10 +450,13 @@ const showArchive = () => {
       if (itemsTotalHeight <= archiveListHeight && itemsTotalHeight > 0) {
         loadMoreButton.classList.remove('archive__button--visible');
       }
+
       if (hydrappArray.length === 1) {
         removeButton.classList.remove('archive__button--visible');
         archiveList.firstElementChild.classList.add('archive__item--visible');
       }
+
+      handleArchiveLastItem();
     }
   }
   // F2 //////////////////////////////////////// CLOSE ARCHIVE << SHOW ARCHIVE 
