@@ -308,6 +308,7 @@ const showArchive = () => {
   } // F2 //////////////////////////////////////////// END OF HANDLE ITEM EDIT 
   
   // F2 //////////////////////////////////////////// LOAD MORE << SHOW ARCHIVE 
+
   const loadMoreItems = () => {
     
     const archiveItems = document.querySelectorAll('.archive__item--js');
@@ -353,6 +354,8 @@ const showArchive = () => {
 
     const newEntryKey = setDateKey(getOffsetedDateOf(lastEntryDate));
     setNewKeyValue(newEntryKey, 0);
+    const archiveListHeight = archiveList.clientHeight;
+    let viewportHeight = 0;
 
     const newEntry = new Entry(newEntryKey);
     hydrappArray.push(newEntry);
@@ -360,11 +363,14 @@ const showArchive = () => {
     const currentIndex = hydrappArray.length - 1;
     archiveList.insertAdjacentHTML('beforeend', hydrappArray[currentIndex].html);
     setIndicators(hydrappArray[currentIndex].ID, hydrappArray[currentIndex].value);
-
+    
     for (let i = 2; i < archiveList.children.length; i++) {
       const item = archiveList.children[i];
       if (!item.classList.contains('archive__item--visible')) {
         item.classList.add('archive__item--visible');
+      }
+      if (viewportHeight <= archiveListHeight - item.offsetHeight) {
+        viewportHeight += item.offsetHeight;
       }
     }
 
@@ -382,6 +388,11 @@ const showArchive = () => {
 
     hydrappArray[currentIndex].itemHeight = archiveList.lastElementChild.offsetHeight;
     hydrappArray[currentIndex].totalHeight = currentIndex;
+
+    if (hydrappArray[currentIndex].totalHeight > archiveList.clientHeight - hydrappArray[currentIndex].itemHeight) {
+      archiveList.style.height = viewportHeight;
+    }
+
     archiveList.scrollTop = hydrappArray[currentIndex].totalHeight;
 
     editButtons = document.querySelectorAll('.edition__button--js-edit');
@@ -389,6 +400,7 @@ const showArchive = () => {
     newEditButton.index = currentIndex;
     newEditButton.addEventListener('click', handleItemEdit);
     
+    console.log('viewportHeight', viewportHeight);
     console.log('item height: ', hydrappArray[currentIndex].itemHeight);
     console.log('total height: ', hydrappArray[currentIndex].totalHeight);
     
