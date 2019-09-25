@@ -312,9 +312,9 @@ const showArchive = () => {
   const createRemoveItemButton = () => {
   
     const removeItemButton = document.createElement('button');
-    removeItemButton.className = 'button archive__button archive__button--visible archive__button--remove archive__button--js-remove';
+    removeItemButton.className = 'button remove-button remove-button--visible remove-button--js';
     removeItemButton.innerHTML = `
-    <svg class="archive__svg">
+    <svg class="remove-button__svg">
       <use href="assets/svg/icons.svg#remove-icon"></use>
     </svg>
     `
@@ -335,8 +335,8 @@ const showArchive = () => {
     }    
 
     const previousItem = archiveList.lastElementChild.previousElementSibling;
-    const previousRemoveButton = previousItem.querySelector('.archive__button--js-remove');
-    const lastRemoveButton = lastItem.querySelector('.archive__button--js-remove');
+    const previousRemoveButton = previousItem.querySelector('.remove-button--js');
+    const lastRemoveButton = lastItem.querySelector('.remove-button--js');
 
     if (previousRemoveButton) {
       previousItem.classList.remove('archive__item--removable');
@@ -489,7 +489,7 @@ const showArchive = () => {
   ////////////////////////////////////////////////// VARIABLES << SHOW ARCHIVE 
 
   let editButtons = document.querySelectorAll('.edition__button--js-edit');
-  let removeItemButton = document.querySelector('.archive__button--js-remove');
+  let removeItemButton = document.querySelector('.remove-button--js');
 
   ///////////////////////////////////////////// FUNCTION CALLS << SHOW ARCHIVE 
 
