@@ -229,6 +229,8 @@ const showArchive = () => {
 
   if (archive.classList.contains('archive--visible')) {
     archive.classList.remove('archive--visible')
+    window.removeEventListener('keydown', addNewItem);
+    window.removeEventListener('keydown', removeLastItem);
 
   } else {
 
@@ -239,6 +241,8 @@ const showArchive = () => {
     }
     loadMoreItems();
     archive.classList.add('archive--visible');
+    window.addEventListener('keydown', addNewItem);
+    window.addEventListener('keydown', removeLastItem);
   }
 }
 // F1 /////////////////////////////////////////////////////// HANDLE ITEM EDIT 
@@ -410,78 +414,88 @@ const loadMoreItems = () => {
 
 // F1 /////////////////////////////////////////// ADD NEW ITEM << SHOW ARCHIVE 
 
-const addNewItem = () => {
+const addNewItem = (e) => {
 
-  const newEntryKey = setDateKey(getOffsetedDateOf(lastEntryDate));
-  setNewKeyValue(newEntryKey, 0);
-  const archiveListHeight = archiveList.clientHeight;
-  let viewportHeight = 0;
+  const self = e.keyCode || e.target;
 
-  const newEntry = new Entry(newEntryKey);
-  hydrappArray.push(newEntry);
-  lastEntryDate.setDate(lastEntryDate.getDate() - 1);
-  const currentIndex = hydrappArray.length - 1;
-  archiveList.insertAdjacentHTML('beforeend', hydrappArray[currentIndex].html);
-  setIndicators(hydrappArray[currentIndex].ID, hydrappArray[currentIndex].value);
+  if (self === 65 || self === addNewButton) {
+
+    const newEntryKey = setDateKey(getOffsetedDateOf(lastEntryDate));
+    setNewKeyValue(newEntryKey, 0);
+    const archiveListHeight = archiveList.clientHeight;
+    let viewportHeight = 0;
   
-  handleArchiveLastItem();
-  
-  for (let i = 2; i < archiveList.children.length; i++) {
-    const item = archiveList.children[i];
-    if (!item.classList.contains('archive__item--visible')) {
-      item.classList.add('archive__item--visible');
+    const newEntry = new Entry(newEntryKey);
+    hydrappArray.push(newEntry);
+    lastEntryDate.setDate(lastEntryDate.getDate() - 1);
+    const currentIndex = hydrappArray.length - 1;
+    archiveList.insertAdjacentHTML('beforeend', hydrappArray[currentIndex].html);
+    setIndicators(hydrappArray[currentIndex].ID, hydrappArray[currentIndex].value);
+    
+    handleArchiveLastItem();
+    
+    for (let i = 2; i < archiveList.children.length; i++) {
+      const item = archiveList.children[i];
+      if (!item.classList.contains('archive__item--visible')) {
+        item.classList.add('archive__item--visible');
+      }
+      if (viewportHeight <= archiveListHeight - item.offsetHeight) {
+        viewportHeight += item.offsetHeight;
+      }
     }
-    if (viewportHeight <= archiveListHeight - item.offsetHeight) {
-      viewportHeight += item.offsetHeight;
+    
+    if (loadMoreButton.classList.contains('archive__button--visible')) {
+      loadMoreButton.classList.remove('archive__button--visible');
     }
-  }
   
-  if (loadMoreButton.classList.contains('archive__button--visible')) {
-    loadMoreButton.classList.remove('archive__button--visible');
+    if (currentIndex === 1) {
+      archiveList.firstElementChild.classList.remove('archive__item--visible');
+    } 
+  
+    hydrappArray[currentIndex].itemHeight = archiveList.lastElementChild.offsetHeight;
+    hydrappArray[currentIndex].totalHeight = currentIndex;
+  
+    if (hydrappArray[currentIndex].totalHeight > archiveList.clientHeight - hydrappArray[currentIndex].itemHeight) {
+      archiveList.style.height = viewportHeight;
+    }
+  
+    archiveList.scrollTop = hydrappArray[currentIndex].totalHeight;
+  
+    editButtons = document.querySelectorAll('.edition__button--js-edit');
+    const newEditButton = editButtons[currentIndex];
+    newEditButton.index = currentIndex;
+    newEditButton.addEventListener('click', handleItemEdit);
   }
-
-  if (currentIndex === 1) {
-    archiveList.firstElementChild.classList.remove('archive__item--visible');
-  } 
-
-  hydrappArray[currentIndex].itemHeight = archiveList.lastElementChild.offsetHeight;
-  hydrappArray[currentIndex].totalHeight = currentIndex;
-
-  if (hydrappArray[currentIndex].totalHeight > archiveList.clientHeight - hydrappArray[currentIndex].itemHeight) {
-    archiveList.style.height = viewportHeight;
-  }
-
-  archiveList.scrollTop = hydrappArray[currentIndex].totalHeight;
-
-  editButtons = document.querySelectorAll('.edition__button--js-edit');
-  const newEditButton = editButtons[currentIndex];
-  newEditButton.index = currentIndex;
-  newEditButton.addEventListener('click', handleItemEdit);    
 }
 // F1 /////////////////////////////////////// REMOVE LAST ITEM << SHOW ARCHIVE 
 
-const removeLastItem = () => {
+const removeLastItem = (e) => {
 
-  const archiveListHeight = archiveList.clientHeight;
+  const self = e.keyCode || e. target;
 
-  if (hydrappArray.length > 1) {
-    
-    const lastItemKey = hydrappArray[hydrappArray.length - 1].key;
-    hydrappArray.pop();
-    localStorage.removeItem(lastItemKey);
-    lastEntryDate.setDate(lastEntryDate.getDate() + 1);
-    archiveList.removeChild(archiveList.lastElementChild);
-    const itemsTotalHeight = hydrappArray[hydrappArray.length - 1].totalHeight;
+  if (self === 68 || self === removeItemButton) {
 
-    if (itemsTotalHeight <= archiveListHeight && itemsTotalHeight > 0) {
-      loadMoreButton.classList.remove('archive__button--visible');
+    const archiveListHeight = archiveList.clientHeight;
+  
+    if (hydrappArray.length > 1) {
+      
+      const lastItemKey = hydrappArray[hydrappArray.length - 1].key;
+      hydrappArray.pop();
+      localStorage.removeItem(lastItemKey);
+      lastEntryDate.setDate(lastEntryDate.getDate() + 1);
+      archiveList.removeChild(archiveList.lastElementChild);
+      const itemsTotalHeight = hydrappArray[hydrappArray.length - 1].totalHeight;
+  
+      if (itemsTotalHeight <= archiveListHeight && itemsTotalHeight > 0) {
+        loadMoreButton.classList.remove('archive__button--visible');
+      }
+  
+      if (hydrappArray.length === 1) {
+        archiveList.firstElementChild.classList.add('archive__item--visible');
+      }
+  
+      handleArchiveLastItem();
     }
-
-    if (hydrappArray.length === 1) {
-      archiveList.firstElementChild.classList.add('archive__item--visible');
-    }
-
-    handleArchiveLastItem();
   }
 }
 
@@ -518,6 +532,7 @@ let archiveItems = document.querySelectorAll('.archive__item--js');
 appContainer.addEventListener('click', updateCounter);
 archiveButton.addEventListener('click', showArchive);
 loadMoreButton.addEventListener('click', loadMoreItems);
+//window.addEventListener('keydown', loadMoreItems);
 addNewButton.addEventListener('click', addNewItem);
 
 for (let i = 0; i < editButtons.length; i++) {
