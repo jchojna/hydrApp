@@ -104,21 +104,26 @@ class Entry {
 
 //////////////////////////////////////////////////////////////////// FUNCTIONS 
 
-// F1 //////////////////////////////////////////////// CREATE HYDRAPP DATE KEY 
+// F0 //////////////////////////////////////////////// CREATE HYDRAPP DATE KEY 
 
 const setDateKey = (obj) => {
+
+  const timeZoneOffset = (new Date()).getTimezoneOffset() * 60000;
+  let dateObj = obj || new Date();
+  dateObj = (new Date(dateObj - timeZoneOffset));
+
   const prefix = 'hydrApp-';
-  const date = obj.toISOString().slice(0,10);
-  return prefix.concat(date);
+  const dateStr = dateObj.toISOString().slice(0,10);
+  return prefix.concat(dateStr);
 }
-// F1 ///////////////////////////////// CREATE KEY VALUE PAIR IN LOCAL STORAGE 
+// F0 ///////////////////////////////// CREATE KEY VALUE PAIR IN LOCAL STORAGE 
 
 const setNewKeyValue = (key, value) => {
   if ( !localStorage.getItem(key) ) {
     localStorage.setItem(key, value);
   };
 }
-// F1 ///////////////////////////// CREATE ARRAY OF HYDRAPP LOCAL STORAGE KEYS 
+// F0 ///////////////////////////// CREATE ARRAY OF HYDRAPP LOCAL STORAGE KEYS 
 
 const getHydrappKeys = () => {
   const regex = /hydrApp-/;
@@ -128,23 +133,44 @@ const getHydrappKeys = () => {
   .sort()
   .reverse();
 }
-// F1 ////////////////////////////////////////////////////// GET OFFSETED DATE 
 
-const getOffsetedDate = () => {
-  const timeZoneOffset = (new Date()).getTimezoneOffset() * 60000;
-  return (new Date(Date.now() - timeZoneOffset));
+// F0 ///////////////////////////////////////////////////////// SET INDICATORS 
+
+const setIndicators = (id, value) => {
+
+  value > 7 ? value = 7 : false;
+
+  const indicators = document.querySelector(`.indicator--js-${id}`).children;
+  const indicator = document.querySelector(`.indicator--js-${id} .indicator__svg--js-${value}`);
+  
+  for (const indicator of indicators) {
+    indicator.classList.contains('indicator__svg--visible')
+    ? indicator.classList.remove('indicator__svg--visible')
+    : false;
+  }
+  indicator.classList.add('indicator__svg--visible');
 }
-// F1 /////////////////////////////////////////////////// GET OFFSETED DATE OF 
+// F0 //////////////////////////////////////////// CREATE 'REMOVE ITEM' BUTTON 
 
-const getOffsetedDateOf = (date) => {
-  const timeZoneOffset = (new Date()).getTimezoneOffset() * 60000;
-  return new Date(date - timeZoneOffset);
+const createRemoveItemButton = () => {
+
+  const removeItemButton = document.createElement('button');
+  removeItemButton.className = 'button remove-button remove-button--visible remove-button--js';
+  removeItemButton.innerHTML = `
+  <svg class="remove-button__svg">
+    <use href="assets/svg/icons.svg#remove-icon"></use>
+  </svg>
+  `
+  removeItemButton.addEventListener('click', removeLastItem);
+
+  return removeItemButton;
 }
-// F1 //////////////////////////////////////////////////////////// SET COUNTER 
+// F1 ////////////////////////////////////////////////////// SET LOCAL STORAGE 
 
-const setLocalStorage = () => {
-  const offsetedDate = getOffsetedDate();                           // ! OFFSETED OR NORMAL ???
-  let dateKey = setDateKey(offsetedDate);
+const handleLocalStorage = () => {
+
+  const date = new Date();
+  const dateKey = setDateKey(date);
   const hydrappKeys = getHydrappKeys();
   const oldestKey = hydrappKeys[hydrappKeys.length - 1];
 
@@ -153,9 +179,9 @@ const setLocalStorage = () => {
   if ( hydrappKeys.length > 2 ) { // autocomplete missing keys in localstorage
     let limit = 0; // for tests to avoid loop error                            // ! TO REFACTOR
 
-    while (setDateKey(offsetedDate) !== oldestKey && limit < 99) {
-      offsetedDate.setDate(offsetedDate.getDate() - 1);
-      const prevDateKey = setDateKey(offsetedDate);
+    while (setDateKey(date) !== oldestKey && limit < 99) {
+      date.setDate(date.getDate() - 1);
+      const prevDateKey = setDateKey(date);
       setNewKeyValue(prevDateKey, 0);
       limit++;
     }
@@ -166,8 +192,7 @@ const setLocalStorage = () => {
 
 const updateCounter = (e) => {
   const self = e.target;
-  const offsetedDate = getOffsetedDate();
-  const key = setDateKey(offsetedDate);
+  const key = setDateKey();
   const value = parseInt(localStorage.getItem(key));
   let newValue;
 
@@ -205,30 +230,15 @@ const setArchive = () => {
     }
   }
 }
-// F1 ///////////////////////////////////////////////////////// SET INDICATORS 
-
-const setIndicators = (id, value) => {
-
-  value > 7 ? value = 7 : false;
-
-  const indicators = document.querySelector(`.indicator--js-${id}`).children;
-  const indicator = document.querySelector(`.indicator--js-${id} .indicator__svg--js-${value}`);
-  
-  for (const indicator of indicators) {
-    indicator.classList.contains('indicator__svg--visible')
-    ? indicator.classList.remove('indicator__svg--visible')
-    : false;
-  }
-  indicator.classList.add('indicator__svg--visible');
-}
 // F1 /////////////////////////////////////////////////////////// SHOW ARCHIVE 
+
 const showArchive = () => {
 
   archiveItems = document.querySelectorAll('.archive__item--js');
 
   if (archive.classList.contains('archive--visible')) {
     archive.classList.remove('archive--visible')
-    //window.removeEventListener('keydown', showNewEntryModal);
+    //window.removeEventListener('keydown', enterNewEntryValue);
     window.removeEventListener('keydown', removeLastItem);
 
   } else {
@@ -240,26 +250,9 @@ const showArchive = () => {
     }
     loadMoreItems();
     archive.classList.add('archive--visible');
-    //window.addEventListener('keydown', showNewEntryModal);
+    //window.addEventListener('keydown', enterNewEntryValue);
     window.addEventListener('keydown', removeLastItem);
   }
-}
-
-  
-// F1 ////////////////////////////////////////////// CREATE REMOVE ITEM BUTTON 
-
-const createRemoveItemButton = () => {
-
-  const removeItemButton = document.createElement('button');
-  removeItemButton.className = 'button remove-button remove-button--visible remove-button--js';
-  removeItemButton.innerHTML = `
-  <svg class="remove-button__svg">
-    <use href="assets/svg/icons.svg#remove-icon"></use>
-  </svg>
-  `
-  removeItemButton.addEventListener('click', removeLastItem);
-
-  return removeItemButton;
 }
 // F1 /////////////////////////////////////////////// ADJUST LAST ITEM OF LIST 
 
@@ -287,7 +280,6 @@ const handleArchiveLastItem = () => {
     lastItem.insertBefore(removeItemButton, lastItemValueNode);
   }
 }
-
 // F1 ////////////////////////////////////////////// LOAD MORE << SHOW ARCHIVE 
 
 let archiveScroll = 0;
@@ -345,7 +337,7 @@ const loadMoreItems = () => {
 }
 // F1 ////////////////////////////////////////// ARCHIVE MODAL << SHOW ARCHIVE 
 
-const showNewEntryModal = () => {
+const enterNewEntryValue = () => {
 
   let value = 0;
   newEntryModal.classList.add('new-entry--visible');
@@ -383,7 +375,6 @@ const showNewEntryModal = () => {
 
   newEntryModal.addEventListener('click', handleValue);
 }
-
 // F1 /////////////////////////////////////////// ADD NEW ITEM << SHOW ARCHIVE 
 
 const addNewItem = (e, value) => {
@@ -485,8 +476,7 @@ const removeLastItem = (e) => {
     }
   }
 }
-
-// F1 /////////////////////////////////////////////////////// HANDLE ITEM EDIT 
+// F2 /////////////////////////////////////////////////////// HANDLE ITEM EDIT 
 
 const handleItemEdit = (e) => {
   const itemIndex = e.target.index;
@@ -498,7 +488,7 @@ const handleItemEdit = (e) => {
   const saveButton = document.querySelectorAll('.edition__button--js-save')[itemIndex];
   const archiveValue = document.querySelectorAll('.archive__value--js')[itemIndex];
 
-  // F2 ////////////////////////////// TOGGLE ITEM DISPLAY << HANDLE ITEM EDIT 
+  // F0 ////////////////////////////// TOGGLE ITEM DISPLAY << HANDLE ITEM EDIT 
 
   const toggleItemDisplay = () => {
     archive.classList.toggle('archive--on-top');
@@ -511,7 +501,7 @@ const handleItemEdit = (e) => {
     }
     editSection.classList.toggle('edition--visible');
   }
-  // F2 /////////////////////////////////// EXIT EDIT MODE << HANDLE ITEM EDIT 
+  // F1 /////////////////////////////////// EXIT EDIT MODE << HANDLE ITEM EDIT 
 
   const exitEditMode = () => {
     toggleItemDisplay();
@@ -522,7 +512,7 @@ const handleItemEdit = (e) => {
     archive.removeEventListener('click', handleEdition);
     archive.removeEventListener('keydown', handleEdition);
   }
-  // F2 /////////////////////////////////// HANDLE EDITION << HANDLE ITEM EDIT 
+  // F1 /////////////////////////////////// HANDLE EDITION << HANDLE ITEM EDIT 
 
   const handleEdition = (e) => {
     const self = e.keyCode || e.target;
@@ -562,13 +552,24 @@ const handleItemEdit = (e) => {
       break;
     }
   }
-  // F2 /////////////////////////////////// FUNCTION CALLS << HANDLE ITEM EDIT 
+  ///////////////////////////////////////// FUNCTION CALLS << HANDLE ITEM EDIT 
 
   toggleItemDisplay();
   archive.addEventListener('click', handleEdition);
   archive.addEventListener('keydown', handleEdition);
 
-} // F1 ////////////////////////////////////////////// END OF HANDLE ITEM EDIT 
+}
+// F2 //////////////////////////////////////////////// END OF HANDLE ITEM EDIT 
+
+/*
+##     ##    ###    ########  ####    ###    ########  ##       ########  ######
+##     ##   ## ##   ##     ##  ##    ## ##   ##     ## ##       ##       ##    ##
+##     ##  ##   ##  ##     ##  ##   ##   ##  ##     ## ##       ##       ##
+##     ## ##     ## ########   ##  ##     ## ########  ##       ######    ######
+ ##   ##  ######### ##   ##    ##  ######### ##     ## ##       ##             ##
+  ## ##   ##     ## ##    ##   ##  ##     ## ##     ## ##       ##       ##    ##
+   ###    ##     ## ##     ## #### ##     ## ########  ######## ########  ######
+*/
 
 //////////////////////////////////////////////////////////////////// VARIABLES 
 // APP
@@ -596,8 +597,8 @@ const statsButton = document.querySelector('.navigation__button--js-stats');
 
 /////////////////////////////////////////////////////////////// FUNCTION CALLS 
 
-setLocalStorage();
-setArchive();
+handleLocalStorage();
+//setArchive();
 
 //////////////////////////////////////////////////////////////////// VARIABLES 
 
@@ -607,12 +608,12 @@ let archiveItems = document.querySelectorAll('.archive__item--js');
 
 ////////////////////////////////////////////////////////////// EVENT LISTENERS 
 
-showArchive();  // ! for tests
+//showArchive();  // ! for tests
 
 appContainer.addEventListener('click', updateCounter);
 archiveButton.addEventListener('click', showArchive);
 loadMoreButton.addEventListener('click', loadMoreItems);
-addNewButton.addEventListener('click', showNewEntryModal);
+addNewButton.addEventListener('click', enterNewEntryValue);
 
 for (let i = 0; i < editButtons.length; i++) {
   const editButton = editButtons[i];
