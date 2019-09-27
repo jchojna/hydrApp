@@ -7,14 +7,14 @@
     <title>hydrApp</title>
     <meta name="description" content="Simple app for tracking the amount of glasses of water consumed per day" />
 
-    <!-- Open Graph -->
+    <!---------------------------------------------------------- OPEN GRAPH -->
     <meta property="og:title" content="hydrApp" />
     <meta property="og:description" content="With this simple app you can track how many glasses of water you drink per day" />
     <meta property="og:url" content="https://jchojna.github.io/hydrApp/" />
     <meta property="og:image" content="https://jchojna.github.io/hydrApp/assets/img/cover.png" />
     <meta property="og:image:width" content="600" />
     <meta property="og:image:height" content="600" />
-
+    <!--------------------------------------------------- END OF OPEN GRAPH -->
     <link rel="manifest" href="manifest.json" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <link
@@ -31,10 +31,12 @@
     <link rel="stylesheet" href="css/main.css" />
   </head>
   <body>
-    <!-- HYDRAPP -->
+    <!------------------------------------------------------------- HYDRAPP -->
     <main class="app">
+      <!-------------------------------------------------------- APP HEADER -->
       <header class="app__header">
         <h1 class="app__heading visuallyhidden">hydrApp</h1>
+        <!-------------------------------------------------- APP NAVIGATION -->
         <nav class="navigation">
           <ul class="navigation__list">
             <li class="logo">
@@ -59,8 +61,12 @@
             </li>
           </ul>
         </nav>
+        <!------------------------------------------- END OF APP NAVIGATION -->
       </header>
+      <!-------------------------------------------------------- APP HEADER -->
+      <!----------------------------------------------------- APP CONTAINER -->
       <div class="app__container app__container--js">
+        <!--------------------------------------------------- GLASS SECTION -->
         <section class="glass">
           <h2 class="glass__heading visuallyhidden">Glass of water</h2>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 252 366" enable-background="new 0 0 252 366" class="glass__svg">
@@ -74,17 +80,23 @@
           </svg>
           <p class="glass__counter glass__counter--js"></p>
         </section>
+        <!-------------------------------------------- END OF GLASS SECTION -->
+        <!--------------------------------------------------- GLASS BUTTONS -->
         <button class="button app__button app__button--add app__button--js-add">
           Add glass
         </button>
         <button class="button app__button app__button--remove app__button--js-remove">
           Remove glass
         </button>
+        <!-------------------------------------------- END OF GLASS BUTTONS -->
       </div>
+      <!---------------------------------------------- END OF APP CONTAINER -->
+      <!--------------------------------------------------- ARCHIVE SECTION -->
       <section class="archive archive--js">
         <h2 class="archive__heading visuallyhidden">History</h2>
         <div class="archive__overlay archive__overlay--js"></div>
         <ul class="archive__list archive__list--js"></ul>
+        <!------------------------------------------------- ARCHIVE BUTTONS -->
         <div class="archive__buttons">
           <button class="button archive__button archive__button--add-new archive__button--js-add-new">
             Add
@@ -93,9 +105,18 @@
             Load more
           </button>
         </div>
+        <!------------------------------------------ END OF ARCHIVE BUTTONS -->
+        <!--------------------------------------- ARCHIVE ADD NEW MODAL BOX -->
+        <div class="add-new add-new--js">
+          <p class="add-new__value add-new__value--js">7</p>
+          <button class="add-new__button add-new__button--decrease add-new__button--js-decrease">LESS</button>
+          <button class="add-new__button add-new__button--increase add-new__button--js-increase">MORE</button>
+        </div>
+        <!-------------------------------- END OF ARCHIVE ADD NEW MODAL BOX -->
       </section>
+      <!-------------------------------------------- END OF ARCHIVE SECTION -->
     </main>
-
+    <!------------------------------------------------------ END OF HYDRAPP -->
     <script src="js/main.js"></script>
   </body>
 </html>
