@@ -28,12 +28,13 @@ for (let i = 0; i < 8; i++) {
 }
 
 class Entry {
-  constructor(key, height) {                                                // ! IS HEIGHT NEEDED ?
+  constructor(key) {
     this.key = key;
     this.getValue = key;
     this.getTitle = key;
     this.getID = key;
-    this.itemHeight = height;
+    this.itemHeight = 0;
+    this.totalHeight = 0;
 
     this.html = `
       <li class="archive__item archive__item--js ${this.key}">
@@ -93,12 +94,12 @@ class Entry {
   set getID(date) {
     this.ID = date.replace('hydrApp-','').split('-').reverse().join('');
   }
-  get totalHeight() {
+  /* get totalHeight() {
     return this._totalHeight;
   }
   set totalHeight(amount) {
     this._totalHeight = amount * this.itemHeight;
-  }
+  } */
 }
 
 //////////////////////////////////////////////////////////////////// FUNCTIONS 
@@ -197,14 +198,12 @@ const setArchive = () => {
     for (let i = 0; i < hydrappKeys.length; i++) {
 
       const newEntry = new Entry(hydrappKeys[i], 0);
-      newEntry.totalHeight = i;
       archiveList.innerHTML += newEntry.html;
       lastEntryDate.setDate(lastEntryDate.getDate() - 1);
       setIndicators(newEntry.ID, newEntry.value);
       hydrappArray.push(newEntry);
     }
   }
-  console.log('hydrappArray', hydrappArray);
 }
 // F1 ///////////////////////////////////////////////////////// SET INDICATORS 
 
@@ -243,8 +242,219 @@ const showArchive = () => {
     archive.classList.add('archive--visible');
     window.addEventListener('keydown', addNewItem);
     window.addEventListener('keydown', removeLastItem);
+
+    console.log(`item ${hydrappArray.length - 1}: `, hydrappArray[hydrappArray.length - 1].itemHeight);
+    console.log(`total ${hydrappArray.length - 1}: `, hydrappArray[hydrappArray.length - 1].totalHeight);
   }
 }
+
+  
+// F1 ////////////////////////////////////////////// CREATE REMOVE ITEM BUTTON 
+
+const createRemoveItemButton = () => {
+
+  const removeItemButton = document.createElement('button');
+  removeItemButton.className = 'button remove-button remove-button--visible remove-button--js';
+  removeItemButton.innerHTML = `
+  <svg class="remove-button__svg">
+    <use href="assets/svg/icons.svg#remove-icon"></use>
+  </svg>
+  `
+  removeItemButton.addEventListener('click', removeLastItem);
+
+  return removeItemButton;
+}
+// F1 /////////////////////////////////////////////// ADJUST LAST ITEM OF LIST 
+
+const handleArchiveLastItem = () => {
+
+  const lastItem = archiveList.lastElementChild;
+  const lastItemValueNode = lastItem.querySelector('.archive__value--js');
+
+  if (!removeItemButton) {
+    removeItemButton = createRemoveItemButton();
+  }    
+
+  const previousItem = archiveList.lastElementChild.previousElementSibling;
+  const previousRemoveButton = previousItem.querySelector('.remove-button--js');
+  const lastRemoveButton = lastItem.querySelector('.remove-button--js');
+
+  if (previousRemoveButton) {
+    previousItem.classList.remove('archive__item--removable');
+    previousItem.removeChild(previousRemoveButton);
+  }
+
+  if (!lastRemoveButton) {
+
+    lastItem.classList.add('archive__item--removable');
+    lastItem.insertBefore(removeItemButton, lastItemValueNode);
+  }
+}
+
+// F1 ////////////////////////////////////////////// LOAD MORE << SHOW ARCHIVE 
+
+let archiveScroll = 0;
+
+const loadMoreItems = () => {
+
+  archiveItems = document.querySelectorAll('.archive__item--js');
+  const archiveListHeight = archiveList.clientHeight;
+  let viewportHeight = 0;
+
+  // show 'no history...' message
+  if (hydrappArray.length === 1) {
+    archiveList.firstElementChild.classList.add('archive__item--visible');
+
+  // show archive entries
+  } else if (hydrappArray.length > 1) {
+
+    // loop
+    for (let i = 1; i < archiveItems.length; i++) {
+
+      const item = archiveItems[i];
+
+      if (!item.classList.contains('archive__item--visible')) {
+
+        item.classList.add('archive__item--visible');
+        viewportHeight += item.offsetHeight;
+        
+        // items exceed screen
+        if (viewportHeight > archiveListHeight - item.offsetHeight) {
+
+          archiveList.style.height = viewportHeight + 'px';
+          loadMoreButton.classList.add('archive__button--visible');
+
+          while (i < archiveItems.length) {
+            hydrappArray[i].itemHeight = item.offsetHeight;
+            hydrappArray[i].totalHeight = hydrappArray.reduce((prev, {itemHeight}) => prev + itemHeight, 0);
+            i++;
+          }
+          break;
+        }
+        
+      } else {
+        loadMoreButton.classList.remove('archive__button--visible');
+      }
+      hydrappArray[i].itemHeight = item.offsetHeight;
+      hydrappArray[i].totalHeight = hydrappArray.reduce((prev, {itemHeight}) => prev + itemHeight, 0);
+    }
+    // end of loop
+
+    archiveList.scrollTop = archiveScroll;
+    archiveScroll += viewportHeight;
+
+    handleArchiveLastItem();
+  }
+
+
+}
+
+// F1 /////////////////////////////////////////// ADD NEW ITEM << SHOW ARCHIVE 
+
+const addNewItem = (e) => {
+
+  const self = e.keyCode || e.target;
+
+  if (self === 65 || self === addNewButton) {
+
+    const newEntryKey = setDateKey(getOffsetedDateOf(lastEntryDate));
+    setNewKeyValue(newEntryKey, 0);
+    const archiveListHeight = archiveList.clientHeight;
+    let viewportHeight = 0;
+  
+    const newEntry = new Entry(newEntryKey);
+    hydrappArray.push(newEntry);
+    lastEntryDate.setDate(lastEntryDate.getDate() - 1);
+    const currentIndex = hydrappArray.length - 1;
+    archiveList.insertAdjacentHTML('beforeend', hydrappArray[currentIndex].html);
+    setIndicators(hydrappArray[currentIndex].ID, hydrappArray[currentIndex].value);
+    
+    handleArchiveLastItem();
+    
+    // loop
+    for (let i = 2; i < archiveList.children.length; i++) {
+      const item = archiveList.children[i];
+      if (!item.classList.contains('archive__item--visible')) {
+        item.classList.add('archive__item--visible');
+        hydrappArray[i-1].totalHeight = hydrappArray.reduce((prev, {itemHeight}) => prev + itemHeight, 0);
+        archiveScroll += item.offsetHeight;
+        console.log('archiveScroll', archiveScroll);
+      }
+
+      if (viewportHeight <= archiveListHeight - item.offsetHeight) {
+        viewportHeight += item.offsetHeight;
+        //archiveScroll += item.offsetHeight;
+      } else {
+        archiveList.style.height = viewportHeight + 'px';
+      }
+    }
+    // end of loop
+    
+    if (loadMoreButton.classList.contains('archive__button--visible')) {
+      loadMoreButton.classList.remove('archive__button--visible');
+    }
+  
+    if (currentIndex === 1) {
+      archiveList.firstElementChild.classList.remove('archive__item--visible');
+    } 
+  
+    hydrappArray[currentIndex].itemHeight = archiveList.lastElementChild.offsetHeight;
+    hydrappArray[currentIndex].totalHeight = hydrappArray.reduce((prev, {itemHeight}) => prev + itemHeight, 0);
+  
+    if (hydrappArray[currentIndex].totalHeight > archiveList.clientHeight - hydrappArray[currentIndex].itemHeight) {
+      archiveList.style.height = viewportHeight;
+    }
+  
+    //archiveList.scrollTop = hydrappArray[currentIndex].totalHeight;
+    archive.scrollTop = archiveScroll;
+  
+    editButtons = document.querySelectorAll('.edition__button--js-edit');
+    const newEditButton = editButtons[currentIndex];
+    newEditButton.index = currentIndex;
+    newEditButton.addEventListener('click', handleItemEdit);
+
+    console.log(`item ${hydrappArray.length - 1}: `, hydrappArray[hydrappArray.length - 1].itemHeight);
+    console.log(`total ${hydrappArray.length - 1}: `, hydrappArray[hydrappArray.length - 1].totalHeight);
+  }
+}
+// F1 /////////////////////////////////////// REMOVE LAST ITEM << SHOW ARCHIVE 
+
+const removeLastItem = (e) => {
+
+  const self = e.keyCode || e. target;
+
+  if (self === 68 || self === removeItemButton) {
+
+    const archiveListHeight = archiveList.clientHeight;
+  
+    if (hydrappArray.length > 1) {
+      
+      const lastItemKey = hydrappArray[hydrappArray.length - 1].key;
+      hydrappArray.pop();
+      localStorage.removeItem(lastItemKey);
+      lastEntryDate.setDate(lastEntryDate.getDate() + 1);
+      archiveList.removeChild(archiveList.lastElementChild);
+      const itemsTotalHeight = hydrappArray[hydrappArray.length - 1].totalHeight;
+      archiveList.scrollTop = 500;
+
+      // hide 'load more' button when not enough items to fill the screen
+      if (itemsTotalHeight <= archiveListHeight && itemsTotalHeight > 0) {
+        loadMoreButton.classList.remove('archive__button--visible');
+      }
+      // show 'no history...' message
+      if (hydrappArray.length === 1) {
+        archiveList.firstElementChild.classList.add('archive__item--visible');
+        hydrappArray[0].itemHeight = 0;
+        hydrappArray[0].totalHeight = 0;
+      }
+      // add remove button on actual last item
+      handleArchiveLastItem();
+    }
+    console.log(`item ${hydrappArray.length - 1}: `, hydrappArray[hydrappArray.length - 1].itemHeight);
+    console.log(`total ${hydrappArray.length - 1}: `, hydrappArray[hydrappArray.length - 1].totalHeight);
+  }
+}
+
 // F1 /////////////////////////////////////////////////////// HANDLE ITEM EDIT 
 
 const handleItemEdit = (e) => {
@@ -328,176 +538,6 @@ const handleItemEdit = (e) => {
   archive.addEventListener('keydown', handleEdition);
 
 } // F1 ////////////////////////////////////////////// END OF HANDLE ITEM EDIT 
-  
-// F1 ////////////////////////////////////////////// CREATE REMOVE ITEM BUTTON 
-
-const createRemoveItemButton = () => {
-
-  const removeItemButton = document.createElement('button');
-  removeItemButton.className = 'button remove-button remove-button--visible remove-button--js';
-  removeItemButton.innerHTML = `
-  <svg class="remove-button__svg">
-    <use href="assets/svg/icons.svg#remove-icon"></use>
-  </svg>
-  `
-
-  removeItemButton.addEventListener('click', removeLastItem);
-
-  return removeItemButton;
-}
-// F1 /////////////////////////////////////////////// ADJUST LAST ITEM OF LIST 
-
-const handleArchiveLastItem = () => {
-
-  const lastItem = archiveList.lastElementChild;
-  const lastItemValueNode = lastItem.querySelector('.archive__value--js');
-
-  if (!removeItemButton) {
-    removeItemButton = createRemoveItemButton();
-  }    
-
-  const previousItem = archiveList.lastElementChild.previousElementSibling;
-  const previousRemoveButton = previousItem.querySelector('.remove-button--js');
-  const lastRemoveButton = lastItem.querySelector('.remove-button--js');
-
-  if (previousRemoveButton) {
-    previousItem.classList.remove('archive__item--removable');
-    previousItem.removeChild(previousRemoveButton);
-  }
-
-  if (!lastRemoveButton) {
-
-    lastItem.classList.add('archive__item--removable');
-    lastItem.insertBefore(removeItemButton, lastItemValueNode);
-  }
-}
-
-// F1 ////////////////////////////////////////////// LOAD MORE << SHOW ARCHIVE 
-
-const loadMoreItems = () => {
-
-  archiveItems = document.querySelectorAll('.archive__item--js');
-  const archiveListHeight = archiveList.clientHeight;
-  let viewportHeight = 0;
-
-  if (hydrappArray.length === 1) {
-    archiveList.firstElementChild.classList.add('archive__item--visible');
-
-  } else if (hydrappArray.length > 1) {
-
-    for (let i = 1; i < archiveItems.length; i++) {
-
-      const item = archiveItems[i];
-
-      if (!item.classList.contains('archive__item--visible')) {
-
-        item.classList.add('archive__item--visible');
-        viewportHeight += item.offsetHeight;
-
-        hydrappArray[i].itemHeight = item.offsetHeight;
-        hydrappArray[i].totalHeight = i;
-        archiveList.scrollTop = hydrappArray[i].totalHeight;
-        
-        if (viewportHeight > archiveListHeight - item.offsetHeight) {
-          
-          archiveList.style.height = viewportHeight + 'px';
-          loadMoreButton.classList.add('archive__button--visible');
-          break;
-        }
-      } else {
-        loadMoreButton.classList.remove('archive__button--visible');
-      }
-    }
-    handleArchiveLastItem();
-  }
-}
-
-// F1 /////////////////////////////////////////// ADD NEW ITEM << SHOW ARCHIVE 
-
-const addNewItem = (e) => {
-
-  const self = e.keyCode || e.target;
-
-  if (self === 65 || self === addNewButton) {
-
-    const newEntryKey = setDateKey(getOffsetedDateOf(lastEntryDate));
-    setNewKeyValue(newEntryKey, 0);
-    const archiveListHeight = archiveList.clientHeight;
-    let viewportHeight = 0;
-  
-    const newEntry = new Entry(newEntryKey);
-    hydrappArray.push(newEntry);
-    lastEntryDate.setDate(lastEntryDate.getDate() - 1);
-    const currentIndex = hydrappArray.length - 1;
-    archiveList.insertAdjacentHTML('beforeend', hydrappArray[currentIndex].html);
-    setIndicators(hydrappArray[currentIndex].ID, hydrappArray[currentIndex].value);
-    
-    handleArchiveLastItem();
-    
-    for (let i = 2; i < archiveList.children.length; i++) {
-      const item = archiveList.children[i];
-      if (!item.classList.contains('archive__item--visible')) {
-        item.classList.add('archive__item--visible');
-      }
-      if (viewportHeight <= archiveListHeight - item.offsetHeight) {
-        viewportHeight += item.offsetHeight;
-      }
-    }
-    
-    if (loadMoreButton.classList.contains('archive__button--visible')) {
-      loadMoreButton.classList.remove('archive__button--visible');
-    }
-  
-    if (currentIndex === 1) {
-      archiveList.firstElementChild.classList.remove('archive__item--visible');
-    } 
-  
-    hydrappArray[currentIndex].itemHeight = archiveList.lastElementChild.offsetHeight;
-    hydrappArray[currentIndex].totalHeight = currentIndex;
-  
-    if (hydrappArray[currentIndex].totalHeight > archiveList.clientHeight - hydrappArray[currentIndex].itemHeight) {
-      archiveList.style.height = viewportHeight;
-    }
-  
-    archiveList.scrollTop = hydrappArray[currentIndex].totalHeight;
-  
-    editButtons = document.querySelectorAll('.edition__button--js-edit');
-    const newEditButton = editButtons[currentIndex];
-    newEditButton.index = currentIndex;
-    newEditButton.addEventListener('click', handleItemEdit);
-  }
-}
-// F1 /////////////////////////////////////// REMOVE LAST ITEM << SHOW ARCHIVE 
-
-const removeLastItem = (e) => {
-
-  const self = e.keyCode || e. target;
-
-  if (self === 68 || self === removeItemButton) {
-
-    const archiveListHeight = archiveList.clientHeight;
-  
-    if (hydrappArray.length > 1) {
-      
-      const lastItemKey = hydrappArray[hydrappArray.length - 1].key;
-      hydrappArray.pop();
-      localStorage.removeItem(lastItemKey);
-      lastEntryDate.setDate(lastEntryDate.getDate() + 1);
-      archiveList.removeChild(archiveList.lastElementChild);
-      const itemsTotalHeight = hydrappArray[hydrappArray.length - 1].totalHeight;
-  
-      if (itemsTotalHeight <= archiveListHeight && itemsTotalHeight > 0) {
-        loadMoreButton.classList.remove('archive__button--visible');
-      }
-  
-      if (hydrappArray.length === 1) {
-        archiveList.firstElementChild.classList.add('archive__item--visible');
-      }
-  
-      handleArchiveLastItem();
-    }
-  }
-}
 
 //////////////////////////////////////////////////////////////////// VARIABLES 
 // APP
