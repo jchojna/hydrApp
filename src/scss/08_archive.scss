@@ -278,8 +278,9 @@
   }
 }
 
-.add-new {
+.new-entry {
   @include flex-center;
+  visibility: hidden;
   grid-auto-rows: 100px;
   background-color: rgba($color: #000, $alpha: 0.5);
   position: fixed;
@@ -287,6 +288,10 @@
   left: 0;
   right: 0;
   bottom: 0;
+
+  &--visible {
+    visibility: visible;
+  }
 
   &__container {
     display: grid;
