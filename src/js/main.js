@@ -116,13 +116,6 @@ const setDateKey = (obj) => {
   const dateStr = dateObj.toISOString().slice(0,10);
   return prefix.concat(dateStr);
 }
-// F0 ///////////////////////////////// CREATE KEY VALUE PAIR IN LOCAL STORAGE 
-
-const setNewKeyValue = (key, value) => {
-  if ( !localStorage.getItem(key) ) {
-    localStorage.setItem(key, value);
-  };
-}
 // F0 ///////////////////////////// CREATE ARRAY OF HYDRAPP LOCAL STORAGE KEYS 
 
 const getHydrappKeys = () => {
@@ -133,7 +126,13 @@ const getHydrappKeys = () => {
   .sort()
   .reverse();
 }
+// F0 ///////////////////////////////// CREATE KEY VALUE PAIR IN LOCAL STORAGE 
 
+const setNewKeyValue = (key, value) => {
+  if ( !localStorage.getItem(key) ) {
+    localStorage.setItem(key, value);
+  };
+}
 // F0 ///////////////////////////////////////////////////////// SET INDICATORS 
 
 const setIndicators = (id, value) => {
@@ -165,49 +164,65 @@ const createRemoveItemButton = () => {
 
   return removeItemButton;
 }
-// F1 ////////////////////////////////////////////////////// SET LOCAL STORAGE 
+// F2 ////////////////////////////////////////////////////// SET LOCAL STORAGE 
 
 const handleLocalStorage = () => {
 
   const date = new Date();
-  const dateKey = setDateKey(date);
-  const hydrappKeys = getHydrappKeys();
-  const oldestKey = hydrappKeys[hydrappKeys.length - 1];
-
+  let dateKey = setDateKey(date);
   setNewKeyValue(dateKey, 0);
+  let hydrappKeys = getHydrappKeys();
+  const oldestKey = hydrappKeys[hydrappKeys.length - 1];
   
-  if ( hydrappKeys.length > 2 ) { // autocomplete missing keys in localstorage
-    let limit = 0; // for tests to avoid loop error                            // ! TO REFACTOR
-
-    while (setDateKey(date) !== oldestKey && limit < 99) {
-      date.setDate(date.getDate() - 1);
-      const prevDateKey = setDateKey(date);
-      setNewKeyValue(prevDateKey, 0);
-      limit++;
-    }
+  // create object for each key
+  const createEntryObject = (date) => {
+    const dateKey = setDateKey(date);
+    const newEntry = new Entry(dateKey);
+    hydrappArray.push(newEntry);
   }
-  counter.innerHTML = localStorage.getItem(dateKey);
+  
+  // first object of array
+  createEntryObject(date);
+
+  // autocomplete the rest of keys if needed
+  while (dateKey !== oldestKey) {
+    dateKey = setDateKey(date.setDate(date.getDate() - 1));
+    setNewKeyValue(dateKey, 0);
+    createEntryObject(date);
+  }
+
+  //counter.innerHTML = localStorage.getItem(dateKey);
+  updateCounter('displayValue');
+  
+  console.log(hydrappArray);
 }
 // F1 ///////////////////////////////////////////////////////// UPDATE COUNTER 
 
 const updateCounter = (e) => {
-  const self = e.target;
+  const self = e.target || e;
   const key = setDateKey();
-  const value = parseInt(localStorage.getItem(key));
-  let newValue;
+  let value = parseInt(localStorage.getItem(key));
 
-  if (self === addGlass || self === removeGlass) {
-    switch (self) {
-      case addGlass:
-        value < counterMaxValue ? newValue = value + 1 : newValue = counterMaxValue;
-        break;
-      case removeGlass:
-        value > 0 ? newValue = value - 1 : newValue = 0;
-        break;
-    }
-    localStorage.setItem(key, newValue);
-    counter.innerHTML = newValue;
+  switch (self) {
+    case 'displayValue':
+      counter.innerHTML = value;
+      break;
+    
+    case addGlass:
+      value < counterMaxValue ? value++ : value = counterMaxValue;
+      localStorage.setItem(key, value);
+      hydrappArray[0].value = value;
+      counter.innerHTML = value;
+      break;
+
+    case removeGlass:
+      value > 0 ? value-- : value = 0;
+      localStorage.setItem(key, value);
+      hydrappArray[0].value = value;
+      counter.innerHTML = value;
+      break;
   }
+  console.log(hydrappArray);
 }
 // F1 //////////////////////////////////////////////////////////// SET ARCHIVE 
 
