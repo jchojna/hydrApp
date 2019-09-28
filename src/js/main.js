@@ -18,6 +18,7 @@ if ('serviceWorker' in navigator) {
 
 const hydrappArray = [];
 const lastEntryDate = new Date();
+const weekDay = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
 let indicators = '';
 for (let i = 0; i < 8; i++) {
@@ -30,17 +31,18 @@ for (let i = 0; i < 8; i++) {
 class Entry {
   constructor(date) {
     this.key = setDateKey(date);
-    this.getValue = setDateKey(date);
-    this.getTitle = setDateKey(date);
-    this.getID = setDateKey(date);
-    this.itemHeight = 0;
-    this.totalHeight = 0;
+    this.value = date;
+    this.date = date;
+    this.id = this.date;
+    this.day = date;
+    //this.itemHeight = 0;
+    //this.totalHeight = 0;
 
     this.html = `
       <li class="archive__item archive__item--js ${this.key}">
-        <p class="archive__date">${this.getTitle}</p>
+        <p class="archive__date">${this.date}</p>
         <p class="archive__value archive__value--js">
-          ${this.getValue}
+          ${this.value}
         </p>
         <div class="edition edition--js">
           <button class="button edition__button edition__button--visible edition__button--edit edition__button--js-edit">
@@ -69,30 +71,37 @@ class Entry {
             </svg>
           </button>
         </div>
-        <div class="indicator indicator--js-${this.getID}">
+        <div class="indicator indicator--js-${this.id}">
           ${indicators}
         </div>
       </li>
     `
   }
 
-  get getValue() {
-    return this.value;
+  get value() {
+    return this._value;
   }
-  set getValue(key) {
-    this.value = localStorage.getItem(key);
+  set value(date) {
+    this._value = localStorage.getItem(setDateKey(date));
   }
-  get getTitle() {
-    return this.title;
+  get date() {
+    return this._date;
   }
-  set getTitle(date) {
-    this.title = date.replace('hydrApp-','').split('-').reverse().join(' ');
+  set date(date) {
+    this._date = getOffsetedDate(date).toISOString().slice(0,10).split('-').reverse().join(' ');
   }
-  get getID() {
-    return this.ID;
+  get id() {
+    return this._id;
   }
-  set getID(date) {
-    this.ID = date.replace('hydrApp-','').split('-').reverse().join('');
+  set id(date) {
+    this._id = date.replace(/\s/g,'');
+  }
+  get day() {
+    return this._day;
+  }
+  set day(date) {
+    const dayIndex = date.getDay();
+    this._day = weekDay[dayIndex];
   }
   /* get totalHeight() {
     return this._totalHeight;
@@ -104,6 +113,12 @@ class Entry {
 
 //////////////////////////////////////////////////////////////////// FUNCTIONS 
 
+// F0 ////////////////////////////////////////////////////// GET OFFSETED DATE 
+
+const getOffsetedDate = (obj) => {
+  const timeZoneOffset = (new Date()).getTimezoneOffset() * 60000;
+  return (new Date(obj - timeZoneOffset));
+}
 // F0 //////////////////////////////////////////////// CREATE HYDRAPP DATE KEY 
 
 const setDateKey = (obj) => {
@@ -178,8 +193,6 @@ const handleData = () => {
   const createEntryObject = (date) => {
     const dateKey = setDateKey(date);
     const newEntry = new Entry(date);
-    newEntry.day = date.getDay();
-    console.log(newEntry.day);
 
 
 
@@ -198,6 +211,8 @@ const handleData = () => {
   updateCounter('displayValue');
   
   console.log(hydrappArray);
+  console.log(hydrappArray[0].day);
+
 }
 // F1 ///////////////////////////////////////////////////////// UPDATE COUNTER 
 
@@ -239,7 +254,7 @@ const setArchiveDOM = () => {
     for (let i = 0; i < hydrappArray.length; i++) {
       archiveList.innerHTML += hydrappArray[i].html;
       lastEntryDate.setDate(lastEntryDate.getDate() - 1);
-      setIndicators(hydrappArray[i].ID, hydrappArray[i].value);
+      setIndicators(hydrappArray[i].id, hydrappArray[i].value);
     }
   }
 }
@@ -409,7 +424,7 @@ const addNewItem = (e, value) => {
     setNewKeyValue(newEntryKey, value);
     hydrappArray[currentIndex].value = value;
     archiveValue.textContent = hydrappArray[currentIndex].value;
-    setIndicators(hydrappArray[currentIndex].ID, hydrappArray[currentIndex].value);
+    setIndicators(hydrappArray[currentIndex].id, hydrappArray[currentIndex].value);
 
     handleArchiveLastItem();
     
@@ -519,7 +534,7 @@ const handleItemEdit = (e) => {
   const exitEditMode = () => {
     toggleItemDisplay();
     archiveValue.textContent = hydrappArray[itemIndex].value;
-    setIndicators(hydrappArray[itemIndex].ID, hydrappArray[itemIndex].value);
+    setIndicators(hydrappArray[itemIndex].id, hydrappArray[itemIndex].value);
     removeItemButton.classList.add('remove-button--visible');
 
     archive.removeEventListener('click', handleEdition);
@@ -538,7 +553,7 @@ const handleItemEdit = (e) => {
         e.preventDefault();
         value > 0 ? value-- : false;
         archiveValue.textContent = value;
-        setIndicators(hydrappArray[itemIndex].ID, value);
+        setIndicators(hydrappArray[itemIndex].id, value);
       break;
       
       case 39:
@@ -546,7 +561,7 @@ const handleItemEdit = (e) => {
         e.preventDefault();
         value < counterMaxValue ? value++ : false;
         archiveValue.textContent = value;
-        setIndicators(hydrappArray[itemIndex].ID, value);
+        setIndicators(hydrappArray[itemIndex].id, value);
       break;
 
       case 27:
