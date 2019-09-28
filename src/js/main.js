@@ -18,7 +18,7 @@ if ('serviceWorker' in navigator) {
 
 const hydrappArray = [];
 const lastEntryDate = new Date();
-const weekDay = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const weekDay = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
 
 let indicators = '';
 for (let i = 0; i < 8; i++) {
@@ -241,20 +241,51 @@ const updateCounter = (e) => {
       break;
   }
 }
-// F1 //////////////////////////////////////////////////////////// SET ARCHIVE 
+// F2 //////////////////////////////////////////////////////////// SET ARCHIVE 
 
 const setArchiveDOM = () => {
+
   const emptyArchive = `
-  <li class="archive__item archive__item--empty">No history yet...</li>
+    <p class="weeks__empty">No history yet...</p>
   `;
-  archiveList.innerHTML += emptyArchive;
+  archiveWeeks.innerHTML += emptyArchive;
 
-  if (hydrappArray.length) {
+  const addWeekTable = (index, week) => {
+    return `
+      <table class="weeks__table">
+        <thead class="weeks__header">
+          <tr>
+            <th class="weeks__heading">Week ${week}</th>
+          </tr>
+        </thead>
+        <tbody class="weeks__body">
+          <tr>
+            <td class="weeks__day">${hydrappArray[index].day}</td>
+          </tr>
+        </tbody>
+      </table>
+    `
+  }
 
-    for (let i = 0; i < hydrappArray.length; i++) {
-      archiveList.innerHTML += hydrappArray[i].html;
-      lastEntryDate.setDate(lastEntryDate.getDate() - 1);
-      setIndicators(hydrappArray[i].id, hydrappArray[i].value);
+  const addWeekDay = (index) => {
+    return `
+      <tr>
+        <td class="weeks__day">${hydrappArray[index].day}</td>
+      </tr>
+    `
+  }
+
+  let weekNumber = 1;
+  for (let i = 0; i < hydrappArray.length; i++) {
+
+    if (hydrappArray[i].day !== 'sunday' && i !== 0) {
+      const weeksBody = archiveWeeks.lastElementChild.lastElementChild;
+      const day = addWeekDay(i);
+      weeksBody.insertAdjacentHTML("afterbegin", day);
+    } else {
+      const week = addWeekTable(i, weekNumber);
+      archiveWeeks.innerHTML += week;
+      weekNumber++;
     }
   }
 }
@@ -286,14 +317,14 @@ const showArchive = () => {
 
 const handleArchiveLastItem = () => {
 
-  const lastItem = archiveList.lastElementChild;
+  const lastItem = archiveWeeks.lastElementChild;
   const lastItemValueNode = lastItem.querySelector('.archive__value--js');
 
   if (!removeItemButton) {
     removeItemButton = createRemoveItemButton();
   }    
 
-  const previousItem = archiveList.lastElementChild.previousElementSibling;
+  const previousItem = archiveWeeks.lastElementChild.previousElementSibling;
   const previousRemoveButton = previousItem.querySelector('.remove-button--js');
   const lastRemoveButton = lastItem.querySelector('.remove-button--js');
 
@@ -315,12 +346,12 @@ let archiveScroll = 0;
 const loadMoreItems = () => {
 
   archiveItems = document.querySelectorAll('.archive__item--js');
-  const archiveListHeight = archiveList.clientHeight;
-  let viewportHeight = 0;
+  //const archiveListHeight = archiveList.clientHeight;
+  //let viewportHeight = 0;
 
   // show 'no history...' message
   if (hydrappArray.length === 1) {
-    archiveList.firstElementChild.classList.add('archive__item--visible');
+    archiveWeeks.firstElementChild.classList.add('archive__item--visible');
 
   // show archive entries
   } else if (hydrappArray.length > 1) {
@@ -330,37 +361,31 @@ const loadMoreItems = () => {
 
       const item = archiveItems[i];
 
-      if (!item.classList.contains('archive__item--visible')) {
 
-        item.classList.add('archive__item--visible');
-        viewportHeight += item.offsetHeight;
-        
-        // items exceed screen
-        if (viewportHeight > archiveListHeight - item.offsetHeight) {
 
-          archiveList.style.height = viewportHeight + 'px';
-          loadMoreButton.classList.add('archive__button--visible');
 
-          while (i < archiveItems.length) {
-            hydrappArray[i].itemHeight = item.offsetHeight;
-            hydrappArray[i].totalHeight = hydrappArray.reduce((prev, {itemHeight}) => prev + itemHeight, 0);
-            i++;
-          }
-          break;
-        }
-        
-      } else {
-        loadMoreButton.classList.remove('archive__button--visible');
-      }
-      hydrappArray[i].itemHeight = item.offsetHeight;
-      hydrappArray[i].totalHeight = hydrappArray.reduce((prev, {itemHeight}) => prev + itemHeight, 0);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      //hydrappArray[i].itemHeight = item.offsetHeight;
+      //hydrappArray[i].totalHeight = hydrappArray.reduce((prev, {itemHeight}) => prev + itemHeight, 0);
     }
     // end of loop
-
-    archiveList.scrollTop = archiveScroll;
-    archiveScroll += viewportHeight;
-
-    handleArchiveLastItem();
+    //handleArchiveLastItem();
   }
 }
 // F1 ////////////////////////////////////////// ARCHIVE MODAL << SHOW ARCHIVE 
@@ -412,14 +437,14 @@ const addNewItem = (e, value) => {
   if (self === 65 || self === newEntrySave) {
     
     const newEntryKey = setDateKey(getOffsetedDateOf(lastEntryDate));
-    const archiveListHeight = archiveList.clientHeight;
+    const archiveListHeight = archiveWeeks.clientHeight;
     let viewportHeight = 0;
     
     const newEntry = new Entry(newEntryKey);
     hydrappArray.push(newEntry);
     lastEntryDate.setDate(lastEntryDate.getDate() - 1);
     const currentIndex = hydrappArray.length - 1;
-    archiveList.insertAdjacentHTML('beforeend', hydrappArray[currentIndex].html);
+    archiveWeeks.insertAdjacentHTML('beforeend', hydrappArray[currentIndex].html);
     const archiveValue = document.querySelectorAll('.archive__value--js')[currentIndex];
     setNewKeyValue(newEntryKey, value);
     hydrappArray[currentIndex].value = value;
@@ -429,8 +454,8 @@ const addNewItem = (e, value) => {
     handleArchiveLastItem();
     
     // loop
-    for (let i = 2; i < archiveList.children.length; i++) {
-      const item = archiveList.children[i];
+    for (let i = 2; i < archiveWeeks.children.length; i++) {
+      const item = archiveWeeks.children[i];
       if (!item.classList.contains('archive__item--visible')) {
         item.classList.add('archive__item--visible');
         hydrappArray[i-1].totalHeight = hydrappArray.reduce((prev, {itemHeight}) => prev + itemHeight, 0);
@@ -441,7 +466,7 @@ const addNewItem = (e, value) => {
         viewportHeight += item.offsetHeight;
         archiveScroll += item.offsetHeight;
       } else {
-        archiveList.style.height = viewportHeight + 'px';
+        archiveWeeks.style.height = viewportHeight + 'px';
       }
     }
     // end of loop
@@ -451,17 +476,17 @@ const addNewItem = (e, value) => {
     }
   
     if (currentIndex === 1) {
-      archiveList.firstElementChild.classList.remove('archive__item--visible');
+      archiveWeeks.firstElementChild.classList.remove('archive__item--visible');
     } 
   
-    hydrappArray[currentIndex].itemHeight = archiveList.lastElementChild.offsetHeight;
+    hydrappArray[currentIndex].itemHeight = archiveWeeks.lastElementChild.offsetHeight;
     hydrappArray[currentIndex].totalHeight = hydrappArray.reduce((prev, {itemHeight}) => prev + itemHeight, 0);
   
-    if (hydrappArray[currentIndex].totalHeight > archiveList.clientHeight - hydrappArray[currentIndex].itemHeight) {
-      archiveList.style.height = viewportHeight;
+    if (hydrappArray[currentIndex].totalHeight > archiveWeeks.clientHeight - hydrappArray[currentIndex].itemHeight) {
+      archiveWeeks.style.height = viewportHeight;
     }
   
-    archiveList.scrollTop = hydrappArray[currentIndex].totalHeight;
+    archiveWeeks.scrollTop = hydrappArray[currentIndex].totalHeight;
   
     editButtons = document.querySelectorAll('.edition__button--js-edit');
     const newEditButton = editButtons[currentIndex];
@@ -477,7 +502,7 @@ const removeLastItem = (e) => {
 
   if (self === 68 || self === removeItemButton) {
 
-    const archiveListHeight = archiveList.clientHeight;
+    const archiveListHeight = archiveWeeks.clientHeight;
   
     if (hydrappArray.length > 1) {
       
@@ -485,9 +510,9 @@ const removeLastItem = (e) => {
       hydrappArray.pop();
       localStorage.removeItem(lastItemKey);
       lastEntryDate.setDate(lastEntryDate.getDate() + 1);
-      archiveList.removeChild(archiveList.lastElementChild);
+      archiveWeeks.removeChild(archiveWeeks.lastElementChild);
       const itemsTotalHeight = hydrappArray[hydrappArray.length - 1].totalHeight;
-      archiveList.scrollTop = itemsTotalHeight - hydrappArray[hydrappArray.length - 1].itemHeight;
+      archiveWeeks.scrollTop = itemsTotalHeight - hydrappArray[hydrappArray.length - 1].itemHeight;
 
       // hide 'load more' button when not enough items to fill the screen
       if (itemsTotalHeight <= archiveListHeight && itemsTotalHeight > 0) {
@@ -495,7 +520,7 @@ const removeLastItem = (e) => {
       }
       // show 'no history...' message
       if (hydrappArray.length === 1) {
-        archiveList.firstElementChild.classList.add('archive__item--visible');
+        archiveWeeks.firstElementChild.classList.add('archive__item--visible');
         hydrappArray[0].itemHeight = 0;
         hydrappArray[0].totalHeight = 0;
       }
@@ -609,7 +634,7 @@ const counterMaxValue = 99;
 // ARCHIVE
 const archive = document.querySelector('.archive--js');
 const pageOverlay = document.querySelector('.archive__overlay--js');
-const archiveList = document.querySelector('.archive__list--js');
+const archiveWeeks = document.querySelector('.weeks--js');
 const archiveButton = document.querySelector('.navigation__button--js-archive');
 const loadMoreButton = document.querySelector('.archive__button--js-load-more');
 const addNewButton = document.querySelector('.archive__button--add-new');
@@ -640,11 +665,11 @@ showArchive();  // ! for tests
 
 appContainer.addEventListener('click', updateCounter);
 archiveButton.addEventListener('click', showArchive);
-loadMoreButton.addEventListener('click', loadMoreItems);
-addNewButton.addEventListener('click', enterNewEntryValue);
+//loadMoreButton.addEventListener('click', loadMoreItems);
+//addNewButton.addEventListener('click', enterNewEntryValue);
 
-for (let i = 0; i < editButtons.length; i++) {
+/* for (let i = 0; i < editButtons.length; i++) {
   const editButton = editButtons[i];
   editButton.index = i;
   editButton.addEventListener('click', handleItemEdit);
-}
+} */
