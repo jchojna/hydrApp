@@ -28,11 +28,11 @@ for (let i = 0; i < 8; i++) {
 }
 
 class Entry {
-  constructor(key) {
-    this.key = key;
-    this.getValue = key;
-    this.getTitle = key;
-    this.getID = key;
+  constructor(date) {
+    this.key = setDateKey(date);
+    this.getValue = setDateKey(date);
+    this.getTitle = setDateKey(date);
+    this.getID = setDateKey(date);
     this.itemHeight = 0;
     this.totalHeight = 0;
 
@@ -166,7 +166,7 @@ const createRemoveItemButton = () => {
 }
 // F2 ////////////////////////////////////////////////////// SET LOCAL STORAGE 
 
-const handleLocalStorage = () => {
+const handleData = () => {
 
   const date = new Date();
   let dateKey = setDateKey(date);
@@ -177,10 +177,14 @@ const handleLocalStorage = () => {
   // create object for each key
   const createEntryObject = (date) => {
     const dateKey = setDateKey(date);
-    const newEntry = new Entry(dateKey);
+    const newEntry = new Entry(date);
+    newEntry.day = date.getDay();
+    console.log(newEntry.day);
+
+
+
     hydrappArray.push(newEntry);
   }
-  
   // first object of array
   createEntryObject(date);
 
@@ -190,7 +194,6 @@ const handleLocalStorage = () => {
     setNewKeyValue(dateKey, 0);
     createEntryObject(date);
   }
-
   //counter.innerHTML = localStorage.getItem(dateKey);
   updateCounter('displayValue');
   
@@ -222,26 +225,21 @@ const updateCounter = (e) => {
       counter.innerHTML = value;
       break;
   }
-  console.log(hydrappArray);
 }
 // F1 //////////////////////////////////////////////////////////// SET ARCHIVE 
 
-const setArchive = () => {
-  const hydrappKeys = getHydrappKeys();
+const setArchiveDOM = () => {
   const emptyArchive = `
   <li class="archive__item archive__item--empty">No history yet...</li>
   `;
   archiveList.innerHTML += emptyArchive;
 
-  if (hydrappKeys.length) {
+  if (hydrappArray.length) {
 
-    for (let i = 0; i < hydrappKeys.length; i++) {
-
-      const newEntry = new Entry(hydrappKeys[i], 0);
-      archiveList.innerHTML += newEntry.html;
+    for (let i = 0; i < hydrappArray.length; i++) {
+      archiveList.innerHTML += hydrappArray[i].html;
       lastEntryDate.setDate(lastEntryDate.getDate() - 1);
-      setIndicators(newEntry.ID, newEntry.value);
-      hydrappArray.push(newEntry);
+      setIndicators(hydrappArray[i].ID, hydrappArray[i].value);
     }
   }
 }
@@ -612,8 +610,8 @@ const statsButton = document.querySelector('.navigation__button--js-stats');
 
 /////////////////////////////////////////////////////////////// FUNCTION CALLS 
 
-handleLocalStorage();
-//setArchive();
+handleData();
+setArchiveDOM();
 
 //////////////////////////////////////////////////////////////////// VARIABLES 
 
@@ -623,7 +621,7 @@ let archiveItems = document.querySelectorAll('.archive__item--js');
 
 ////////////////////////////////////////////////////////////// EVENT LISTENERS 
 
-//showArchive();  // ! for tests
+showArchive();  // ! for tests
 
 appContainer.addEventListener('click', updateCounter);
 archiveButton.addEventListener('click', showArchive);
