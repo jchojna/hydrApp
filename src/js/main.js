@@ -52,8 +52,8 @@ class Entry {
 
     this.weekHtml = `
       <section class="week">
-        <h3 class="week__heading">Week</h3>
-        <ul class="week__list"></ul>
+        <h3 class="week__heading week__heading--js">Week</h3>
+        <ul class="week__list week__list--js"></ul>
       </section>
     `;
 
@@ -62,7 +62,7 @@ class Entry {
       <li class="entry entry--js ${this.key}">
         <header class="entry__header entry__header--js">
           <p class="entry__heading entry__heading--day">${this.day}</p>
-          <p class="entry__heading entry__heading--date">${this.date}</p>
+          <p class="entry__heading entry__heading--date entry__heading--js-date">${this.date}</p>
         </header>
         <span class="entry__value entry__value--js">${this.value}</span>
         <!------------------------------------------ EDITION BUTTONS -->
@@ -128,13 +128,6 @@ class Entry {
   set day(date) {
     const dayIndex = date.getDay();
     this._day = weekDay[dayIndex];
-  }
-  get number() {
-    return this._number;
-  }
-  set number(num) {
-
-    this._number = num;
   }
 
   /* get totalHeight() {
@@ -222,12 +215,10 @@ const handleData = () => {
   setNewKeyValue(dateKey, 0);
   let hydrappKeys = getHydrappKeys();
   const oldestKey = hydrappKeys[hydrappKeys.length - 1];
-  let weekNumber = 1;
   
   // create object for each key
   const createEntryObject = (date) => {
-    const newEntry = new Entry(date, weekNumber);
-    if (newEntry.day === 'sunday') weekNumber++;
+    const newEntry = new Entry(date);
     hydrappArray.push(newEntry);
   }
   // first object of array
@@ -288,6 +279,44 @@ const setArchiveDOM = () => {
     setIndicators(id, value);
   }
   lastWeekList.innerHTML += addButtonHtml;
+}
+// F1 /////////////////////////////////////////////////////// SET WEEK HEADING 
+
+const updateWeekHeading = () => {
+
+  const weekLists = document.querySelectorAll('.week__list--js');
+  const weekHeadings = document.querySelectorAll('.week__heading--js');
+
+  const getDate = (element) => {
+
+    return element
+      .className
+      .split(' ')
+      .filter(a => /hydrApp/.test(a))
+      .toString()
+      .slice(10)
+      .split('-')
+      .reverse()
+      .join('.')
+      ;
+  }
+  
+  for (let i = 0; i < weekLists.length; i++) {
+
+    const entries = weekLists[i].querySelectorAll('.entry--js');
+    const startDate = getDate(entries[entries.length - 1]);
+    const endDate = getDate(entries[0]);
+    const heading = weekHeadings[i];
+    heading.textContent = `${startDate.slice(0,5)} - ${endDate}`;
+  }
+
+
+
+
+
+
+
+
 }
 // F1 /////////////////////////////////////////////////////////// SHOW ARCHIVE 
 
@@ -636,6 +665,7 @@ const statsButton = document.querySelector('.navigation__button--js-stats');
 
 handleData();
 setArchiveDOM();
+updateWeekHeading();
 
 //////////////////////////////////////////////////////////////////// VARIABLES 
 
