@@ -41,7 +41,7 @@ class Entry {
 
     this.weekHtml = `
       <section class="weeks__week">
-        <h3 class="weeks__heading">WEEK ${this.number}</h3>
+        <h3 class="weeks__heading">Week ${this.number}</h3>
         <ul class="weeks__list"></ul>
       </section>
     `;
@@ -49,8 +49,10 @@ class Entry {
     this.dayHtml = `
       <!--------------------------------------------------- DAY ITEM -->
       <li class="weeks__item weeks__item--js ${this.key}">
-        <span class="weeks__date">${this.date}</span>
-        <span class="weeks__day">${this.day}</span>
+        <div class="weeks__title">
+          <p class="weeks__text weeks__text--day">${this.day}</p>
+          <p class="weeks__text weeks__text--date">${this.date}</p>
+        </div>
         <span class="weeks__value weeks__value--js">${this.value}</span>
         <!------------------------------------------ EDITION BUTTONS -->
         <div class="edition edition--js">
@@ -504,7 +506,6 @@ const removeLastItem = (e) => {
 
 const handleItemEdit = (e) => {
   const itemIndex = e.target.index;
-  console.log('itemIndex', itemIndex);
 
   const weekItem = document.querySelectorAll('.weeks__item--js')[itemIndex];
   const editSection = document.querySelectorAll('.edition--js')[itemIndex];
