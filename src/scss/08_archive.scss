@@ -23,11 +23,11 @@
     transition: transform 0.3s ease-out, visibility 0s;
   }
 
-  &--on-top {
+  /* &--on-top {
     z-index: 2;
-  }
+  } */
 
-  &__overlay {
+  /* &__overlay {
     background-color: rgba($color: #000, $alpha: 0.3);
     position: fixed;
     top: 0;
@@ -44,15 +44,15 @@
       visibility: visible;
       transition: opacity $time-edit-mode, visibility $time-edit-mode;
     }
-  }
+  } */
 
-  & &__item--on-top { // overriding higher specificity selectors
+  /* & &__item--on-top { // overriding higher specificity selectors
     box-shadow: 0 0 30px rgba($color: #000, $alpha: 0.3);
     background-color: $color-background;
     position: relative;
     border-color: #fff;
     z-index: 1;
-  }
+  } */
 
   &__buttons {
     width: 100%;
@@ -116,6 +116,8 @@
   }
 
   &__list {
+    display: flex;
+    flex-direction: column-reverse;
     list-style-type: none;
     padding: 0;
     margin: 0;
@@ -127,6 +129,10 @@
     grid-gap: 5px;
     align-items: center;
     padding: 5px;
+
+    &:not(:first-child) {
+      border-bottom: 1px solid $color-grey;
+    }
   }
 
   &__text {
