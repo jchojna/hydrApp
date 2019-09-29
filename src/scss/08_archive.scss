@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////// ARCHIVE
+////////////////////////////////////////////////////////////////////// ARCHIVE 
 .archive {
   position: fixed;
   top: 0;
@@ -23,37 +23,6 @@
     transition: transform 0.3s ease-out, visibility 0s;
   }
 
-  /* &--on-top {
-    z-index: 2;
-  } */
-
-  /* &__overlay {
-    background-color: rgba($color: #000, $alpha: 0.3);
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    visibility: hidden;
-    z-index: 1;
-    opacity: 0;
-    transition: opacity $time-edit-mode, visibility 0s $time-edit-mode;
-
-    &--visible {
-      opacity: 1;
-      visibility: visible;
-      transition: opacity $time-edit-mode, visibility $time-edit-mode;
-    }
-  } */
-
-  /* & &__item--on-top { // overriding higher specificity selectors
-    box-shadow: 0 0 30px rgba($color: #000, $alpha: 0.3);
-    background-color: $color-background;
-    position: relative;
-    border-color: #fff;
-    z-index: 1;
-  } */
-
   &__buttons {
     @include flex-center;
     width: 100%;
@@ -72,12 +41,15 @@
       background-color: $color-water;
     }
   }
-}
-//////////////////////////////////////////////////////////////////////// WEEKS 
 
-.weeks {
+  &__weeks {
+    width: 100%;
+    padding: $layout-xs-sm-padding;
+  }
+}
+///////////////////////////////////////////////////////////////////////// WEEK 
+.week {
   width: 100%;
-  padding: $layout-xs-sm-padding;
 
   &__empty {
     display: none;
@@ -87,10 +59,6 @@
     &--visible {
       display: block;
     }
-  }
-
-  &__week {
-    width: 100%;
   }
 
   &__heading {
@@ -109,34 +77,66 @@
     padding: 0;
     margin: 0;
   }
+}
+//////////////////////////////////////////////////////////////////////// ENTRY 
+.entry {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  grid-gap: 5px;
+  align-items: center;
+  padding: 5px;
+  position: relative;
 
-  &__item {
-    display: grid;
-    grid-template-columns: 1fr auto auto auto;
-    grid-gap: 5px;
-    align-items: center;
-    padding: 5px;
-
-    &:not(:first-child) {
-      border-bottom: 1px solid $color-grey;
-    }
+  &--edit-mode {
+    background-color: $color-dark-background;
   }
 
-  &__text {
+  &--add {
+    padding: 10px;
+  }
+
+  &:not(:first-child) {
+    border-bottom: 1px solid $color-grey;
+  }
+
+  & &--add { // overriding higher specificity selectors
+    @include flex-center;
+    border: none;
+  }
+  
+  &__button {
+    margin: 0;
+    padding: 0.6rem 0.8rem;
+    color: #fff;
+    border-radius: 5px;
+    
+    &:hover {
+      background-color: $color-water;
+    }
+  }
+  
+  &__header {
+  
+    &--edit-mode {
+      color: #aaa;
+    }
+  }
+  
+  &__heading {
     text-align: left;
     margin: 0;
-
+  
     &--day {
       font-weight: bold;
       text-transform: capitalize;
     }
-
+  
     &--date {
       font-size: 0.85rem;
       margin-top: 3px;
     }
   }
-
+  
   &__value {
     @include flex-center;
     margin: 0;
@@ -145,47 +145,14 @@
     height: $size-xs-archive-buttons;
     border: 2px solid #fff;
     border-radius: 50%;
-
+  
     @media only screen and (min-width: $media-sm) {
       width: $size-sm-archive-buttons;
       height: $size-sm-archive-buttons;
     }
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
-////////////////////////////////////////////////////////////////// EDITION MODE
+///////////////////////////////////////////////////////////////// EDITION MODE 
 .edition {
   position: relative;
   display: grid;
@@ -246,7 +213,7 @@
     }
   }
 }
-//////////////////////////////////////////////////////////////////// INDICATORS
+/////////////////////////////////////////////////////////////////// INDICATORS 
 .indicator {
   @include flex-center;
   position: relative;
@@ -291,7 +258,7 @@
     }
   }
 }
-
+//////////////////////////////////////////////////////////////// REMOVE BUTTON 
 .remove-button {
   display: none;
   fill: #fff;
@@ -314,7 +281,7 @@
     pointer-events: none;
   }
 }
-
+//////////////////////////////////////////////////////////////////// NEW ENTRY 
 .new-entry {
   @include flex-center;
   visibility: hidden;
