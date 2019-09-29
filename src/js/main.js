@@ -28,6 +28,14 @@ for (let i = 0; i < 8; i++) {
   </svg>`
 }
 
+const addButtonHtml = `
+<li class="weeks__item weeks__item--js-buttons">
+  <button class="button weeks__button weeks__button--add weeks__button--js-add">
+    Add new day..
+  </button>
+</li>
+`;
+
 class Entry {
   constructor(date, weekNumber) {
     this.key = setDateKey(date);
@@ -276,10 +284,11 @@ const setArchiveDOM = () => {
     ? archiveWeeks.innerHTML += weekHtml
     : false;
 
-    const lastWeekList = archiveWeeks.lastElementChild.lastElementChild;
+    var lastWeekList = archiveWeeks.lastElementChild.lastElementChild;
     lastWeekList.innerHTML += dayHtml;
     setIndicators(id, value);
   }
+  lastWeekList.innerHTML += addButtonHtml;
 }
 // F1 /////////////////////////////////////////////////////////// SHOW ARCHIVE 
 
