@@ -31,7 +31,7 @@ for (let i = 0; i < 8; i++) {
 class Entry {
   constructor(date, weekNumber) {
     this.key = setDateKey(date);
-    this.value = date;
+    this.value = this.key;
     this.date = date;
     this.id = this.date;
     this.day = date;
@@ -51,7 +51,7 @@ class Entry {
       <li class="weeks__item weeks__item--js ${this.key}">
         <span class="weeks__date">${this.date}</span>
         <span class="weeks__day">${this.day}</span>
-        <span class="weeks__value">${this.value}</span>
+        <span class="weeks__value weeks__value--js">${this.value}</span>
         <!------------------------------------------ EDITION BUTTONS -->
         <div class="edition edition--js">
           <button class="button edition__button edition__button--visible edition__button--edit edition__button--js-edit">
@@ -94,8 +94,8 @@ class Entry {
   get value() {
     return this._value;
   }
-  set value(date) {
-    this._value = localStorage.getItem(setDateKey(date));
+  set value(key) {
+    this._value = localStorage.getItem(key);
   }
   get date() {
     return this._date;
@@ -119,9 +119,9 @@ class Entry {
   get number() {
     return this._number;
   }
-  set number(no) {
+  set number(num) {
 
-    this._number = no;
+    this._number = num;
   }
 
   /* get totalHeight() {
@@ -214,7 +214,7 @@ const handleData = () => {
   // create object for each key
   const createEntryObject = (date) => {
     const newEntry = new Entry(date, weekNumber);
-    if (newEntry.day === 'monday') weekNumber++;
+    if (newEntry.day === 'sunday') weekNumber++;
     hydrappArray.push(newEntry);
   }
   // first object of array
@@ -265,11 +265,12 @@ const setArchiveDOM = () => {
   `;
   archiveWeeks.innerHTML += archiveEmpty;
 
-  for (let i = hydrappArray.length - 1; i >= 0; i--) {
+  //for (let i = hydrappArray.length - 1; i >= 0; i--) {
+  for (let i = 0; i < hydrappArray.length; i++) {
 
     const {value, id, day, dayHtml, weekHtml} = hydrappArray[i];
    
-    day === 'monday' || i === hydrappArray.length - 1
+    day === 'sunday' || i === 0
     ? archiveWeeks.innerHTML += weekHtml
     : false;
 
@@ -282,7 +283,7 @@ const setArchiveDOM = () => {
 
 const showArchive = () => {
 
-  archiveItems = document.querySelectorAll('.archive__item--js');
+  weekItems = document.querySelectorAll('.archive__item--js');
 
   if (archive.classList.contains('archive--visible')) {
     archive.classList.remove('archive--visible')
@@ -291,7 +292,7 @@ const showArchive = () => {
 
   } else {
 
-    for (const item of archiveItems) {
+    for (const item of weekItems) {
       item.classList.contains('archive__item--visible')
       ? item.classList.remove('archive__item--visible')
       : false;
@@ -334,21 +335,21 @@ let archiveScroll = 0;
 
 const loadMoreItems = () => {
 
-  archiveItems = document.querySelectorAll('.archive__item--js');
+  weekItems = document.querySelectorAll('.archive__item--js');
   //const archiveListHeight = archiveList.clientHeight;
   //let viewportHeight = 0;
 
   // show 'no history...' message
   if (hydrappArray.length === 1) {
-    archiveWeeks.firstElementChild.classList.add('archive__item--visible');
+    archiveWeeks.firstElementChild.classList.add('weeks__empty--visible');
 
   // show archive entries
   } else if (hydrappArray.length > 1) {
 
     // loop
-    for (let i = 1; i < archiveItems.length; i++) {
+    for (let i = 1; i < weekItems.length; i++) {
 
-      const item = archiveItems[i];
+      const item = weekItems[i];
 
 
       //hydrappArray[i].itemHeight = item.offsetHeight;
@@ -415,10 +416,10 @@ const addNewItem = (e, value) => {
     lastEntryDate.setDate(lastEntryDate.getDate() - 1);
     const currentIndex = hydrappArray.length - 1;
     archiveWeeks.insertAdjacentHTML('beforeend', hydrappArray[currentIndex].html);
-    const archiveValue = document.querySelectorAll('.archive__value--js')[currentIndex];
+    const weekValue = document.querySelectorAll('.archive__value--js')[currentIndex];
     setNewKeyValue(newEntryKey, value);
     hydrappArray[currentIndex].value = value;
-    archiveValue.textContent = hydrappArray[currentIndex].value;
+    weekValue.textContent = hydrappArray[currentIndex].value;
     setIndicators(hydrappArray[currentIndex].id, hydrappArray[currentIndex].value);
 
     handleArchiveLastItem();
@@ -503,21 +504,22 @@ const removeLastItem = (e) => {
 
 const handleItemEdit = (e) => {
   const itemIndex = e.target.index;
-  const archiveItem = document.querySelectorAll('.archive__item--js')[itemIndex];
+  console.log('itemIndex', itemIndex);
+
+  const weekItem = document.querySelectorAll('.weeks__item--js')[itemIndex];
   const editSection = document.querySelectorAll('.edition--js')[itemIndex];
   const decreaseButton = document.querySelectorAll('.edition__button--js-decrease')[itemIndex];
   const increaseButton = document.querySelectorAll('.edition__button--js-increase')[itemIndex];
   const cancelButton = document.querySelectorAll('.edition__button--js-cancel')[itemIndex];
   const saveButton = document.querySelectorAll('.edition__button--js-save')[itemIndex];
-  const archiveValue = document.querySelectorAll('.archive__value--js')[itemIndex];
+  const weekValue = document.querySelectorAll('.weeks__value--js')[itemIndex];
 
   // F0 ////////////////////////////// TOGGLE ITEM DISPLAY << HANDLE ITEM EDIT 
 
   const toggleItemDisplay = () => {
     archive.classList.toggle('archive--on-top');
-    archiveItem.classList.toggle('archive__item--on-top');
+    weekItem.classList.toggle('archive__item--on-top');
     pageOverlay.classList.toggle('archive__overlay--visible');
-    removeItemButton.classList.remove('remove-button--visible');
     
     for (const editButton of editSection.children) {
       editButton.classList.toggle('edition__button--visible');
@@ -527,10 +529,10 @@ const handleItemEdit = (e) => {
   // F1 /////////////////////////////////// EXIT EDIT MODE << HANDLE ITEM EDIT 
 
   const exitEditMode = () => {
+    const {value, id} = hydrappArray[itemIndex];
     toggleItemDisplay();
-    archiveValue.textContent = hydrappArray[itemIndex].value;
-    setIndicators(hydrappArray[itemIndex].id, hydrappArray[itemIndex].value);
-    removeItemButton.classList.add('remove-button--visible');
+    weekValue.textContent = value;
+    setIndicators(id, value);
 
     archive.removeEventListener('click', handleEdition);
     archive.removeEventListener('keydown', handleEdition);
@@ -539,24 +541,26 @@ const handleItemEdit = (e) => {
 
   const handleEdition = (e) => {
     const self = e.keyCode || e.target;
-    let value = parseInt(archiveValue.textContent);
+    let dayValue = parseInt(weekValue.textContent);
+
+    const {key, id} = hydrappArray[itemIndex];
 
     switch (self) {
 
       case 37:
       case decreaseButton:
         e.preventDefault();
-        value > 0 ? value-- : false;
-        archiveValue.textContent = value;
-        setIndicators(hydrappArray[itemIndex].id, value);
+        dayValue > 0 ? dayValue-- : false;
+        weekValue.textContent = dayValue;
+        setIndicators(id, dayValue);
       break;
       
       case 39:
       case increaseButton:
         e.preventDefault();
-        value < counterMaxValue ? value++ : false;
-        archiveValue.textContent = value;
-        setIndicators(hydrappArray[itemIndex].id, value);
+        dayValue < counterMaxValue ? dayValue++ : false;
+        weekValue.textContent = dayValue;
+        setIndicators(id, dayValue);
       break;
 
       case 27:
@@ -569,8 +573,9 @@ const handleItemEdit = (e) => {
       case 13:
       case saveButton:
         e.preventDefault();
-        hydrappArray[itemIndex].value = value;
-        localStorage.setItem(hydrappArray[itemIndex].key, value);
+        localStorage.setItem(key, dayValue);
+        // setter function
+        hydrappArray[itemIndex].value = key;
         exitEditMode();
       break;
     }
@@ -627,7 +632,7 @@ setArchiveDOM();
 
 let editButtons = document.querySelectorAll('.edition__button--js-edit');
 let removeItemButton = document.querySelector('.remove-button--js');
-let archiveItems = document.querySelectorAll('.archive__item--js');
+let weekItems = document.querySelectorAll('.week__item--js');
 
 ////////////////////////////////////////////////////////////// EVENT LISTENERS 
 
@@ -638,8 +643,8 @@ archiveButton.addEventListener('click', showArchive);
 //loadMoreButton.addEventListener('click', loadMoreItems);
 //addNewButton.addEventListener('click', enterNewEntryValue);
 
-/* for (let i = 0; i < editButtons.length; i++) {
+for (let i = 0; i < editButtons.length; i++) {
   const editButton = editButtons[i];
   editButton.index = i;
   editButton.addEventListener('click', handleItemEdit);
-} */
+}
