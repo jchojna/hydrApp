@@ -29,21 +29,30 @@ for (let i = 0; i < 8; i++) {
 }
 
 class Entry {
-  constructor(date) {
+  constructor(date, weekNumber) {
     this.key = setDateKey(date);
     this.value = date;
     this.date = date;
     this.id = this.date;
     this.day = date;
+    this.number = weekNumber;
     //this.itemHeight = 0;
     //this.totalHeight = 0;
 
-    this.html = `
-      <li class="archive__item archive__item--js ${this.key}">
-        <p class="archive__date">${this.date}</p>
-        <p class="archive__value archive__value--js">
-          ${this.value}
-        </p>
+    this.weekHtml = `
+      <section class="weeks__week">
+        <h3 class="weeks__heading">WEEK ${this.number}</h3>
+        <ul class="weeks__list"></ul>
+      </section>
+    `;
+
+    this.dayHtml = `
+      <!--------------------------------------------------- DAY ITEM -->
+      <li class="weeks__item weeks__item--js ${this.key}">
+        <span class="weeks__date">${this.date}</span>
+        <span class="weeks__day">${this.day}</span>
+        <span class="weeks__value">${this.value}</span>
+        <!------------------------------------------ EDITION BUTTONS -->
         <div class="edition edition--js">
           <button class="button edition__button edition__button--visible edition__button--edit edition__button--js-edit">
             <svg class="edition__svg edition__svg--edit">
@@ -71,11 +80,15 @@ class Entry {
             </svg>
           </button>
         </div>
+        <!----------------------------------- END OF EDITION BUTTONS -->
+        <!----------------------------------------------- INDICATORS -->
         <div class="indicator indicator--js-${this.id}">
           ${indicators}
         </div>
+        <!---------------------------------------- END OF INDICATORS -->
       </li>
-    `
+      <!-------------------------------------------- END OF DAY ITEM -->
+    `;
   }
 
   get value() {
@@ -103,6 +116,14 @@ class Entry {
     const dayIndex = date.getDay();
     this._day = weekDay[dayIndex];
   }
+  get number() {
+    return this._number;
+  }
+  set number(no) {
+
+    this._number = no;
+  }
+
   /* get totalHeight() {
     return this._totalHeight;
   }
@@ -188,14 +209,12 @@ const handleData = () => {
   setNewKeyValue(dateKey, 0);
   let hydrappKeys = getHydrappKeys();
   const oldestKey = hydrappKeys[hydrappKeys.length - 1];
+  let weekNumber = 1;
   
   // create object for each key
   const createEntryObject = (date) => {
-    const dateKey = setDateKey(date);
-    const newEntry = new Entry(date);
-
-
-
+    const newEntry = new Entry(date, weekNumber);
+    if (newEntry.day === 'monday') weekNumber++;
     hydrappArray.push(newEntry);
   }
   // first object of array
@@ -209,10 +228,6 @@ const handleData = () => {
   }
   //counter.innerHTML = localStorage.getItem(dateKey);
   updateCounter('displayValue');
-  
-  console.log(hydrappArray);
-  console.log(hydrappArray[0].day);
-
 }
 // F1 ///////////////////////////////////////////////////////// UPDATE COUNTER 
 
@@ -245,48 +260,22 @@ const updateCounter = (e) => {
 
 const setArchiveDOM = () => {
 
-  const emptyArchive = `
+  const archiveEmpty = `
     <p class="weeks__empty">No history yet...</p>
   `;
-  archiveWeeks.innerHTML += emptyArchive;
+  archiveWeeks.innerHTML += archiveEmpty;
 
-  const addWeekTable = (index, week) => {
-    return `
-      <table class="weeks__table">
-        <thead class="weeks__header">
-          <tr>
-            <th class="weeks__heading">Week ${week}</th>
-          </tr>
-        </thead>
-        <tbody class="weeks__body">
-          <tr>
-            <td class="weeks__day">${hydrappArray[index].day}</td>
-          </tr>
-        </tbody>
-      </table>
-    `
-  }
+  for (let i = hydrappArray.length - 1; i >= 0; i--) {
 
-  const addWeekDay = (index) => {
-    return `
-      <tr>
-        <td class="weeks__day">${hydrappArray[index].day}</td>
-      </tr>
-    `
-  }
+    const {value, id, day, dayHtml, weekHtml} = hydrappArray[i];
+   
+    day === 'monday' || i === hydrappArray.length - 1
+    ? archiveWeeks.innerHTML += weekHtml
+    : false;
 
-  let weekNumber = 1;
-  for (let i = 0; i < hydrappArray.length; i++) {
-
-    if (hydrappArray[i].day !== 'sunday' && i !== 0) {
-      const weeksBody = archiveWeeks.lastElementChild.lastElementChild;
-      const day = addWeekDay(i);
-      weeksBody.insertAdjacentHTML("afterbegin", day);
-    } else {
-      const week = addWeekTable(i, weekNumber);
-      archiveWeeks.innerHTML += week;
-      weekNumber++;
-    }
+    const lastWeekList = archiveWeeks.lastElementChild.lastElementChild;
+    lastWeekList.innerHTML += dayHtml;
+    setIndicators(id, value);
   }
 }
 // F1 /////////////////////////////////////////////////////////// SHOW ARCHIVE 
@@ -360,25 +349,6 @@ const loadMoreItems = () => {
     for (let i = 1; i < archiveItems.length; i++) {
 
       const item = archiveItems[i];
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
       //hydrappArray[i].itemHeight = item.offsetHeight;
