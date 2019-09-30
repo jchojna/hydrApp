@@ -191,20 +191,34 @@ const setIndicators = (id, value) => {
   }
   indicator.classList.add('indicator__svg--visible');
 }
+// F0 //////////////////////////////////////////////// CREATE ADD ENTRY BUTTON 
+
+const createAddEntryButton = () => {
+  const addEntryButton = document.createElement('li');
+  addEntryButton.className = 'entry entry--add entry--js-add';
+  addEntryButton.innerHTML = `
+  <button class="button entry__button entry__button--add entry__button--js-add">
+    Add new day..
+  </button>
+  `;
+  addEntryButton.addEventListener('click', enterNewDayValue);
+
+  return addEntryButton;
+}
 // F0 //////////////////////////////////////////// CREATE 'REMOVE ITEM' BUTTON 
 
-const createRemoveItemButton = () => {
+const createRemoveEntryButton = () => {
 
-  const removeItemButton = document.createElement('button');
-  removeItemButton.className = 'button remove-button remove-button--visible remove-button--js';
-  removeItemButton.innerHTML = `
+  const removeEntryButton = document.createElement('button');
+  removeEntryButton.className = 'button button entry__button entry__button--remove entry__button--js-remove';
+  removeEntryButton.innerHTML = `
   <svg class="remove-button__svg">
     <use href="assets/svg/icons.svg#remove-icon"></use>
   </svg>
   `
-  removeItemButton.addEventListener('click', removeLastItem);
+  removeEntryButton.addEventListener('click', removeLastEntry);
 
-  return removeItemButton;
+  return removeEntryButton;
 }
 // F2 ////////////////////////////////////////////////////// SET LOCAL STORAGE 
 
@@ -261,42 +275,28 @@ const updateCounter = (e) => {
       break;
   }
 }
-// F0 //////////////////////////////////////////////// CREATE ADD ENTRY BUTTON 
-
-const createAddEntryButton = () => {
-  const addButtonItem = document.createElement('li');
-  addButtonItem.className = 'entry entry--add entry--js-add';
-  addButtonItem.innerHTML = `
-  <button class="button entry__button entry__button--add entry__button--js-add">
-    Add new day..
-  </button>
-  `;
-  return addButtonItem;
-}
-
 // F2 /////////////////////////////////////////////////////// ADD ARCHIVE NODE 
 
 const addArchiveNode = (index, option) => {
 
   const object = hydrappArray[index];  
   const {value, id, day, dayHtml, weekHtml} = object;
-
-  const addEntryButtonAppended = document.querySelector('.entry--js-add');
-  if (addEntryButtonAppended) {
-    addEntryButtonAppended.parentNode.removeChild(addEntryButtonAppended);
-  };
   
   ((day === 'sunday' || index === 0)) && option !== 'add'
-  ? archiveWeeks.innerHTML += weekHtml
+  ? archiveWeeks.insertAdjacentHTML('beforeend', weekHtml)
   : false;
+
   let lastWeekList = archiveWeeks.lastElementChild.lastElementChild;
-  lastWeekList.innerHTML += dayHtml;
+  lastWeekList.insertAdjacentHTML('beforeend', dayHtml);
   setIndicators(id, value);
   updateWeekHeading();
 
   // when last entry is being added
   if (index === hydrappArray.length - 1) {
-    hydrappArray[index].day === 'monday' ? archiveWeeks.innerHTML += weekHtml : false;
+    hydrappArray[index].day === 'monday'
+    ? archiveWeeks.insertAdjacentHTML("beforeend", weekHtml)
+    : false;
+
     lastWeekList = archiveWeeks.lastElementChild.lastElementChild;
     lastWeekList.appendChild(addEntryButton);
   }
@@ -309,6 +309,7 @@ const setArchiveDOM = () => {
   for (let i = 0; i < hydrappArray.length; i++) {
     addArchiveNode(i);
   }
+  handleArchiveLastItem();
 }
 // F2 /////////////////////////////////////////////////////// SET WEEK HEADING 
 
@@ -356,7 +357,7 @@ const showArchive = () => {
   if (archive.classList.contains('archive--visible')) {
     archive.classList.remove('archive--visible')
     //window.removeEventListener('keydown', enterNewEntryValue);
-    window.removeEventListener('keydown', removeLastItem);
+    //window.removeEventListener('keydown', removeLastItem);
 
   } else {
 
@@ -372,33 +373,7 @@ const showArchive = () => {
     : false;
 
     //window.addEventListener('keydown', enterNewEntryValue);
-    window.addEventListener('keydown', removeLastItem);
-  }
-}
-// F1 /////////////////////////////////////////////// ADJUST LAST ITEM OF LIST 
-
-const handleArchiveLastItem = () => {
-
-  const lastItem = archiveWeeks.lastElementChild;
-  const lastItemValueNode = lastItem.querySelector('.archive__value--js');
-
-  if (!removeItemButton) {
-    removeItemButton = createRemoveItemButton();
-  }    
-
-  const previousItem = archiveWeeks.lastElementChild.previousElementSibling;
-  const previousRemoveButton = previousItem.querySelector('.remove-button--js');
-  const lastRemoveButton = lastItem.querySelector('.remove-button--js');
-
-  if (previousRemoveButton) {
-    previousItem.classList.remove('archive__item--removable');
-    previousItem.removeChild(previousRemoveButton);
-  }
-
-  if (!lastRemoveButton) {
-
-    lastItem.classList.add('archive__item--removable');
-    lastItem.insertBefore(removeItemButton, lastItemValueNode);
+    //window.addEventListener('keydown', removeLastItem);
   }
 }
 // F1 ////////////////////////////////////////// ARCHIVE MODAL << SHOW ARCHIVE 
@@ -461,13 +436,26 @@ const addNewEntry = (e, value) => {
     hydrappArray.push(newEntry);
 
     addArchiveNode(hydrappArray.length - 1, 'add');
+    handleArchiveLastItem();
   }
+}
+// F1 /////////////////////////////////////////////// ADJUST LAST ITEM OF LIST 
+
+const handleArchiveLastItem = () => {
+
+  const entries = document.querySelectorAll('.entry--js');
+  const lastEntry = entries[entries.length - 1];
+  const lastEntryValueNode = lastEntry.querySelector('.entry__value--js');
+
+  lastEntry.insertBefore(removeEntryButton, lastEntryValueNode);
 }
 // F1 /////////////////////////////////////// REMOVE LAST ITEM << SHOW ARCHIVE 
 
-const removeLastItem = (e) => {
+const removeLastEntry = (e) => {
+  
+  console.log('test');
 
-  const self = e.keyCode || e. target;
+  /* const self = e.keyCode || e. target;
 
   if (self === 68 || self === removeItemButton) {
 
@@ -497,6 +485,24 @@ const removeLastItem = (e) => {
       handleArchiveLastItem();
     }
   }
+ */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 // F2 /////////////////////////////////////////////////////// HANDLE ITEM EDIT 
 
@@ -611,6 +617,7 @@ const archiveButton = document.querySelector('.navigation__button--js-archive');
 const prevWeekButton = document.querySelector('.archive__button--js-prev');
 const nextWeekButton = document.querySelector('.archive__button--js-next');
 const addEntryButton = createAddEntryButton();
+const removeEntryButton = createRemoveEntryButton();
 // NEW ENTRY
 const newEntryMode = document.querySelector('.new-entry--js');
 const newEntryValue = document.querySelector('.new-entry__value--js');
@@ -630,7 +637,6 @@ updateWeekHeading();
 //////////////////////////////////////////////////////////////////// VARIABLES 
 
 let editButtons = document.querySelectorAll('.edition__button--js-edit');
-let removeItemButton = document.querySelector('.remove-button--js');
 let entries = document.querySelectorAll('.entry--js');
 const addNewDayButton = document.querySelector('.entry__button--js-add');
 
@@ -640,7 +646,6 @@ showArchive();  // ! for tests
 
 appContainer.addEventListener('click', updateCounter);
 archiveButton.addEventListener('click', showArchive);
-addEntryButton.addEventListener('click', enterNewDayValue);
 //loadMoreButton.addEventListener('click', loadMoreItems);
 
 for (let i = 0; i < editButtons.length; i++) {
