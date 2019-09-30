@@ -6,7 +6,6 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>hydrApp</title>
     <meta name="description" content="Simple app for tracking the amount of glasses of water consumed per day" />
-
     <!---------------------------------------------------------- OPEN GRAPH -->
     <meta property="og:title" content="hydrApp" />
     <meta property="og:description" content="With this simple app you can track how many glasses of water you drink per day" />
@@ -27,7 +26,6 @@
       type="image/png"
       href="assets/icons/icon-192x192.png"
     />
-
     <link rel="stylesheet" href="css/main.css" />
   </head>
   <body>
@@ -95,10 +93,7 @@
       <section class="archive archive--js">
         <h2 class="archive__heading visuallyhidden">History</h2>
         <!--------------------------------------------------- ARCHIVE WEEKS -->
-        <!-- <div class="archive__overlay archive__overlay--js"></div> -->
-        <div class="archive__weeks archive__weeks--js">
-          
-        </div>
+        <div class="archive__weeks archive__weeks--js"></div>
         <!-------------------------------------------- END OF ARCHIVE WEEKS -->
         <!------------------------------------------------- ARCHIVE BUTTONS -->
         <div class="archive__buttons">
@@ -109,35 +104,35 @@
             Next
           </button>
         </div>
-        <!------------------------------------------ END OF ARCHIVE BUTTONS -->
-        <!--------------------------------------- ARCHIVE ADD NEW MODAL BOX -->
-        <section class="new-entry new-entry--js">
-          <h3 class="new-entry__heading visuallyhidden">Add new archive entry</h3>
-          <div class="new-entry__container">
-            <p class="new-entry__value new-entry__value--js">7</p>
-            <button class="button new-entry__button new-entry__button--decrease new-entry__button--js-decrease">
-              <svg class="new-entry__svg new-entry__svg--decrease" viewBox="0 0 512 512">
-                <use href="assets/svg/icons.svg#left-arrow"></use>
-              </svg>
-            </button>
-            <button class="button new-entry__button new-entry__button--increase new-entry__button--js-increase">
-              <svg class="new-entry__svg new-entry__svg--increase" viewBox="0 0 512 512">
-                <use href="assets/svg/icons.svg#right-arrow"></use>
-              </svg>
-            </button>
-            <button class="button new-entry__button new-entry__button--cancel new-entry__button--js-cancel">
-              <svg class="new-entry__svg new-entry__svg--cancel" viewBox="0 0 512 512">
-                <use href="assets/svg/icons.svg#back-arrow"></use>
-              </svg>
-            </button>
-            <button class="button new-entry__button new-entry__button--save new-entry__button--js-save">
-              <svg class="new-entry__svg new-entry__svg--save" viewBox="0 0 512 512">
-                <use href="assets/svg/icons.svg#save-icon"></use>
-              </svg>
-            </button>
-          </div>
-        </section>
         <!-------------------------------- END OF ARCHIVE ADD NEW MODAL BOX -->
+      </section>
+      <!------------------------------------------ END OF ARCHIVE BUTTONS -->
+      <!--------------------------------------- ARCHIVE ADD NEW MODAL BOX -->
+      <section class="new-entry new-entry--js">
+        <h3 class="new-entry__heading visuallyhidden">Add new archive entry</h3>
+        <div class="new-entry__container">
+          <p class="new-entry__value new-entry__value--js"></p>
+          <button class="button new-entry__button new-entry__button--decrease new-entry__button--js-decrease">
+            <svg class="new-entry__svg new-entry__svg--decrease" viewBox="0 0 512 512">
+              <use href="assets/svg/icons.svg#left-arrow"></use>
+            </svg>
+          </button>
+          <button class="button new-entry__button new-entry__button--increase new-entry__button--js-increase">
+            <svg class="new-entry__svg new-entry__svg--increase" viewBox="0 0 512 512">
+              <use href="assets/svg/icons.svg#right-arrow"></use>
+            </svg>
+          </button>
+          <button class="button new-entry__button new-entry__button--cancel new-entry__button--js-cancel">
+            <svg class="new-entry__svg new-entry__svg--cancel" viewBox="0 0 512 512">
+              <use href="assets/svg/icons.svg#back-arrow"></use>
+            </svg>
+          </button>
+          <button class="button new-entry__button new-entry__button--save new-entry__button--js-save">
+            <svg class="new-entry__svg new-entry__svg--save" viewBox="0 0 512 512">
+              <use href="assets/svg/icons.svg#save-icon"></use>
+            </svg>
+          </button>
+        </div>
       </section>
       <!-------------------------------------------- END OF ARCHIVE SECTION -->
     </main>
