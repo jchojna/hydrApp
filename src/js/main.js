@@ -486,6 +486,7 @@ const removeLastEntry = (e) => {
 
       // add remove button on current last item
       handleArchiveLastEntry();
+      updateWeekHeading();
     } else {
 
     }
