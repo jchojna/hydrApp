@@ -286,29 +286,6 @@
     }
   }
 }
-//////////////////////////////////////////////////////////////// REMOVE BUTTON 
-.remove-button {
-  display: none;
-  fill: #fff;
-  padding: 0;
-  width: $size-xs-archive-buttons;
-  height: $size-xs-archive-buttons;
-  transition: fill $time-hover-effect;
-
-  &--visible {
-    @include flex-center;
-  }
-
-  &:hover {
-    fill: $color-low;
-  }
-
-  &__svg {
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-  }
-}
 //////////////////////////////////////////////////////////////////// NEW ENTRY 
 .new-entry {
   @include flex-center;

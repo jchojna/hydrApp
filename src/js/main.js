@@ -47,8 +47,6 @@ class Entry {
     this.date = date;
     this.id = this.date;
     this.day = date;
-    //this.itemHeight = 0;
-    //this.totalHeight = 0;
 
     this.weekHtml = `
       <section class="week">
@@ -309,7 +307,7 @@ const addArchiveNode = (index, option) => {
 
 const setArchiveDOM = () => {
   
-  archiveWeeks.innerHTML += archiveEmpty;
+  //archiveWeeks.innerHTML += archiveEmpty;
   for (let i = 0; i < hydrappArray.length; i++) {
     addArchiveNode(i);
   }
@@ -371,9 +369,9 @@ const showArchive = () => {
     }
     archive.classList.add('archive--visible');
 
-    hydrappArray.length === 1
+    /* hydrappArray.length === 1
     ? archiveWeeks.firstElementChild.classList.add('week__empty--visible')
-    : false;
+    : false; */
 
     //window.addEventListener('keydown', enterNewEntryValue);
     //window.addEventListener('keydown', removeLastItem);
@@ -454,8 +452,10 @@ const handleArchiveLastEntry = () => {
   const lastEntry = entries[entries.length - 1];
   const lastEntryValueNode = lastEntry.querySelector('.entry__value--js');
 
-  lastEntry.insertBefore(removeEntryButton, lastEntryValueNode);
-  lastEntry.classList.add('entry--last');
+  if (entries.length > 1) {
+    lastEntry.insertBefore(removeEntryButton, lastEntryValueNode);
+    lastEntry.classList.add('entry--last');
+  }
 }
 // F1 /////////////////////////////////////// REMOVE LAST ITEM << SHOW ARCHIVE 
 
