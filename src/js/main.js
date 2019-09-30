@@ -281,24 +281,29 @@ const addArchiveNode = (index, option) => {
 
   const {value, id, day, dayHtml, weekHtml} = hydrappArray[index];
   
+  // add new week
   ((day === 'sunday' || index === 0)) && option !== 'add'
   ? archiveWeeks.insertAdjacentHTML('beforeend', weekHtml)
   : false;
-
+  // add next day entry
   let lastWeekList = archiveWeeks.lastElementChild.lastElementChild;
   lastWeekList.insertAdjacentHTML('beforeend', dayHtml);
   setIndicators(id, value);
   updateWeekHeading();
 
-  // when last entry is being added
+  // add 'add entry button at the end
   if (index === hydrappArray.length - 1) {
     day === 'monday'
     ? archiveWeeks.insertAdjacentHTML("beforeend", weekHtml)
     : false;
-
     lastWeekList = archiveWeeks.lastElementChild.lastElementChild;
     lastWeekList.appendChild(addEntryButton);
   }
+
+  // add event listeners to all edit buttons
+  const editButton = document.querySelectorAll('.edition__button--js-edit')[index];
+  editButton.index = index;
+  editButton.addEventListener('click', handleItemEdit);
 }
 // F2 //////////////////////////////////////////////////////////// SET ARCHIVE 
 
@@ -320,8 +325,7 @@ const updateWeekHeading = () => {
   const getDate = (element) => {
 
     if (element) {
-      return element
-        .className
+      return element.className
         .split(' ')
         .filter(a => /hydrApp/.test(a))
         .toString()
@@ -512,6 +516,7 @@ const handleItemEdit = (e) => {
 
   const exitEditMode = () => {
     const {value, id} = hydrappArray[itemIndex];
+    
     toggleItemDisplay();
     entryValue.textContent = value;
     setIndicators(id, value);
@@ -627,8 +632,8 @@ appContainer.addEventListener('click', updateCounter);
 archiveButton.addEventListener('click', showArchive);
 //loadMoreButton.addEventListener('click', loadMoreItems);
 
-for (let i = 0; i < editButtons.length; i++) {
+/* for (let i = 0; i < editButtons.length; i++) {
   const editButton = editButtons[i];
   editButton.index = i;
   editButton.addEventListener('click', handleItemEdit);
-}
+} */
