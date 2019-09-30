@@ -195,11 +195,11 @@ const setIndicators = (id, value) => {
 
 const createAddEntryButton = () => {
   const addEntryButton = document.createElement('li');
-  addEntryButton.className = 'entry entry--add entry--js-add';
+  addEntryButton.className = 'entry entry__add';
   addEntryButton.innerHTML = `
-  <button class="button entry__button entry__button--add entry__button--js-add">
-    Add new day..
-  </button>
+    <button class="button entry__button entry__button--add entry__button--js-add">
+      Add new day..
+    </button>
   `;
   addEntryButton.addEventListener('click', enterNewDayValue);
 
@@ -210,11 +210,11 @@ const createAddEntryButton = () => {
 const createRemoveEntryButton = () => {
 
   const removeEntryButton = document.createElement('button');
-  removeEntryButton.className = 'button entry__button entry__button--remove entry__button--js-remove';
+  removeEntryButton.className = 'button entry__remove';
   removeEntryButton.innerHTML = `
-  <svg class="remove-button__svg">
-    <use href="assets/svg/icons.svg#remove-icon"></use>
-  </svg>
+    <svg class="entry__svg" viewBox="0 0 512 512">
+      <use href="assets/svg/icons.svg#remove-icon"></use>
+    </svg>
   `
   removeEntryButton.addEventListener('click', removeLastEntry);
 
@@ -425,6 +425,9 @@ const addNewEntry = (e, value) => {
 
   //if (self === 65 || self === newEntrySave) {
   if (self === newEntrySave) {
+    let lastEntryIndex = hydrappArray.length - 1;
+    const lastEntry = document.querySelectorAll('.entry--js')[lastEntryIndex];
+    lastEntry.classList.remove('entry--last');
 
     lastEntryDate.setDate(lastEntryDate.getDate() - 1);
     const newEntryKey = setDateKey(lastEntryDate);
@@ -434,7 +437,8 @@ const addNewEntry = (e, value) => {
     newEntry.value = newEntryKey;
     hydrappArray.push(newEntry);
 
-    addArchiveNode(hydrappArray.length - 1, 'add');
+    lastEntryIndex = hydrappArray.length - 1;
+    addArchiveNode(lastEntryIndex, 'add');
     handleArchiveLastEntry();
   }
 }
@@ -447,6 +451,7 @@ const handleArchiveLastEntry = () => {
   const lastEntryValueNode = lastEntry.querySelector('.entry__value--js');
 
   lastEntry.insertBefore(removeEntryButton, lastEntryValueNode);
+  lastEntry.classList.add('entry--last');
 }
 // F1 /////////////////////////////////////// REMOVE LAST ITEM << SHOW ARCHIVE 
 
@@ -498,6 +503,10 @@ const handleItemEdit = (e) => {
     editSection.classList.toggle('edition--visible');
     entry.classList.toggle('entry--edit-mode');
     entryHeader.classList.toggle('entry__header--edit-mode');
+
+    itemIndex === hydrappArray.length - 1
+    ? removeEntryButton.classList.toggle('entry__remove--hidden')
+    : false;
   }
   // F1 /////////////////////////////////// EXIT EDIT MODE << HANDLE ITEM EDIT 
 

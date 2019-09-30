@@ -81,27 +81,22 @@
 //////////////////////////////////////////////////////////////////////// ENTRY 
 .entry {
   display: grid;
-  grid-template-columns: 1fr auto auto auto;
+  grid-template-columns: 1fr repeat(3, auto);
   grid-gap: 5px;
   align-items: center;
   padding: 5px;
   position: relative;
 
+  &--last {
+    grid-template-columns: 1fr repeat(4, auto);
+  }
+
   &--edit-mode {
     background-color: $color-dark-background;
   }
 
-  &--add {
-    padding: 10px;
-  }
-
   &:not(:first-child) {
     border-bottom: 1px solid $color-grey;
-  }
-
-  & &--add { // overriding higher specificity selectors
-    @include flex-center;
-    border: none;
   }
   
   &__button {
@@ -113,6 +108,39 @@
     &:hover {
       background-color: $color-water;
     }
+  }
+  
+  &__add {
+    @include flex-center;
+    padding: 10px;
+  }
+
+  &.entry__add { // overriding higher specificity selectors
+    border: none;
+  }
+
+  &__remove {
+    @include flex-center;
+    width: $size-xs-archive-buttons;
+    height: $size-xs-archive-buttons;
+    overflow: hidden;
+    padding: 0;
+    fill: #fff;
+    transition: width $time-edit-buttons;
+
+    &--hidden {
+      width: 0;
+    }
+    
+    &:hover {
+      fill: $color-low;
+    }
+  }
+
+  &__svg {
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
   }
   
   &__header {
@@ -292,6 +320,7 @@
   left: 0;
   right: 0;
   bottom: 0;
+  z-index: 1;
 
   &--visible {
     visibility: visible;
