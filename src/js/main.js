@@ -33,7 +33,7 @@ const archiveEmpty = `
 `;
 
 const addButtonHtml = `
-<li class="entry entry--add">
+<li class="entry entry--add entry--js-add">
   <button class="button entry__button entry__button--add entry__button--js-add">
     Add new day..
   </button>
@@ -227,6 +227,7 @@ const handleData = () => {
   // autocomplete the rest of keys if needed
   while (dateKey !== oldestKey) {
     dateKey = setDateKey(date.setDate(date.getDate() - 1));
+    lastEntryDate.setDate(lastEntryDate.getDate() - 1);
     setNewKeyValue(dateKey, 0);
     createEntryObject(date);
   }
@@ -260,27 +261,56 @@ const updateCounter = (e) => {
       break;
   }
 }
+// F0 //////////////////////////////////////////////// CREATE ADD ENTRY BUTTON 
+
+const createAddEntryButton = () => {
+  const addButtonItem = document.createElement('li');
+  addButtonItem.className = 'entry entry--add entry--js-add';
+  addButtonItem.innerHTML = `
+  <button class="button entry__button entry__button--add entry__button--js-add">
+    Add new day..
+  </button>
+  `;
+  return addButtonItem;
+}
+
+// F2 /////////////////////////////////////////////////////// ADD ARCHIVE NODE 
+
+const addArchiveNode = (index, option) => {
+
+  const object = hydrappArray[index];  
+  const {value, id, day, dayHtml, weekHtml} = object;
+
+  const addEntryButtonAppended = document.querySelector('.entry--js-add');
+  if (addEntryButtonAppended) {
+    addEntryButtonAppended.parentNode.removeChild(addEntryButtonAppended);
+  };
+  
+  ((day === 'sunday' || index === 0)) && option !== 'add'
+  ? archiveWeeks.innerHTML += weekHtml
+  : false;
+  let lastWeekList = archiveWeeks.lastElementChild.lastElementChild;
+  lastWeekList.innerHTML += dayHtml;
+  setIndicators(id, value);
+  updateWeekHeading();
+
+  // when last entry is being added
+  if (index === hydrappArray.length - 1) {
+    hydrappArray[index].day === 'monday' ? archiveWeeks.innerHTML += weekHtml : false;
+    lastWeekList = archiveWeeks.lastElementChild.lastElementChild;
+    lastWeekList.appendChild(addEntryButton);
+  }
+}
 // F2 //////////////////////////////////////////////////////////// SET ARCHIVE 
 
 const setArchiveDOM = () => {
-
+  
   archiveWeeks.innerHTML += archiveEmpty;
-
   for (let i = 0; i < hydrappArray.length; i++) {
-
-    const {value, id, day, dayHtml, weekHtml} = hydrappArray[i];
-   
-    day === 'sunday' || i === 0
-    ? archiveWeeks.innerHTML += weekHtml
-    : false;
-
-    var lastWeekList = archiveWeeks.lastElementChild.lastElementChild;
-    lastWeekList.innerHTML += dayHtml;
-    setIndicators(id, value);
+    addArchiveNode(i);
   }
-  lastWeekList.innerHTML += addButtonHtml;
 }
-// F1 /////////////////////////////////////////////////////// SET WEEK HEADING 
+// F2 /////////////////////////////////////////////////////// SET WEEK HEADING 
 
 const updateWeekHeading = () => {
 
@@ -336,8 +366,12 @@ const showArchive = () => {
       ? entry.classList.remove('entry--visible')
       : false;
     }
-    loadMoreItems();
     archive.classList.add('archive--visible');
+
+    hydrappArray.length === 1
+    ? archiveWeeks.firstElementChild.classList.add('week__empty--visible')
+    : false;
+
     //window.addEventListener('keydown', enterNewEntryValue);
     window.addEventListener('keydown', removeLastItem);
   }
@@ -368,44 +402,18 @@ const handleArchiveLastItem = () => {
     lastItem.insertBefore(removeItemButton, lastItemValueNode);
   }
 }
-// F1 ////////////////////////////////////////////// LOAD MORE << SHOW ARCHIVE 
-
-let archiveScroll = 0;
-
-const loadMoreItems = () => {
-
-  entries = document.querySelectorAll('.entry--js');
-  //const archiveListHeight = archiveList.clientHeight;
-  //let viewportHeight = 0;
-
-  // show 'no history...' message
-  if (hydrappArray.length === 1) {
-    archiveWeeks.firstElementChild.classList.add('week__empty--visible');
-
-  // show archive entries
-  } else if (hydrappArray.length > 1) {
-
-    // loop
-    for (let i = 1; i < entries.length; i++) {
-
-      const entry = entries[i];
-
-
-      //hydrappArray[i].itemHeight = item.offsetHeight;
-      //hydrappArray[i].totalHeight = hydrappArray.reduce((prev, {itemHeight}) => prev + itemHeight, 0);
-    }
-    // end of loop
-    //handleArchiveLastItem();
-  }
-}
 // F1 ////////////////////////////////////////// ARCHIVE MODAL << SHOW ARCHIVE 
 
 const enterNewDayValue = () => {
 
   let value = 0;
-  newEntryModal.classList.add('new-entry--visible');
+  newEntryMode.classList.add('new-entry--visible');
   newEntryValue.textContent = value;
 
+  const modeOff = () => {
+    newEntryMode.classList.remove('new-entry--visible');
+    newEntryMode.removeEventListener('click', handleValue);
+  }
 
   const handleValue = (e) => {
 
@@ -424,84 +432,36 @@ const enterNewDayValue = () => {
         break;
 
       case newEntryCancel:
-        newEntryModal.classList.remove('new-entry--visible');
-        newEntryModal.removeEventListener('click', handleValue);
+        modeOff();
         break;
 
       case newEntrySave:
-        addNewItem(e, value);
-        newEntryModal.classList.remove('new-entry--visible');
-        newEntryModal.removeEventListener('click', handleValue);
+        addNewEntry(e, value);
+        modeOff();
         break;
     }
   }
-
-  newEntryModal.addEventListener('click', handleValue);
+  newEntryMode.addEventListener('click', handleValue);
 }
 // F1 /////////////////////////////////////////// ADD NEW ITEM << SHOW ARCHIVE 
 
-const addNewItem = (e, value) => {
+const addNewEntry = (e, value) => {
 
-  const self = /* e.keyCode || */ e.target;
+  //const self = e.keyCode || e.target;
+  const self = e.target;
 
-  if (self === 65 || self === newEntrySave) {
-    
-    const newEntryKey = setDateKey(getOffsetedDateOf(lastEntryDate));
-    const archiveListHeight = archiveWeeks.clientHeight;
-    let viewportHeight = 0;
-    
-    const newEntry = new Entry(newEntryKey);
-    hydrappArray.push(newEntry);
+  //if (self === 65 || self === newEntrySave) {
+  if (self === newEntrySave) {
+
     lastEntryDate.setDate(lastEntryDate.getDate() - 1);
-    const currentIndex = hydrappArray.length - 1;
-    archiveWeeks.insertAdjacentHTML('beforeend', hydrappArray[currentIndex].html);
-    const weekValue = document.querySelectorAll('.archive__value--js')[currentIndex];
+    const newEntryKey = setDateKey(lastEntryDate);
+    
     setNewKeyValue(newEntryKey, value);
-    hydrappArray[currentIndex].value = value;
-    weekValue.textContent = hydrappArray[currentIndex].value;
-    setIndicators(hydrappArray[currentIndex].id, hydrappArray[currentIndex].value);
+    const newEntry = new Entry(lastEntryDate);
+    newEntry.value = newEntryKey;
+    hydrappArray.push(newEntry);
 
-    handleArchiveLastItem();
-    
-    // loop
-    for (let i = 2; i < archiveWeeks.children.length; i++) {
-      const item = archiveWeeks.children[i];
-      if (!item.classList.contains('archive__item--visible')) {
-        item.classList.add('archive__item--visible');
-        hydrappArray[i-1].totalHeight = hydrappArray.reduce((prev, {itemHeight}) => prev + itemHeight, 0);
-        archiveScroll += item.offsetHeight;
-      }
-
-      if (viewportHeight <= archiveListHeight - item.offsetHeight) {
-        viewportHeight += item.offsetHeight;
-        archiveScroll += item.offsetHeight;
-      } else {
-        archiveWeeks.style.height = viewportHeight + 'px';
-      }
-    }
-    // end of loop
-    
-    if (loadMoreButton.classList.contains('archive__button--visible')) {
-      loadMoreButton.classList.remove('archive__button--visible');
-    }
-  
-    if (currentIndex === 1) {
-      archiveWeeks.firstElementChild.classList.remove('archive__item--visible');
-    } 
-  
-    hydrappArray[currentIndex].itemHeight = archiveWeeks.lastElementChild.offsetHeight;
-    hydrappArray[currentIndex].totalHeight = hydrappArray.reduce((prev, {itemHeight}) => prev + itemHeight, 0);
-  
-    if (hydrappArray[currentIndex].totalHeight > archiveWeeks.clientHeight - hydrappArray[currentIndex].itemHeight) {
-      archiveWeeks.style.height = viewportHeight;
-    }
-  
-    archiveWeeks.scrollTop = hydrappArray[currentIndex].totalHeight;
-  
-    editButtons = document.querySelectorAll('.edition__button--js-edit');
-    const newEditButton = editButtons[currentIndex];
-    newEditButton.index = currentIndex;
-    newEditButton.addEventListener('click', handleItemEdit);
+    addArchiveNode(hydrappArray.length - 1, 'add');
   }
 }
 // F1 /////////////////////////////////////// REMOVE LAST ITEM << SHOW ARCHIVE 
@@ -651,8 +611,9 @@ const archiveWeeks = document.querySelector('.archive__weeks--js');
 const archiveButton = document.querySelector('.navigation__button--js-archive');
 const prevWeekButton = document.querySelector('.archive__button--js-prev');
 const nextWeekButton = document.querySelector('.archive__button--js-next');
+const addEntryButton = createAddEntryButton();
 // NEW ENTRY
-const newEntryModal = document.querySelector('.new-entry--js');
+const newEntryMode = document.querySelector('.new-entry--js');
 const newEntryValue = document.querySelector('.new-entry__value--js');
 const newEntryDecrease = document.querySelector('.new-entry__button--js-decrease');
 const newEntryIncrease = document.querySelector('.new-entry__button--js-increase');
@@ -680,7 +641,7 @@ showArchive();  // ! for tests
 
 appContainer.addEventListener('click', updateCounter);
 archiveButton.addEventListener('click', showArchive);
-addNewDayButton.addEventListener('click', enterNewDayValue);
+addEntryButton.addEventListener('click', enterNewDayValue);
 //loadMoreButton.addEventListener('click', loadMoreItems);
 
 for (let i = 0; i < editButtons.length; i++) {
