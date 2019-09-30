@@ -52,7 +52,7 @@ class Entry {
 
     this.weekHtml = `
       <section class="week">
-        <h3 class="week__heading week__heading--js">Week</h3>
+        <h3 class="week__heading week__heading--js">New week</h3>
         <ul class="week__list week__list--js"></ul>
       </section>
     `;
@@ -319,16 +319,20 @@ const updateWeekHeading = () => {
 
   const getDate = (element) => {
 
-    return element
-      .className
-      .split(' ')
-      .filter(a => /hydrApp/.test(a))
-      .toString()
-      .slice(10)
-      .split('-')
-      .reverse()
-      .join('.')
-      ;
+    if (element) {
+      return element
+        .className
+        .split(' ')
+        .filter(a => /hydrApp/.test(a))
+        .toString()
+        .slice(10)
+        .split('-')
+        .reverse()
+        .join('.')
+        ;
+    } else {
+      return false;
+    }
   }
   
   for (let i = 0; i < weekLists.length; i++) {
@@ -337,16 +341,11 @@ const updateWeekHeading = () => {
     const startDate = getDate(entries[entries.length - 1]);
     const endDate = getDate(entries[0]);
     const heading = weekHeadings[i];
-    heading.textContent = `${startDate.slice(0,5)} - ${endDate}`;
+
+    heading.textContent = `${startDate
+    ? (startDate === endDate ? startDate : `${startDate.slice(0,5)} - ${endDate}`)
+    : `New Week`}`;
   }
-
-
-
-
-
-
-
-
 }
 // F1 /////////////////////////////////////////////////////////// SHOW ARCHIVE 
 
