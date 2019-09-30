@@ -210,7 +210,7 @@ const createAddEntryButton = () => {
 const createRemoveEntryButton = () => {
 
   const removeEntryButton = document.createElement('button');
-  removeEntryButton.className = 'button button entry__button entry__button--remove entry__button--js-remove';
+  removeEntryButton.className = 'button entry__button entry__button--remove entry__button--js-remove';
   removeEntryButton.innerHTML = `
   <svg class="remove-button__svg">
     <use href="assets/svg/icons.svg#remove-icon"></use>
@@ -279,8 +279,7 @@ const updateCounter = (e) => {
 
 const addArchiveNode = (index, option) => {
 
-  const object = hydrappArray[index];  
-  const {value, id, day, dayHtml, weekHtml} = object;
+  const {value, id, day, dayHtml, weekHtml} = hydrappArray[index];
   
   ((day === 'sunday' || index === 0)) && option !== 'add'
   ? archiveWeeks.insertAdjacentHTML('beforeend', weekHtml)
@@ -293,7 +292,7 @@ const addArchiveNode = (index, option) => {
 
   // when last entry is being added
   if (index === hydrappArray.length - 1) {
-    hydrappArray[index].day === 'monday'
+    day === 'monday'
     ? archiveWeeks.insertAdjacentHTML("beforeend", weekHtml)
     : false;
 
@@ -309,7 +308,7 @@ const setArchiveDOM = () => {
   for (let i = 0; i < hydrappArray.length; i++) {
     addArchiveNode(i);
   }
-  handleArchiveLastItem();
+  handleArchiveLastEntry();
 }
 // F2 /////////////////////////////////////////////////////// SET WEEK HEADING 
 
@@ -436,12 +435,12 @@ const addNewEntry = (e, value) => {
     hydrappArray.push(newEntry);
 
     addArchiveNode(hydrappArray.length - 1, 'add');
-    handleArchiveLastItem();
+    handleArchiveLastEntry();
   }
 }
 // F1 /////////////////////////////////////////////// ADJUST LAST ITEM OF LIST 
 
-const handleArchiveLastItem = () => {
+const handleArchiveLastEntry = () => {
 
   const entries = document.querySelectorAll('.entry--js');
   const lastEntry = entries[entries.length - 1];
@@ -452,57 +451,28 @@ const handleArchiveLastItem = () => {
 // F1 /////////////////////////////////////// REMOVE LAST ITEM << SHOW ARCHIVE 
 
 const removeLastEntry = (e) => {
-  
-  console.log('test');
 
-  /* const self = e.keyCode || e. target;
+  //const self = e.keyCode || e. target;
+  const self = e.target;
+  const lastItemKey = hydrappArray[hydrappArray.length - 1].key;
+  const lastEntry = self.parentNode;
 
-  if (self === 68 || self === removeItemButton) {
+  //if (self === 68 || self === removeItemButton) {
+  if (self === removeEntryButton) {
 
-    const archiveListHeight = archiveWeeks.clientHeight;
-  
     if (hydrappArray.length > 1) {
-      
-      const lastItemKey = hydrappArray[hydrappArray.length - 1].key;
+
       hydrappArray.pop();
       localStorage.removeItem(lastItemKey);
       lastEntryDate.setDate(lastEntryDate.getDate() + 1);
-      archiveWeeks.removeChild(archiveWeeks.lastElementChild);
-      const itemsTotalHeight = hydrappArray[hydrappArray.length - 1].totalHeight;
-      archiveWeeks.scrollTop = itemsTotalHeight - hydrappArray[hydrappArray.length - 1].itemHeight;
+      lastEntry.parentNode.removeChild(lastEntry);
 
-      // hide 'load more' button when not enough items to fill the screen
-      if (itemsTotalHeight <= archiveListHeight && itemsTotalHeight > 0) {
-        loadMoreButton.classList.remove('archive__button--visible');
-      }
-      // show 'no history...' message
-      if (hydrappArray.length === 1) {
-        archiveWeeks.firstElementChild.classList.add('archive__item--visible');
-        hydrappArray[0].itemHeight = 0;
-        hydrappArray[0].totalHeight = 0;
-      }
-      // add remove button on actual last item
-      handleArchiveLastItem();
+      // add remove button on current last item
+      handleArchiveLastEntry();
+    } else {
+
     }
   }
- */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
 // F2 /////////////////////////////////////////////////////// HANDLE ITEM EDIT 
 
