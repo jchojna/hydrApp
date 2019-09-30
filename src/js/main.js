@@ -199,7 +199,7 @@ const createAddEntryButton = () => {
       Add new day..
     </button>
   `;
-  addEntryButton.addEventListener('click', enterNewDayValue);
+  addEntryButton.addEventListener('click', enterNewEntryValue);
 
   return addEntryButton;
 }
@@ -357,8 +357,8 @@ const showArchive = () => {
 
   if (archive.classList.contains('archive--visible')) {
     archive.classList.remove('archive--visible')
-    //window.removeEventListener('keydown', enterNewEntryValue);
-    //window.removeEventListener('keydown', removeLastItem);
+    window.removeEventListener('keydown', enterNewEntryValue);
+    window.removeEventListener('keydown', removeLastEntry);
 
   } else {
 
@@ -373,60 +373,73 @@ const showArchive = () => {
     ? archiveWeeks.firstElementChild.classList.add('week__empty--visible')
     : false; */
 
-    //window.addEventListener('keydown', enterNewEntryValue);
-    //window.addEventListener('keydown', removeLastItem);
+    window.addEventListener('keydown', enterNewEntryValue);
+    window.addEventListener('keydown', removeLastEntry);
   }
 }
 // F1 ////////////////////////////////////////// ARCHIVE MODAL << SHOW ARCHIVE 
 
-const enterNewDayValue = () => {
+const enterNewEntryValue = (e) => {
 
-  let value = 0;
-  newEntryMode.classList.add('new-entry--visible');
-  newEntryValue.textContent = value;
+  const self = e.keyCode || e.target;
+  e.preventDefault();
+  const addEntryButton = document.querySelector('.entry__button--js-add');
 
-  const modeOff = () => {
-    newEntryMode.classList.remove('new-entry--visible');
-    newEntryMode.removeEventListener('click', handleValue);
-  }
+  if (self === 107 || self === addEntryButton) {
 
-  const handleValue = (e) => {
-
-    const self = e.target;
-
-    switch (self) {
-
-      case newEntryDecrease:
-        value !== 0 ? value-- : false;
-        newEntryValue.textContent = value;
-        break;
-        
-      case newEntryIncrease:
-        value !== counterMaxValue ? value++ : false;
-        newEntryValue.textContent = value;
-        break;
-
-      case newEntryCancel:
-        modeOff();
-        break;
-
-      case newEntrySave:
-        addNewEntry(e, value);
-        modeOff();
-        break;
+    let value = 0;
+    newEntryMode.classList.add('new-entry--visible');
+    newEntryValue.textContent = value;
+  
+    const modeOff = () => {
+      newEntryMode.classList.remove('new-entry--visible');
+      newEntryMode.removeEventListener('click', handleValue);
+      window.removeEventListener('keydown', handleValue);
+      window.addEventListener('keydown', enterNewEntryValue);
     }
+  
+    const handleValue = (e) => {
+  
+      const self = e.keyCode || e.target;
+  
+      switch (self) {
+  
+        case 37:
+        case newEntryDecrease:
+          value !== 0 ? value-- : false;
+          newEntryValue.textContent = value;
+          break;
+
+        case 39:
+        case newEntryIncrease:
+          value !== counterMaxValue ? value++ : false;
+          newEntryValue.textContent = value;
+          break;
+  
+        case 27:
+        case newEntryCancel:
+          modeOff();
+          break;
+  
+        case 13:
+        case newEntrySave:
+          addNewEntry(e, value);
+          modeOff();
+          break;
+      }
+    }
+    newEntryMode.addEventListener('click', handleValue);
+    window.addEventListener('keydown', handleValue);
+    window.removeEventListener('keydown', enterNewEntryValue);
   }
-  newEntryMode.addEventListener('click', handleValue);
 }
 // F1 /////////////////////////////////////////// ADD NEW ITEM << SHOW ARCHIVE 
 
 const addNewEntry = (e, value) => {
 
-  //const self = e.keyCode || e.target;
-  const self = e.target;
+  const self = e.keyCode || e.target;
 
-  //if (self === 65 || self === newEntrySave) {
-  if (self === newEntrySave) {
+  if (self === 13 || self === newEntrySave) {
     let lastEntryIndex = hydrappArray.length - 1;
     const lastEntry = document.querySelectorAll('.entry--js')[lastEntryIndex];
     lastEntry.classList.remove('entry--last');
@@ -461,14 +474,12 @@ const handleArchiveLastEntry = () => {
 
 const removeLastEntry = (e) => {
 
-  //const self = e.keyCode || e. target;
-  const self = e.target;
-  const {day, key} = hydrappArray[hydrappArray.length - 1];
-  console.log('day', day);
-  const lastEntryNode = self.parentNode;
+  const self = e.keyCode || e. target;
+  const lastEntryIndex = hydrappArray.length - 1;
+  const {day, key} = hydrappArray[lastEntryIndex];
+  const lastEntryNode = document.querySelectorAll('.entry--js')[lastEntryIndex];
 
-  //if (self === 68 || self === removeItemButton) {
-  if (self === removeEntryButton) {
+  if (self === 109 || self === removeEntryButton) {
 
     if (hydrappArray.length > 1) {
 
