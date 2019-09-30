@@ -463,8 +463,9 @@ const removeLastEntry = (e) => {
 
   //const self = e.keyCode || e. target;
   const self = e.target;
-  const lastItemKey = hydrappArray[hydrappArray.length - 1].key;
-  const lastEntry = self.parentNode;
+  const {day, key} = hydrappArray[hydrappArray.length - 1];
+  console.log('day', day);
+  const lastEntryNode = self.parentNode;
 
   //if (self === 68 || self === removeItemButton) {
   if (self === removeEntryButton) {
@@ -472,9 +473,16 @@ const removeLastEntry = (e) => {
     if (hydrappArray.length > 1) {
 
       hydrappArray.pop();
-      localStorage.removeItem(lastItemKey);
+      localStorage.removeItem(key);
       lastEntryDate.setDate(lastEntryDate.getDate() + 1);
-      lastEntry.parentNode.removeChild(lastEntry);
+      lastEntryNode.parentNode.removeChild(lastEntryNode);
+
+      // removing last week section after deleting last day of that week
+      if (day === 'monday') {
+        archiveWeeks.removeChild(archiveWeeks.lastElementChild);
+        const lastWeekList = archiveWeeks.lastElementChild.lastElementChild;
+        lastWeekList.appendChild(addEntryButton);
+      }
 
       // add remove button on current last item
       handleArchiveLastEntry();
