@@ -23,26 +23,6 @@
     transition: transform 0.3s ease-out, visibility 0s;
   }
 
-  &__buttons {
-    @include flex-center;
-    width: 100%;
-    padding: $layout-xs-sm-padding;
-    justify-content: space-between;
-    border: 2px solid cadetblue;
-  }
-
-  &__button {
-    padding: 0.6rem 1rem;
-    border-radius: 4px;
-    color: #fff;
-    font-size: 1rem;
-    transition: background-color $time-hover-effect;
-
-    &:hover {
-      background-color: $color-water;
-    }
-  }
-
   &__weeks {
     position: relative;
     width: 100%;
@@ -65,12 +45,28 @@
     visibility: visible;
   }
 
-  &__heading {
-    margin: 0;
+  &__header {
+    display: grid;
+    grid-template-columns: 1fr repeat(2, auto);
     background-color: $color-water;
-    text-align: center;
     border-radius: 5px;
     padding: 5px;
+  }
+
+  &__heading {
+    margin: 0;
+  }
+
+  &__button {
+    color: #fff;
+
+    &--prev {
+
+    }
+
+    &--next {
+
+    }
   }
 
   &__list {

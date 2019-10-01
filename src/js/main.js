@@ -50,7 +50,15 @@ class Entry {
 
     this.weekHtml = `
       <section class="week week--js">
-        <h3 class="week__heading week__heading--js">New week</h3>
+        <header class="week__header">
+          <h3 class="week__heading week__heading--js">New week</h3>
+          <button class="button week__button week__button--prev week__button--js-prev">
+            Previous
+          </button>
+          <button class="button week__button week__button--next week__button--js-next">
+            Next
+          </button>
+        </header>
         <ul class="week__list week__list--js"></ul>
       </section>
     `;
