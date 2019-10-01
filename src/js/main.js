@@ -382,7 +382,6 @@ const showArchive = () => {
 const enterNewEntryValue = (e) => {
 
   const self = e.keyCode || e.target;
-  e.preventDefault();
   const addEntryButton = document.querySelector('.entry__button--js-add');
 
   if (self === 107 || self === addEntryButton) {
@@ -436,7 +435,7 @@ const enterNewEntryValue = (e) => {
 // F1 /////////////////////////////////////////// ADD NEW ITEM << SHOW ARCHIVE 
 
 const addNewEntry = (e, value) => {
-
+  
   const self = e.keyCode || e.target;
 
   if (self === 13 || self === newEntrySave) {
