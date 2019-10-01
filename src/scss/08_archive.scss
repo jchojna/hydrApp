@@ -28,6 +28,7 @@
     width: 100%;
     padding: $layout-xs-sm-padding;
     justify-content: space-between;
+    border: 2px solid cadetblue;
   }
 
   &__button {
@@ -43,23 +44,25 @@
   }
 
   &__weeks {
+    position: relative;
     width: 100%;
+    height: 100%;
     padding: $layout-xs-sm-padding;
-    //border: 1px solid #000;
+    border: 2px solid tomato;
   }
 }
 ///////////////////////////////////////////////////////////////////////// WEEK 
 .week {
-  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  visibility: hidden;
+  border: 2px solid olivedrab;
 
-  &__empty {
-    display: none;
-    text-align: center;
-    margin: 0;
-
-    &--visible {
-      display: block;
-    }
+  &--visible {
+    visibility: visible;
   }
 
   &__heading {
@@ -68,7 +71,6 @@
     text-align: center;
     border-radius: 5px;
     padding: 5px;
-    margin: 5px 0;
   }
 
   &__list {
@@ -113,7 +115,6 @@
   
   &__add {
     @include flex-center;
-    padding: 10px;
   }
 
   &__remove {
@@ -203,7 +204,7 @@
     transition: opacity $time-edit-buttons, visibility 0s $time-edit-buttons;
 
     &--visible {
-      visibility: visible;
+      visibility: inherit;
       opacity: 1;
       transition: opacity $time-edit-buttons, visibility 0s;
     }
@@ -278,7 +279,7 @@
 
     &--visible {
       opacity: 1;
-      visibility: visible;
+      visibility: inherit;
       transform: translateX(0);
     }
   }

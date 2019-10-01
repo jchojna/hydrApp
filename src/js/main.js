@@ -49,7 +49,7 @@ class Entry {
     this.day = date;
 
     this.weekHtml = `
-      <section class="week">
+      <section class="week week--js">
         <h3 class="week__heading week__heading--js">New week</h3>
         <ul class="week__list week__list--js"></ul>
       </section>
@@ -307,7 +307,6 @@ const addArchiveNode = (index, option) => {
 
 const setArchiveDOM = () => {
   
-  //archiveWeeks.innerHTML += archiveEmpty;
   for (let i = 0; i < hydrappArray.length; i++) {
     addArchiveNode(i);
   }
@@ -354,25 +353,20 @@ const updateWeekHeading = () => {
 const showArchive = () => {
 
   entries = document.querySelectorAll('.entry--js');
+  const weeks = document.querySelectorAll('.week--js');
+  const weekIndex = 0;
 
   if (archive.classList.contains('archive--visible')) {
     archive.classList.remove('archive--visible')
+    //remove keyboard event listeners
     window.removeEventListener('keydown', enterNewEntryValue);
     window.removeEventListener('keydown', removeLastEntry);
 
   } else {
 
-    for (const entry of entries) {
-      entry.classList.contains('entry--visible')
-      ? entry.classList.remove('entry--visible')
-      : false;
-    }
     archive.classList.add('archive--visible');
-
-    /* hydrappArray.length === 1
-    ? archiveWeeks.firstElementChild.classList.add('week__empty--visible')
-    : false; */
-
+    weeks[weekIndex].classList.add('week--visible');
+    //add keyboard event listeners
     window.addEventListener('keydown', enterNewEntryValue);
     window.addEventListener('keydown', removeLastEntry);
   }
