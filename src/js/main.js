@@ -50,7 +50,7 @@ class Entry {
 
     this.weekHtml = `
       <section class="week week--js">
-        <header class="week__header">
+        <header class="week__header week__header--js">
           <h3 class="week__heading week__heading--js">New week</h3>
           <button class="button week__button week__button--prev week__button--js-prev">
             Previous
@@ -181,6 +181,13 @@ const setNewKeyValue = (key, value) => {
     localStorage.setItem(key, value);
   };
 }
+// F0 ///////////////////////////////////////////////// LOOPED RANGE OF VALUES 
+
+const range = (max, num, action) => {
+  action === 'increase' ? num >= max ? num = 0 : num++ : false;
+  action === 'decrease' ? num <= 0 ? num = max : num-- : false;
+  return num;
+}
 // F0 ///////////////////////////////////////////////////////// SET INDICATORS 
 
 const setIndicators = (id, value) => {
@@ -288,9 +295,12 @@ const addArchiveNode = (index, option) => {
   const {value, id, day, dayHtml, weekHtml} = hydrappArray[index];
   
   // add new week
-  ((day === 'sunday' || index === 0)) && option !== 'add'
-  ? archiveWeeks.insertAdjacentHTML('beforeend', weekHtml)
-  : false;
+  if (((day === 'sunday' || index === 0)) && option !== 'add') {
+
+    archiveWeeks.insertAdjacentHTML('beforeend', weekHtml);                // ! TO REFACTOR
+    const weekHeader = archiveWeeks.lastElementChild.firstElementChild;
+    weekHeader.addEventListener('click', slideWeek);
+  }
   // add next day entry
   let lastWeekList = archiveWeeks.lastElementChild.lastElementChild;
   lastWeekList.insertAdjacentHTML('beforeend', dayHtml);
@@ -299,9 +309,12 @@ const addArchiveNode = (index, option) => {
 
   // add 'add entry button at the end
   if (index === hydrappArray.length - 1) {
-    day === 'monday'
-    ? archiveWeeks.insertAdjacentHTML("beforeend", weekHtml)
-    : false;
+    if (day === 'monday') {
+      archiveWeeks.insertAdjacentHTML("beforeend", weekHtml);              // ! TO REFACTOR
+      const weekHeader = archiveWeeks.lastElementChild.firstElementChild;
+      weekHeader.addEventListener('click', slideWeek);
+    };
+
     lastWeekList = archiveWeeks.lastElementChild.lastElementChild;
     lastWeekList.appendChild(addEntryButton);
   }
@@ -311,6 +324,30 @@ const addArchiveNode = (index, option) => {
   editButton.index = index;
   editButton.addEventListener('click', handleItemEdit);
 }
+// F2 ///////////////////////////////////////////////////////////// SLIDE WEEK 
+
+const slideWeek = (e) => {
+
+  const self = e.target;
+
+  const prevWeekButton = document.querySelectorAll('.week__button--js-prev')[currentWeekIndex];
+  const nextWeekButton = document.querySelectorAll('.week__button--js-next')[currentWeekIndex];
+
+  switch (self) {
+
+    case prevWeekButton:
+      archiveWeeks.children[currentWeekIndex].classList.remove('week--visible');
+      currentWeekIndex = range(archiveWeeks.children.length - 1, currentWeekIndex, 'decrease');
+      archiveWeeks.children[currentWeekIndex].classList.add('week--visible');
+      break;
+
+    case nextWeekButton:
+      archiveWeeks.children[currentWeekIndex].classList.remove('week--visible');
+      currentWeekIndex = range(archiveWeeks.children.length - 1, currentWeekIndex, 'increase');
+      archiveWeeks.children[currentWeekIndex].classList.add('week--visible');
+      break;
+  }
+}
 // F2 //////////////////////////////////////////////////////////// SET ARCHIVE 
 
 const setArchiveDOM = () => {
@@ -318,6 +355,10 @@ const setArchiveDOM = () => {
   for (let i = 0; i < hydrappArray.length; i++) {
     addArchiveNode(i);
   }
+  // set the newest week as visible
+  const weeks = document.querySelectorAll('.week--js');
+  weeks[currentWeekIndex].classList.add('week--visible');
+  // set 'remove entry' button on the last entry
   handleArchiveLastEntry();
 }
 // F2 /////////////////////////////////////////////////////// SET WEEK HEADING 
@@ -361,8 +402,6 @@ const updateWeekHeading = () => {
 const showArchive = () => {
 
   entries = document.querySelectorAll('.entry--js');
-  const weeks = document.querySelectorAll('.week--js');
-  const weekIndex = 0;
 
   if (archive.classList.contains('archive--visible')) {
     archive.classList.remove('archive--visible')
@@ -373,7 +412,6 @@ const showArchive = () => {
   } else {
 
     archive.classList.add('archive--visible');
-    weeks[weekIndex].classList.add('week--visible');
     //add keyboard event listeners
     window.addEventListener('keydown', enterNewEntryValue);
     window.addEventListener('keydown', removeLastEntry);
@@ -623,6 +661,7 @@ const prevWeekButton = document.querySelector('.archive__button--js-prev');
 const nextWeekButton = document.querySelector('.archive__button--js-next');
 const addEntryButton = createAddEntryButton();
 const removeEntryButton = createRemoveEntryButton();
+let currentWeekIndex = 0;
 // NEW ENTRY
 const newEntryMode = document.querySelector('.new-entry--js');
 const newEntryValue = document.querySelector('.new-entry__value--js');
