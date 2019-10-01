@@ -45,6 +45,7 @@
   &__weeks {
     width: 100%;
     padding: $layout-xs-sm-padding;
+    //border: 1px solid #000;
   }
 }
 ///////////////////////////////////////////////////////////////////////// WEEK 
@@ -72,7 +73,7 @@
 
   &__list {
     display: flex;
-    flex-direction: column-reverse;
+    flex-direction: column;
     list-style-type: none;
     padding: 0;
     margin: 0;
@@ -95,7 +96,7 @@
     background-color: $color-dark-background;
   }
 
-  &:not(:first-child) {
+  &:not(:last-child) {
     border-bottom: 1px solid $color-grey;
   }
   
@@ -113,10 +114,6 @@
   &__add {
     @include flex-center;
     padding: 10px;
-  }
-
-  &.entry__add { // overriding higher specificity selectors
-    border: none;
   }
 
   &__remove {
