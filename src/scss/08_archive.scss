@@ -5,7 +5,7 @@
   left: 0;
   bottom: 0;
   width: 100%;
-  background-color: $color-background;
+  background-color: $cold-dark-blue;
   font-weight: 300;
   display: flex;
   visibility: hidden;
@@ -51,8 +51,10 @@
   &__header {
     display: grid;
     grid-template-columns: 1fr repeat(2, auto);
+    align-items: center;
+    justify-items: center;
     grid-gap: 5px;
-    background-color: $color-water;
+    background-color: $cold-blue;
     border-radius: 5px;
     padding: 5px;
   }
@@ -62,7 +64,8 @@
   }
 
   &__button {
-    fill: #fff;
+    display: flex;
+    fill: $cold-light-blue;
     max-width: 30px;
     width: 100%;
     padding: 0;
@@ -104,21 +107,21 @@
   }
 
   &--edit-mode {
-    background-color: $color-dark-background;
+    background-color: $cold-darkest-blue;
   }
 
   &:not(:last-child) {
-    border-bottom: 1px solid $color-grey;
+    border-bottom: 1px solid $cold-blue;
   }
   
   &__button {
     margin: 0;
     padding: 0.6rem 0.8rem;
-    color: #fff;
+    color: $cold-light-blue;
     border-radius: 5px;
     
     &:hover {
-      background-color: $color-water;
+      background-color: $cold-blue;
     }
   }
   
@@ -132,7 +135,7 @@
     height: $size-xs-archive-buttons;
     overflow: hidden;
     padding: 0;
-    fill: #fff;
+    fill: $cold-light-blue;
     transition: width $time-edit-buttons;
 
     &--hidden {
@@ -140,7 +143,7 @@
     }
     
     &:hover {
-      fill: $color-low;
+      fill: $warm-red;
     }
   }
 
@@ -153,7 +156,7 @@
   &__header {
   
     &--edit-mode {
-      color: #aaa;
+      color: $cold-dark-blue;
     }
   }
   
@@ -178,7 +181,7 @@
     font-weight: bold;
     width: $size-xs-archive-buttons;
     height: $size-xs-archive-buttons;
-    border: 2px solid #fff;
+    border: 2px solid $cold-light-blue;
     border-radius: 50%;
   
     @media only screen and (min-width: $media-sm) {
@@ -226,7 +229,7 @@
   &__svg {
     width: 100%;
     height: 100%;
-    fill: #fff;
+    fill: $cold-light-blue;
     pointer-events: none;
   }
 
@@ -270,21 +273,19 @@
     bottom: 0;
     height: 100%;
     width: 100%;
-    fill: $color-emoticon-low;
+    fill: $warm-yellow;
     opacity: 0;
     visibility: hidden;
     transform: translateX(100%);
     transition: opacity $time-edit-mode, transform $time-edit-mode;
     
-
-    @for $i from 1 to 9 {
-      &--emo-#{$i} {
-        $reverse: 9-$i;
-        $red: 27*$reverse;
-        $green: 25*$i;
-        fill: rgb(10+$red, 40+$green, 20);
-      }
-    }
+    &--emo-1 { fill: $warm-red; }
+    &--emo-2 { fill: $warm-dark-orange; }
+    &--emo-3 { fill: $warm-dark-orange; }
+    &--emo-4 { fill: $warm-orange; }
+    &--emo-5 { fill: $warm-orange; }
+    &--emo-6 { fill: $warm-light-orange; }
+    &--emo-7 { fill: $warm-light-orange; }
 
     &--visible {
       opacity: 1;
@@ -298,7 +299,7 @@
   @include flex-center;
   visibility: hidden;
   grid-auto-rows: 100px;
-  background-color: rgba($color: #000, $alpha: 0.7);
+  background-color: rgba($color: $cold-darkest-blue, $alpha: 0.8);
   position: fixed;
   top: 0;
   left: 0;
@@ -322,7 +323,8 @@
     font-size: 6rem;
     font-weight: bold;
     margin: 0;
-    border: 6px solid #fff;
+    color: $cold-light-blue;
+    border: 6px solid $cold-light-blue;
     border-radius: 50%;
     width: 100%;
     height: 100%;
@@ -334,10 +336,10 @@
     @include flex-center;
     width: 100%;
     height: 100%;
-    fill: #aaa;
+    fill: $cold-blue;
 
     &:hover {
-      fill: #fff;
+      fill: $cold-light-blue;
     }
   }
 
