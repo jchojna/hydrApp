@@ -9,14 +9,15 @@
   padding: 1rem;
 
   &__header {
+    @include flex-center;
     position: fixed;
     top: 0;
     right: 0;
+    height: $layout-xs-header-height;
     width: 100%;
     z-index: 1;
     background-color: $color-background;
-    padding: $layout-xs-sm-padding;
-    border: 2px solid hotpink;
+    padding: 0 $layout-xs-sm-padding;
   }
 
   &__container {
@@ -60,10 +61,12 @@
 }
 //////////////////////////////////////////////////////////////////// NAVIGATION
 .navigation {
+  flex-grow: 1;
 
   &__list {
-    @include flex-center;
-    justify-content: flex-end;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     list-style-type: none;
     margin: 0;
     padding: 0;

@@ -1,3 +1,4 @@
+/////////////////////////////////////////////////////////////////////// COLORS 
 $color-background: #3767AD;
 $color-dark-background: darken($color-background, 10%);
 $color-water: #2196f3;
@@ -9,6 +10,13 @@ $color-high: rgb(89, 240, 18);
 $color-emoticon-low: rgb(221, 75, 30);
 $color-emoticon-hight: rgb(89, 240, 18);
 
+/////////////////////////////////////////////////////////////////////// LAYOUT 
+// HEADER
+$layout-xs-header-height: 60px;
+
+
+
+
 $size-xs-archive-buttons: 25px;
 $size-sm-archive-buttons: 30px;
 
@@ -19,6 +27,7 @@ $layout-xs-sm-padding: 1rem;
 $media-sm: 360px;
 $media-md: 768px;
 $media-lg: 1024px;
+///////////////////////////////////////////////////////////////////////// TIME 
 
 $time-hover-effect: 0.2s;
 $time-edit-mode: 0.2s;

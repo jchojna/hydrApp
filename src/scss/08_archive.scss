@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////// ARCHIVE 
 .archive {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   bottom: 0;
@@ -13,7 +13,7 @@
   justify-content: flex-start;
   align-items: center;
   overflow: auto;
-  padding-top: 5rem;
+  padding: $layout-xs-header-height $layout-xs-sm-padding $layout-xs-sm-padding;
   transform: translateY(-100%);
   transition: transform 0.3s ease-in, visibility 0s 0.3s;
 
@@ -27,19 +27,17 @@
     position: relative;
     width: 100%;
     height: 100%;
-    padding: $layout-xs-sm-padding;
-    border: 2px solid tomato;
   }
 }
 ///////////////////////////////////////////////////////////////////////// WEEK 
 .week {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
   bottom: 0;
+  right: 0;
+  left: 0;
+  top: 0;
   visibility: hidden;
-  border: 2px solid olivedrab;
+  padding-top: 10px;
 
   &--visible {
     visibility: visible;
@@ -60,7 +58,7 @@
 
   &__button {
     fill: #fff;
-    max-width: 40px;
+    max-width: 30px;
     width: 100%;
     padding: 0;
 
