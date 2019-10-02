@@ -337,6 +337,7 @@ const slideWeek = (e) => {
   const self = e.keyCode || e.target;
   const prevWeekButton = document.querySelectorAll('.week__button--js-prev')[currentWeekIndex];
   const nextWeekButton = document.querySelectorAll('.week__button--js-next')[currentWeekIndex];
+  const weeksAmount = archiveWeeks.children.length;
 
   const handleSlide = (direction) => {
     // handle previous section
@@ -347,15 +348,17 @@ const slideWeek = (e) => {
     archiveWeeks.children[currentWeekIndex].classList = `week week--js week--visible week--slide-in-from-${direction === 'toLeft' ? `left` : `right`}`;
   }
 
-  switch (self) {
-    case 37:
-    case prevWeekButton:
-      handleSlide('toLeft');
-      break;
-    case 39:
-    case nextWeekButton:
-      handleSlide('toRight');
-      break;
+  if (weeksAmount > 1) {
+    switch (self) {
+      case 37:
+      case prevWeekButton:
+        handleSlide('toLeft');
+        break;
+      case 39:
+      case nextWeekButton:
+        handleSlide('toRight');
+        break;
+    }
   }
 }
 // F2 //////////////////////////////////////////////////////////// SET ARCHIVE 
