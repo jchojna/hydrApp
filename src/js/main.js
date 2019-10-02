@@ -360,21 +360,14 @@ const updateWeekHeading = () => {
   const getDate = (element) => {
 
     if (element) {
-      return element.className
-        .split(' ')
-        .filter(a => /hydrApp/.test(a))
-        .toString()
-        .slice(10)
-        .split('-')
-        .reverse()
-        .join('.')
-        ;
+      const filtered = element.className.split(' ').filter(a => /hydrApp/.test(a));
+      return filtered.toString().slice(10).split('-').reverse().join('.');
     } else {
       return false;
     }
   }
 
-  const setButtonsVisiblity = (index) => {
+  const setButtonsVisiblity = (index, option) => {
     const prevWeekButton = document.querySelectorAll('.week__button--js-prev')[index];
     const nextWeekButton = document.querySelectorAll('.week__button--js-next')[index];
 
@@ -382,14 +375,16 @@ const updateWeekHeading = () => {
 
       case 0:
         prevWeekButton.classList.remove('week__button--visible');
-        nextWeekButton.classList.add('week__button--visible');
+        option === 'oneWeek'
+        ? nextWeekButton.classList.remove('week__button--visible')
+        : nextWeekButton.classList.add('week__button--visible');
         break;
       
       case weekHeadings.length - 1:
         prevWeekButton.classList.add('week__button--visible');
         nextWeekButton.classList.remove('week__button--visible');
         break;
-      
+
       default:
         prevWeekButton.classList.add('week__button--visible');
         nextWeekButton.classList.add('week__button--visible');
@@ -408,9 +403,7 @@ const updateWeekHeading = () => {
     ? (startDate === endDate ? startDate : `${startDate.slice(0,5)} - ${endDate}`)
     : `New Week`}`;
 
-    if (weekHeadings.length > 1) {
-      setButtonsVisiblity(i);
-    }
+    weekLists.length > 1 ? setButtonsVisiblity(i) : setButtonsVisiblity(i, 'oneWeek');
   }
 }
 // F1 /////////////////////////////////////////////////////////// SHOW ARCHIVE 
