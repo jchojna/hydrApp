@@ -25,7 +25,7 @@
   }
 
   &__heading {
-    margin: 20px 0;
+    margin: 15px 0;
     font-size: 1.3rem;
     font-weight: normal;
   }
@@ -46,7 +46,6 @@
   visibility: hidden;
   transition: visibility 0s $time-week-slide;
   padding: 0 $layout-xs-sm-padding;
-  //overflow: auto;
 
   &--visible {
     visibility: visible;
@@ -81,7 +80,7 @@
     border-radius: $br-items;
     padding: 5px;
     margin-bottom: 11px;
-    height: 40px;
+    height: 50px;
   }
 
   &__heading {
@@ -137,6 +136,7 @@
   position: relative;
   border-radius: $br-items;
   margin-bottom: 11px;
+  height: 50px;
 
   &--last {
     grid-template-columns: 1fr repeat(4, auto);
@@ -147,9 +147,9 @@
   }
 
   &:not(:last-child) {
-    //margin-bottom: 11px;
+    margin-bottom: 11px;
 
-    /* &::after{
+    &::after{
       content: "";
       position: absolute;
       bottom: -6px;
@@ -157,7 +157,7 @@
       width: 100%;
       padding: 5px 0;
       border-bottom: 1px solid $cold-blue;
-    } */
+    }
   }
   
   &__button {
