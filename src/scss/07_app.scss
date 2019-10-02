@@ -15,9 +15,9 @@
     right: 0;
     height: $layout-xs-header-height;
     width: 100%;
-    z-index: 1;
     background-color: $cold-dark-blue;
     padding: 0 $layout-xs-sm-padding;
+    z-index: 2;
   }
 
   &__container {
@@ -99,7 +99,7 @@
 //////////////////////////////////////////////////////////////// BURGER BUTTON 
 .burger-button {
   @include flex-center;
-  fill: $cold-light-blue;
+  fill: $cold-blue;
   width: $size-logo-height;
   padding: 5px;
   transition: fill $time-hover-effect, transform $time-hover-effect;
@@ -109,7 +109,7 @@
   }
 
   &:hover {
-    fill: $cold-blue;
+    fill: $cold-light-blue;
   }
 
   &__svg {
@@ -117,6 +117,39 @@
     height: 100%;
     pointer-events: none;
   }
+}
+////////////////////////////////////////////////////////////////// MOBILE MENU 
+.mobile-menu {
+  visibility: hidden;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  top: 0;
+  background-color: $cold-dark-blue;
+  z-index: 1;
+
+  &--visible {
+    visibility: visible;
+  }
+
+
+  &__list {
+
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 ///////////////////////////////////////////////////////////////////////// LOGO 
 .logo {
@@ -167,8 +200,10 @@
 
   &__counter {
     margin: 0;
+    color: $cold-dark-blue;
     text-align: center;
-    font-size: 7rem;
+    font-size: 5rem;
+    font-weight: bold;
     position: absolute;
   }
 }

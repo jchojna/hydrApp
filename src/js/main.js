@@ -349,6 +349,7 @@ const updateWeekHeading = () => {
   const weekLists = document.querySelectorAll('.week__list--js');
   const weekHeadings = document.querySelectorAll('.week__heading--js');
 
+  // F0 ///////////////////////////////////////////////////////////// GET DATE 
   const getDate = (element) => {
 
     if (element) {
@@ -358,7 +359,7 @@ const updateWeekHeading = () => {
       return false;
     }
   }
-
+  // F0 /////////////////////////////////////////////// SET BUTTONS VISIBILITY 
   const setButtonsVisiblity = (index, option) => {
     const prevWeekButton = document.querySelectorAll('.week__button--js-prev')[index];
     const nextWeekButton = document.querySelectorAll('.week__button--js-next')[index];
@@ -396,6 +397,35 @@ const updateWeekHeading = () => {
     : `New Week`}`;
 
     weekLists.length > 1 ? setButtonsVisiblity(i) : setButtonsVisiblity(i, 'oneWeek');
+  }
+}
+// F1 ///////////////////////////////////////////////////// TOGGLE MOBILE MENU 
+
+const toggleMobileMenu = (e) => {
+  const self = e.target;
+
+  if (self === burgerButton) {
+
+    self.classList.toggle('burger-button--active');
+    mobileMenu.classList.toggle('mobile-menu--visible');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   }
 }
 // F1 /////////////////////////////////////////////////////////// SHOW ARCHIVE 
@@ -713,6 +743,9 @@ const addGlass = document.querySelector('.app__button--js-add');
 const removeGlass = document.querySelector('.app__button--js-remove');
 const counter = document.querySelector('.glass__counter--js');
 const counterMaxValue = 99;
+// NAVIGATION
+const burgerButton = document.querySelector('.burger-button--js');
+const mobileMenu = document.querySelector('.mobile-menu--js');
 // ARCHIVE
 const archive = document.querySelector('.archive--js');
 const archiveOverlay = document.querySelector('.archive__overlay--js');
@@ -747,14 +780,6 @@ const addNewDayButton = document.querySelector('.entry__button--js-add');
 
 ////////////////////////////////////////////////////////////// EVENT LISTENERS 
 
-showArchive();  // ! for tests
-
 appContainer.addEventListener('click', updateCounter);
 archiveButton.addEventListener('click', showArchive);
-//loadMoreButton.addEventListener('click', loadMoreItems);
-
-/* for (let i = 0; i < editButtons.length; i++) {
-  const editButton = editButtons[i];
-  editButton.index = i;
-  editButton.addEventListener('click', handleItemEdit);
-} */
+burgerButton.addEventListener('click', toggleMobileMenu);
