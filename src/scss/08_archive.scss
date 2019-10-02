@@ -43,19 +43,31 @@
   left: 0;
   top: 0;
   visibility: hidden;
-  transform: translateX(0);
   transition: visibility 0s $time-week-slide;
   padding: 0 $layout-xs-sm-padding;
 
   &--visible {
     visibility: visible;
+    animation-fill-mode: forwards;
     transition: visibility 0s;
   }
 
-  &--slide-in-from-left { animation: slide-in-from-left $time-week-slide; }
-  &--slide-out-to-left { animation: slide-out-to-left $time-week-slide; }
-  &--slide-out-to-right { animation: slide-out-to-right $time-week-slide; }
-  &--slide-in-from-right { animation: slide-in-from-right $time-week-slide; }
+  &--slide-in-from-left {
+    animation: slide-in-from-left $time-week-slide;
+  }
+  &--slide-out-to-left {
+    animation: slide-out-to-left $time-week-slide;
+    animation-fill-mode: forwards;
+    pointer-events: none;
+  }
+  &--slide-out-to-right {
+    animation: slide-out-to-right $time-week-slide;
+    pointer-events: none;
+    animation-fill-mode: forwards;
+  }
+  &--slide-in-from-right {
+    animation: slide-in-from-right $time-week-slide;
+  }
 
   &__header {
     display: grid;
