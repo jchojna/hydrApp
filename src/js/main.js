@@ -453,8 +453,6 @@ const slideWeek = (e) => {
         break;
     }
   }
-  console.log('weeksAmount', weeksAmount);
-  console.log(currentWeekIndex);
 }
 // F1 ////////////////////////////////////////// ARCHIVE MODAL << SHOW ARCHIVE 
 
@@ -528,13 +526,26 @@ const addNewEntry = (e, value) => {
     lastEntryDate.setDate(lastEntryDate.getDate() - 1);
     const newEntryKey = setDateKey(lastEntryDate);
     
+    // handle local storage and array of objects
     setNewKeyValue(newEntryKey, value);
     const newEntry = new Entry(lastEntryDate);
     newEntry.value = newEntryKey;
     hydrappArray.push(newEntry);
 
+    // create new entry node
     lastEntryIndex = hydrappArray.length - 1;
     addArchiveNode(lastEntryIndex, 'add');
+
+    // jump to the last week
+    const weeks = archiveWeeks.children;
+    const currentWeek = weeks[currentWeekIndex];
+    const lastWeekIndex = weeks.length - 1;
+    const lastWeek = weeks[lastWeekIndex];
+    if (currentWeekIndex !== lastWeekIndex) {
+      currentWeekIndex = archiveWeeks.children.length - 1;
+      currentWeek.className = 'week week--js week--slide-out-to-left';
+      lastWeek.className = 'week week--js week--visible week--slide-in-from-right';
+    }
     handleArchiveLastEntry();
   }
 }
