@@ -49,7 +49,6 @@ class Entry {
     this.day = date;
 
     this.weekHtml = `
-      <!------------------------------------------------------ WEEK SECTION -->
       <section class="week week--js">
         <header class="week__header week__header--js">
           <button class="button week__button week__button--prev week__button--js-prev">
@@ -66,18 +65,15 @@ class Entry {
         </header>
         <ul class="week__list week__list--js"></ul>
       </section>
-      <!----------------------------------------------- END OF WEEK SECTION -->
     `;
 
     this.dayHtml = `
-      <!--------------------------------------------------- DAY ITEM -->
       <li class="entry entry--js ${this.key}">
         <header class="entry__header entry__header--js">
           <p class="entry__heading entry__heading--day">${this.day}</p>
           <p class="entry__heading entry__heading--date entry__heading--js-date">${this.date}</p>
         </header>
         <span class="entry__value entry__value--js">${this.value}</span>
-        <!------------------------------------------ EDITION BUTTONS -->
         <div class="edition edition--js">
           <button class="button edition__button edition__button--visible edition__button--edit edition__button--js-edit">
             <svg class="edition__svg edition__svg--edit">
@@ -105,14 +101,10 @@ class Entry {
             </svg>
           </button>
         </div>
-        <!----------------------------------- END OF EDITION BUTTONS -->
-        <!----------------------------------------------- INDICATORS -->
         <div class="indicator indicator--js-${this.id}">
           ${indicators}
         </div>
-        <!---------------------------------------- END OF INDICATORS -->
       </li>
-      <!-------------------------------------------- END OF DAY ITEM -->
     `;
   }
 
@@ -438,10 +430,15 @@ const slideWeek = (e) => {
   const handleSlide = (direction) => {
     // handle previous section
     archiveWeeks.children[currentWeekIndex].className = `week week--js week--slide-out-to-${direction === 'toLeft' ? `right` : `left`}`;
+    const previousWeekIndex = currentWeekIndex;
     // change index
     currentWeekIndex = limit(archiveWeeks.children.length - 1, currentWeekIndex, direction === 'toLeft' ? `decrease` : `increase`);
     // handle next section
-    archiveWeeks.children[currentWeekIndex].classList = `week week--js week--visible week--slide-in-from-${direction === 'toLeft' ? `left` : `right`}`;
+    if (currentWeekIndex !== previousWeekIndex) {
+      archiveWeeks.children[currentWeekIndex].classList = `week week--js week--visible week--slide-in-from-${direction === 'toLeft' ? `left` : `right`}`;
+    } else {
+      archiveWeeks.children[currentWeekIndex].classList = 'week week--js week--visible';
+    }
   }
 
   if (weeksAmount > 1) {
@@ -456,6 +453,8 @@ const slideWeek = (e) => {
         break;
     }
   }
+  console.log('weeksAmount', weeksAmount);
+  console.log(currentWeekIndex);
 }
 // F1 ////////////////////////////////////////// ARCHIVE MODAL << SHOW ARCHIVE 
 
@@ -575,11 +574,10 @@ const removeLastEntry = (e) => {
         const weekToRemove = archiveWeeks.lastElementChild;
         const ifVisible = weekToRemove.classList.contains('week--visible');
         archiveWeeks.removeChild(archiveWeeks.lastElementChild);
-
         const lastWeek = archiveWeeks.lastElementChild;
         const lastWeekList = lastWeek.lastElementChild;
         if (ifVisible) {
-          lastWeek.className = 'week week--js week--visible week--slide-in-from-left';
+          lastWeek.className = 'week week--js week--visible week--slide-in-from-left';currentWeekIndex--;
         }
         lastWeekList.appendChild(addEntryButton);
       }
