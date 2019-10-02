@@ -5,15 +5,15 @@
   left: 0;
   bottom: 0;
   width: 100%;
-  background-color: $color-background;
+  background-color: $cold-dark-blue;
   font-weight: 300;
   display: flex;
   visibility: hidden;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  overflow: auto;
-  padding-top: 5rem;
+  overflow: scrollY;
+  padding-top: $layout-xs-header-height;
   transform: translateY(-100%);
   transition: transform 0.3s ease-in, visibility 0s 0.3s;
 
@@ -23,52 +23,98 @@
     transition: transform 0.3s ease-out, visibility 0s;
   }
 
-  &__buttons {
-    @include flex-center;
-    width: 100%;
-    padding: $layout-xs-sm-padding;
-    justify-content: space-between;
-  }
-
-  &__button {
-    padding: 0.6rem 1rem;
-    border-radius: 4px;
-    color: #fff;
-    font-size: 1rem;
-    transition: background-color $time-hover-effect;
-
-    &:hover {
-      background-color: $color-water;
-    }
+  &__heading {
+    margin: 20px 0;
+    font-size: 1.3rem;
+    font-weight: normal;
   }
 
   &__weeks {
+    position: relative;
     width: 100%;
-    padding: $layout-xs-sm-padding;
-    //border: 1px solid #000;
+    height: 100%;
   }
 }
 ///////////////////////////////////////////////////////////////////////// WEEK 
 .week {
-  width: 100%;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  top: 0;
+  visibility: hidden;
+  transition: visibility 0s $time-week-slide;
+  padding: 0 $layout-xs-sm-padding;
 
-  &__empty {
-    display: none;
-    text-align: center;
-    margin: 0;
+  &--visible {
+    visibility: visible;
+    animation-fill-mode: forwards;
+    transition: visibility 0s;
+  }
 
-    &--visible {
-      display: block;
-    }
+  &--slide-in-from-left {
+    animation: slide-in-from-left $time-week-slide;
+  }
+  &--slide-out-to-left {
+    animation: slide-out-to-left $time-week-slide;
+    animation-fill-mode: forwards;
+    pointer-events: none;
+  }
+  &--slide-out-to-right {
+    animation: slide-out-to-right $time-week-slide;
+    pointer-events: none;
+    animation-fill-mode: forwards;
+  }
+  &--slide-in-from-right {
+    animation: slide-in-from-right $time-week-slide;
+  }
+
+  &__header {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    justify-items: center;
+    grid-gap: 5px;
+    background-color: $cold-blue;
+    border-radius: 5px;
+    padding: 5px;
+    margin-bottom: 15px;
+    height: 40px;
   }
 
   &__heading {
     margin: 0;
-    background-color: $color-water;
-    text-align: center;
-    border-radius: 5px;
-    padding: 5px;
-    margin: 5px 0;
+  }
+
+  &__button {
+    display: flex;
+    visibility: hidden;
+    fill: $cold-light-blue;
+    max-width: 30px;
+    width: 100%;
+    padding: 0;
+
+    &--visible {
+      visibility: inherit;
+    }
+
+    &--prev {
+
+    }
+
+    &--next {
+
+    }
+
+    &:hover {
+      fill: $cold-dark-blue;
+    }
+  }
+
+  &__svg  {
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
   }
 
   &__list {
@@ -93,27 +139,26 @@
   }
 
   &--edit-mode {
-    background-color: $color-dark-background;
+    background-color: $cold-darkest-blue;
   }
 
   &:not(:last-child) {
-    border-bottom: 1px solid $color-grey;
+    border-bottom: 1px solid $cold-blue;
   }
   
   &__button {
     margin: 0;
     padding: 0.6rem 0.8rem;
-    color: #fff;
+    color: $cold-light-blue;
     border-radius: 5px;
     
     &:hover {
-      background-color: $color-water;
+      background-color: $cold-blue;
     }
   }
   
   &__add {
     @include flex-center;
-    padding: 10px;
   }
 
   &__remove {
@@ -122,7 +167,7 @@
     height: $size-xs-archive-buttons;
     overflow: hidden;
     padding: 0;
-    fill: #fff;
+    fill: $cold-light-blue;
     transition: width $time-edit-buttons;
 
     &--hidden {
@@ -130,7 +175,7 @@
     }
     
     &:hover {
-      fill: $color-low;
+      fill: $warm-red;
     }
   }
 
@@ -143,7 +188,7 @@
   &__header {
   
     &--edit-mode {
-      color: #aaa;
+      color: $cold-dark-blue;
     }
   }
   
@@ -168,7 +213,7 @@
     font-weight: bold;
     width: $size-xs-archive-buttons;
     height: $size-xs-archive-buttons;
-    border: 2px solid #fff;
+    border: 2px solid $cold-light-blue;
     border-radius: 50%;
   
     @media only screen and (min-width: $media-sm) {
@@ -203,7 +248,7 @@
     transition: opacity $time-edit-buttons, visibility 0s $time-edit-buttons;
 
     &--visible {
-      visibility: visible;
+      visibility: inherit;
       opacity: 1;
       transition: opacity $time-edit-buttons, visibility 0s;
     }
@@ -216,7 +261,7 @@
   &__svg {
     width: 100%;
     height: 100%;
-    fill: #fff;
+    fill: $cold-light-blue;
     pointer-events: none;
   }
 
@@ -260,25 +305,23 @@
     bottom: 0;
     height: 100%;
     width: 100%;
-    fill: $color-emoticon-low;
+    fill: $warm-yellow;
     opacity: 0;
     visibility: hidden;
     transform: translateX(100%);
     transition: opacity $time-edit-mode, transform $time-edit-mode;
     
-
-    @for $i from 1 to 9 {
-      &--emo-#{$i} {
-        $reverse: 9-$i;
-        $red: 27*$reverse;
-        $green: 25*$i;
-        fill: rgb(10+$red, 40+$green, 20);
-      }
-    }
+    &--emo-1 { fill: $warm-red; }
+    &--emo-2 { fill: $warm-dark-orange; }
+    &--emo-3 { fill: $warm-dark-orange; }
+    &--emo-4 { fill: $warm-orange; }
+    &--emo-5 { fill: $warm-orange; }
+    &--emo-6 { fill: $warm-light-orange; }
+    &--emo-7 { fill: $warm-light-orange; }
 
     &--visible {
       opacity: 1;
-      visibility: visible;
+      visibility: inherit;
       transform: translateX(0);
     }
   }
@@ -288,7 +331,7 @@
   @include flex-center;
   visibility: hidden;
   grid-auto-rows: 100px;
-  background-color: rgba($color: #000, $alpha: 0.7);
+  background-color: rgba($color: $cold-darkest-blue, $alpha: 0.8);
   position: fixed;
   top: 0;
   left: 0;
@@ -312,7 +355,8 @@
     font-size: 6rem;
     font-weight: bold;
     margin: 0;
-    border: 6px solid #fff;
+    color: $cold-light-blue;
+    border: 6px solid $cold-light-blue;
     border-radius: 50%;
     width: 100%;
     height: 100%;
@@ -324,10 +368,10 @@
     @include flex-center;
     width: 100%;
     height: 100%;
-    fill: #aaa;
+    fill: $cold-blue;
 
     &:hover {
-      fill: #fff;
+      fill: $cold-light-blue;
     }
   }
 

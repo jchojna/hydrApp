@@ -49,21 +49,31 @@ class Entry {
     this.day = date;
 
     this.weekHtml = `
-      <section class="week">
-        <h3 class="week__heading week__heading--js">New week</h3>
+      <section class="week week--js">
+        <header class="week__header week__header--js">
+          <button class="button week__button week__button--prev week__button--js-prev">
+            <svg class="week__svg" viewBox="0 0 512 512">
+              <use href="assets/svg/icons.svg#left-arrow"></use>
+            </svg>
+          </button>
+          <h3 class="week__heading week__heading--js">New week</h3>
+          <button class="button week__button week__button--next week__button--js-next">
+            <svg class="week__svg" viewBox="0 0 512 512">
+              <use href="assets/svg/icons.svg#right-arrow"></use>
+            </svg>
+          </button>
+        </header>
         <ul class="week__list week__list--js"></ul>
       </section>
     `;
 
     this.dayHtml = `
-      <!--------------------------------------------------- DAY ITEM -->
       <li class="entry entry--js ${this.key}">
         <header class="entry__header entry__header--js">
           <p class="entry__heading entry__heading--day">${this.day}</p>
           <p class="entry__heading entry__heading--date entry__heading--js-date">${this.date}</p>
         </header>
         <span class="entry__value entry__value--js">${this.value}</span>
-        <!------------------------------------------ EDITION BUTTONS -->
         <div class="edition edition--js">
           <button class="button edition__button edition__button--visible edition__button--edit edition__button--js-edit">
             <svg class="edition__svg edition__svg--edit">
@@ -72,12 +82,12 @@ class Entry {
           </button>
           <button class="button edition__button edition__button--decrease edition__button--js-decrease">
             <svg class="edition__svg edition__svg--decrease">
-              <use href="assets/svg/icons.svg#left-arrow"></use>
+              <use href="assets/svg/icons.svg#down-arrow"></use>
             </svg>
           </button>
           <button class="button edition__button edition__button--increase edition__button--js-increase">
             <svg class="edition__svg edition__svg--increase">
-              <use href="assets/svg/icons.svg#right-arrow"></use>
+              <use href="assets/svg/icons.svg#up-arrow"></use>
             </svg>
           </button>
           <button class="button edition__button edition__button--cancel edition__button--js-cancel">
@@ -91,14 +101,10 @@ class Entry {
             </svg>
           </button>
         </div>
-        <!----------------------------------- END OF EDITION BUTTONS -->
-        <!----------------------------------------------- INDICATORS -->
         <div class="indicator indicator--js-${this.id}">
           ${indicators}
         </div>
-        <!---------------------------------------- END OF INDICATORS -->
       </li>
-      <!-------------------------------------------- END OF DAY ITEM -->
     `;
   }
 
@@ -172,6 +178,20 @@ const setNewKeyValue = (key, value) => {
   if ( !localStorage.getItem(key) ) {
     localStorage.setItem(key, value);
   };
+}
+// F0 ///////////////////////////////////////////////// LOOPED RANGE OF VALUES 
+
+const range = (max, num, action) => {
+  action === 'increase' ? num >= max ? num = 0 : num++ : false;
+  action === 'decrease' ? num <= 0 ? num = max : num-- : false;
+  return num;
+}
+// F0 //////////////////////////////////////////////// LIMITED RANGE OF VALUES 
+
+const limit = (max, num, action) => {
+  action === 'increase' ? num >= max ? false : num++ : false;
+  action === 'decrease' ? num <= 0 ? false : num-- : false;
+  return num;
 }
 // F0 ///////////////////////////////////////////////////////// SET INDICATORS 
 
@@ -280,23 +300,29 @@ const addArchiveNode = (index, option) => {
   const {value, id, day, dayHtml, weekHtml} = hydrappArray[index];
   
   // add new week
-  ((day === 'sunday' || index === 0)) && option !== 'add'
-  ? archiveWeeks.insertAdjacentHTML('beforeend', weekHtml)
-  : false;
+  if (((day === 'sunday' || index === 0)) && option !== 'add') {
+
+    archiveWeeks.insertAdjacentHTML('beforeend', weekHtml);                // ! TO REFACTOR
+    const weekHeader = archiveWeeks.lastElementChild.firstElementChild;
+    weekHeader.addEventListener('click', slideWeek);
+  }
   // add next day entry
   let lastWeekList = archiveWeeks.lastElementChild.lastElementChild;
   lastWeekList.insertAdjacentHTML('beforeend', dayHtml);
   setIndicators(id, value);
-  updateWeekHeading();
 
   // add 'add entry button at the end
   if (index === hydrappArray.length - 1) {
-    day === 'monday'
-    ? archiveWeeks.insertAdjacentHTML("beforeend", weekHtml)
-    : false;
+    if (day === 'monday') {
+      archiveWeeks.insertAdjacentHTML("beforeend", weekHtml);              // ! TO REFACTOR
+      const weekHeader = archiveWeeks.lastElementChild.firstElementChild;
+      weekHeader.addEventListener('click', slideWeek);
+    };
+
     lastWeekList = archiveWeeks.lastElementChild.lastElementChild;
     lastWeekList.appendChild(addEntryButton);
   }
+  updateWeekHeading();
 
   // add event listeners to all edit buttons
   const editButton = document.querySelectorAll('.edition__button--js-edit')[index];
@@ -307,10 +333,13 @@ const addArchiveNode = (index, option) => {
 
 const setArchiveDOM = () => {
   
-  //archiveWeeks.innerHTML += archiveEmpty;
   for (let i = 0; i < hydrappArray.length; i++) {
     addArchiveNode(i);
   }
+  // set the newest week as visible
+  const weeks = document.querySelectorAll('.week--js');
+  weeks[currentWeekIndex].classList.add('week--visible');
+  // set 'remove entry' button on the last entry
   handleArchiveLastEntry();
 }
 // F2 /////////////////////////////////////////////////////// SET WEEK HEADING 
@@ -323,17 +352,35 @@ const updateWeekHeading = () => {
   const getDate = (element) => {
 
     if (element) {
-      return element.className
-        .split(' ')
-        .filter(a => /hydrApp/.test(a))
-        .toString()
-        .slice(10)
-        .split('-')
-        .reverse()
-        .join('.')
-        ;
+      const filtered = element.className.split(' ').filter(a => /hydrApp/.test(a));
+      return filtered.toString().slice(10).split('-').reverse().join('.');
     } else {
       return false;
+    }
+  }
+
+  const setButtonsVisiblity = (index, option) => {
+    const prevWeekButton = document.querySelectorAll('.week__button--js-prev')[index];
+    const nextWeekButton = document.querySelectorAll('.week__button--js-next')[index];
+
+    switch (index) {
+
+      case 0:
+        prevWeekButton.classList.remove('week__button--visible');
+        option === 'oneWeek'
+        ? nextWeekButton.classList.remove('week__button--visible')
+        : nextWeekButton.classList.add('week__button--visible');
+        break;
+      
+      case weekHeadings.length - 1:
+        prevWeekButton.classList.add('week__button--visible');
+        nextWeekButton.classList.remove('week__button--visible');
+        break;
+
+      default:
+        prevWeekButton.classList.add('week__button--visible');
+        nextWeekButton.classList.add('week__button--visible');
+        break;
     }
   }
   
@@ -347,6 +394,8 @@ const updateWeekHeading = () => {
     heading.textContent = `${startDate
     ? (startDate === endDate ? startDate : `${startDate.slice(0,5)} - ${endDate}`)
     : `New Week`}`;
+
+    weekLists.length > 1 ? setButtonsVisiblity(i) : setButtonsVisiblity(i, 'oneWeek');
   }
 }
 // F1 /////////////////////////////////////////////////////////// SHOW ARCHIVE 
@@ -359,22 +408,50 @@ const showArchive = () => {
     archive.classList.remove('archive--visible')
     window.removeEventListener('keydown', enterNewEntryValue);
     window.removeEventListener('keydown', removeLastEntry);
+    window.removeEventListener('keydown', slideWeek);
 
   } else {
 
-    for (const entry of entries) {
-      entry.classList.contains('entry--visible')
-      ? entry.classList.remove('entry--visible')
-      : false;
-    }
     archive.classList.add('archive--visible');
-
-    /* hydrappArray.length === 1
-    ? archiveWeeks.firstElementChild.classList.add('week__empty--visible')
-    : false; */
-
     window.addEventListener('keydown', enterNewEntryValue);
     window.addEventListener('keydown', removeLastEntry);
+    window.addEventListener('keydown', slideWeek);
+  }
+}
+// F2 ///////////////////////////////////////////////////////////// SLIDE WEEK 
+
+const slideWeek = (e) => {
+
+  const self = e.keyCode || e.target;
+  const prevWeekButton = document.querySelectorAll('.week__button--js-prev')[currentWeekIndex];
+  const nextWeekButton = document.querySelectorAll('.week__button--js-next')[currentWeekIndex];
+  const weeksAmount = archiveWeeks.children.length;
+
+  const handleSlide = (direction) => {
+    // handle previous section
+    archiveWeeks.children[currentWeekIndex].className = `week week--js week--slide-out-to-${direction === 'toLeft' ? `right` : `left`}`;
+    const previousWeekIndex = currentWeekIndex;
+    // change index
+    currentWeekIndex = limit(archiveWeeks.children.length - 1, currentWeekIndex, direction === 'toLeft' ? `decrease` : `increase`);
+    // handle next section
+    if (currentWeekIndex !== previousWeekIndex) {
+      archiveWeeks.children[currentWeekIndex].classList = `week week--js week--visible week--slide-in-from-${direction === 'toLeft' ? `left` : `right`}`;
+    } else {
+      archiveWeeks.children[currentWeekIndex].classList = 'week week--js week--visible';
+    }
+  }
+
+  if (weeksAmount > 1) {
+    switch (self) {
+      case 37:
+      case prevWeekButton:
+        handleSlide('toLeft');
+        break;
+      case 39:
+      case nextWeekButton:
+        handleSlide('toRight');
+        break;
+    }
   }
 }
 // F1 ////////////////////////////////////////// ARCHIVE MODAL << SHOW ARCHIVE 
@@ -395,6 +472,7 @@ const enterNewEntryValue = (e) => {
       newEntryMode.removeEventListener('click', handleValue);
       window.removeEventListener('keydown', handleValue);
       window.addEventListener('keydown', enterNewEntryValue);
+      window.addEventListener('keydown', slideWeek);
     }
   
     const handleValue = (e) => {
@@ -430,6 +508,7 @@ const enterNewEntryValue = (e) => {
     newEntryMode.addEventListener('click', handleValue);
     window.addEventListener('keydown', handleValue);
     window.removeEventListener('keydown', enterNewEntryValue);
+    window.removeEventListener('keydown', slideWeek);
   }
 }
 // F1 /////////////////////////////////////////// ADD NEW ITEM << SHOW ARCHIVE 
@@ -439,6 +518,7 @@ const addNewEntry = (e, value) => {
   const self = e.keyCode || e.target;
 
   if (self === 13 || self === newEntrySave) {
+
     let lastEntryIndex = hydrappArray.length - 1;
     const lastEntry = document.querySelectorAll('.entry--js')[lastEntryIndex];
     lastEntry.classList.remove('entry--last');
@@ -446,13 +526,26 @@ const addNewEntry = (e, value) => {
     lastEntryDate.setDate(lastEntryDate.getDate() - 1);
     const newEntryKey = setDateKey(lastEntryDate);
     
+    // handle local storage and array of objects
     setNewKeyValue(newEntryKey, value);
     const newEntry = new Entry(lastEntryDate);
     newEntry.value = newEntryKey;
     hydrappArray.push(newEntry);
 
+    // create new entry node
     lastEntryIndex = hydrappArray.length - 1;
     addArchiveNode(lastEntryIndex, 'add');
+
+    // jump to the last week
+    const weeks = archiveWeeks.children;
+    const currentWeek = weeks[currentWeekIndex];
+    const lastWeekIndex = weeks.length - 1;
+    const lastWeek = weeks[lastWeekIndex];
+    if (currentWeekIndex !== lastWeekIndex) {
+      currentWeekIndex = archiveWeeks.children.length - 1;
+      currentWeek.className = 'week week--js week--slide-out-to-left';
+      lastWeek.className = 'week week--js week--visible week--slide-in-from-right';
+    }
     handleArchiveLastEntry();
   }
 }
@@ -489,8 +582,14 @@ const removeLastEntry = (e) => {
 
       // removing last week section after deleting last day of that week
       if (day === 'monday') {
+        const weekToRemove = archiveWeeks.lastElementChild;
+        const ifVisible = weekToRemove.classList.contains('week--visible');
         archiveWeeks.removeChild(archiveWeeks.lastElementChild);
-        const lastWeekList = archiveWeeks.lastElementChild.lastElementChild;
+        const lastWeek = archiveWeeks.lastElementChild;
+        const lastWeekList = lastWeek.lastElementChild;
+        if (ifVisible) {
+          lastWeek.className = 'week week--js week--visible week--slide-in-from-left';currentWeekIndex--;
+        }
         lastWeekList.appendChild(addEntryButton);
       }
 
@@ -542,6 +641,7 @@ const handleItemEdit = (e) => {
 
     archive.removeEventListener('click', handleEdition);
     archive.removeEventListener('keydown', handleEdition);
+    window.addEventListener('keydown', slideWeek);
   }
   // F1 /////////////////////////////////// HANDLE EDITION << HANDLE ITEM EDIT 
 
@@ -553,7 +653,7 @@ const handleItemEdit = (e) => {
 
     switch (self) {
 
-      case 37:
+      case 40:
       case decreaseButton:
         e.preventDefault();
         dayValue > 0 ? dayValue-- : false;
@@ -561,7 +661,7 @@ const handleItemEdit = (e) => {
         setIndicators(id, dayValue);
       break;
       
-      case 39:
+      case 38:
       case increaseButton:
         e.preventDefault();
         dayValue < counterMaxValue ? dayValue++ : false;
@@ -591,6 +691,7 @@ const handleItemEdit = (e) => {
   toggleItemDisplay();
   archive.addEventListener('click', handleEdition);
   archive.addEventListener('keydown', handleEdition);
+  window.removeEventListener('keydown', slideWeek);
 
 }
 // F2 //////////////////////////////////////////////// END OF HANDLE ITEM EDIT 
@@ -621,6 +722,7 @@ const prevWeekButton = document.querySelector('.archive__button--js-prev');
 const nextWeekButton = document.querySelector('.archive__button--js-next');
 const addEntryButton = createAddEntryButton();
 const removeEntryButton = createRemoveEntryButton();
+let currentWeekIndex = 0;
 // NEW ENTRY
 const newEntryMode = document.querySelector('.new-entry--js');
 const newEntryValue = document.querySelector('.new-entry__value--js');

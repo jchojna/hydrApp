@@ -1,13 +1,19 @@
-$color-background: #3767AD;
-$color-dark-background: darken($color-background, 10%);
-$color-water: #2196f3;
-$color-grey: #ccc;
-$color-low: rgb(221, 75, 30);
-$color-medium: rgb(224, 152, 17);
-$color-high: rgb(89, 240, 18);
+/////////////////////////////////////////////////////////////////////// COLORS 
+$cold-darkest-blue: #112f44;
+$cold-dark-blue: #274c66;
+$cold-blue: #4a8eb2;
+$cold-light-blue: #d3f3ff;
 
-$color-emoticon-low: rgb(221, 75, 30);
-$color-emoticon-hight: rgb(89, 240, 18);
+$warm-red: #aa494c;
+$warm-dark-orange: #ba6353;
+$warm-orange: #d68960;
+$warm-light-orange: #e2b673;
+$warm-yellow: #edcf84;
+
+/////////////////////////////////////////////////////////////////////// LAYOUT 
+// HEADER
+$layout-xs-header-height: 60px;
+
 
 $size-xs-archive-buttons: 25px;
 $size-sm-archive-buttons: 30px;
@@ -19,10 +25,12 @@ $layout-xs-sm-padding: 1rem;
 $media-sm: 360px;
 $media-md: 768px;
 $media-lg: 1024px;
+///////////////////////////////////////////////////////////////////////// TIME 
 
 $time-hover-effect: 0.2s;
 $time-edit-mode: 0.2s;
 $time-edit-buttons: 0.5s;
+$time-week-slide: 0.5s;
 
 $edit-group-cols: 4;
 $edit-group-col-gap: 5px;
