@@ -54,13 +54,13 @@ class Entry {
         <header class="week__header week__header--js">
           <button class="button week__button week__button--prev week__button--js-prev">
             <svg class="week__svg" viewBox="0 0 512 512">
-              <use href="assets/svg/icons.svg#left-arrow-simple"></use>
+              <use href="assets/svg/icons.svg#left-arrow"></use>
             </svg>
           </button>
           <h3 class="week__heading week__heading--js">New week</h3>
           <button class="button week__button week__button--next week__button--js-next">
             <svg class="week__svg" viewBox="0 0 512 512">
-              <use href="assets/svg/icons.svg#right-arrow-simple"></use>
+              <use href="assets/svg/icons.svg#right-arrow"></use>
             </svg>
           </button>
         </header>
@@ -86,12 +86,12 @@ class Entry {
           </button>
           <button class="button edition__button edition__button--decrease edition__button--js-decrease">
             <svg class="edition__svg edition__svg--decrease">
-              <use href="assets/svg/icons.svg#left-arrow"></use>
+              <use href="assets/svg/icons.svg#down-arrow"></use>
             </svg>
           </button>
           <button class="button edition__button edition__button--increase edition__button--js-increase">
             <svg class="edition__svg edition__svg--increase">
-              <use href="assets/svg/icons.svg#right-arrow"></use>
+              <use href="assets/svg/icons.svg#up-arrow"></use>
             </svg>
           </button>
           <button class="button edition__button edition__button--cancel edition__button--js-cancel">
@@ -639,6 +639,7 @@ const handleItemEdit = (e) => {
 
     archive.removeEventListener('click', handleEdition);
     archive.removeEventListener('keydown', handleEdition);
+    window.addEventListener('keydown', slideWeek);
   }
   // F1 /////////////////////////////////// HANDLE EDITION << HANDLE ITEM EDIT 
 
@@ -650,7 +651,7 @@ const handleItemEdit = (e) => {
 
     switch (self) {
 
-      case 37:
+      case 40:
       case decreaseButton:
         e.preventDefault();
         dayValue > 0 ? dayValue-- : false;
@@ -658,7 +659,7 @@ const handleItemEdit = (e) => {
         setIndicators(id, dayValue);
       break;
       
-      case 39:
+      case 38:
       case increaseButton:
         e.preventDefault();
         dayValue < counterMaxValue ? dayValue++ : false;
@@ -688,6 +689,7 @@ const handleItemEdit = (e) => {
   toggleItemDisplay();
   archive.addEventListener('click', handleEdition);
   archive.addEventListener('keydown', handleEdition);
+  window.removeEventListener('keydown', slideWeek);
 
 }
 // F2 //////////////////////////////////////////////// END OF HANDLE ITEM EDIT 
