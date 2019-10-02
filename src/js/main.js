@@ -545,8 +545,15 @@ const removeLastEntry = (e) => {
 
       // removing last week section after deleting last day of that week
       if (day === 'monday') {
+        const weekToRemove = archiveWeeks.lastElementChild;
+        const ifVisible = weekToRemove.classList.contains('week--visible');
         archiveWeeks.removeChild(archiveWeeks.lastElementChild);
-        const lastWeekList = archiveWeeks.lastElementChild.lastElementChild;
+        
+        const lastWeek = archiveWeeks.lastElementChild;
+        const lastWeekList = lastWeek.lastElementChild;
+        if (ifVisible) {
+          lastWeek.className = 'week week--js week--visible week--slide-in-from-left';
+        }
         lastWeekList.appendChild(addEntryButton);
       }
 
