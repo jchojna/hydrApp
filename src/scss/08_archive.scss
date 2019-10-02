@@ -13,7 +13,7 @@
   justify-content: flex-start;
   align-items: center;
   overflow: auto;
-  padding: $layout-xs-header-height $layout-xs-sm-padding $layout-xs-sm-padding;
+  padding-top: $layout-xs-header-height;
   transform: translateY(-100%);
   transition: transform 0.3s ease-in, visibility 0s 0.3s;
 
@@ -44,44 +44,18 @@
   top: 0;
   visibility: hidden;
   transform: translateX(0);
-  transition: visibility 0s 1s;
+  transition: visibility 0s $time-week-slide;
+  padding: 0 $layout-xs-sm-padding;
 
   &--visible {
     visibility: visible;
     transition: visibility 0s;
   }
-  &--slide-in-from-left {
-    animation: slide-in-from-left 1s;
-  }
-  &--slide-out-to-right {
-    animation: slide-out-to-right 1s;
-  }
-  &--slide-in-from-right {
-    animation: slide-in-from-right 1s;
-  }
-  &--slide-out-to-left {
-    animation: slide-out-to-left 1s;
-  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  &--slide-in-from-left { animation: slide-in-from-left $time-week-slide; }
+  &--slide-out-to-left { animation: slide-out-to-left $time-week-slide; }
+  &--slide-out-to-right { animation: slide-out-to-right $time-week-slide; }
+  &--slide-in-from-right { animation: slide-in-from-right $time-week-slide; }
 
   &__header {
     display: grid;
