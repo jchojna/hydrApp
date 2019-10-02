@@ -318,7 +318,6 @@ const addArchiveNode = (index, option) => {
   let lastWeekList = archiveWeeks.lastElementChild.lastElementChild;
   lastWeekList.insertAdjacentHTML('beforeend', dayHtml);
   setIndicators(id, value);
-  updateWeekHeading();
 
   // add 'add entry button at the end
   if (index === hydrappArray.length - 1) {
@@ -331,6 +330,7 @@ const addArchiveNode = (index, option) => {
     lastWeekList = archiveWeeks.lastElementChild.lastElementChild;
     lastWeekList.appendChild(addEntryButton);
   }
+  updateWeekHeading();
 
   // add event listeners to all edit buttons
   const editButton = document.querySelectorAll('.edition__button--js-edit')[index];
@@ -373,6 +373,29 @@ const updateWeekHeading = () => {
       return false;
     }
   }
+
+  const setButtonsVisiblity = (index) => {
+    const prevWeekButton = document.querySelectorAll('.week__button--js-prev')[index];
+    const nextWeekButton = document.querySelectorAll('.week__button--js-next')[index];
+
+    switch (index) {
+
+      case 0:
+        prevWeekButton.classList.remove('week__button--visible');
+        nextWeekButton.classList.add('week__button--visible');
+        break;
+      
+      case weekHeadings.length - 1:
+        prevWeekButton.classList.add('week__button--visible');
+        nextWeekButton.classList.remove('week__button--visible');
+        break;
+      
+      default:
+        prevWeekButton.classList.add('week__button--visible');
+        nextWeekButton.classList.add('week__button--visible');
+        break;
+    }
+  }
   
   for (let i = 0; i < weekLists.length; i++) {
 
@@ -384,6 +407,10 @@ const updateWeekHeading = () => {
     heading.textContent = `${startDate
     ? (startDate === endDate ? startDate : `${startDate.slice(0,5)} - ${endDate}`)
     : `New Week`}`;
+
+    if (weekHeadings.length > 1) {
+      setButtonsVisiblity(i);
+    }
   }
 }
 // F1 /////////////////////////////////////////////////////////// SHOW ARCHIVE 
