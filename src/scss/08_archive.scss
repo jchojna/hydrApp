@@ -12,10 +12,11 @@
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  overflow: scrollY;
   padding-top: $layout-xs-header-height;
   transform: translateY(-100%);
   transition: transform 0.3s ease-in, visibility 0s 0.3s;
+  overflow-x: hidden;
+  overflow-y: auto;
 
   &--visible {
     visibility: visible;
@@ -45,6 +46,7 @@
   visibility: hidden;
   transition: visibility 0s $time-week-slide;
   padding: 0 $layout-xs-sm-padding;
+  //overflow: auto;
 
   &--visible {
     visibility: visible;
@@ -76,9 +78,9 @@
     justify-items: center;
     grid-gap: 5px;
     background-color: $cold-blue;
-    border-radius: 5px;
+    border-radius: $br-items;
     padding: 5px;
-    margin-bottom: 15px;
+    margin-bottom: 11px;
     height: 40px;
   }
 
@@ -133,6 +135,8 @@
   align-items: center;
   padding: 5px;
   position: relative;
+  border-radius: $br-items;
+  margin-bottom: 11px;
 
   &--last {
     grid-template-columns: 1fr repeat(4, auto);
@@ -143,7 +147,17 @@
   }
 
   &:not(:last-child) {
-    border-bottom: 1px solid $cold-blue;
+    //margin-bottom: 11px;
+
+    /* &::after{
+      content: "";
+      position: absolute;
+      bottom: -6px;
+      left: 0;
+      width: 100%;
+      padding: 5px 0;
+      border-bottom: 1px solid $cold-blue;
+    } */
   }
   
   &__button {
