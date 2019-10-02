@@ -52,12 +52,12 @@ class Entry {
       <!------------------------------------------------------ WEEK SECTION -->
       <section class="week week--js">
         <header class="week__header week__header--js">
-          <h3 class="week__heading week__heading--js">New week</h3>
           <button class="button week__button week__button--prev week__button--js-prev">
             <svg class="week__svg" viewBox="0 0 512 512">
               <use href="assets/svg/icons.svg#left-arrow-simple"></use>
             </svg>
           </button>
+          <h3 class="week__heading week__heading--js">New week</h3>
           <button class="button week__button week__button--next week__button--js-next">
             <svg class="week__svg" viewBox="0 0 512 512">
               <use href="assets/svg/icons.svg#right-arrow-simple"></use>
@@ -192,6 +192,13 @@ const setNewKeyValue = (key, value) => {
 const range = (max, num, action) => {
   action === 'increase' ? num >= max ? num = 0 : num++ : false;
   action === 'decrease' ? num <= 0 ? num = max : num-- : false;
+  return num;
+}
+// F0 //////////////////////////////////////////////// LIMITED RANGE OF VALUES 
+
+const limit = (max, num, action) => {
+  action === 'increase' ? num >= max ? false : num++ : false;
+  action === 'decrease' ? num <= 0 ? false : num-- : false;
   return num;
 }
 // F0 ///////////////////////////////////////////////////////// SET INDICATORS 
@@ -330,37 +337,6 @@ const addArchiveNode = (index, option) => {
   editButton.index = index;
   editButton.addEventListener('click', handleItemEdit);
 }
-// F2 ///////////////////////////////////////////////////////////// SLIDE WEEK 
-
-const slideWeek = (e) => {
-
-  const self = e.keyCode || e.target;
-  const prevWeekButton = document.querySelectorAll('.week__button--js-prev')[currentWeekIndex];
-  const nextWeekButton = document.querySelectorAll('.week__button--js-next')[currentWeekIndex];
-  const weeksAmount = archiveWeeks.children.length;
-
-  const handleSlide = (direction) => {
-    // handle previous section
-    archiveWeeks.children[currentWeekIndex].className = `week week--js week--slide-out-to-${direction === 'toLeft' ? `right` : `left`}`;
-    // change index
-    currentWeekIndex = range(archiveWeeks.children.length - 1, currentWeekIndex, direction === 'toLeft' ? `decrease` : `increase`);
-    // handle next section
-    archiveWeeks.children[currentWeekIndex].classList = `week week--js week--visible week--slide-in-from-${direction === 'toLeft' ? `left` : `right`}`;
-  }
-
-  if (weeksAmount > 1) {
-    switch (self) {
-      case 37:
-      case prevWeekButton:
-        handleSlide('toLeft');
-        break;
-      case 39:
-      case nextWeekButton:
-        handleSlide('toRight');
-        break;
-    }
-  }
-}
 // F2 //////////////////////////////////////////////////////////// SET ARCHIVE 
 
 const setArchiveDOM = () => {
@@ -428,6 +404,37 @@ const showArchive = () => {
     window.addEventListener('keydown', enterNewEntryValue);
     window.addEventListener('keydown', removeLastEntry);
     window.addEventListener('keydown', slideWeek);
+  }
+}
+// F2 ///////////////////////////////////////////////////////////// SLIDE WEEK 
+
+const slideWeek = (e) => {
+
+  const self = e.keyCode || e.target;
+  const prevWeekButton = document.querySelectorAll('.week__button--js-prev')[currentWeekIndex];
+  const nextWeekButton = document.querySelectorAll('.week__button--js-next')[currentWeekIndex];
+  const weeksAmount = archiveWeeks.children.length;
+
+  const handleSlide = (direction) => {
+    // handle previous section
+    archiveWeeks.children[currentWeekIndex].className = `week week--js week--slide-out-to-${direction === 'toLeft' ? `right` : `left`}`;
+    // change index
+    currentWeekIndex = limit(archiveWeeks.children.length - 1, currentWeekIndex, direction === 'toLeft' ? `decrease` : `increase`);
+    // handle next section
+    archiveWeeks.children[currentWeekIndex].classList = `week week--js week--visible week--slide-in-from-${direction === 'toLeft' ? `left` : `right`}`;
+  }
+
+  if (weeksAmount > 1) {
+    switch (self) {
+      case 37:
+      case prevWeekButton:
+        handleSlide('toLeft');
+        break;
+      case 39:
+      case nextWeekButton:
+        handleSlide('toRight');
+        break;
+    }
   }
 }
 // F1 ////////////////////////////////////////// ARCHIVE MODAL << SHOW ARCHIVE 
@@ -548,7 +555,7 @@ const removeLastEntry = (e) => {
         const weekToRemove = archiveWeeks.lastElementChild;
         const ifVisible = weekToRemove.classList.contains('week--visible');
         archiveWeeks.removeChild(archiveWeeks.lastElementChild);
-        
+
         const lastWeek = archiveWeeks.lastElementChild;
         const lastWeekList = lastWeek.lastElementChild;
         if (ifVisible) {

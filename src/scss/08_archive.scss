@@ -71,7 +71,7 @@
 
   &__header {
     display: grid;
-    grid-template-columns: 1fr repeat(2, auto);
+    grid-template-columns: auto 1fr auto;
     align-items: center;
     justify-items: center;
     grid-gap: 5px;
@@ -79,6 +79,7 @@
     border-radius: 5px;
     padding: 5px;
     margin-bottom: 15px;
+    height: 40px;
   }
 
   &__heading {
@@ -91,6 +92,10 @@
     max-width: 30px;
     width: 100%;
     padding: 0;
+
+    &--visible {
+      display: flex;
+    }
 
     &--prev {
 
