@@ -334,17 +334,28 @@ const addArchiveNode = (index, option) => {
 
 const slideWeek = (e) => {
 
-  const self = e.target;
+  const self = e.keyCode || e.target;
   const prevWeekButton = document.querySelectorAll('.week__button--js-prev')[currentWeekIndex];
   const nextWeekButton = document.querySelectorAll('.week__button--js-next')[currentWeekIndex];
 
-  if (self === prevWeekButton || self === nextWeekButton) {
+  const handleSlide = (direction) => {
     // handle previous section
-    archiveWeeks.children[currentWeekIndex].className = `week week--js week--slide-out-to-${self === prevWeekButton ? `right` : `left`}`;
+    archiveWeeks.children[currentWeekIndex].className = `week week--js week--slide-out-to-${direction === 'toLeft' ? `right` : `left`}`;
     // change index
-    currentWeekIndex = range(archiveWeeks.children.length - 1, currentWeekIndex, self === prevWeekButton ? `decrease` : `increase`);
+    currentWeekIndex = range(archiveWeeks.children.length - 1, currentWeekIndex, direction === 'toLeft' ? `decrease` : `increase`);
     // handle next section
-    archiveWeeks.children[currentWeekIndex].classList = `week week--js week--visible week--slide-in-from-${self === prevWeekButton ? `left` : `right`}`;
+    archiveWeeks.children[currentWeekIndex].classList = `week week--js week--visible week--slide-in-from-${direction === 'toLeft' ? `left` : `right`}`;
+  }
+
+  switch (self) {
+    case 37:
+    case prevWeekButton:
+      handleSlide('toLeft');
+      break;
+    case 39:
+    case nextWeekButton:
+      handleSlide('toRight');
+      break;
   }
 }
 // F2 //////////////////////////////////////////////////////////// SET ARCHIVE 
@@ -404,16 +415,16 @@ const showArchive = () => {
 
   if (archive.classList.contains('archive--visible')) {
     archive.classList.remove('archive--visible')
-    //remove keyboard event listeners
     window.removeEventListener('keydown', enterNewEntryValue);
     window.removeEventListener('keydown', removeLastEntry);
+    window.removeEventListener('keydown', slideWeek);
 
   } else {
 
     archive.classList.add('archive--visible');
-    //add keyboard event listeners
     window.addEventListener('keydown', enterNewEntryValue);
     window.addEventListener('keydown', removeLastEntry);
+    window.addEventListener('keydown', slideWeek);
   }
 }
 // F1 ////////////////////////////////////////// ARCHIVE MODAL << SHOW ARCHIVE 
@@ -434,6 +445,7 @@ const enterNewEntryValue = (e) => {
       newEntryMode.removeEventListener('click', handleValue);
       window.removeEventListener('keydown', handleValue);
       window.addEventListener('keydown', enterNewEntryValue);
+      window.addEventListener('keydown', slideWeek);
     }
   
     const handleValue = (e) => {
@@ -469,6 +481,7 @@ const enterNewEntryValue = (e) => {
     newEntryMode.addEventListener('click', handleValue);
     window.addEventListener('keydown', handleValue);
     window.removeEventListener('keydown', enterNewEntryValue);
+    window.removeEventListener('keydown', slideWeek);
   }
 }
 // F1 /////////////////////////////////////////// ADD NEW ITEM << SHOW ARCHIVE 
@@ -478,6 +491,7 @@ const addNewEntry = (e, value) => {
   const self = e.keyCode || e.target;
 
   if (self === 13 || self === newEntrySave) {
+
     let lastEntryIndex = hydrappArray.length - 1;
     const lastEntry = document.querySelectorAll('.entry--js')[lastEntryIndex];
     lastEntry.classList.remove('entry--last');
