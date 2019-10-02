@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////////// MAIN APP INTERFACE
+/////////////////////////////////////////////////////////// MAIN APP INTERFACE 
 .app {
   @include flex-center;
   flex-direction: column;
@@ -60,7 +60,7 @@
     }
   }
 }
-//////////////////////////////////////////////////////////////////// NAVIGATION
+/////////////////////////////////////////////////////////////////// NAVIGATION 
 .navigation {
   flex-grow: 1;
 
@@ -77,6 +77,7 @@
   }
 
   &__button {
+    display: none;
     color: $cold-light-blue;
     padding: 0.5rem;
     border: 2px solid transparent;
@@ -85,33 +86,65 @@
       border-bottom-color: $cold-light-blue;
     }
   }
+
+  @media only screen and (min-width: $media-md) {
+    & {
+
+      &__button {
+        display: block;
+      }
+    }
+  }
 }
-////////////////////////////////////////////////////////////////////////// LOGO
+//////////////////////////////////////////////////////////////// BURGER BUTTON 
+.burger-button {
+  @include flex-center;
+  fill: $cold-light-blue;
+  width: $size-logo-height;
+  padding: 5px;
+  transition: fill $time-hover-effect, transform $time-hover-effect;
+
+  &--active {
+    transform: rotate(90deg);
+  }
+
+  &:hover {
+    fill: $cold-blue;
+  }
+
+  &__svg {
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+}
+///////////////////////////////////////////////////////////////////////// LOGO 
 .logo {
   flex-grow: 1;
+  display: flex;
+  height: $size-logo-height;
 
   &__link {
     @include flex-center;
     position: relative;
-    max-width: 120px;
   }
 
   &__svg {
     fill: $cold-blue;
     width: 100%;
-    height: 100%;
+    height: $size-logo-height;
+
 
     &--color {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
-      height: 100%;
       fill: $cold-light-blue;
     }
   }
 }
-///////////////////////////////////////////////////////////////////////// GLASS
+//////////////////////////////////////////////////////////////////////// GLASS 
 .glass {
   @include flex-center;
   position: relative;
