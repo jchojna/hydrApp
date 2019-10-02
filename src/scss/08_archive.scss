@@ -43,10 +43,45 @@
   left: 0;
   top: 0;
   visibility: hidden;
+  transform: translateX(0);
+  transition: visibility 0s 1s;
 
   &--visible {
     visibility: visible;
+    transition: visibility 0s;
   }
+  &--slide-in-from-left {
+    animation: slide-in-from-left 1s;
+  }
+  &--slide-out-to-right {
+    animation: slide-out-to-right 1s;
+  }
+  &--slide-in-from-right {
+    animation: slide-in-from-right 1s;
+  }
+  &--slide-out-to-left {
+    animation: slide-out-to-left 1s;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   &__header {
     display: grid;
@@ -57,6 +92,7 @@
     background-color: $cold-blue;
     border-radius: 5px;
     padding: 5px;
+    margin-bottom: 15px;
   }
 
   &__heading {
@@ -76,6 +112,10 @@
 
     &--next {
 
+    }
+
+    &:hover {
+      fill: $cold-dark-blue;
     }
   }
 

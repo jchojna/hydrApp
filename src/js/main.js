@@ -339,13 +339,25 @@ const slideWeek = (e) => {
   const prevWeekButton = document.querySelectorAll('.week__button--js-prev')[currentWeekIndex];
   const nextWeekButton = document.querySelectorAll('.week__button--js-next')[currentWeekIndex];
 
-  if (self === prevWeekButton || self === nextWeekButton) {
+  switch (self) {
 
-    archiveWeeks.children[currentWeekIndex].classList.remove('week--visible');
-    self === prevWeekButton
-    ? currentWeekIndex = range(archiveWeeks.children.length - 1, currentWeekIndex, 'decrease')
-    : currentWeekIndex = range(archiveWeeks.children.length - 1, currentWeekIndex, 'increase');
-    archiveWeeks.children[currentWeekIndex].classList.add('week--visible');
+    case prevWeekButton:
+      
+      archiveWeeks.children[currentWeekIndex].className = 'week week--js week--slide-out-to-right';
+
+      currentWeekIndex = range(archiveWeeks.children.length - 1, currentWeekIndex, 'decrease')
+
+      archiveWeeks.children[currentWeekIndex].classList = 'week week--js week--visible week--slide-in-from-left';
+      break;
+
+    case nextWeekButton:
+      
+      archiveWeeks.children[currentWeekIndex].className = 'week week--js week--slide-out-to-left';
+
+      currentWeekIndex = range(archiveWeeks.children.length - 1, currentWeekIndex, 'increase');
+
+      archiveWeeks.children[currentWeekIndex].className = 'week week--js week--visible week--slide-in-from-right';
+      break;
   }
 }
 // F2 //////////////////////////////////////////////////////////// SET ARCHIVE 
