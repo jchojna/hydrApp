@@ -335,29 +335,16 @@ const addArchiveNode = (index, option) => {
 const slideWeek = (e) => {
 
   const self = e.target;
-
   const prevWeekButton = document.querySelectorAll('.week__button--js-prev')[currentWeekIndex];
   const nextWeekButton = document.querySelectorAll('.week__button--js-next')[currentWeekIndex];
 
-  switch (self) {
-
-    case prevWeekButton:
-      
-      archiveWeeks.children[currentWeekIndex].className = 'week week--js week--slide-out-to-right';
-
-      currentWeekIndex = range(archiveWeeks.children.length - 1, currentWeekIndex, 'decrease')
-
-      archiveWeeks.children[currentWeekIndex].classList = 'week week--js week--visible week--slide-in-from-left';
-      break;
-
-    case nextWeekButton:
-      
-      archiveWeeks.children[currentWeekIndex].className = 'week week--js week--slide-out-to-left';
-
-      currentWeekIndex = range(archiveWeeks.children.length - 1, currentWeekIndex, 'increase');
-
-      archiveWeeks.children[currentWeekIndex].className = 'week week--js week--visible week--slide-in-from-right';
-      break;
+  if (self === prevWeekButton || self === nextWeekButton) {
+    // handle previous section
+    archiveWeeks.children[currentWeekIndex].className = `week week--js week--slide-out-to-${self === prevWeekButton ? `right` : `left`}`;
+    // change index
+    currentWeekIndex = range(archiveWeeks.children.length - 1, currentWeekIndex, self === prevWeekButton ? `decrease` : `increase`);
+    // handle next section
+    archiveWeeks.children[currentWeekIndex].classList = `week week--js week--visible week--slide-in-from-${self === prevWeekButton ? `left` : `right`}`;
   }
 }
 // F2 //////////////////////////////////////////////////////////// SET ARCHIVE 
