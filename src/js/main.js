@@ -402,7 +402,7 @@ const updateWeekHeading = () => {
 // F1 ///////////////////////////////////////////////////// TOGGLE MOBILE MENU 
 
 const toggleMobileMenu = (e) => {
-  const self = e.target;
+  const self = e.target || e;
 
   if (self === burgerButton) {
 
@@ -771,6 +771,8 @@ const statsButton = document.querySelector('.navigation__button--js-stats');
 handleData();
 setArchiveDOM();
 updateWeekHeading();
+
+toggleMobileMenu(burgerButton);                 // ! FOR TESTS ONLY
 
 //////////////////////////////////////////////////////////////////// VARIABLES 
 

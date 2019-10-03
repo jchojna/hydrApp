@@ -28,8 +28,7 @@
 .burger-button {
   @include flex-center;
   fill: $cold-blue;
-  width: $size-logo-height;
-  padding: 5px;
+  width: $size-main-buttons;
   transition: fill $time-hover-effect, transform $time-hover-effect;
 
   &--active {
@@ -90,10 +89,8 @@
   left: 0;
   top: 0;
   background-color: $cold-darkest-blue;
-  //visibility: hidden;                               // ! FOR TESTS
-  //transform: translateY(-100%);                     // ! FOR TESTS
-  visibility: visible;                                // ! FOR TESTS
-  transform: translateY(0);                           // ! FOR TESTS
+  visibility: hidden;
+  transform: translateY(-100%);
   transition: transform $time-mobile-menu ease-in, visibility 0s $time-mobile-menu;
   z-index: 1;
 
