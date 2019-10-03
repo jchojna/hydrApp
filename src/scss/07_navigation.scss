@@ -96,6 +96,7 @@
   visibility: hidden;
   transform: translateY(-100%);
   transition: transform $time-mobile-menu ease-in, visibility 0s $time-mobile-menu;
+  overflow: auto;
   z-index: 1;
 
   &--visible {
@@ -128,6 +129,7 @@
     font-size: 1.5rem;
     font-weight: normal;
     text-align: center;
+    pointer-events: none;
   }
 
   &__svg {

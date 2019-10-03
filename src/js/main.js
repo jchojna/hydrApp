@@ -133,13 +133,6 @@ class Entry {
     const dayIndex = date.getDay();
     this._day = weekDay[dayIndex];
   }
-
-  /* get totalHeight() {
-    return this._totalHeight;
-  }
-  set totalHeight(amount) {
-    this._totalHeight = amount * this.itemHeight;
-  } */
 }
 
 //////////////////////////////////////////////////////////////////// FUNCTIONS 
@@ -192,6 +185,18 @@ const limit = (max, num, action) => {
   action === 'increase' ? num >= max ? false : num++ : false;
   action === 'decrease' ? num <= 0 ? false : num-- : false;
   return num;
+}
+// F0 ////////////////////////// SET CURRENTLY DISPLAYED ARCHIVE WEEK'S HEIGHT 
+
+const setCurrentWeekHeight = () => {
+  
+  const currentWeek = document.querySelectorAll('.week--js')[currentWeekIndex];
+  const childrenArray = [...currentWeek.children];
+  const childrenHeight = childrenArray.reduce((a,b) => a + b.clientHeight, 0);
+  const offsetHeight = 40;
+  const finalHeight = childrenHeight + offsetHeight;
+
+  archiveWeeks.style.height = `${finalHeight}px`;
 }
 // F0 ///////////////////////////////////////////////////////// SET INDICATORS 
 
@@ -444,30 +449,21 @@ const showArchive = () => {
 const expandArchive = (e) => {
   const self = e.target;
   const svgIcons = self.lastElementChild;
+  const section = self.nextElementSibling;
 
   switch (self) {
     case mobileMenuArchiveSection:
     case mobileMenuStatsSection:
     case mobileMenuSettingsSection:
       
-      svgIcons.classList.toggle('mobile-menu__svg--active');
+    svgIcons.classList.toggle('mobile-menu__svg--active');
 
-      break;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    if (svgIcons.classList.contains('mobile-menu__svg--active')) {
+      setCurrentWeekHeight();
+    } else {
+      section.style.height = 0;
+    }
+    break;
   }
 }
 // F2 ///////////////////////////////////////////////////////////// SLIDE WEEK 
@@ -504,6 +500,7 @@ const slideWeek = (e) => {
         handleSlide('toRight');
         break;
     }
+    setCurrentWeekHeight();
   }
 }
 // F1 ////////////////////////////////////////// ARCHIVE MODAL << SHOW ARCHIVE 
@@ -599,6 +596,7 @@ const addNewEntry = (e, value) => {
       lastWeek.className = 'week week--js week--visible week--slide-in-from-right';
     }
     handleArchiveLastEntry();
+    setCurrentWeekHeight();
   }
 }
 // F1 /////////////////////////////////////////////// ADJUST LAST ITEM OF LIST 
@@ -648,8 +646,7 @@ const removeLastEntry = (e) => {
       // add remove button on current last item
       handleArchiveLastEntry();
       updateWeekHeading();
-    } else {
-
+      setCurrentWeekHeight();
     }
   }
 }
