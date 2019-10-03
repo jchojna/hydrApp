@@ -95,14 +95,14 @@
   background-color: $cold-darkest-blue;
   visibility: hidden;
   transform: translateY(-100%);
-  transition: transform $time-mobile-menu ease-in, visibility 0s $time-mobile-menu;
+  transition: transform $time-mobmenu-main ease-in, visibility 0s $time-mobmenu-main;
   overflow: auto;
   z-index: 1;
 
   &--visible {
     visibility: visible;
     transform: translateY(0);
-    transition: transform $time-mobile-menu ease-in, visibility 0s;
+    transition: transform $time-mobmenu-main ease-in, visibility 0s;
   }
 
   &__section {

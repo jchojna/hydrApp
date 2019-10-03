@@ -446,24 +446,31 @@ const showArchive = () => {
 */
 // F1 ///////////////////////////////////////////////////////// EXPAND ARCHIVE 
 
-const expandArchive = (e) => {
+const expandArchive = (e) => {                      // ! to DRY !
   const self = e.target;
   const svgIcons = self.lastElementChild;
   const section = self.nextElementSibling;
 
   switch (self) {
     case mobileMenuArchiveSection:
-    case mobileMenuStatsSection:
-    case mobileMenuSettingsSection:
       
-    svgIcons.classList.toggle('mobile-menu__svg--active');
+      svgIcons.classList.toggle('mobile-menu__svg--active');
+      if (svgIcons.classList.contains('mobile-menu__svg--active')) {
+        setCurrentWeekHeight();
+      } else {
+        section.style.height = 0;
+      }
+      break;
+    
+    case mobileMenuStatsSection:
+      svgIcons.classList.toggle('mobile-menu__svg--active');
+      section.classList.toggle('stats__container--active');
+      break;
 
-    if (svgIcons.classList.contains('mobile-menu__svg--active')) {
-      setCurrentWeekHeight();
-    } else {
-      section.style.height = 0;
-    }
-    break;
+    case mobileMenuSettingsSection:
+      svgIcons.classList.toggle('mobile-menu__svg--active');
+      section.classList.toggle('settings__container--active');
+      break;
   }
 }
 // F2 ///////////////////////////////////////////////////////////// SLIDE WEEK 
