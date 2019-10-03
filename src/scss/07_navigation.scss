@@ -90,8 +90,10 @@
   left: 0;
   top: 0;
   background-color: $cold-darkest-blue;
-  visibility: hidden;
-  transform: translateY(-100%);
+  //visibility: hidden;                               // ! FOR TESTS
+  //transform: translateY(-100%);                     // ! FOR TESTS
+  visibility: visible;                                // ! FOR TESTS
+  transform: translateY(0);                           // ! FOR TESTS
   transition: transform $time-mobile-menu ease-in, visibility 0s $time-mobile-menu;
   z-index: 1;
 
