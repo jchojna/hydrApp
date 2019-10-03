@@ -1,58 +1,22 @@
 ////////////////////////////////////////////////////////////////////// ARCHIVE 
 .archive {
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
+  flex-grow: 1;
   width: 100%;
-  //background-color: $cold-dark-blue;
   font-weight: 300;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: flex-end;
   align-items: center;
   padding-top: $layout-xs-header-height;
   //transition: transform 0.3s ease-in, visibility 0s 0.3s;
-  overflow-x: hidden;
-  overflow-y: auto;
-
-  &__header {
-    width: 100%;
-    display: grid;
-    padding: 0 $layout-xs-sm-padding;
-    grid-template-columns: $size-main-buttons 1fr $size-main-buttons;
-
-    &::before { // needed to make heading in the center
-      content: "";
-    }
-  }
-
-  &__heading {
-    margin: 15px 0;
-    font-size: 1.3rem;
-    font-weight: normal;
-    text-align: center;
-  }
-
-  &__button {
-    fill: $cold-blue;
-    width: 100%;
-
-    &:hover {
-      fill: $cold-light-blue;
-    }
-  }
-
-  &__svg {
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-  }
+  //overflow-x: hidden;
+  //overflow-y: auto;
 
   &__weeks {
     position: relative;
     width: 100%;
-    height: 100%;
+    height: 0;
+    overflow: hidden;
   }
 }
 ///////////////////////////////////////////////////////////////////////// WEEK 
@@ -62,6 +26,7 @@
   right: 0;
   left: 0;
   top: 0;
+  height: 100%;
   visibility: hidden;
   transition: visibility 0s $time-week-slide;
   padding: 0 $layout-xs-sm-padding;

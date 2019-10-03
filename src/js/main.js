@@ -443,12 +443,15 @@ const showArchive = () => {
 
 const expandArchive = (e) => {
   const self = e.target;
+  const svgIcons = self.lastElementChild;
 
   switch (self) {
     case mobileMenuArchiveSection:
     case mobileMenuStatsSection:
     case mobileMenuSettingsSection:
-      console.log('test');
+      
+      svgIcons.classList.toggle('mobile-menu__svg--active');
+
       break;
 
 
