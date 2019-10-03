@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////////// MAIN APP INTERFACE
+/////////////////////////////////////////////////////////// MAIN APP INTERFACE 
 .app {
   @include flex-center;
   flex-direction: column;
@@ -15,9 +15,8 @@
     right: 0;
     height: $layout-xs-header-height;
     width: 100%;
-    z-index: 1;
-    background-color: $cold-dark-blue;
     padding: 0 $layout-xs-sm-padding;
+    z-index: 2;
   }
 
   &__container {
@@ -60,58 +59,7 @@
     }
   }
 }
-//////////////////////////////////////////////////////////////////// NAVIGATION
-.navigation {
-  flex-grow: 1;
-
-  &__list {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  &__item {
-  }
-
-  &__button {
-    color: $cold-light-blue;
-    padding: 0.5rem;
-    border: 2px solid transparent;
-
-    &:hover {
-      border-bottom-color: $cold-light-blue;
-    }
-  }
-}
-////////////////////////////////////////////////////////////////////////// LOGO
-.logo {
-  flex-grow: 1;
-
-  &__link {
-    @include flex-center;
-    position: relative;
-    max-width: 120px;
-  }
-
-  &__svg {
-    fill: $cold-blue;
-    width: 100%;
-    height: 100%;
-
-    &--color {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      fill: $cold-light-blue;
-    }
-  }
-}
-///////////////////////////////////////////////////////////////////////// GLASS
+//////////////////////////////////////////////////////////////////////// GLASS 
 .glass {
   @include flex-center;
   position: relative;
@@ -134,8 +82,10 @@
 
   &__counter {
     margin: 0;
+    color: $cold-dark-blue;
     text-align: center;
-    font-size: 7rem;
+    font-size: 5rem;
+    font-weight: bold;
     position: absolute;
   }
 }

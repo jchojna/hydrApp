@@ -133,13 +133,6 @@ class Entry {
     const dayIndex = date.getDay();
     this._day = weekDay[dayIndex];
   }
-
-  /* get totalHeight() {
-    return this._totalHeight;
-  }
-  set totalHeight(amount) {
-    this._totalHeight = amount * this.itemHeight;
-  } */
 }
 
 //////////////////////////////////////////////////////////////////// FUNCTIONS 
@@ -192,6 +185,18 @@ const limit = (max, num, action) => {
   action === 'increase' ? num >= max ? false : num++ : false;
   action === 'decrease' ? num <= 0 ? false : num-- : false;
   return num;
+}
+// F0 ////////////////////////// SET CURRENTLY DISPLAYED ARCHIVE WEEK'S HEIGHT 
+
+const setCurrentWeekHeight = () => {
+  
+  const currentWeek = document.querySelectorAll('.week--js')[currentWeekIndex];
+  const childrenArray = [...currentWeek.children];
+  const childrenHeight = childrenArray.reduce((a,b) => a + b.clientHeight, 0);
+  const offsetHeight = 40;
+  const finalHeight = childrenHeight + offsetHeight;
+
+  archiveWeeks.style.height = `${finalHeight}px`;
 }
 // F0 ///////////////////////////////////////////////////////// SET INDICATORS 
 
@@ -349,6 +354,7 @@ const updateWeekHeading = () => {
   const weekLists = document.querySelectorAll('.week__list--js');
   const weekHeadings = document.querySelectorAll('.week__heading--js');
 
+  // F0 ///////////////////////////////////////////////////////////// GET DATE 
   const getDate = (element) => {
 
     if (element) {
@@ -358,7 +364,7 @@ const updateWeekHeading = () => {
       return false;
     }
   }
-
+  // F0 /////////////////////////////////////////////// SET BUTTONS VISIBILITY 
   const setButtonsVisiblity = (index, option) => {
     const prevWeekButton = document.querySelectorAll('.week__button--js-prev')[index];
     const nextWeekButton = document.querySelectorAll('.week__button--js-next')[index];
@@ -398,6 +404,17 @@ const updateWeekHeading = () => {
     weekLists.length > 1 ? setButtonsVisiblity(i) : setButtonsVisiblity(i, 'oneWeek');
   }
 }
+// F1 ///////////////////////////////////////////////////// TOGGLE MOBILE MENU 
+
+const toggleMobileMenu = (e) => {
+  const self = e.target || e;
+
+  if (self === burgerButton) {
+
+    self.classList.toggle('burger-button--active');
+    mobileMenu.classList.toggle('mobile-menu--visible');
+  }
+}
 // F1 /////////////////////////////////////////////////////////// SHOW ARCHIVE 
 
 const showArchive = () => {
@@ -416,6 +433,44 @@ const showArchive = () => {
     window.addEventListener('keydown', enterNewEntryValue);
     window.addEventListener('keydown', removeLastEntry);
     window.addEventListener('keydown', slideWeek);
+  }
+}
+/*
+######## ##     ## ########     ###    ##    ## ########
+##        ##   ##  ##     ##   ## ##   ###   ## ##     ##
+##         ## ##   ##     ##  ##   ##  ####  ## ##     ##
+######      ###    ########  ##     ## ## ## ## ##     ##
+##         ## ##   ##        ######### ##  #### ##     ##
+##        ##   ##  ##        ##     ## ##   ### ##     ##
+######## ##     ## ##        ##     ## ##    ## ########
+*/
+// F1 ///////////////////////////////////////////////////////// EXPAND ARCHIVE 
+
+const expandArchive = (e) => {                      // ! to DRY !
+  const self = e.target;
+  const svgIcons = self.lastElementChild;
+  const section = self.nextElementSibling;
+
+  switch (self) {
+    case mobileMenuArchiveSection:
+      
+      svgIcons.classList.toggle('mobile-menu__svg--active');
+      if (svgIcons.classList.contains('mobile-menu__svg--active')) {
+        setCurrentWeekHeight();
+      } else {
+        section.style.height = 0;
+      }
+      break;
+    
+    case mobileMenuStatsSection:
+      svgIcons.classList.toggle('mobile-menu__svg--active');
+      section.classList.toggle('stats__container--active');
+      break;
+
+    case mobileMenuSettingsSection:
+      svgIcons.classList.toggle('mobile-menu__svg--active');
+      section.classList.toggle('settings__container--active');
+      break;
   }
 }
 // F2 ///////////////////////////////////////////////////////////// SLIDE WEEK 
@@ -452,6 +507,7 @@ const slideWeek = (e) => {
         handleSlide('toRight');
         break;
     }
+    setCurrentWeekHeight();
   }
 }
 // F1 ////////////////////////////////////////// ARCHIVE MODAL << SHOW ARCHIVE 
@@ -547,6 +603,7 @@ const addNewEntry = (e, value) => {
       lastWeek.className = 'week week--js week--visible week--slide-in-from-right';
     }
     handleArchiveLastEntry();
+    setCurrentWeekHeight();
   }
 }
 // F1 /////////////////////////////////////////////// ADJUST LAST ITEM OF LIST 
@@ -596,8 +653,7 @@ const removeLastEntry = (e) => {
       // add remove button on current last item
       handleArchiveLastEntry();
       updateWeekHeading();
-    } else {
-
+      setCurrentWeekHeight();
     }
   }
 }
@@ -670,7 +726,6 @@ const handleItemEdit = (e) => {
       break;
 
       case 27:
-      case archiveOverlay:
       case cancelButton:
         e.preventDefault();
         exitEditMode();
@@ -713,9 +768,14 @@ const addGlass = document.querySelector('.app__button--js-add');
 const removeGlass = document.querySelector('.app__button--js-remove');
 const counter = document.querySelector('.glass__counter--js');
 const counterMaxValue = 99;
+// NAVIGATION
+const burgerButton = document.querySelector('.burger-button--js');
+const mobileMenu = document.querySelector('.mobile-menu--js');
+const mobileMenuArchiveSection = document.querySelector('.mobile-menu__section--js-archive');
+const mobileMenuStatsSection = document.querySelector('.mobile-menu__section--js-stats');
+const mobileMenuSettingsSection = document.querySelector('.mobile-menu__section--js-settings');
 // ARCHIVE
 const archive = document.querySelector('.archive--js');
-const archiveOverlay = document.querySelector('.archive__overlay--js');
 const archiveWeeks = document.querySelector('.archive__weeks--js');
 const archiveButton = document.querySelector('.navigation__button--js-archive');
 const prevWeekButton = document.querySelector('.archive__button--js-prev');
@@ -739,6 +799,8 @@ handleData();
 setArchiveDOM();
 updateWeekHeading();
 
+toggleMobileMenu(burgerButton);                 // ! FOR TESTS ONLY
+
 //////////////////////////////////////////////////////////////////// VARIABLES 
 
 let editButtons = document.querySelectorAll('.edition__button--js-edit');
@@ -747,14 +809,7 @@ const addNewDayButton = document.querySelector('.entry__button--js-add');
 
 ////////////////////////////////////////////////////////////// EVENT LISTENERS 
 
-showArchive();  // ! for tests
-
 appContainer.addEventListener('click', updateCounter);
 archiveButton.addEventListener('click', showArchive);
-//loadMoreButton.addEventListener('click', loadMoreItems);
-
-/* for (let i = 0; i < editButtons.length; i++) {
-  const editButton = editButtons[i];
-  editButton.index = i;
-  editButton.addEventListener('click', handleItemEdit);
-} */
+burgerButton.addEventListener('click', toggleMobileMenu);
+mobileMenu.addEventListener('click', expandArchive);

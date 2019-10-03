@@ -1,39 +1,21 @@
 ////////////////////////////////////////////////////////////////////// ARCHIVE 
 .archive {
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
+  flex-grow: 1;
   width: 100%;
-  background-color: $cold-dark-blue;
   font-weight: 300;
   display: flex;
-  visibility: hidden;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: flex-end;
   align-items: center;
   padding-top: $layout-xs-header-height;
-  transform: translateY(-100%);
-  transition: transform 0.3s ease-in, visibility 0s 0.3s;
-  overflow-x: hidden;
-  overflow-y: auto;
-
-  &--visible {
-    visibility: visible;
-    transform: translateY(0);
-    transition: transform 0.3s ease-out, visibility 0s;
-  }
-
-  &__heading {
-    margin: 15px 0;
-    font-size: 1.3rem;
-    font-weight: normal;
-  }
 
   &__weeks {
+    background-color: $cold-dark-blue;
     position: relative;
     width: 100%;
-    height: 100%;
+    height: 0;
+    overflow: hidden;
+    transition: height $time-mobmenu-expand ease-in-out;
   }
 }
 ///////////////////////////////////////////////////////////////////////// WEEK 
@@ -42,7 +24,8 @@
   bottom: 0;
   right: 0;
   left: 0;
-  top: 0;
+  top: 20px;
+  height: 100%;
   visibility: hidden;
   transition: visibility 0s $time-week-slide;
   padding: 0 $layout-xs-sm-padding;

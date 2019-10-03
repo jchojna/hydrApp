@@ -12,9 +12,9 @@ $warm-yellow: #edcf84;
 
 /////////////////////////////////////////////////////////////////////// LAYOUT 
 // HEADER
-$layout-xs-header-height: 60px;
+$layout-xs-header-height: 64px;
 
-
+$size-main-buttons: 30px;
 $size-xs-archive-buttons: 25px;
 $size-sm-archive-buttons: 30px;
 
@@ -35,6 +35,9 @@ $time-hover-effect: 0.2s;
 $time-edit-mode: 0.2s;
 $time-edit-buttons: 0.5s;
 $time-week-slide: 0.5s;
+// MOBILE MENU
+$time-mobmenu-expand: 0.5s;
+$time-mobmenu-main: 0.4s;
 
 $edit-group-cols: 4;
 $edit-group-col-gap: 5px;
