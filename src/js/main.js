@@ -408,24 +408,6 @@ const toggleMobileMenu = (e) => {
 
     self.classList.toggle('burger-button--active');
     mobileMenu.classList.toggle('mobile-menu--visible');
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   }
 }
 // F1 /////////////////////////////////////////////////////////// SHOW ARCHIVE 
@@ -446,6 +428,43 @@ const showArchive = () => {
     window.addEventListener('keydown', enterNewEntryValue);
     window.addEventListener('keydown', removeLastEntry);
     window.addEventListener('keydown', slideWeek);
+  }
+}
+/*
+######## ##     ## ########     ###    ##    ## ########
+##        ##   ##  ##     ##   ## ##   ###   ## ##     ##
+##         ## ##   ##     ##  ##   ##  ####  ## ##     ##
+######      ###    ########  ##     ## ## ## ## ##     ##
+##         ## ##   ##        ######### ##  #### ##     ##
+##        ##   ##  ##        ##     ## ##   ### ##     ##
+######## ##     ## ##        ##     ## ##    ## ########
+*/
+// F1 ///////////////////////////////////////////////////////// EXPAND ARCHIVE 
+
+const expandArchive = (e) => {
+  const self = e.target;
+
+  switch (self) {
+    case mobileMenuArchiveSection:
+    case mobileMenuStatsSection:
+    case mobileMenuSettingsSection:
+      console.log('test');
+      break;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   }
 }
 // F2 ///////////////////////////////////////////////////////////// SLIDE WEEK 
@@ -700,7 +719,6 @@ const handleItemEdit = (e) => {
       break;
 
       case 27:
-      case archiveOverlay:
       case cancelButton:
         e.preventDefault();
         exitEditMode();
@@ -746,9 +764,11 @@ const counterMaxValue = 99;
 // NAVIGATION
 const burgerButton = document.querySelector('.burger-button--js');
 const mobileMenu = document.querySelector('.mobile-menu--js');
+const mobileMenuArchiveSection = document.querySelector('.mobile-menu__section--js-archive');
+const mobileMenuStatsSection = document.querySelector('.mobile-menu__section--js-stats');
+const mobileMenuSettingsSection = document.querySelector('.mobile-menu__section--js-settings');
 // ARCHIVE
 const archive = document.querySelector('.archive--js');
-const archiveOverlay = document.querySelector('.archive__overlay--js');
 const archiveWeeks = document.querySelector('.archive__weeks--js');
 const archiveButton = document.querySelector('.navigation__button--js-archive');
 const prevWeekButton = document.querySelector('.archive__button--js-prev');
@@ -785,3 +805,4 @@ const addNewDayButton = document.querySelector('.entry__button--js-add');
 appContainer.addEventListener('click', updateCounter);
 archiveButton.addEventListener('click', showArchive);
 burgerButton.addEventListener('click', toggleMobileMenu);
+mobileMenu.addEventListener('click', expandArchive);
