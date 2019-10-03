@@ -1,3 +1,51 @@
+///////////////////////////////////////////////////////////////////////// LOGO 
+.logo {
+  flex-grow: 1;
+  display: flex;
+  max-width: 150px;
+  height: 100%;
+
+  &__link {
+    @include flex-center;
+    position: relative;
+  }
+
+  &__svg {
+    fill: $cold-blue;
+    width: 100%;
+    height: 100%;
+
+    &--color {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      fill: $cold-light-blue;
+    }
+  }
+}
+//////////////////////////////////////////////////////////////// BURGER BUTTON 
+.burger-button {
+  @include flex-center;
+  fill: $cold-blue;
+  width: $size-logo-height;
+  padding: 5px;
+  transition: fill $time-hover-effect, transform $time-hover-effect;
+
+  &--active {
+    transform: rotate(90deg);
+  }
+
+  &:hover {
+    fill: $cold-light-blue;
+  }
+
+  &__svg {
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+}
 /////////////////////////////////////////////////////////////////// NAVIGATION 
 .navigation {
   flex-grow: 1;
@@ -34,84 +82,22 @@
     }
   }
 }
-//////////////////////////////////////////////////////////////// BURGER BUTTON 
-.burger-button {
-  @include flex-center;
-  fill: $cold-blue;
-  width: $size-logo-height;
-  padding: 5px;
-  transition: fill $time-hover-effect, transform $time-hover-effect;
-
-  &--active {
-    transform: rotate(90deg);
-  }
-
-  &:hover {
-    fill: $cold-light-blue;
-  }
-
-  &__svg {
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-  }
-}
 ////////////////////////////////////////////////////////////////// MOBILE MENU 
 .mobile-menu {
-  visibility: hidden;
   position: fixed;
   bottom: 0;
   right: 0;
   left: 0;
   top: 0;
-  background-color: $cold-dark-blue;
+  background-color: $cold-darkest-blue;
+  visibility: hidden;
+  transform: translateY(-100%);
+  transition: transform $time-mobile-menu ease-in, visibility 0s $time-mobile-menu;
   z-index: 1;
 
   &--visible {
     visibility: visible;
-  }
-
-
-  &__list {
-
-  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-}
-///////////////////////////////////////////////////////////////////////// LOGO 
-.logo {
-  flex-grow: 1;
-  display: flex;
-  height: $size-logo-height;
-
-  &__link {
-    @include flex-center;
-    position: relative;
-  }
-
-  &__svg {
-    fill: $cold-blue;
-    width: 100%;
-    height: $size-logo-height;
-
-
-    &--color {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      fill: $cold-light-blue;
-    }
+    transform: translateY(0);
+    transition: transform $time-mobile-menu ease-in, visibility 0s;
   }
 }
