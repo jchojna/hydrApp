@@ -417,8 +417,6 @@ const toggleMobileMenu = (e) => {
     self.classList.toggle('burger-button--active');
     mobileMenu.classList.toggle('mobile-menu--visible');
   }
-
-  console.log(hydrappArray[0].value);
 }
 // F1 /////////////////////////////////////////////////////////// SHOW ARCHIVE 
 
@@ -428,30 +426,15 @@ const showArchive = () => {
 
   if (archive.classList.contains('archive--visible')) {
     archive.classList.remove('archive--visible')
-    window.removeEventListener('keydown', enterNewEntryValue);
-    window.removeEventListener('keydown', removeLastEntry);
-    window.removeEventListener('keydown', slideWeek);
 
   } else {
 
     archive.classList.add('archive--visible');
-    window.addEventListener('keydown', enterNewEntryValue);
-    window.addEventListener('keydown', removeLastEntry);
-    window.addEventListener('keydown', slideWeek);
   }
 }
-/*
-######## ##     ## ########     ###    ##    ## ########
-##        ##   ##  ##     ##   ## ##   ###   ## ##     ##
-##         ## ##   ##     ##  ##   ##  ####  ## ##     ##
-######      ###    ########  ##     ## ## ## ## ##     ##
-##         ## ##   ##        ######### ##  #### ##     ##
-##        ##   ##  ##        ##     ## ##   ### ##     ##
-######## ##     ## ##        ##     ## ##    ## ########
-*/
 // F1 ///////////////////////////////////////////////////////// EXPAND ARCHIVE 
 
-const expandArchive = (e) => {                      // ! to DRY !
+const toggleArchive = (e) => {                      // ! to DRY !
   const self = e.target;
   const svgIcons = self.lastElementChild;
   const section = self.nextElementSibling;
@@ -461,9 +444,19 @@ const expandArchive = (e) => {                      // ! to DRY !
       
       svgIcons.classList.toggle('mobile-menu__svg--active');
       if (svgIcons.classList.contains('mobile-menu__svg--active')) {
+
         setCurrentWeekHeight();
+        window.addEventListener('keydown', enterNewEntryValue);
+        window.addEventListener('keydown', removeLastEntry);
+        window.addEventListener('keydown', slideWeek);
+
       } else {
+
         section.style.height = 0;
+        window.removeEventListener('keydown', enterNewEntryValue);
+        window.removeEventListener('keydown', removeLastEntry);
+        window.removeEventListener('keydown', slideWeek);
+
       }
       break;
     
@@ -561,6 +554,7 @@ const enterNewEntryValue = (e) => {
   
         case 13:
         case newEntrySave:
+          e.preventDefault();
           addNewEntry(e, value);
           modeOff();
           break;
@@ -579,6 +573,8 @@ const addNewEntry = (e, value) => {
   const self = e.keyCode || e.target;
 
   if (self === 13 || self === newEntrySave) {
+
+    e.preventDefault();
 
     let lastEntryIndex = hydrappArray.length - 1;
     const lastEntry = document.querySelectorAll('.entry--js')[lastEntryIndex];
@@ -806,7 +802,7 @@ handleData();
 setArchiveDOM();
 updateWeekHeading();
 
-toggleMobileMenu(burgerButton);                 // ! FOR TESTS ONLY
+//toggleMobileMenu(burgerButton);                 // ! FOR TESTS ONLY
 
 //////////////////////////////////////////////////////////////////// VARIABLES 
 
@@ -817,6 +813,5 @@ const addNewDayButton = document.querySelector('.entry__button--js-add');
 ////////////////////////////////////////////////////////////// EVENT LISTENERS 
 
 appContainer.addEventListener('click', updateCounter);
-archiveButton.addEventListener('click', showArchive);
 burgerButton.addEventListener('click', toggleMobileMenu);
-mobileMenu.addEventListener('click', expandArchive);
+mobileMenu.addEventListener('click', toggleArchive);
