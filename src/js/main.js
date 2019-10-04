@@ -277,24 +277,27 @@ const updateCounter = (e) => {
   const self = e.target || e;
   const key = setDateKey();
   let value = parseInt(localStorage.getItem(key));
+  const firstArchiveEntry = document.querySelector('.entry__value--js');
 
-  switch (self) {
+  switch (self) {                                                     // ! REFACTOR
     case 'displayValue':
       counter.innerHTML = value;
       break;
     
-    case addGlass:
+    case addGlass:                                                    // ! REFACTOR
       value < counterMaxValue ? value++ : value = counterMaxValue;
       localStorage.setItem(key, value);
-      hydrappArray[0].value = value;
+      hydrappArray[0].value = key;
       counter.innerHTML = value;
+      firstArchiveEntry.textContent = hydrappArray[0].value;
       break;
 
-    case removeGlass:
+    case removeGlass:                                                 // ! REFACTOR
       value > 0 ? value-- : value = 0;
       localStorage.setItem(key, value);
-      hydrappArray[0].value = value;
+      hydrappArray[0].value = key;
       counter.innerHTML = value;
+      firstArchiveEntry.textContent = hydrappArray[0].value;
       break;
   }
 }
@@ -414,6 +417,8 @@ const toggleMobileMenu = (e) => {
     self.classList.toggle('burger-button--active');
     mobileMenu.classList.toggle('mobile-menu--visible');
   }
+
+  console.log(hydrappArray[0].value);
 }
 // F1 /////////////////////////////////////////////////////////// SHOW ARCHIVE 
 
@@ -704,6 +709,7 @@ const handleItemEdit = (e) => {
   const handleEdition = (e) => {
     const self = e.keyCode || e.target;
     let dayValue = parseInt(entryValue.textContent);
+    const glassCounter = document.querySelector('.glass__counter--js');
 
     const {key, id} = hydrappArray[itemIndex];
 
@@ -737,6 +743,7 @@ const handleItemEdit = (e) => {
         localStorage.setItem(key, dayValue);
         // setter function
         hydrappArray[itemIndex].value = key;
+        glassCounter.textContent = hydrappArray[0].value;
         exitEditMode();
       break;
     }
