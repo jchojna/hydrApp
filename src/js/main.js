@@ -221,7 +221,7 @@ const createAddEntryButton = () => {
   addEntryButton.className = 'entry entry__add';
   addEntryButton.innerHTML = `
     <button class="button entry__button entry__button--add entry__button--js-add">
-      Add new day..
+      Add previous day..
     </button>
   `;
   addEntryButton.addEventListener('click', enterNewEntryValue);
@@ -349,6 +349,11 @@ const setArchiveDOM = () => {
   weeks[currentWeekIndex].classList.add('week--visible');
   // set 'remove entry' button on the last entry
   handleArchiveLastEntry();
+
+  // generate indicators for new entry mode
+  const indicatorsContainer = document.querySelector('.indicator--js-new');
+  indicatorsContainer.innerHTML = indicators;
+  setIndicators('new', 0);
 }
 // F2 /////////////////////////////////////////////////////// SET WEEK HEADING 
 
@@ -506,13 +511,14 @@ const slideWeek = (e) => {
         break;
     }
     setCurrentWeekHeight();
+    entriesFadeIn();
   }
 }
 // F1 ////////////////////////////////////////// ARCHIVE MODAL << SHOW ARCHIVE 
 
 const enterNewEntryValue = (e) => {
 
-  const self = e.keyCode || e.target;
+  const self = e.keyCode || e.target || e;                // ! e only for tests
   const addEntryButton = document.querySelector('.entry__button--js-add');
 
   if (self === 107 || self === addEntryButton) {
@@ -539,12 +545,14 @@ const enterNewEntryValue = (e) => {
         case newEntryDecrease:
           value !== 0 ? value-- : false;
           newEntryValue.textContent = value;
+          setIndicators('new', value);
           break;
 
         case 39:
         case newEntryIncrease:
           value !== counterMaxValue ? value++ : false;
           newEntryValue.textContent = value;
+          setIndicators('new', value);
           break;
   
         case 27:
@@ -802,7 +810,8 @@ handleData();
 setArchiveDOM();
 updateWeekHeading();
 
-//toggleMobileMenu(burgerButton);                 // ! FOR TESTS ONLY
+//toggleMobileMenu(burgerButton);                           // ! FOR TESTS ONLY
+//enterNewEntryValue(107);                                    // ! FOR TESTS ONLY
 
 //////////////////////////////////////////////////////////////////// VARIABLES 
 

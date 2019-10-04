@@ -18,6 +18,15 @@
     transition: height $time-mobmenu-expand ease-in-out;
   }
 }
+/*
+##      ## ######## ######## ##    ##
+##  ##  ## ##       ##       ##   ##
+##  ##  ## ##       ##       ##  ##
+##  ##  ## ######   ######   #####
+##  ##  ## ##       ##       ##  ##
+##  ##  ## ##       ##       ##   ##
+ ###  ###  ######## ######## ##    ##
+*/
 ///////////////////////////////////////////////////////////////////////// WEEK 
 .week {
   position: absolute;
@@ -291,6 +300,11 @@
   @media only screen and (min-width: $media-sm) {
     width: $size-sm-archive-buttons;
     height: $size-sm-archive-buttons;
+  }
+
+  &--new {
+    height: 100%;
+    width: 100%;
   }
 
   &__svg {
