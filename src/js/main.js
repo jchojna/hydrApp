@@ -423,21 +423,19 @@ const toggleMobileMenu = (e) => {
     mobileMenu.classList.toggle('mobile-menu--visible');
   }
 }
-// F1 /////////////////////////////////////////////////////////// SHOW ARCHIVE 
+// F1 /////////////////////////////////////////////////// ANIMATE WEEK ENTRIES 
 
-const showArchive = () => {
+const entriesFadeIn = () => {
+  const currentWeekList = document.querySelectorAll('.week__list--js')[currentWeekIndex];
+  let delay = 0.1;
 
-  entries = document.querySelectorAll('.entry--js');
-
-  if (archive.classList.contains('archive--visible')) {
-    archive.classList.remove('archive--visible')
-
-  } else {
-
-    archive.classList.add('archive--visible');
-  }
+  [...currentWeekList.children].forEach(elem => {
+    elem.classList.add('entry--visible');
+    elem.style.transitionDelay = `${delay}s`;
+    delay += 0.1;
+  });
 }
-// F1 ///////////////////////////////////////////////////////// EXPAND ARCHIVE 
+// F1 ///////////////////////////////////////////////////////// TOGGLE ARCHIVE 
 
 const toggleArchive = (e) => {                      // ! to DRY !
   const self = e.target;
@@ -451,6 +449,7 @@ const toggleArchive = (e) => {                      // ! to DRY !
       if (svgIcons.classList.contains('mobile-menu__svg--active')) {
 
         setCurrentWeekHeight();
+        entriesFadeIn();
         window.addEventListener('keydown', enterNewEntryValue);
         window.addEventListener('keydown', removeLastEntry);
         window.addEventListener('keydown', slideWeek);
@@ -458,6 +457,7 @@ const toggleArchive = (e) => {                      // ! to DRY !
       } else {
 
         section.style.height = 0;
+        entriesFadeIn();
         window.removeEventListener('keydown', enterNewEntryValue);
         window.removeEventListener('keydown', removeLastEntry);
         window.removeEventListener('keydown', slideWeek);
@@ -585,7 +585,7 @@ const addNewEntry = (e, value) => {
     e.preventDefault();
 
     let lastEntryIndex = hydrappArray.length - 1;
-    const lastEntry = document.querySelectorAll('.entry--js')[lastEntryIndex];
+    let lastEntry = document.querySelectorAll('.entry--js')[lastEntryIndex];
     lastEntry.classList.remove('entry--last');
 
     lastEntryDate.setDate(lastEntryDate.getDate() - 1);
@@ -600,6 +600,8 @@ const addNewEntry = (e, value) => {
     // create new entry node
     lastEntryIndex = hydrappArray.length - 1;
     addArchiveNode(lastEntryIndex, 'add');
+    lastEntry = document.querySelectorAll('.entry--js')[lastEntryIndex];
+    lastEntry.classList.add('entry--visible');
 
     // jump to the last week
     const weeks = archiveWeeks.children;
@@ -758,7 +760,6 @@ const handleItemEdit = (e) => {
   archive.addEventListener('click', handleEdition);
   archive.addEventListener('keydown', handleEdition);
   window.removeEventListener('keydown', slideWeek);
-
 }
 // F2 //////////////////////////////////////////////// END OF HANDLE ITEM EDIT 
 

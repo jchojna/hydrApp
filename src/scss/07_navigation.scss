@@ -106,15 +106,17 @@
   }
 
   &__section {
+    @include flex-center;
+    justify-content: space-between;
     width: 100%;
-    display: grid;
     fill: $cold-blue;
     padding: 0 $layout-xs-sm-padding;
-    grid-template-columns: $size-main-buttons 1fr $size-main-buttons;
+    grid-template-columns: 1fr 40px;
     cursor: pointer;
 
     &::before { // needed to make heading in the center
       content: "";
+      width: $size-main-buttons;
     }
 
     &:hover {
@@ -130,11 +132,12 @@
     font-weight: normal;
     text-align: center;
     pointer-events: none;
+    width: 200px;
   }
 
   &__svg {
-    width: 100%;
-    height: 100%;
+    width: $size-main-buttons;
+    height: $size-main-buttons;
     pointer-events: none;
     transition: transform 0.4s;
 
