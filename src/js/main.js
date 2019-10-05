@@ -819,8 +819,8 @@ handleData();
 setArchiveDOM();
 updateWeekHeading();
 
-//toggleMobileMenu(burgerButton);                           // ! FOR TESTS ONLY
-//enterNewEntryValue(107);                                    // ! FOR TESTS ONLY
+toggleMobileMenu(burgerButton);                           // ! FOR TESTS ONLY
+enterNewEntryValue(107);                                    // ! FOR TESTS ONLY
 
 //////////////////////////////////////////////////////////////////// VARIABLES 
 

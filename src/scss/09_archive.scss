@@ -281,13 +281,20 @@
 
   &__container {
     display: grid;
-    grid-template-columns: repeat(2, $size-xs-archive-add-new);
+    grid-template-columns: $size-xs-archive-add-new;
     grid-auto-rows: $size-xs-archive-add-new;
+    grid-template-areas:
+      "date indicator"
+      "value value"
+      "value value"
+      "down up"
+      "cancel save";
     grid-gap: 1rem;
   }
 
   &__value {
     @include flex-center;
+    grid-area: value;
     font-size: 6rem;
     font-weight: bold;
     margin: 0;
@@ -307,6 +314,12 @@
     &:hover {
       fill: $cold-light-blue;
     }
+
+    &--decrease { grid-area: down; };
+    &--increase { grid-area: up; };
+    &--cancel { grid-area: cancel; };
+    &--save { grid-area: save; };
+    &--date { grid-area: date; };
   }
 
   &__svg {
@@ -420,6 +433,7 @@
   &--new {
     height: 100%;
     width: 100%;
+    grid-area: indicator;
   }
 
   &__svg {
