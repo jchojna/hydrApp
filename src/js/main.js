@@ -425,15 +425,22 @@ const toggleMobileMenu = (e) => {
 }
 // F1 /////////////////////////////////////////////////// ANIMATE WEEK ENTRIES 
 
-const entriesFadeIn = () => {
+const entriesFade = (action) => {
   const currentWeekList = document.querySelectorAll('.week__list--js')[currentWeekIndex];
-  let delay = 0.1;
+  let delay = 0;
 
-  [...currentWeekList.children].forEach(elem => {
-    elem.classList.add('entry--visible');
-    elem.style.transitionDelay = `${delay}s`;
-    delay += 0.1;
-  });
+  if (action === 'in') {
+    [...currentWeekList.children].forEach(elem => {
+      elem.classList.add('entry--visible');
+      elem.style.transitionDelay = `${delay}s`;
+      delay += 0.1;
+    });
+  } else if (action === 'out') {
+    [...currentWeekList.children].reverse().forEach(elem => {
+      elem.classList.remove('entry--visible');
+      elem.style.transitionDelay = 0;
+    });
+  }
 }
 // F1 ///////////////////////////////////////////////////////// TOGGLE ARCHIVE 
 
@@ -449,7 +456,7 @@ const toggleArchive = (e) => {                      // ! to DRY !
       if (svgIcons.classList.contains('mobile-menu__svg--active')) {
 
         setCurrentWeekHeight();
-        entriesFadeIn();
+        entriesFade('in');
         window.addEventListener('keydown', enterNewEntryValue);
         window.addEventListener('keydown', removeLastEntry);
         window.addEventListener('keydown', slideWeek);
@@ -457,7 +464,7 @@ const toggleArchive = (e) => {                      // ! to DRY !
       } else {
 
         section.style.height = 0;
-        entriesFadeIn();
+        entriesFade('out');
         window.removeEventListener('keydown', enterNewEntryValue);
         window.removeEventListener('keydown', removeLastEntry);
         window.removeEventListener('keydown', slideWeek);
@@ -511,7 +518,7 @@ const slideWeek = (e) => {
         break;
     }
     setCurrentWeekHeight();
-    entriesFadeIn();
+    entriesFade('in');
   }
 }
 // F1 ////////////////////////////////////////// ARCHIVE MODAL << SHOW ARCHIVE 
@@ -602,6 +609,7 @@ const addNewEntry = (e, value) => {
     addArchiveNode(lastEntryIndex, 'add');
     lastEntry = document.querySelectorAll('.entry--js')[lastEntryIndex];
     lastEntry.classList.add('entry--visible');
+    lastEntry.classList.add('entry--fadeIn');
 
     // jump to the last week
     const weeks = archiveWeeks.children;
