@@ -131,8 +131,6 @@
 //////////////////////////////////////////////////////////////////////// ENTRY 
 .entry {
   display: grid;
-  visibility: hidden;
-  opacity: 0;
   grid-template-columns: 1fr repeat(3, auto);
   grid-gap: 5px;
   align-items: center;
