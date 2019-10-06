@@ -528,11 +528,24 @@ const enterNewEntryValue = (e) => {
   const self = e.keyCode || e.target || e;                // ! e only for tests
   const addEntryButton = document.querySelector('.entry__button--js-add');
 
+  // set day and date for display
+  const displayDate = new Date();
+  const lastEntryKey = hydrappArray[hydrappArray.length - 1].key;
+                                   
+  while (setDateKey(displayDate) !== lastEntryKey) displayDate.setDate(displayDate.getDate() - 1);
+  displayDate.setDate(displayDate.getDate() - 1);
+
+  const displayEntry = new Entry(displayDate);
+  const day = displayEntry.day;
+  const date = displayEntry.date;
+
   if (self === 107 || self === addEntryButton) {
 
     let value = 0;
     newEntryMode.classList.add('new-entry--visible');
     newEntryValue.textContent = value;
+    newEntryDay.textContent = day;
+    newEntryDate.textContent = date;
   
     const modeOff = () => {
       newEntryMode.classList.remove('new-entry--visible');
@@ -806,6 +819,8 @@ let currentWeekIndex = 0;
 // NEW ENTRY
 const newEntryMode = document.querySelector('.new-entry--js');
 const newEntryValue = document.querySelector('.new-entry__value--js');
+const newEntryDay = document.querySelector('.new-entry__day--js');
+const newEntryDate = document.querySelector('.new-entry__date--js');
 const newEntryDecrease = document.querySelector('.new-entry__button--js-decrease');
 const newEntryIncrease = document.querySelector('.new-entry__button--js-increase');
 const newEntryCancel = document.querySelector('.new-entry__button--js-cancel');
