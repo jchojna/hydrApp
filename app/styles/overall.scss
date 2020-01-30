@@ -1,6 +1,13 @@
 @import 'variables.scss';
 @import 'mixins.scss';
 
+.browserupgrade {
+  margin: 0.2em 0;
+  background: #ccc;
+  color: #000;
+  padding: 0.2em 0;
+}
+
 html {
   box-sizing: border-box;
   scroll-behavior: smooth;
@@ -14,6 +21,7 @@ html {
 }
 
 body {
+  background: #fafafa;
   color: $cold-light-blue;
   font-family: "Nunito", Arial, sans-serif;
   font-weight: medium;

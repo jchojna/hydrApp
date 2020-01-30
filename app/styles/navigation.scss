@@ -60,29 +60,6 @@
     margin: 0;
     padding: 0;
   }
-
-  &__item {
-  }
-
-  &__button {
-    display: none;
-    color: $cold-light-blue;
-    padding: 0.5rem;
-    border: 2px solid transparent;
-
-    &:hover {
-      border-bottom-color: $cold-light-blue;
-    }
-  }
-
-  @media only screen and (min-width: $media-md) {
-    & {
-
-      &__button {
-        display: block;
-      }
-    }
-  }
 }
 ////////////////////////////////////////////////////////////////// MOBILE MENU 
 .mobile-menu {
