@@ -133,13 +133,6 @@ class Entry {
     const dayIndex = date.getDay();
     this._day = weekDay[dayIndex];
   }
-
-  /* get totalHeight() {
-    return this._totalHeight;
-  }
-  set totalHeight(amount) {
-    this._totalHeight = amount * this.itemHeight;
-  } */
 }
 
 //////////////////////////////////////////////////////////////////// FUNCTIONS 
@@ -193,6 +186,18 @@ const limit = (max, num, action) => {
   action === 'decrease' ? num <= 0 ? false : num-- : false;
   return num;
 }
+// F0 ////////////////////////// SET CURRENTLY DISPLAYED ARCHIVE WEEK'S HEIGHT 
+
+const setCurrentWeekHeight = () => {
+  
+  const currentWeek = document.querySelectorAll('.week--js')[currentWeekIndex];
+  const childrenArray = [...currentWeek.children];
+  const childrenHeight = childrenArray.reduce((a,b) => a + b.clientHeight, 0);
+  const offsetHeight = 40;
+  const finalHeight = childrenHeight + offsetHeight;
+
+  archiveWeeks.style.height = `${finalHeight}px`;
+}
 // F0 ///////////////////////////////////////////////////////// SET INDICATORS 
 
 const setIndicators = (id, value) => {
@@ -216,7 +221,7 @@ const createAddEntryButton = () => {
   addEntryButton.className = 'entry entry__add';
   addEntryButton.innerHTML = `
     <button class="button entry__button entry__button--add entry__button--js-add">
-      Add new day..
+      Add previous day..
     </button>
   `;
   addEntryButton.addEventListener('click', enterNewEntryValue);
@@ -272,24 +277,27 @@ const updateCounter = (e) => {
   const self = e.target || e;
   const key = setDateKey();
   let value = parseInt(localStorage.getItem(key));
+  const firstArchiveEntry = document.querySelector('.entry__value--js');
 
-  switch (self) {
+  switch (self) {                                                     // ! REFACTOR
     case 'displayValue':
       counter.innerHTML = value;
       break;
     
-    case addGlass:
+    case addGlass:                                                    // ! REFACTOR
       value < counterMaxValue ? value++ : value = counterMaxValue;
       localStorage.setItem(key, value);
-      hydrappArray[0].value = value;
+      hydrappArray[0].value = key;
       counter.innerHTML = value;
+      firstArchiveEntry.textContent = hydrappArray[0].value;
       break;
 
-    case removeGlass:
+    case removeGlass:                                                 // ! REFACTOR
       value > 0 ? value-- : value = 0;
       localStorage.setItem(key, value);
-      hydrappArray[0].value = value;
+      hydrappArray[0].value = key;
       counter.innerHTML = value;
+      firstArchiveEntry.textContent = hydrappArray[0].value;
       break;
   }
 }
@@ -341,6 +349,11 @@ const setArchiveDOM = () => {
   weeks[currentWeekIndex].classList.add('week--visible');
   // set 'remove entry' button on the last entry
   handleArchiveLastEntry();
+
+  // generate indicators for new entry mode
+  const indicatorsContainer = document.querySelector('.indicator--js-new');
+  indicatorsContainer.innerHTML = indicators;
+  setIndicators('new', 0);
 }
 // F2 /////////////////////////////////////////////////////// SET WEEK HEADING 
 
@@ -349,6 +362,7 @@ const updateWeekHeading = () => {
   const weekLists = document.querySelectorAll('.week__list--js');
   const weekHeadings = document.querySelectorAll('.week__heading--js');
 
+  // F0 ///////////////////////////////////////////////////////////// GET DATE 
   const getDate = (element) => {
 
     if (element) {
@@ -358,7 +372,7 @@ const updateWeekHeading = () => {
       return false;
     }
   }
-
+  // F0 /////////////////////////////////////////////// SET BUTTONS VISIBILITY 
   const setButtonsVisiblity = (index, option) => {
     const prevWeekButton = document.querySelectorAll('.week__button--js-prev')[index];
     const nextWeekButton = document.querySelectorAll('.week__button--js-next')[index];
@@ -398,24 +412,75 @@ const updateWeekHeading = () => {
     weekLists.length > 1 ? setButtonsVisiblity(i) : setButtonsVisiblity(i, 'oneWeek');
   }
 }
-// F1 /////////////////////////////////////////////////////////// SHOW ARCHIVE 
+// F1 ///////////////////////////////////////////////////// TOGGLE MOBILE MENU 
 
-const showArchive = () => {
+const toggleMobileMenu = (e) => {
+  const self = e.target || e;
 
-  entries = document.querySelectorAll('.entry--js');
+  if (self === burgerButton) {
 
-  if (archive.classList.contains('archive--visible')) {
-    archive.classList.remove('archive--visible')
-    window.removeEventListener('keydown', enterNewEntryValue);
-    window.removeEventListener('keydown', removeLastEntry);
-    window.removeEventListener('keydown', slideWeek);
+    self.classList.toggle('burger-button--active');
+    mobileMenu.classList.toggle('mobile-menu--visible');
+  }
+}
+// F1 /////////////////////////////////////////////////// ANIMATE WEEK ENTRIES 
 
-  } else {
+const entriesFade = (action) => {
+  const currentWeekList = document.querySelectorAll('.week__list--js')[currentWeekIndex];
+  let delay = 0;
 
-    archive.classList.add('archive--visible');
-    window.addEventListener('keydown', enterNewEntryValue);
-    window.addEventListener('keydown', removeLastEntry);
-    window.addEventListener('keydown', slideWeek);
+  if (action === 'in') {
+    [...currentWeekList.children].forEach(elem => {
+      elem.classList.add('entry--visible');
+      elem.style.transitionDelay = `${delay}s`;
+      delay += 0.1;
+    });
+  } else if (action === 'out') {
+    [...currentWeekList.children].reverse().forEach(elem => {
+      elem.classList.remove('entry--visible');
+      elem.style.transitionDelay = 0;
+    });
+  }
+}
+// F1 ///////////////////////////////////////////////////////// TOGGLE ARCHIVE 
+
+const toggleArchive = (e) => {                      // ! to DRY !
+  const self = e.target;
+  const svgIcons = self.lastElementChild;
+  const section = self.nextElementSibling;
+
+  switch (self) {
+    case mobileMenuArchiveSection:
+      
+      svgIcons.classList.toggle('mobile-menu__svg--active');
+      if (svgIcons.classList.contains('mobile-menu__svg--active')) {
+
+        setCurrentWeekHeight();
+        entriesFade('in');
+        window.addEventListener('keydown', enterNewEntryValue);
+        window.addEventListener('keydown', removeLastEntry);
+        window.addEventListener('keydown', slideWeek);
+
+      } else {
+
+        section.style.height = 0;
+        entriesFade('out');
+        window.removeEventListener('keydown', enterNewEntryValue);
+        window.removeEventListener('keydown', removeLastEntry);
+        window.removeEventListener('keydown', slideWeek);
+
+      }
+      break;
+    
+    case mobileMenuStatsSection:
+      svgIcons.classList.toggle('mobile-menu__svg--active');
+      section.classList.toggle('stats__container--active');
+      break;
+
+    case mobileMenuSettingsSection:
+      svgIcons.classList.toggle('mobile-menu__svg--active');
+      section.classList.toggle('settings__container--active');
+      break;
   }
 }
 // F2 ///////////////////////////////////////////////////////////// SLIDE WEEK 
@@ -452,20 +517,35 @@ const slideWeek = (e) => {
         handleSlide('toRight');
         break;
     }
+    setCurrentWeekHeight();
+    entriesFade('in');
   }
 }
 // F1 ////////////////////////////////////////// ARCHIVE MODAL << SHOW ARCHIVE 
 
 const enterNewEntryValue = (e) => {
 
-  const self = e.keyCode || e.target;
+  const self = e.keyCode || e.target || e;                // ! e only for tests
   const addEntryButton = document.querySelector('.entry__button--js-add');
+
+  // set day and date for display
+  const displayDate = new Date();
+  const lastEntryKey = hydrappArray[hydrappArray.length - 1].key;
+                                   
+  while (setDateKey(displayDate) !== lastEntryKey) displayDate.setDate(displayDate.getDate() - 1);
+  displayDate.setDate(displayDate.getDate() - 1);
+
+  const displayEntry = new Entry(displayDate);
+  const day = displayEntry.day;
+  const date = displayEntry.date;
 
   if (self === 107 || self === addEntryButton) {
 
     let value = 0;
     newEntryMode.classList.add('new-entry--visible');
     newEntryValue.textContent = value;
+    newEntryDay.textContent = day;
+    newEntryDate.textContent = date;
   
     const modeOff = () => {
       newEntryMode.classList.remove('new-entry--visible');
@@ -485,12 +565,14 @@ const enterNewEntryValue = (e) => {
         case newEntryDecrease:
           value !== 0 ? value-- : false;
           newEntryValue.textContent = value;
+          setIndicators('new', value);
           break;
 
         case 39:
         case newEntryIncrease:
           value !== counterMaxValue ? value++ : false;
           newEntryValue.textContent = value;
+          setIndicators('new', value);
           break;
   
         case 27:
@@ -500,6 +582,7 @@ const enterNewEntryValue = (e) => {
   
         case 13:
         case newEntrySave:
+          e.preventDefault();
           addNewEntry(e, value);
           modeOff();
           break;
@@ -519,8 +602,10 @@ const addNewEntry = (e, value) => {
 
   if (self === 13 || self === newEntrySave) {
 
+    e.preventDefault();
+
     let lastEntryIndex = hydrappArray.length - 1;
-    const lastEntry = document.querySelectorAll('.entry--js')[lastEntryIndex];
+    let lastEntry = document.querySelectorAll('.entry--js')[lastEntryIndex];
     lastEntry.classList.remove('entry--last');
 
     lastEntryDate.setDate(lastEntryDate.getDate() - 1);
@@ -535,6 +620,9 @@ const addNewEntry = (e, value) => {
     // create new entry node
     lastEntryIndex = hydrappArray.length - 1;
     addArchiveNode(lastEntryIndex, 'add');
+    lastEntry = document.querySelectorAll('.entry--js')[lastEntryIndex];
+    lastEntry.classList.add('entry--visible');
+    lastEntry.classList.add('entry--fadeIn');
 
     // jump to the last week
     const weeks = archiveWeeks.children;
@@ -547,6 +635,7 @@ const addNewEntry = (e, value) => {
       lastWeek.className = 'week week--js week--visible week--slide-in-from-right';
     }
     handleArchiveLastEntry();
+    setCurrentWeekHeight();
   }
 }
 // F1 /////////////////////////////////////////////// ADJUST LAST ITEM OF LIST 
@@ -596,8 +685,7 @@ const removeLastEntry = (e) => {
       // add remove button on current last item
       handleArchiveLastEntry();
       updateWeekHeading();
-    } else {
-
+      setCurrentWeekHeight();
     }
   }
 }
@@ -648,6 +736,7 @@ const handleItemEdit = (e) => {
   const handleEdition = (e) => {
     const self = e.keyCode || e.target;
     let dayValue = parseInt(entryValue.textContent);
+    const glassCounter = document.querySelector('.glass__counter--js');
 
     const {key, id} = hydrappArray[itemIndex];
 
@@ -670,7 +759,6 @@ const handleItemEdit = (e) => {
       break;
 
       case 27:
-      case archiveOverlay:
       case cancelButton:
         e.preventDefault();
         exitEditMode();
@@ -682,6 +770,7 @@ const handleItemEdit = (e) => {
         localStorage.setItem(key, dayValue);
         // setter function
         hydrappArray[itemIndex].value = key;
+        glassCounter.textContent = hydrappArray[0].value;
         exitEditMode();
       break;
     }
@@ -692,7 +781,6 @@ const handleItemEdit = (e) => {
   archive.addEventListener('click', handleEdition);
   archive.addEventListener('keydown', handleEdition);
   window.removeEventListener('keydown', slideWeek);
-
 }
 // F2 //////////////////////////////////////////////// END OF HANDLE ITEM EDIT 
 
@@ -713,9 +801,14 @@ const addGlass = document.querySelector('.app__button--js-add');
 const removeGlass = document.querySelector('.app__button--js-remove');
 const counter = document.querySelector('.glass__counter--js');
 const counterMaxValue = 99;
+// NAVIGATION
+const burgerButton = document.querySelector('.burger-button--js');
+const mobileMenu = document.querySelector('.mobile-menu--js');
+const mobileMenuArchiveSection = document.querySelector('.mobile-menu__section--js-archive');
+const mobileMenuStatsSection = document.querySelector('.mobile-menu__section--js-stats');
+const mobileMenuSettingsSection = document.querySelector('.mobile-menu__section--js-settings');
 // ARCHIVE
 const archive = document.querySelector('.archive--js');
-const archiveOverlay = document.querySelector('.archive__overlay--js');
 const archiveWeeks = document.querySelector('.archive__weeks--js');
 const archiveButton = document.querySelector('.navigation__button--js-archive');
 const prevWeekButton = document.querySelector('.archive__button--js-prev');
@@ -726,6 +819,8 @@ let currentWeekIndex = 0;
 // NEW ENTRY
 const newEntryMode = document.querySelector('.new-entry--js');
 const newEntryValue = document.querySelector('.new-entry__value--js');
+const newEntryDay = document.querySelector('.new-entry__day--js');
+const newEntryDate = document.querySelector('.new-entry__date--js');
 const newEntryDecrease = document.querySelector('.new-entry__button--js-decrease');
 const newEntryIncrease = document.querySelector('.new-entry__button--js-increase');
 const newEntryCancel = document.querySelector('.new-entry__button--js-cancel');
@@ -739,6 +834,9 @@ handleData();
 setArchiveDOM();
 updateWeekHeading();
 
+//toggleMobileMenu(burgerButton);                           // ! FOR TESTS ONLY
+//enterNewEntryValue(107);                                    // ! FOR TESTS ONLY
+
 //////////////////////////////////////////////////////////////////// VARIABLES 
 
 let editButtons = document.querySelectorAll('.edition__button--js-edit');
@@ -747,14 +845,6 @@ const addNewDayButton = document.querySelector('.entry__button--js-add');
 
 ////////////////////////////////////////////////////////////// EVENT LISTENERS 
 
-showArchive();  // ! for tests
-
 appContainer.addEventListener('click', updateCounter);
-archiveButton.addEventListener('click', showArchive);
-//loadMoreButton.addEventListener('click', loadMoreItems);
-
-/* for (let i = 0; i < editButtons.length; i++) {
-  const editButton = editButtons[i];
-  editButton.index = i;
-  editButton.addEventListener('click', handleItemEdit);
-} */
+burgerButton.addEventListener('click', toggleMobileMenu);
+mobileMenu.addEventListener('click', toggleArchive);

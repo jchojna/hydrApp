@@ -1,0 +1,148 @@
+///////////////////////////////////////////////////////////////////////// LOGO 
+.logo {
+  flex-grow: 1;
+  display: flex;
+  max-width: 150px;
+  height: 100%;
+
+  &__link {
+    @include flex-center;
+    position: relative;
+  }
+
+  &__svg {
+    fill: $cold-blue;
+    width: 100%;
+    height: 100%;
+
+    &--color {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      fill: $cold-light-blue;
+    }
+  }
+}
+//////////////////////////////////////////////////////////////// BURGER BUTTON 
+.burger-button {
+  @include flex-center;
+  fill: $cold-blue;
+  width: $size-main-buttons;
+  transition: fill $time-hover-effect, transform $time-hover-effect;
+
+  &--active {
+    transform: rotate(90deg);
+  }
+
+  &:hover {
+    fill: $cold-light-blue;
+  }
+
+  &__svg {
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+}
+/////////////////////////////////////////////////////////////////// NAVIGATION 
+.navigation {
+  flex-grow: 1;
+
+  &__list {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  &__item {
+  }
+
+  &__button {
+    display: none;
+    color: $cold-light-blue;
+    padding: 0.5rem;
+    border: 2px solid transparent;
+
+    &:hover {
+      border-bottom-color: $cold-light-blue;
+    }
+  }
+
+  @media only screen and (min-width: $media-md) {
+    & {
+
+      &__button {
+        display: block;
+      }
+    }
+  }
+}
+////////////////////////////////////////////////////////////////// MOBILE MENU 
+.mobile-menu {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  top: 0;
+  background-color: $cold-darkest-blue;
+  visibility: hidden;
+  transform: translateY(-100%);
+  transition: transform $time-mobmenu-main ease-in, visibility 0s $time-mobmenu-main;
+  overflow: auto;
+  z-index: 1;
+
+  &--visible {
+    visibility: visible;
+    transform: translateY(0);
+    transition: transform $time-mobmenu-main ease-in, visibility 0s;
+  }
+
+  &__section {
+    @include flex-center;
+    justify-content: space-between;
+    width: 100%;
+    fill: $cold-blue;
+    padding: 0 $layout-xs-sm-padding;
+    grid-template-columns: 1fr 40px;
+    cursor: pointer;
+
+    &::before { // needed to make heading in the center
+      content: "";
+      width: $size-main-buttons;
+    }
+
+    &:hover {
+      fill: $cold-light-blue;
+      background-color: lighten($cold-darkest-blue, 3%);
+    }
+  }
+
+  &__title {
+    color: $cold-light-blue;
+    margin: 15px 0;
+    font-size: 1.5rem;
+    font-weight: normal;
+    text-align: center;
+    pointer-events: none;
+    width: 200px;
+  }
+
+  &__svg {
+    width: $size-main-buttons;
+    height: $size-main-buttons;
+    pointer-events: none;
+    transition: transform 0.4s;
+
+    &--active {
+      transform: rotate(135deg);
+    }
+  }
+}

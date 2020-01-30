@@ -1,6 +1,7 @@
 html {
   box-sizing: border-box;
   scroll-behavior: smooth;
+  touch-action: manipulation;
 }
 
 *,
@@ -10,13 +11,14 @@ html {
 }
 
 body {
+  color: $cold-light-blue;
   font-family: "Nunito", Arial, sans-serif;
   font-weight: medium;
-  color: $cold-light-blue;
 }
 
 .button {
   background: none;
   border: none;
   cursor: pointer;
+  padding: 0;
 }

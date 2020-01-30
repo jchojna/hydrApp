@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////////// MAIN APP INTERFACE
+/////////////////////////////////////////////////////////// MAIN APP INTERFACE 
 .app {
   @include flex-center;
   flex-direction: column;
@@ -6,7 +6,7 @@
   width: 100%;
   min-height: 100vh;
   background-color: $cold-dark-blue;
-  padding: 1rem;
+  padding: $layout-xs-header-height 0;
 
   &__header {
     @include flex-center;
@@ -15,24 +15,25 @@
     right: 0;
     height: $layout-xs-header-height;
     width: 100%;
-    z-index: 1;
-    background-color: $cold-dark-blue;
     padding: 0 $layout-xs-sm-padding;
+    z-index: 2;border: 1px solid #000;
   }
 
   &__container {
     @include flex-center;
+    flex-grow: 1;
     width: 60%;
     height: 100%;
     max-width: 1200px;
-    margin-top: 4rem;
     flex-direction: column;
+    border: 1px solid #000;
   }
 
   &__button {
     border-radius: 4px;
     padding: 12px;
     min-width: 200px;
+    margin-top: 48px;
     color: $cold-light-blue;
     font-size: 0.875rem;
     transition: box-shadow $time-hover-effect, background-color $time-hover-effect;
@@ -42,7 +43,6 @@
       font-weight: bold;
       background-color: $cold-blue;
       color: $cold-darkest-blue;
-      margin-bottom: 2rem;
       box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
       
 
@@ -60,66 +60,17 @@
     }
   }
 }
-//////////////////////////////////////////////////////////////////// NAVIGATION
-.navigation {
-  flex-grow: 1;
-
-  &__list {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  &__item {
-  }
-
-  &__button {
-    color: $cold-light-blue;
-    padding: 0.5rem;
-    border: 2px solid transparent;
-
-    &:hover {
-      border-bottom-color: $cold-light-blue;
-    }
-  }
-}
-////////////////////////////////////////////////////////////////////////// LOGO
-.logo {
-  flex-grow: 1;
-
-  &__link {
-    @include flex-center;
-    position: relative;
-    max-width: 120px;
-  }
-
-  &__svg {
-    fill: $cold-blue;
-    width: 100%;
-    height: 100%;
-
-    &--color {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      fill: $cold-light-blue;
-    }
-  }
-}
-///////////////////////////////////////////////////////////////////////// GLASS
+//////////////////////////////////////////////////////////////////////// GLASS 
 .glass {
   @include flex-center;
   position: relative;
 
   &__svg {
+    display: flex;
+    flex-grow: 1;
     width: 100%;
-    max-height: 400px;
-    margin-bottom: 48px;
+    height: 100%;
+    //max-height: 400px;
   }
 
   &__fill {
@@ -134,8 +85,10 @@
 
   &__counter {
     margin: 0;
+    color: $cold-dark-blue;
     text-align: center;
-    font-size: 7rem;
+    font-size: 5rem;
+    font-weight: bold;
     position: absolute;
   }
 }
