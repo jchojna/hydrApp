@@ -1,3 +1,6 @@
+@import 'variables.scss';
+@import 'mixins.scss';
+
 /////////////////////////////////////////////////////////// MAIN APP INTERFACE 
 .app {
   @include flex-center;

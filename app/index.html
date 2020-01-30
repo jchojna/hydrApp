@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>hydrApp</title>
+  <meta name="description" content="Simple app for tracking the amount of glasses of water consumed per day" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <link
+    rel="apple-touch-icon"
+    sizes="192x192"
+    href="assets/icons/icon-192x192.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    href="assets/icons/icon-192x192.png"
+  />
+  <!--: OPEN GRAPH                                                       :-->
+  <meta property="og:title" content="hydrApp" />
+  <meta property="og:description" content="With this simple app you can track how many glasses of water you drink per day" />
+  <meta property="og:url" content="https://jchojna.github.io/hydrApp/" />
+  <meta property="og:image" content="https://jchojna.github.io/hydrApp/assets/img/cover.png" />
+  <meta property="og:image:width" content="600" />
+  <meta property="og:image:height" content="600" />
+  <!--: END OF OPEN GRAPH                                                :-->
+  <!-- build:css styles/main.css -->
+  <link rel="stylesheet" href="styles/main.css">
+  <!-- endbuild -->
+</head>
+<body>
+  <!--[if IE]>
+    <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+  <![endif]-->
+  <!--| HYDRAPP                                                            |-->
+  <main class="app">
+    <!--| APP HEADER                                                       |-->
+    <header class="app__header">
+      <h1 class="app__heading visuallyhidden">hydrApp</h1>
+      <!--: APP NAVIGATION                                                 :-->
+      <nav class="navigation">
+        <h2 class="navigation__heading visuallyhidden">Navigation</h2>
+        <ul class="navigation__list">
+          <li class="logo">
+            <a class="logo__link" href="index.html">
+              <svg class="logo__svg" viewBox="0 0 512 135">
+                <use href="assets/svg/icons.svg#logo-white"></use>
+              </svg>
+              <svg class="logo__svg logo__svg--color" viewBox="0 0 512 135">
+                <use href="assets/svg/icons.svg#logo-color"></use>
+              </svg>
+            </a>
+          </li>
+          <li class="navigation__item">
+            <button class="button navigation__button navigation__button--stats navigation__button--js-stats">
+              Stats
+            </button>
+          </li>
+          <li class="navigation__item">
+            <button class="button navigation__button navigation__button--archive navigation__button--js-archive">
+              Archive
+            </button>
+          </li>
+          <li class="navigation__item">
+            <button class="button burger-button burger-button--js">
+              <svg class="burger-button__svg" viewBox="0 0 512 512">
+                <use href="assets/svg/icons.svg#burger-button"></use>
+              </svg>
+            </button>
+          </li>
+        </ul>
+      </nav>
+      <!--: end of APP NAVIGATION                                          :-->
+    </header>
+    <!--| end of APP HEADER                                                |-->
+    <!--| APP CONTAINER                                                    |-->
+    <div class="app__container app__container--js">
+      <!--: GLASS SECTION                                                  :-->
+      <section class="glass">
+        <h2 class="glass__heading visuallyhidden">Glass of water</h2>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 252 366" enable-background="new 0 0 252 366" class="glass__svg">
+          <g id="glass">
+            <path class="glass__outline" d="M185.7,355H66.3c-6.2,0-11.5-4.6-12.3-10.8L11.1,25.1c-1-7.5,4.8-14.1,12.3-14.1h205.1
+            c7.5,0,13.3,6.6,12.3,14.1L198,344.2C197.2,350.4,192,355,185.7,355z"/>
+            <path class="glass__fill" d="M68.9,339.6l-26.2-195l1.9-0.8c13.4-5.7,26.8-8.5,39.9-8.5c1.8,0,3.7,0.1,5.5,0.2c15.8,1,26.9,5.8,37.7,10.4
+            c10.6,4.6,20.6,8.9,34.8,9.8c1.7,0.1,3.5,0.2,5.2,0.2c12,0,24.5-2.7,37.1-8.2l4.4-1.9l-0.6,4.8c-0.1,0.6-25.4,189-25.4,189H68.9z"
+              />
+          </g>
+        </svg>
+        <p class="glass__counter glass__counter--js"></p>
+      </section>
+      <!--: end of GLASS SECTION                                           :-->
+      <!--: GLASS BUTTONS                                                  :-->
+      <button class="button app__button app__button--add app__button--js-add">
+        Add glass
+      </button>
+      <button class="button app__button app__button--remove app__button--js-remove">
+        Remove glass
+      </button>
+      <!--: end of GLASS BUTTONS                                           :-->
+    </div>
+    <!--| end of APP CONTAINER                                             |-->
+    <!--| MOBILE MENU                                                      |-->
+    <section class="mobile-menu mobile-menu--js">
+      <h2 class="mobile-menu__heading visuallyhidden">Mobile menu</h2>
+      <!--: ARCHIVE SECTION                                                :-->
+      <section class="archive archive--js">
+        <h3 class="archive__heading visuallyhidden">Archive</h3>
+        <button class="button mobile-menu__section mobile-menu__section--js-archive">
+          <p class="mobile-menu__title">Archive</p>
+          <svg class="mobile-menu__svg" viewBox="0 0 512 512">
+            <use href="assets/svg/icons.svg#plus-cross"></use>
+          </svg>
+        </button>
+        <div class="archive__weeks archive__weeks--js"></div>
+      </section>
+      <!--: end of ARCHIVE SECTION                                         :-->
+      <!--: STATS SECTION                                                  :-->
+      <section class="stats stats--js">
+        <h3 class="stats__heading visuallyhidden">Stats</h3>
+        <button class="button mobile-menu__section mobile-menu__section--js-stats">
+          <p class="mobile-menu__title">Stats</p>
+          <svg class="mobile-menu__svg" viewBox="0 0 512 512">
+            <use href="assets/svg/icons.svg#plus-cross"></use>
+          </svg>
+        </button>
+        <div class="stats__container stats__container--js">
+          <p class="stats__text">Check out again soon...</p>
+        </div>
+      </section>
+      <!--: end of STATS SECTION                                           :-->
+      <!--: end of ARCHIVE SECTION                                         :-->
+      <!--: SETTINGS SECTION                                               :-->
+      <section class="settings settings--js">
+        <h3 class="settings__heading visuallyhidden">Settings</h3>
+        <button class="button mobile-menu__section mobile-menu__section--js-settings">
+          <p class="mobile-menu__title">Settings</p>
+          <svg class="mobile-menu__svg" viewBox="0 0 512 512">
+            <use href="assets/svg/icons.svg#plus-cross"></use>
+          </svg>
+        </button>
+        <div class="settings__container settings__container--js">
+          <p class="settings__text">Check out again soon...</p>
+        </div>
+      </section>
+      <!--:  end of SETTINGS SECTION                                       :-->
+      <!--: ARCHIVE ADD NEW MODAL BOX                                      :-->
+      <section class="new-entry new-entry--js">
+        <h3 class="new-entry__heading visuallyhidden">Add new archive entry</h3>
+        <div class="new-entry__container">
+          <div class="new-entry__display new-entry__display--js">
+            <p class="new-entry__value new-entry__value--js"></p>
+            <p class="new-entry__date new-entry__date--js"></p>
+            <p class="new-entry__day new-entry__day--js"></p>
+          </div>
+          <div class="indicator indicator--new indicator--js-new"></div>
+          <button class="button new-entry__button new-entry__button--decrease new-entry__button--js-decrease">
+            <svg class="new-entry__svg new-entry__svg--decrease" viewBox="0 0 512 512">
+              <use href="assets/svg/icons.svg#minus-circle"></use>
+            </svg>
+          </button>
+          <button class="button new-entry__button new-entry__button--increase new-entry__button--js-increase">
+            <svg class="new-entry__svg new-entry__svg--increase" viewBox="0 0 512 512">
+              <use href="assets/svg/icons.svg#plus-circle"></use>
+            </svg>
+          </button>
+          <button class="button new-entry__button new-entry__button--cancel new-entry__button--js-cancel">
+            <svg class="new-entry__svg new-entry__svg--cancel" viewBox="0 0 512 512">
+              <use href="assets/svg/icons.svg#back-arrow"></use>
+            </svg>
+          </button>
+          <button class="button new-entry__button new-entry__button--save new-entry__button--js-save">
+            <svg class="new-entry__svg new-entry__svg--save" viewBox="0 0 512 512">
+              <use href="assets/svg/icons.svg#save-icon"></use>
+            </svg>
+          </button>
+          <!-- <button class="button new-entry__button new-entry__button--date new-entry__button--js-date">
+            <svg class="new-entry__svg new-entry__svg--date" viewBox="0 0 512 512">
+              <use href="assets/svg/icons.svg#save-icon"></use>
+            </svg>
+          </button> -->
+        </div>
+      </section>
+      <!--: end of ARCHIVE ADD NEW MODAL BOX                               :-->
+    </section>
+    <!--| end of MOBILE MENU                                               |-->
+  </main>
+  <!--| end of HYDRAPP                                                     |-->
+  <!-- build:js scripts/vendor.js -->
+  <!-- endbuild -->
+  <!-- build:js scripts/main.js -->
+  <script src="scripts/main.js"></script>
+  <!-- endbuild -->
+</body>
+</html>

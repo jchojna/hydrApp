@@ -1,4 +1,13 @@
+# dependencies
 node_modules
-dist
-github
+bower_components
+
 figma
+
+# compiled output
+/dist
+/.tmp
+
+# System Files
+.DS_Store
+Thumbs.db
