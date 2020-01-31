@@ -3,7 +3,7 @@
 //| LOGO                                                                    |//
 .logo {
   @include flex-center;
-  max-width: ($burgerBtn-size-xs + 10px) * $logo-aspect-ratio;
+  max-width: ($burgerBtn-size-xs - 10px) * $logo-aspect-ratio;
   position: relative;
   width: 100%;
 
@@ -35,16 +35,19 @@
 .burgerBtn {
   @include button;
   @include flex-center;
-  fill: $cold-blue;
+  background-color: $cold-blue;
+  border-radius: 50%;
+  fill: $cold-dark-blue;
+  padding: $burgerBtn-padding-xs;
+  transition: background-color $time-hover-effect, transform $time-hover-effect;
   width: $burgerBtn-size-xs;
-  transition: fill $time-hover-effect, transform $time-hover-effect;
 
   &--active {
     transform: rotate(90deg);
   }
 
   &:hover {
-    fill: $cold-light-blue;
+    background-color: $cold-light-blue;
   }
 
   &__svg {
@@ -53,11 +56,13 @@
   }
 
   @media only screen and (min-width: $media-md) {
+    padding: $burgerBtn-padding-md;
     width: $burgerBtn-size-md;
 
   }
   
   @media only screen and (min-width: $media-lg) {
+    padding: $burgerBtn-padding-lg;
     width: $burgerBtn-size-lg;
 
   }
