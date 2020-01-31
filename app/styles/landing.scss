@@ -7,9 +7,8 @@
   background-color: $cold-dark-blue;
   height: 100%;
   min-height: 100vh;
-  padding: $header-height-xs 0;
   width: 100%;
-
+  //: PAGE HEADER                                                           ://
   &__header {
     align-items: center;
     display: flex;
@@ -32,15 +31,13 @@
   
     }
   }
-
+  //: PAGE CONTAINER                                                        ://
   &__container {
     @include flex-center;
-    flex-grow: 1;
-    width: 60%;
+    width: 100%;
     height: 100%;
     max-width: 1200px;
     flex-direction: column;
-    border: 1px solid #000;
   }
 
   &__button {
@@ -72,37 +69,5 @@
         background-color: $cold-blue;
       }
     }
-  }
-}
-//////////////////////////////////////////////////////////////////////// GLASS 
-.glass {
-  @include flex-center;
-  position: relative;
-
-  &__svg {
-    display: flex;
-    flex-grow: 1;
-    width: 100%;
-    height: 100%;
-    //max-height: 400px;
-  }
-
-  &__fill {
-    fill: $cold-blue;
-  }
-
-  &__outline {
-    fill: none;
-    stroke: $cold-light-blue;
-    stroke-width: 10px;
-  }
-
-  &__counter {
-    margin: 0;
-    color: $cold-dark-blue;
-    text-align: center;
-    font-size: 5rem;
-    font-weight: bold;
-    position: absolute;
   }
 }
