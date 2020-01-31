@@ -14,7 +14,6 @@
     display: flex;
     justify-content: space-between;
     padding: $header-padding-xs;
-    padding-bottom: $header-buttonsGap-xs;
     position: fixed;
     right: 0;
     top: 0;
@@ -24,13 +23,11 @@
 
     @media only screen and (min-width: $media-md) {
       padding: $header-padding-md;
-      padding-bottom: $header-buttonsGap-md;
   
     }
     
     @media only screen and (min-width: $media-lg) {
       padding: $header-padding-lg;
-      padding-bottom: $header-buttonsGap-lg;
   
     }
   }
