@@ -10,7 +10,7 @@
   flex-direction: column;
   justify-content: flex-end;
   align-items: center;
-  padding-top: $layout-xs-header-height;
+  padding-top: $header-height-xs;
 
   &__weeks {
     background-color: $cold-dark-blue;
@@ -278,7 +278,7 @@
   height: 100%;
   z-index: 1;
   padding: $layout-xs-sm-padding;
-  padding-top: $layout-xs-header-height;
+  padding-top: $header-height-xs;
   opacity: 0;
   transition: opacity $time-new-entry, visibility 0s $time-new-entry;
 

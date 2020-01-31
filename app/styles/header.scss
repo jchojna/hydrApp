@@ -1,0 +1,44 @@
+@import 'variables.scss';
+@import 'mixins.scss';
+//| LOGO                                                                    |//
+.logo {
+  @include flex-center;
+  max-width: $burgerBtn-size * $logo-aspect-ratio;
+  position: relative;
+  width: 100%;
+
+  &__svg {
+    fill: $cold-blue;
+    width: 100%;
+
+    &--color {
+      fill: $cold-light-blue;
+      height: 100%;
+      left: 0;
+      position: absolute;
+      width: 100%;
+      top: 0;
+    }
+  }
+}
+//| BURGER BUTTON                                                           |//
+.burgerBtn {
+  @include button;
+  @include flex-center;
+  fill: $cold-blue;
+  width: $burgerBtn-size;
+  transition: fill $time-hover-effect, transform $time-hover-effect;
+
+  &--active {
+    transform: rotate(90deg);
+  }
+
+  &:hover {
+    fill: $cold-light-blue;
+  }
+
+  &__svg {
+    width: 100%;
+    pointer-events: none;
+  }
+}

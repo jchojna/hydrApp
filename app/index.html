@@ -36,39 +36,30 @@
   <![endif]-->
   <!--| HYDRAPP                                                            |-->
   <main class="app">
-    <!--| APP HEADER                                                       |-->
+    <!--| NAVIGATION                                                       |-->
     <header class="app__header">
       <h1 class="app__heading visuallyhidden">hydrApp</h1>
-      <!--: APP NAVIGATION                                                 :-->
-      <nav class="navigation">
-        <h2 class="navigation__heading visuallyhidden">Navigation</h2>
-        <ul class="navigation__list">
-          <li class="logo">
-            <a class="logo__link" href="index.html">
-              <svg class="logo__svg" viewBox="0 0 512 135">
-                <use href="assets/svg/icons.svg#logo-white"></use>
-              </svg>
-              <svg class="logo__svg logo__svg--color" viewBox="0 0 512 135">
-                <use href="assets/svg/icons.svg#logo-color"></use>
-              </svg>
-            </a>
-          </li>
-          <li class="navigation__item">
-            <button class="button burger-button burger-button--js">
-              <svg class="burger-button__svg" viewBox="0 0 512 512">
-                <use href="assets/svg/icons.svg#burger-button"></use>
-              </svg>
-            </button>
-          </li>
-        </ul>
-      </nav>
-      <!--: end of APP NAVIGATION                                          :-->
+      <a class="logo" href="index.html">
+        <svg class="logo__svg" viewBox="0 0 512 135">
+          <use href="assets/svg/icons.svg#logo-white"></use>
+        </svg>
+        <svg class="logo__svg logo__svg--color" viewBox="0 0 512 135">
+          <use href="assets/svg/icons.svg#logo-color"></use>
+        </svg>
+      </a>
+      <button class="burgerBtn burgerBtn--js">
+        <svg class="burgerBtn__svg" viewBox="0 0 512 512">
+          <use href="assets/svg/icons.svg#burger-button"></use>
+        </svg>
+      </button>
     </header>
-    <!--| end of APP HEADER                                                |-->
+    <!--| end of NAVIGATION                                                |-->
+
+
     <!--| APP CONTAINER                                                    |-->
-    <div class="app__container app__container--js">
+    <!-- <div class="app__container app__container--js"> -->
       <!--: GLASS SECTION                                                  :-->
-      <section class="glass">
+      <!-- <section class="glass">
         <h2 class="glass__heading visuallyhidden">Glass of water</h2>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 252 366" enable-background="new 0 0 252 366" class="glass__svg">
           <g id="glass">
@@ -80,17 +71,17 @@
           </g>
         </svg>
         <p class="glass__counter glass__counter--js"></p>
-      </section>
+      </section> -->
       <!--: end of GLASS SECTION                                           :-->
       <!--: GLASS BUTTONS                                                  :-->
-      <button class="button app__button app__button--add app__button--js-add">
+      <!-- <button class="button app__button app__button--add app__button--js-add">
         Add glass
       </button>
       <button class="button app__button app__button--remove app__button--js-remove">
         Remove glass
-      </button>
+      </button> -->
       <!--: end of GLASS BUTTONS                                           :-->
-    </div>
+    <!-- </div> -->
     <!--| end of APP CONTAINER                                             |-->
     <!--| MOBILE MENU                                                      |-->
     <section class="mobile-menu mobile-menu--js">

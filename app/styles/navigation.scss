@@ -1,54 +1,7 @@
 @import 'variables.scss';
 @import 'mixins.scss';
 
-///////////////////////////////////////////////////////////////////////// LOGO 
-.logo {
-  flex-grow: 1;
-  display: flex;
-  max-width: 150px;
-  height: 100%;
-
-  &__link {
-    @include flex-center;
-    position: relative;
-  }
-
-  &__svg {
-    fill: $cold-blue;
-    width: 100%;
-    height: 100%;
-
-    &--color {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      fill: $cold-light-blue;
-    }
-  }
-}
-//////////////////////////////////////////////////////////////// BURGER BUTTON 
-.burger-button {
-  @include flex-center;
-  fill: $cold-blue;
-  width: $size-main-buttons;
-  transition: fill $time-hover-effect, transform $time-hover-effect;
-
-  &--active {
-    transform: rotate(90deg);
-  }
-
-  &:hover {
-    fill: $cold-light-blue;
-  }
-
-  &__svg {
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-  }
-}
-/////////////////////////////////////////////////////////////////// NAVIGATION 
+//| NAVIGATION                                                              |//
 .navigation {
   flex-grow: 1;
 
@@ -61,7 +14,7 @@
     padding: 0;
   }
 }
-////////////////////////////////////////////////////////////////// MOBILE MENU 
+//| MOBILE MENU                                                             |//
 .mobile-menu {
   display: flex;
   flex-direction: column;

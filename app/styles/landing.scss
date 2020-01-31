@@ -1,25 +1,27 @@
 @import 'variables.scss';
 @import 'mixins.scss';
 
-/////////////////////////////////////////////////////////// MAIN APP INTERFACE 
+//| MAIN APP INTERFACE                                                      |//
 .app {
   @include flex-center;
-  flex-direction: column;
-  height: 100%;
-  width: 100%;
-  min-height: 100vh;
   background-color: $cold-dark-blue;
-  padding: $layout-xs-header-height 0;
+  height: 100%;
+  min-height: 100vh;
+  padding: $header-height-xs 0;
+  width: 100%;
 
   &__header {
-    @include flex-center;
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    padding: $header-padding;
     position: fixed;
-    top: 0;
     right: 0;
-    height: $layout-xs-header-height;
+    top: 0;
     width: 100%;
-    padding: 0 $layout-xs-sm-padding;
-    z-index: 2;border: 1px solid #000;
+    //z-index: 2;
+    
+    border: 1px solid #000;
   }
 
   &__container {
