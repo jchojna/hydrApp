@@ -9,13 +9,24 @@ $warm-dark-orange: #ba6353;
 $warm-orange: #d68960;
 $warm-light-orange: #e2b673;
 $warm-yellow: #edcf84;
+
+//| MEDIA                                                                   |//
+$media-sm: 360px;
+$media-md: 768px;
+$media-lg: 1024px;
 //| LAYOUT                                                                  |//
 // HEADER
 $logo-aspect-ratio: 512 / 135;
 
 $header-height-xs: 64px;
-$header-padding: 30px;
-$burgerBtn-size: 60px;
+//: PAGE HEADER                                                             ://
+$header-padding-xs: 10px;
+$header-padding-md: 20px;
+$header-padding-lg: 30px;
+//: BURGER BUTTON                                                           ://
+$burgerBtn-size-xs: 30px;
+$burgerBtn-size-md: 40px;
+$burgerBtn-size-lg: 60px;
 
 
 
@@ -28,9 +39,6 @@ $size-xs-archive-add-new: 100px;
 
 $layout-xs-sm-padding: 1rem;
 
-$media-sm: 360px;
-$media-md: 768px;
-$media-lg: 1024px;
 //| DECORATION                                                              |//
 $br-items: 5px;
 

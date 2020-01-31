@@ -3,7 +3,7 @@
 //| LOGO                                                                    |//
 .logo {
   @include flex-center;
-  max-width: $burgerBtn-size * $logo-aspect-ratio;
+  max-width: ($burgerBtn-size-xs + 10px) * $logo-aspect-ratio;
   position: relative;
   width: 100%;
 
@@ -20,13 +20,23 @@
       top: 0;
     }
   }
+
+  @media only screen and (min-width: $media-md) {
+    max-width: $burgerBtn-size-md * $logo-aspect-ratio;
+
+  }
+  
+  @media only screen and (min-width: $media-lg) {
+    max-width: $burgerBtn-size-lg * $logo-aspect-ratio;
+
+  }
 }
 //| BURGER BUTTON                                                           |//
 .burgerBtn {
   @include button;
   @include flex-center;
   fill: $cold-blue;
-  width: $burgerBtn-size;
+  width: $burgerBtn-size-xs;
   transition: fill $time-hover-effect, transform $time-hover-effect;
 
   &--active {
@@ -40,5 +50,15 @@
   &__svg {
     width: 100%;
     pointer-events: none;
+  }
+
+  @media only screen and (min-width: $media-md) {
+    width: $burgerBtn-size-md;
+
+  }
+  
+  @media only screen and (min-width: $media-lg) {
+    width: $burgerBtn-size-lg;
+
   }
 }

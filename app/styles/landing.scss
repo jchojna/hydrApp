@@ -14,7 +14,7 @@
     align-items: center;
     display: flex;
     justify-content: space-between;
-    padding: $header-padding;
+    padding: $header-padding-xs;
     position: fixed;
     right: 0;
     top: 0;
@@ -22,6 +22,16 @@
     //z-index: 2;
     
     border: 1px solid #000;
+
+    @media only screen and (min-width: $media-md) {
+      padding: $header-padding-md;
+  
+    }
+    
+    @media only screen and (min-width: $media-lg) {
+      padding: $header-padding-lg;
+  
+    }
   }
 
   &__container {
