@@ -54,29 +54,46 @@
       </button>
     </header>
     <!--| end of PAGE HEADER                                               |-->
-    <!--| APP CONTAINER                                                    |-->
-    <div class="app__container app__container--js">
-      <!-- <h2 class="glass__heading visuallyhidden">Main</h2> -->
-      <!--: COUNTER SECTION                                                :-->
-      <section class="counter">
-        <svg class="counter__svg counter__svg--js-first" viewBox="0 0 75 100">
-          <use href="assets/svg/digits.svg#digit-0"></use>
+    <!--| COUNTER                                                          |-->
+    <section class="counter">
+      <h2 class="counter__heading visuallyhidden">Glass counter</h2>
+      <svg class="counter__svg counter__svg--js-first" viewBox="0 0 75 100">
+        <use href="assets/svg/digits.svg#digit-0"></use>
+      </svg>
+      <svg class="counter__svg counter__svg--js-second" viewBox="0 0 75 100">
+        <use href="assets/svg/digits.svg#digit-4"></use>
+      </svg>
+    </section>
+    <!--| end of COUNTER                                                   |-->
+    <!--| CONTROLS                                                         |-->
+    <section class="controls">
+      <h2 class="controls__heading visuallyhidden">Glass controls</h2>
+      <button class="controls__button controls__button--add controls__button--js-add">
+        <svg class="controls__svg" viewBox="0 0 512 512">
+          <use href="assets/svg/icons.svg#plus-circle"></use>
         </svg>
-        <svg class="counter__svg counter__svg--js-second" viewBox="0 0 75 100">
-          <use href="assets/svg/digits.svg#digit-4"></use>
+      </button>
+      <button class="controls__button controls__button--remove controls__button--js-remove">
+        <svg class="controls__svg" viewBox="0 0 512 512">
+          <use href="assets/svg/icons.svg#minus-circle"></use>
         </svg>
-      </section>
-      <!--: end of GLASS SECTION                                           :-->
-    </div>
-    <!--: GLASS BUTTONS                                                    :-->
-    <!-- <button class="button app__button app__button--add app__button--js-add">
-      Add glass
-    </button>
-    <button class="button app__button app__button--remove app__button--js-remove">
-      Remove glass
-    </button> -->
-    <!--: end of GLASS BUTTONS                                             :-->
-    <!--| end of APP CONTAINER                                             |-->
+      </button>
+      <button class="controls__button">
+        <svg class="controls__svg" viewBox="0 0 512 512">
+          <use href="assets/svg/icons.svg#minus-circle"></use>
+        </svg>
+      </button>
+
+
+
+
+
+    </section>
+    <!--| end of CONTROLS                                                  |-->
+
+
+
+
     <!--| MOBILE MENU                                                      |-->
     <section class="mobile-menu mobile-menu--js">
       <h2 class="mobile-menu__heading visuallyhidden">Mobile menu</h2>

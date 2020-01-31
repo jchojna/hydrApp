@@ -1,0 +1,53 @@
+@import 'variables.scss';
+@import 'mixins.scss';
+
+.controls {
+  display: grid;
+  padding: $header-buttonsGap-xs;
+  padding-right: $header-padding-xs;
+  position: fixed;
+  right: 0;
+  row-gap: $header-buttonsGap-xs * 2;
+  top: $burgerBtn-size-xs + $header-padding-xs + $header-buttonsGap-xs;
+  
+  border: 1px solid #000;
+
+  &__button {
+    @include button;
+    @include flex-center;
+    fill: $cold-blue;
+    width: $burgerBtn-size-xs;
+  }
+
+  &__svg {
+    width: 100%;
+  }
+
+  @media only screen and (min-width: $media-md) {
+
+    & {
+      padding: $header-buttonsGap-md;
+      padding-right: $header-padding-md;
+      row-gap: $header-buttonsGap-md * 2;
+      top: $burgerBtn-size-md + $header-padding-md + $header-buttonsGap-md;
+    
+      &__button {
+        width: $burgerBtn-size-md;
+      }
+    }
+  }
+
+  @media only screen and (min-width: $media-lg) {
+
+    & {
+      padding: $header-buttonsGap-lg;
+      padding-right: $header-padding-lg;
+      row-gap: $header-buttonsGap-lg * 2;
+      top: $burgerBtn-size-lg + $header-padding-lg + $header-buttonsGap-lg;
+    
+      &__button {
+        width: $burgerBtn-size-lg;
+      }
+    }
+  }
+}
