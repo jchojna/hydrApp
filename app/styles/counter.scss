@@ -5,7 +5,9 @@
   column-gap: 10px;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  width: 80%;
+  margin: 0 $header-padding-xs * 2 + $burgerBtn-size-xs;
+  max-width: 300px;
+  width: 100%;
 }
 
 .digit {
@@ -25,11 +27,11 @@
 
   &__svg {
     background-color: $cold-blue;
-    border-radius: 20px;
+    border-radius: 10px;
     fill: $cold-dark-blue;
     height: 100%;
     opacity: 1;
-    padding: 20px;
+    padding: 10px 5px;
     transform: rotateX(0);
     transform-origin: center top;
     width: 100%;
@@ -42,7 +44,7 @@
     &--animateIn {
       transition: opacity 0.5s, transform 1s ease-in-out;
     }
-    
+
     &--animateOut {
       transition: opacity 0.5s 0.5s, transform 1s ease-in-out;
     }
