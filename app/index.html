@@ -34,9 +34,8 @@
   <!--[if IE]>
     <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
   <![endif]-->
-  <!--| HYDRAPP                                                            |-->
   <main class="app">
-    <!--| PAGE HEADER                                                      |-->
+    <!--| APP HEADER                                                       |-->
     <header class="app__header">
       <h1 class="app__heading visuallyhidden">hydrApp</h1>
       <a class="logo" href="index.html">
@@ -53,54 +52,60 @@
         </svg>
       </button>
     </header>
-    <!--| end of PAGE HEADER                                               |-->
-    <!--| COUNTER                                                          |-->
-    <section class="counter counter--js">
-      <h2 class="counter__heading visuallyhidden">Glass counter</h2>
-      <!--: TENTHS                                                         :-->
-      <div class="digit">
-        <svg class="digit__svg digit__svg--prev digit__svg--js-prevTenths" viewBox="0 0 75 100">
-          <use href=""></use>
-        </svg>
-        <svg class="digit__svg digit--overlay digit__svg--next digit__svg--js-nextTenths" viewBox="0 0 75 100">
-          <use href=""></use>
-        </svg>
+    <!--| end of APP HEADER                                                |-->
+    <!--//                                                               //|-->
+    <!--| APP CONTAINER                                                    |-->
+    <section class="app__container">
+      <h2 class="counter__heading visuallyhidden">App container</h2>
+      <!--| COUNTER                                                        |-->
+      <div class="counter counter--js">
+        <!--: TENTHS                                                       :-->
+        <div class="digit">
+          <svg class="digit__svg digit__svg--js-prevTenths" viewBox="0 0 75 100">
+            <use href=""></use>
+          </svg>
+          <svg class="digit__svg digit--overlay digit__svg--js-nextTenths" viewBox="0 0 75 100">
+            <use href=""></use>
+          </svg>
+        </div>
+        <!--: ONES                                                         :-->
+        <div class="digit">
+          <svg class="digit__svg digit__svg--js-prevOnes" viewBox="0 0 75 100">
+            <use href=""></use>
+          </svg>
+          <svg class="digit__svg digit--overlay digit__svg--js-nextOnes" viewBox="0 0 75 100">
+            <use href=""></use>
+          </svg>
+        </div>
       </div>
-      <!--: ONES                                                           :-->
-      <div class="digit">
-        <svg class="digit__svg digit__svg--prev digit__svg--js-prevOnes" viewBox="0 0 75 100">
-          <use href=""></use>
-        </svg>
-        <svg class="digit__svg digit--overlay digit__svg--next digit__svg--js-nextOnes" viewBox="0 0 75 100">
-          <use href=""></use>
-        </svg>
+      <!--| end of COUNTER                                                 |-->
+      <!--                                                                  -->
+      <!--| CONTROLS                                                       |-->
+      <div class="controls controls--js">
+        <button class="controls__button controls__button--add controls__button--js-add">
+          <svg class="controls__svg" viewBox="0 0 512 512">
+            <use href="assets/svg/icons.svg#plus-circle"></use>
+          </svg>
+        </button>
+        <button class="controls__button controls__button--remove controls__button--js-remove">
+          <svg class="controls__svg" viewBox="0 0 512 512">
+            <use href="assets/svg/icons.svg#minus-circle"></use>
+          </svg>
+        </button>
+        <div class="emoji emoji--controls">
+          <svg class="emoji__svg emoji__svg--visible emoji__svg--emo-6" viewBox="0 0 512 512">
+            <use href="assets/svg/emoji.svg#emo-6"></use>
+          </svg>
+        </div>
       </div>
+      <!--| end of CONTROLS                                                |-->
+      <!--                                                                  -->
+
+
+
     </section>
-    <!--| end of COUNTER                                                   |-->
-    <!--| CONTROLS                                                         |-->
-    <section class="controls controls--js">
-      <h2 class="controls__heading visuallyhidden">Glass controls</h2>
-      <button class="controls__button controls__button--add controls__button--js-add">
-        <svg class="controls__svg" viewBox="0 0 512 512">
-          <use href="assets/svg/icons.svg#plus-circle"></use>
-        </svg>
-      </button>
-      <button class="controls__button controls__button--remove controls__button--js-remove">
-        <svg class="controls__svg" viewBox="0 0 512 512">
-          <use href="assets/svg/icons.svg#minus-circle"></use>
-        </svg>
-      </button>
-      <div class="emoji emoji--controls">
-        <svg class="emoji__svg emoji__svg--visible emoji__svg--emo-6" viewBox="0 0 512 512">
-          <use href="assets/svg/emoji.svg#emo-6"></use>
-        </svg>
-      </div>
-    </section>
-    <!--| end of CONTROLS                                                  |-->
-
-
-
-
+    <!--| end of APP CONTAINER                                             |-->
+    <!--//                                                               //|-->
     <!--| MOBILE MENU                                                      |-->
     <section class="mobile-menu mobile-menu--js">
       <h2 class="mobile-menu__heading visuallyhidden">Mobile menu</h2>
@@ -186,7 +191,6 @@
     </section>
     <!--| end of MOBILE MENU                                               |-->
   </main>
-  <!--| end of HYDRAPP                                                     |-->
   <!-- build:js scripts/vendor.js -->
   <!-- endbuild -->
   <!-- build:js scripts/main.js -->

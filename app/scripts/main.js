@@ -195,49 +195,124 @@ const handleData = () => {
     createEntryObject(date);
   }
   const counterValue = hydrappArray[0].value;
-  setCounter(counterValue, 'both');
-  // ! to update
-  //handleCounter('displayValue');
+  setCounter(counterValue, 'initial');
+  // to update
+  // handleCounter('displayValue');
 }
 //| SET COUNTER VALUES                                                      |//
-const setCounter = (value, digit) => {
-  const tenthValue = Math.floor(value / 10);
+const setCounter = (value, action, digit) => {
+  const tenthsValue = Math.floor(value / 10);
   const onesValue = value % 10;
   const hrefPrefix = 'assets/svg/digits.svg#digit-';
-  const tenthsHref = hrefPrefix + tenthValue;
+  const tenthsHref = hrefPrefix + tenthsValue;
   const onesHref = hrefPrefix + onesValue;
 
-  if (digit === 'prev' || digit === 'both') {
-    counterPrevTenths.firstElementChild.setAttribute('href', tenthsHref);
-    counterPrevOnes.firstElementChild.setAttribute('href', onesHref);
-  }
-   if (digit === 'next' || digit === 'both') {
-    counterNextTenths.firstElementChild.setAttribute('href', tenthsHref);
-    counterNextOnes.firstElementChild.setAttribute('href', onesHref);
+  switch (action) {
+
+    case 'initial':
+      counterPrevTenths.firstElementChild.setAttribute('href', tenthsHref);
+      counterPrevOnes.firstElementChild.setAttribute('href', onesHref);
+      counterNextTenths.firstElementChild.setAttribute('href', tenthsHref);
+      counterNextOnes.firstElementChild.setAttribute('href', onesHref);
+    break;
+
+    case 'add':
+
+      if (digit === 'prev') {
+        counterPrevOnes.firstElementChild.setAttribute('href', onesHref);
+        counterNextOnes.classList.add('digit__svg--rotated');
+        counterNextOnes.classList.remove('digit__svg--animateIn');
+        counterNextOnes.classList.remove('digit__svg--animateOut');
+        const timeoutId = setTimeout(() => {
+          counterNextOnes.classList.remove('digit__svg--rotated');
+          counterNextOnes.classList.add('digit__svg--animateIn');
+          clearTimeout(timeoutId);
+        }, 50);
+
+      } else if (digit === 'next') {
+        counterNextOnes.firstElementChild.setAttribute('href', onesHref);
+
+        if (onesValue === 0) {
+          counterNextTenths.firstElementChild.setAttribute('href', tenthsHref);
+          counterNextTenths.classList.add('digit__svg--rotated');
+          counterNextTenths.classList.remove('digit__svg--animateIn');
+          counterNextTenths.classList.remove('digit__svg--animateOut');
+          const timeoutId = setTimeout(() => {
+            counterNextTenths.classList.remove('digit__svg--rotated');
+            counterNextTenths.classList.add('digit__svg--animateIn');
+            clearTimeout(timeoutId);
+          }, 200);
+        }
+      }
+    break;
+
+    case 'remove':
+      
+      if (digit === 'prev') {
+        
+        counterPrevOnes.firstElementChild.setAttribute('href', onesHref);
+        counterNextOnes.classList.remove('digit__svg--rotated');
+        counterNextOnes.classList.remove('digit__svg--animateIn');
+        counterNextOnes.classList.remove('digit__svg--animateOut');
+
+        if (onesValue === 9) {
+          counterPrevTenths.firstElementChild.setAttribute('href', tenthsHref);
+          counterNextTenths.classList.remove('digit__svg--rotated');
+          counterNextTenths.classList.remove('digit__svg--animateIn');
+          counterNextTenths.classList.remove('digit__svg--animateOut');
+          const timeoutId = setTimeout(() => {
+            counterNextTenths.classList.add('digit__svg--rotated');
+            counterNextTenths.classList.add('digit__svg--animateOut');
+            clearTimeout(timeoutId);
+          }, 200);
+        }
+        
+        const timeoutId = setTimeout(() => {
+          counterNextOnes.classList.add('digit__svg--rotated');
+          counterNextOnes.classList.add('digit__svg--animateOut');
+          clearTimeout(timeoutId);
+        }, 50);
+
+      } else if (digit === 'next') {
+        counterNextOnes.firstElementChild.setAttribute('href', onesHref);
+      }
+    break;
   }
 }
 //| HANDLE COUNTER                                                          |//
 const handleCounter = (e) => {
+
+
   const self = e.target || e;
   const key = setDateKey();
   let value = parseInt(hydrappArray[0].value);
-  // * const firstArchiveEntry = document.querySelector('.entry__value--js');
-  //| set previous values of the counter                                    |//
-  setCounter(value, 'prev');
-  //| handle value change and save it                                       |//
-  if (e.target) {
-    if (self === addBtn) {
-      value < counterMaxValue ? value++ : value = counterMaxValue;
-    } else if (self === removeBtn) {
-      value > 0 ? value-- : value = 0;
-    }
-    localStorage.setItem(key, value);
-    hydrappArray[0].value = key;
-    
-    // * firstArchiveEntry.textContent = hydrappArray[0].value;
+  // const firstArchiveEntry = document.querySelector('.entry__value--js');
+
+  //. if add button clicked                                               .//
+  if (self === addBtn) {
+    if (value >= counterMaxValue) return;
+    setCounter(value, 'add', 'prev');
+    value++;
+    setCounter(value, 'add', 'next');
+
+  //. if remove button clicked                                            .//
+  } else if (self === removeBtn) {
+    if (value <= 0) return;
+    setCounter(value, 'remove', 'next');
+    value--;
+    setCounter(value, 'remove', 'prev');
   }
-  //| set next values of the counter                                        |//
-  setCounter(value, 'next');
+  console.log('test');
+  localStorage.setItem(key, value);
+  hydrappArray[0].value = key;
+
+
+
+
+
+  // firstArchiveEntry.textContent = hydrappArray[0].value;
+ 
+
 }
 //| SET CURRENTLY DISPLAYED ARCHIVE WEEK'S HEIGHT                           |//
 const setCurrentWeekHeight = () => {
@@ -777,3 +852,6 @@ const addNewDayButton = document.querySelector('.entry__button--js-add');
 controls.addEventListener('click', handleCounter);
 //burgerButton.addEventListener('click', toggleMobileMenu);
 //mobileMenu.addEventListener('click', toggleArchive);
+
+//window.addEventListener('mousedown', () => console.log('down'))
+//window.addEventListener('mouseup', () => console.log('up'))

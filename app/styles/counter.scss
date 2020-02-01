@@ -9,9 +9,11 @@
 }
 
 .digit {
-  fill: $cold-blue;
+  @include flex-center;
   position: relative;
   width: 100%;
+  perspective: 800;
+  transform-style: preserve-3d;
 
   &--overlay {
     height: 100%;
@@ -19,5 +21,30 @@
     position: absolute;
     top: 0;
     width: 100%;
+  }
+
+  &__svg {
+    background-color: $cold-blue;
+    border-radius: 20px;
+    fill: $cold-dark-blue;
+    height: 100%;
+    opacity: 1;
+    padding: 20px;
+    transform: rotateX(0);
+    transform-origin: center top;
+    width: 100%;
+
+    &--rotated {
+      transform: rotateX(270deg);
+      opacity: 0;
+    }
+
+    &--animateIn {
+      transition: opacity 0.5s, transform 1s ease-in-out;
+    }
+    
+    &--animateOut {
+      transition: opacity 0.5s 0.5s, transform 1s ease-in-out;
+    }
   }
 }
