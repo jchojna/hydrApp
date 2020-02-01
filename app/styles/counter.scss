@@ -5,21 +5,19 @@
   column-gap: 10px;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  position: relative;
   width: 80%;
+}
 
-  &__svg {
-    fill: $cold-blue;
+.digit {
+  fill: $cold-blue;
+  position: relative;
+  width: 100%;
+
+  &--overlay {
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
     width: 100%;
-
-    border: 1px solid #000;
-
-    &--overlay {
-      height: 100%;
-      left: 0;
-      position: absolute;
-      top: 0;
-      width: 100%;
-    }
   }
 }

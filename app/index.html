@@ -54,19 +54,31 @@
       </button>
     </header>
     <!--| end of PAGE HEADER                                               |-->
-    <!--| COUNTER                                                          |-->    
-    <section class="counter">
+    <!--| COUNTER                                                          |-->
+    <section class="counter counter--js">
       <h2 class="counter__heading visuallyhidden">Glass counter</h2>
-      <svg class="counter__svg counter__svg--js-first" viewBox="0 0 75 100">
-        <use href="assets/svg/digits.svg#digit-0"></use>
-      </svg>
-      <svg class="counter__svg counter__svg--js-second" viewBox="0 0 75 100">
-        <use href="assets/svg/digits.svg#digit-4"></use>
-      </svg>
+      <!--: TENTHS                                                         :-->
+      <div class="digit">
+        <svg class="digit__svg digit__svg--prev digit__svg--js-prevTenths" viewBox="0 0 75 100">
+          <use href=""></use>
+        </svg>
+        <svg class="digit__svg digit--overlay digit__svg--next digit__svg--js-nextTenths" viewBox="0 0 75 100">
+          <use href=""></use>
+        </svg>
+      </div>
+      <!--: ONES                                                           :-->
+      <div class="digit">
+        <svg class="digit__svg digit__svg--prev digit__svg--js-prevOnes" viewBox="0 0 75 100">
+          <use href=""></use>
+        </svg>
+        <svg class="digit__svg digit--overlay digit__svg--next digit__svg--js-nextOnes" viewBox="0 0 75 100">
+          <use href=""></use>
+        </svg>
+      </div>
     </section>
     <!--| end of COUNTER                                                   |-->
     <!--| CONTROLS                                                         |-->
-    <section class="controls">
+    <section class="controls controls--js">
       <h2 class="controls__heading visuallyhidden">Glass controls</h2>
       <button class="controls__button controls__button--add controls__button--js-add">
         <svg class="controls__svg" viewBox="0 0 512 512">
@@ -83,9 +95,6 @@
           <use href="assets/svg/emoji.svg#emo-6"></use>
         </svg>
       </div>
-
-
-
     </section>
     <!--| end of CONTROLS                                                  |-->
 

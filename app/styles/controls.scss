@@ -8,8 +8,6 @@
   right: 0;
   row-gap: $controls-gap-xs;
   top: $burgerBtn-size-xs + ($header-padding-xs * 2);
-  
-  border: 1px solid #000;
 
   &__button {
     @include button;
@@ -19,6 +17,7 @@
   }
 
   &__svg {
+    pointer-events: none;
     width: 100%;
   }
 

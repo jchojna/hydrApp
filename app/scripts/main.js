@@ -19,7 +19,7 @@ let indicators = '';
 for (let i = 0; i < 8; i++) {
   indicators += `
   <svg class="indicator__svg indicator__svg--emo-${i+1} indicator__svg--js-${i}">
-    <use href="assets/svg/icons.svg#emoticon-${i}"></use>
+  <use href="assets/svg/icons.svg#emoticon-${i}"></use>
   </svg>`
 }
 const archiveEmpty = `
@@ -105,7 +105,7 @@ class Entry {
     return this._value;
   }
   set value(key) {
-    this._value = localStorage.getItem(key);
+    this._value = parseInt(localStorage.getItem(key));
   }
   get date() {
     return this._date;
@@ -128,6 +128,7 @@ class Entry {
   }
 }
 //| FUNCTIONS                                                               |//
+////                                                                       ////
 //| GET OFFSETED DATE                                                       |//
 const getOffsetedDate = (obj) => {
   const timeZoneOffset = (new Date()).getTimezoneOffset() * 60000;
@@ -169,6 +170,74 @@ const limit = (max, num, action) => {
   action === 'increase' ? num >= max ? false : num++ : false;
   action === 'decrease' ? num <= 0 ? false : num-- : false;
   return num;
+}
+//| HANDLERS                                                                |//
+////                                                                       ////
+//| SET LOCAL STORAGE                                                       |//
+const handleData = () => {
+  const date = new Date();
+  let dateKey = setDateKey(date);
+  setNewKeyValue(dateKey, 0);
+  let hydrappKeys = getHydrappKeys();
+  const oldestKey = hydrappKeys[hydrappKeys.length - 1];
+  //: create object for each key                                            ://
+  const createEntryObject = (date) => {
+    const newEntry = new Entry(date);
+    hydrappArray.push(newEntry);
+  }
+  //: first object of array                                                 ://
+  createEntryObject(date);
+  //: autocomplete the rest of keys if needed                               ://
+  while (dateKey !== oldestKey) {
+    dateKey = setDateKey(date.setDate(date.getDate() - 1));
+    lastEntryDate.setDate(lastEntryDate.getDate() - 1);
+    setNewKeyValue(dateKey, 0);
+    createEntryObject(date);
+  }
+  const counterValue = hydrappArray[0].value;
+  setCounter(counterValue, 'both');
+  // ! to update
+  //handleCounter('displayValue');
+}
+//| SET COUNTER VALUES                                                      |//
+const setCounter = (value, digit) => {
+  const tenthValue = Math.floor(value / 10);
+  const onesValue = value % 10;
+  const hrefPrefix = 'assets/svg/digits.svg#digit-';
+  const tenthsHref = hrefPrefix + tenthValue;
+  const onesHref = hrefPrefix + onesValue;
+
+  if (digit === 'prev' || digit === 'both') {
+    counterPrevTenths.firstElementChild.setAttribute('href', tenthsHref);
+    counterPrevOnes.firstElementChild.setAttribute('href', onesHref);
+  }
+   if (digit === 'next' || digit === 'both') {
+    counterNextTenths.firstElementChild.setAttribute('href', tenthsHref);
+    counterNextOnes.firstElementChild.setAttribute('href', onesHref);
+  }
+}
+//| HANDLE COUNTER                                                          |//
+const handleCounter = (e) => {
+  const self = e.target || e;
+  const key = setDateKey();
+  let value = parseInt(hydrappArray[0].value);
+  // * const firstArchiveEntry = document.querySelector('.entry__value--js');
+  //| set previous values of the counter                                    |//
+  setCounter(value, 'prev');
+  //| handle value change and save it                                       |//
+  if (e.target) {
+    if (self === addBtn) {
+      value < counterMaxValue ? value++ : value = counterMaxValue;
+    } else if (self === removeBtn) {
+      value > 0 ? value-- : value = 0;
+    }
+    localStorage.setItem(key, value);
+    hydrappArray[0].value = key;
+    
+    // * firstArchiveEntry.textContent = hydrappArray[0].value;
+  }
+  //| set next values of the counter                                        |//
+  setCounter(value, 'next');
 }
 //| SET CURRENTLY DISPLAYED ARCHIVE WEEK'S HEIGHT                           |//
 const setCurrentWeekHeight = () => {
@@ -216,59 +285,6 @@ const createRemoveEntryButton = () => {
   `
   removeEntryButton.addEventListener('click', removeLastEntry);
   return removeEntryButton;
-}
-//| SET LOCAL STORAGE                                                       |//
-const handleData = () => {
-  const date = new Date();
-  let dateKey = setDateKey(date);
-  setNewKeyValue(dateKey, 0);
-  let hydrappKeys = getHydrappKeys();
-  const oldestKey = hydrappKeys[hydrappKeys.length - 1];
-  //: create object for each key                                            ://
-  const createEntryObject = (date) => {
-    const newEntry = new Entry(date);
-    hydrappArray.push(newEntry);
-  }
-  //: first object of array                                                 ://
-  createEntryObject(date);
-  //: autocomplete the rest of keys if needed                               ://
-  while (dateKey !== oldestKey) {
-    dateKey = setDateKey(date.setDate(date.getDate() - 1));
-    lastEntryDate.setDate(lastEntryDate.getDate() - 1);
-    setNewKeyValue(dateKey, 0);
-    createEntryObject(date);
-  }
-  //counter.innerHTML = localStorage.getItem(dateKey);
-  updateCounter('displayValue');
-}
-//| UPDATE COUNTER                                                          |//
-const updateCounter = (e) => {
-  const self = e.target || e;
-  const key = setDateKey();
-  let value = parseInt(localStorage.getItem(key));
-  const firstArchiveEntry = document.querySelector('.entry__value--js');
-
-  switch (self) {                                                     // ! REFACTOR
-    case 'displayValue':
-      counter.innerHTML = value;
-      break;
-    
-    case addGlass:                                                    // ! REFACTOR
-      value < counterMaxValue ? value++ : value = counterMaxValue;
-      localStorage.setItem(key, value);
-      hydrappArray[0].value = key;
-      counter.innerHTML = value;
-      firstArchiveEntry.textContent = hydrappArray[0].value;
-      break;
-
-    case removeGlass:                                                 // ! REFACTOR
-      value > 0 ? value-- : value = 0;
-      localStorage.setItem(key, value);
-      hydrappArray[0].value = key;
-      counter.innerHTML = value;
-      firstArchiveEntry.textContent = hydrappArray[0].value;
-      break;
-  }
 }
 //| ADD ARCHIVE NODE                                                        |//
 const addArchiveNode = (index, option) => {
@@ -708,14 +724,20 @@ const handleItemEdit = (e) => {
    ###    ##     ## ##     ## #### ##     ## ########  ######## ########  ######
 */
 //| VARIABLES                                                               |//
-//: APP                                                                     ://
-const appContainer = document.querySelector('.app__container--js');
-const addGlass = document.querySelector('.app__button--js-add');
-const removeGlass = document.querySelector('.app__button--js-remove');
-const counter = document.querySelector('.glass__counter--js');
-const counterMaxValue = 99;
+////                                                                       ////
+//: COUNTER                                                                 ://
+const counter = document.querySelector('.counter--js');
+const counterMaxValue = 20;
+const counterPrevTenths = document.querySelector('.digit__svg--js-prevTenths');
+const counterNextTenths = document.querySelector('.digit__svg--js-nextTenths');
+const counterPrevOnes = document.querySelector('.digit__svg--js-prevOnes');
+const counterNextOnes = document.querySelector('.digit__svg--js-nextOnes');
+//: CONTROLS                                                                ://
+const controls = document.querySelector('.controls--js');
+const addBtn = document.querySelector('.controls__button--js-add');
+const removeBtn = document.querySelector('.controls__button--js-remove');
 //: NAVIGATION                                                              ://
-const burgerButton = document.querySelector('.burger-button--js');
+const burgerButton = document.querySelector('.burgerBtn--js');
 const mobileMenu = document.querySelector('.mobile-menu--js');
 const mobileMenuArchiveSection = document.querySelector('.mobile-menu__section--js-archive');
 const mobileMenuStatsSection = document.querySelector('.mobile-menu__section--js-stats');
@@ -739,9 +761,10 @@ const newEntryCancel = document.querySelector('.new-entry__button--js-cancel');
 const newEntrySave = document.querySelector('.new-entry__button--js-save');
 
 //| FUNCTION CALLS                                                          |//
+////                                                                       ////
 handleData();
-setArchiveDOM();
-updateWeekHeading();
+//setArchiveDOM();
+//updateWeekHeading();
 //toggleMobileMenu(burgerButton);                           // ! FOR TESTS ONLY
 //enterNewEntryValue(107);                                    // ! FOR TESTS ONLY
 
@@ -750,6 +773,7 @@ let editButtons = document.querySelectorAll('.edition__button--js-edit');
 let entries = document.querySelectorAll('.entry--js');
 const addNewDayButton = document.querySelector('.entry__button--js-add');
 //| EVENT LISTENERS                                                         |//
-appContainer.addEventListener('click', updateCounter);
-burgerButton.addEventListener('click', toggleMobileMenu);
-mobileMenu.addEventListener('click', toggleArchive);
+////                                                                       ////
+controls.addEventListener('click', handleCounter);
+//burgerButton.addEventListener('click', toggleMobileMenu);
+//mobileMenu.addEventListener('click', toggleArchive);
