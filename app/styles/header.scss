@@ -23,12 +23,10 @@
 
   @media only screen and (min-width: $media-md) {
     max-width: $burgerBtn-size-md * $logo-aspect-ratio;
-
   }
   
   @media only screen and (min-width: $media-lg) {
     max-width: $burgerBtn-size-lg * $logo-aspect-ratio;
-
   }
 }
 //| BURGER BUTTON                                                           |//
@@ -53,13 +51,11 @@
   }
 
   @media only screen and (min-width: $media-md) {
-    padding: $burgerBtn-padding-md;
     width: $burgerBtn-size-md;
 
   }
   
   @media only screen and (min-width: $media-lg) {
-    padding: $burgerBtn-padding-lg;
     width: $burgerBtn-size-lg;
 
   }

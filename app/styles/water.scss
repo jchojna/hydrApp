@@ -56,23 +56,4 @@
     fill: $cold-darkest-blue;
     width: 100%;
   }
-}  
-
-//| ANIMATIONS                                                              |//
-@keyframes waves {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-@keyframes shake {
-  0% { transform: skewY(0); }
-  20% { transform: skewY(-5deg); }
-  40% { transform: skewY(5deg); }
-  60% { transform: skewY(-2deg); }
-  80% { transform: skewY(2deg); }
-  100% { transform: skewY(0); }
 }
