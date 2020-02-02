@@ -31,7 +31,8 @@
   }
   //: APP CONTAINER                                                         ://
   &__container {
-    @include flex-center;
+    display: flex;
+    align-items: flex-end;
     bottom: 0;
     left: 0;
     min-height: 300px;

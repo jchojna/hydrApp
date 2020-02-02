@@ -2,6 +2,8 @@
 @import 'mixins.scss';
 //| COUNTER                                                                 |//
 .counter {
+  $header-height: $header-padding-xs * 2 + $burgerBtn-size-xs;
+  align-items: center;
   column-gap: 10px;
   display: grid;
   grid-template-areas:
@@ -10,11 +12,11 @@
   "tenths  ones   "
   "message message";
   grid-template-columns: repeat(2, 1fr);
-  margin: 0 $header-padding-xs * 2 + $burgerBtn-size-xs;
+  grid-template-rows: 1fr 1fr auto 2fr;
+  height: calc(100vh - #{$header-height});
+  margin: 0 $header-height;
   max-width: 300px;
   width: 100%;
-  align-items: center;
-  justify-items: center;
 
   &__day,
   &__date,
@@ -27,16 +29,19 @@
   }
 
   &__day {
+    align-self: end;
     grid-area: day;
     text-transform: capitalize;
   }
-  &__date { grid-area: date; }
+  &__date {
+    align-self: start;
+    grid-area: date;
+  }
   &__message { grid-area: message; }
 }
 
 .digit {
   @include flex-center;
-  margin: 50px 0;
   position: relative;
   width: 100%;
   perspective: 800;
@@ -75,11 +80,11 @@
     }
 
     &--animateIn {
-      transition: opacity 0.5s, transform 1s ease-in-out;
+      transition: opacity 0.3s, transform 0.6s ease-in-out;
     }
 
     &--animateOut {
-      transition: opacity 0.5s 0.5s, transform 1s ease-in-out;
+      transition: opacity 0.3s 0.3s, transform 0.6s ease-in-out;
     }
   }
 }
