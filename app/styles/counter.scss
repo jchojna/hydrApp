@@ -4,18 +4,46 @@
 .counter {
   column-gap: 10px;
   display: grid;
+  grid-template-areas:
+  "head   head"
+  "tenths ones"
+  "text   text";
   grid-template-columns: repeat(2, 1fr);
   margin: 0 $header-padding-xs * 2 + $burgerBtn-size-xs;
   max-width: 300px;
   width: 100%;
+  align-items: center;
+  justify-items: center;
+
+  &__heading {
+    grid-area: head;
+    text-align: center;
+    margin: 0;
+  }
+
+  &__text {
+    grid-area: text;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+  }
 }
 
 .digit {
   @include flex-center;
+  margin: 50px 0;
   position: relative;
   width: 100%;
   perspective: 800;
   transform-style: preserve-3d;
+
+  &--tenths {
+    grid-area: tenths;
+  }
+
+  &--ones {
+    grid-area: ones;
+  }
 
   &--overlay {
     height: 100%;

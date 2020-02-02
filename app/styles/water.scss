@@ -1,0 +1,79 @@
+.water {
+  background-color: $cold-darkest-blue;
+  bottom: 0;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 200px;
+  width: 100%;
+  z-index: -1;
+  
+  //animation: skew 2s infinite alternate;
+
+  &::after {
+    content: '';
+    background-color: $cold-darkest-blue;
+    position: absolute;
+    bottom: -100px;
+    left: 0;
+    right: 0;
+    height: 100px;
+    width: 100%;
+  }
+}
+
+//| WAVES                                                                   |//
+.waves {
+  position: absolute;
+  top: calc((5vw - 1px) * -1);
+  left: 0;
+  right: 0;
+  height: 5vw;
+  width: 100%;
+}
+
+
+.wave {
+  @include flex-center;
+  fill: $cold-darkest-blue;
+  width: 100%;
+
+  &--before,
+  &--after {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+  }
+  
+  &--after {
+    left: 100%;
+  }
+
+
+  animation: waves 20s linear infinite;
+  
+  &__svg {
+    fill: $cold-darkest-blue;
+    width: 100%;
+  }
+}  
+
+//| ANIMATIONS                                                              |//
+@keyframes waves {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes skew {
+  0% {
+    transform: skewY(-5deg);
+  }
+  100% {
+    transform: skewY(5deg);
+  }
+}

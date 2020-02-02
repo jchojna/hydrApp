@@ -33,6 +33,7 @@
     @include flex-center;
     bottom: 0;
     left: 0;
+    min-height: 300px;
     position: fixed;
     top: $header-padding-xs * 2 + $burgerBtn-size-xs;
     width: 100%;

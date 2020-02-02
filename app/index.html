@@ -55,21 +55,21 @@
     <!--| end of APP HEADER                                                |-->
     <!--//                                                               //|-->
     <!--| APP CONTAINER                                                    |-->
-    <section class="app__container">
-      <h2 class="counter__heading visuallyhidden">App container</h2>
+    <div class="app__container">
       <!--| COUNTER                                                        |-->
-      <div class="counter counter--js">
+      <!-- <section class="counter counter--js">
+        <h2 class="counter__heading">Monday</h2> -->
         <!--: TENTHS                                                       :-->
-        <div class="digit">
+        <!-- <div class="digit digit--tenths">
           <svg class="digit__svg digit__svg--js-prevTenths" viewBox="0 0 75 100">
             <use href=""></use>
           </svg>
           <svg class="digit__svg digit--overlay digit__svg--js-nextTenths" viewBox="0 0 75 100">
             <use href=""></use>
           </svg>
-        </div>
+        </div> -->
         <!--: ONES                                                         :-->
-        <div class="digit">
+        <!-- <div class="digit digit--ones">
           <svg class="digit__svg digit__svg--js-prevOnes" viewBox="0 0 75 100">
             <use href=""></use>
           </svg>
@@ -77,11 +77,43 @@
             <use href=""></use>
           </svg>
         </div>
-      </div>
+        <p class="counter__text">glasses. Drink more!</p>
+      </section> -->
       <!--| end of COUNTER                                                 |-->
       <!--                                                                  -->
+      <!--| WATER                                                          |-->
+      <div class="water">
+        <div class="waves">
+          <div class="wave wave--before">
+            <svg class="wave__svg" viewBox="0 0 100 10">
+              <use href="assets/svg/wave.svg#wave"></use>
+            </svg>
+            <svg class="wave__svg" viewBox="0 0 100 10">
+              <use href="assets/svg/wave.svg#wave"></use>
+            </svg>
+          </div>
+          <div class="wave">
+            <svg class="wave__svg" viewBox="0 0 100 10">
+              <use href="assets/svg/wave.svg#wave"></use>
+            </svg>
+            <svg class="wave__svg" viewBox="0 0 100 10">
+              <use href="assets/svg/wave.svg#wave"></use>
+            </svg>
+          </div>
+          <div class="wave wave--after">
+            <svg class="wave__svg" viewBox="0 0 100 10">
+              <use href="assets/svg/wave.svg#wave"></use>
+            </svg>
+            <svg class="wave__svg" viewBox="0 0 100 10">
+              <use href="assets/svg/wave.svg#wave"></use>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <!--| end of WATER                                                   |-->
+      <!--                                                                  -->
       <!--| CONTROLS                                                       |-->
-      <div class="controls controls--js">
+      <!-- <div class="controls controls--js">
         <button class="controls__button controls__button--add controls__button--js-add">
           <svg class="controls__svg" viewBox="0 0 512 512">
             <use href="assets/svg/icons.svg#plus-circle"></use>
@@ -97,13 +129,14 @@
             <use href="assets/svg/emoji.svg#emo-6"></use>
           </svg>
         </div>
-      </div>
+      </div> -->
       <!--| end of CONTROLS                                                |-->
       <!--                                                                  -->
 
+      
 
 
-    </section>
+    </div>
     <!--| end of APP CONTAINER                                             |-->
     <!--//                                                               //|-->
     <!--| MOBILE MENU                                                      |-->
