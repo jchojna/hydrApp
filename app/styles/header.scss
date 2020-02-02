@@ -35,10 +35,7 @@
 .burgerBtn {
   @include button;
   @include flex-center;
-  background-color: $cold-blue;
-  border-radius: 50%;
-  fill: $cold-dark-blue;
-  padding: $burgerBtn-padding-xs;
+  fill: $cold-blue;
   transition: background-color $time-hover-effect, transform $time-hover-effect;
   width: $burgerBtn-size-xs;
 

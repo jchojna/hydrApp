@@ -286,7 +286,6 @@ const handleWaterChange = (e) => {
     value--;
     handleCounter(value, 'remove', 'prev');
   }
-  console.log('test');
   localStorage.setItem(key, value);
   hydrappArray[0].value = key;
   handleWaterLevel(value);
