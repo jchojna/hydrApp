@@ -15,17 +15,6 @@ if ('serviceWorker' in navigator) {
 const hydrappArray = [];
 const lastEntryDate = new Date();
 const weekDay = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
-let indicators = '';
-for (let i = 0; i < 8; i++) {
-  indicators += `
-    <svg
-      class="emoji__svg emoji__svg--emo-${i+1} emoji__svg--js-${i}"
-      viewBox="0 0 512 512"
-    >
-      <use href="assets/svg/emoji.svg#emo-${i}"></use>
-    </svg>
-  `
-}
 const archiveEmpty = `
 <p class="week__empty">No history yet...</p>
 `;
@@ -99,7 +88,7 @@ class Entry {
           </button>
         </div>
         <div class="indicator indicator--js-${this.id}">
-          ${indicators}
+          ${emoji}
         </div>
       </li>
     `;
@@ -175,6 +164,22 @@ const limit = (max, num, action) => {
   action === 'decrease' ? num <= 0 ? false : num-- : false;
   return num;
 }
+//| GET EMOJIS HTML STRING                                                  |//
+const getEmojiHtml = (id) => {
+  let emojiHtml = '';
+
+  for (let i = 0; i < emojiAmount; i++) {
+    emojiHtml += `
+      <svg
+        class="emoji__svg emoji__svg--emo-${i} emoji__svg--js-${id}"
+        viewBox="0 0 512 512"
+      >
+        <use href="assets/svg/emoji.svg#emo-${i}"></use>
+      </svg>
+    `
+  }
+  return emojiHtml;
+}
 //| SETTERS                                                                 |//
 ////                                                                       ////
 //| SET LOCAL STORAGE                                                       |//
@@ -201,8 +206,114 @@ const setData = () => {
   // to update
   // handleWaterChange('displayValue');
 }
+//| SET WAVES AMOUNT                                                        |//
+const setWaterWaves = () => {
+  const waveSvg = `
+    <svg class="wave__svg" viewBox="0 0 100 10">
+      <use href="assets/svg/wave.svg#wave"></use>
+    </svg>
+  `;
+  let wavesSvgs = '';
+  for (let i = 1; i <= wavesAmount; i++) {
+    wavesSvgs += waveSvg;
+  }
+  [...waves].forEach(wave => wave.innerHTML = wavesSvgs);
+  handleWaterWaves();
+}
+//| SET ARCHIVE                                                             |//
+const setArchiveDOM = () => {
+  for (let i = 0; i < hydrappArray.length; i++) {
+    addArchiveNode(i);
+  }
+  //: set the newest week as visible                                        ://
+  const weeks = document.querySelectorAll('.week--js');
+  weeks[currentWeekIndex].classList.add('week--visible');
+  //: set 'remove entry' button on the last entry                           ://
+  handleArchiveLastEntry();
+  //: generate indicators for new entry mode                                ://
+  const indicatorsContainer = document.querySelector('.indicator--js-new');
+  indicatorsContainer.innerHTML = indicators;
+  handleEmoji('new', 0);
+}
+//| HANDLERS                                                                |//
+////                                                                       ////
+//| HANDLE ELEMENTS ON WINDOW RESIZE                                        |//
+const handleWindowResize = () => {
+  const waterValue = hydrappArray[0].value;
+  handleWaterLevel(waterValue);
+  handleWaterWaves();
+
+
+
+
+
+
+
+}
+//| HANDLE WATER WAVES                                                      |//
+const handleWaterWaves = () => {
+  const size = window.innerWidth / wavesAmount / 10;
+  wavesContainer.style.height = `${size}px`;
+  wavesContainer.style.top = `${-1 * (size - 1)}px`;
+}
+/*
+##      ##    ###    ######## ######## ########
+##  ##  ##   ## ##      ##    ##       ##     ##
+##  ##  ##  ##   ##     ##    ##       ##     ##
+##  ##  ## ##     ##    ##    ######   ########
+##  ##  ## #########    ##    ##       ##   ##
+##  ##  ## ##     ##    ##    ##       ##    ##
+ ###  ###  ##     ##    ##    ######## ##     ##
+*/
+//| HANDLE WATER CHANGE                                                     |//
+const handleWaterChange = (e) => {
+  const self = e.target || e;
+  const key = setDateKey();
+  let value = parseInt(hydrappArray[0].value);
+  // const firstArchiveEntry = document.querySelector('.entry__value--js');
+
+  //. if add button clicked                                               .//
+  if (self === addBtn) {
+    if (value >= waterMaxValue) return;
+    handleCounter(value, 'add', 'prev');
+    value++;
+    handleCounter(value, 'add', 'next');
+
+  //. if remove button clicked                                            .//
+  } else if (self === removeBtn) {
+    if (value <= 0) return;
+    handleCounter(value, 'remove', 'next');
+    value--;
+    handleCounter(value, 'remove', 'prev');
+  }
+  localStorage.setItem(key, value);
+  hydrappArray[0].value = key;
+  handleWaterLevel(value);
+  handleWaterShake();
+  // firstArchiveEntry.textContent = hydrappArray[0].value;
+}
+//| HANDLE WATER LEVEL                                                      |//
+const handleWaterLevel = (value) => {
+  const windowHeight = window.innerHeight;
+  const offset = windowHeight / waterMaxValue * (waterMaxValue - value);
+  water.style.top = `${offset}px`;
+}
+//| HANDLE WATER LEVEL                                                      |//
+const handleWaterShake = () => {
+  const shakeDuration = 1500;
+
+  water.classList.add('water--shake');
+  water.style.animationDuration = `${shakeDuration}ms`
+
+  wavesShakeTimeoutId !== null ? clearTimeout(wavesShakeTimeoutId) : false;  
+  wavesShakeTimeoutId = setTimeout(() => {
+    water.classList.remove('water--shake');
+    clearTimeout(wavesShakeTimeoutId);
+    wavesShakeTimeoutId = null;
+  }, shakeDuration);
+}
 //| SET COUNTER VALUES                                                      |//
-const setCounter = (value, action, digit) => {
+const handleCounter = (value, action, digit) => {
   const tenthsValue = Math.floor(value / 10);
   const onesValue = value % 10;
   const hrefPrefix = 'assets/svg/digits.svg#digit-';
@@ -281,97 +392,6 @@ const setCounter = (value, action, digit) => {
     break;
   }
 }
-//| SET WAVES AMOUNT                                                        |//
-const setWaterWaves = () => {
-  const waveSvg = `
-    <svg class="wave__svg" viewBox="0 0 100 10">
-      <use href="assets/svg/wave.svg#wave"></use>
-    </svg>
-  `;
-  let wavesSvgs = '';
-  for (let i = 1; i <= wavesAmount; i++) {
-    wavesSvgs += waveSvg;
-  }
-  [...waves].forEach(wave => wave.innerHTML = wavesSvgs);
-  handleWaterWaves();
-}
-//| HANDLERS                                                                |//
-////                                                                       ////
-//| HANDLE ELEMENTS ON WINDOW RESIZE                                        |//
-const handleWindowResize = () => {
-  const waterValue = hydrappArray[0].value;
-  handleWaterLevel(waterValue);
-  handleWaterWaves();
-
-
-
-
-
-
-
-}
-//| HANDLE WATER WAVES                                                      |//
-const handleWaterWaves = () => {
-  const size = window.innerWidth / wavesAmount / 10;
-  wavesContainer.style.height = `${size}px`;
-  wavesContainer.style.top = `${-1 * (size - 1)}px`;
-}
-//| HANDLE WATER CHANGE                                                     |//
-const handleWaterChange = (e) => {
-  const self = e.target || e;
-  const key = setDateKey();
-  let value = parseInt(hydrappArray[0].value);
-  // const firstArchiveEntry = document.querySelector('.entry__value--js');
-
-  //. if add button clicked                                               .//
-  if (self === addBtn) {
-    if (value >= waterMaxValue) return;
-    setCounter(value, 'add', 'prev');
-    value++;
-    setCounter(value, 'add', 'next');
-
-  //. if remove button clicked                                            .//
-  } else if (self === removeBtn) {
-    if (value <= 0) return;
-    setCounter(value, 'remove', 'next');
-    value--;
-    setCounter(value, 'remove', 'prev');
-  }
-  localStorage.setItem(key, value);
-  hydrappArray[0].value = key;
-  handleWaterLevel(value);
-  handleWaterShake();
-  // firstArchiveEntry.textContent = hydrappArray[0].value;
-}
-/*
-##      ##    ###    ######## ######## ########
-##  ##  ##   ## ##      ##    ##       ##     ##
-##  ##  ##  ##   ##     ##    ##       ##     ##
-##  ##  ## ##     ##    ##    ######   ########
-##  ##  ## #########    ##    ##       ##   ##
-##  ##  ## ##     ##    ##    ##       ##    ##
- ###  ###  ##     ##    ##    ######## ##     ##
-*/
-//| HANDLE WATER LEVEL                                                      |//
-const handleWaterLevel = (value) => {
-  const windowHeight = window.innerHeight;
-  const offset = windowHeight / waterMaxValue * (waterMaxValue - value);
-  water.style.top = `${offset}px`;
-}
-//| HANDLE WATER LEVEL                                                      |//
-const handleWaterShake = () => {
-  const shakeDuration = 1500;
-
-  water.classList.add('water--shake');
-  water.style.animationDuration = `${shakeDuration}ms`
-
-  wavesShakeTimeoutId !== null ? clearTimeout(wavesShakeTimeoutId) : false;  
-  wavesShakeTimeoutId = setTimeout(() => {
-    water.classList.remove('water--shake');
-    clearTimeout(wavesShakeTimeoutId);
-    wavesShakeTimeoutId = null;
-  }, shakeDuration);
-}
 //| SET CURRENTLY DISPLAYED ARCHIVE WEEK'S HEIGHT                           |//
 const setCurrentWeekHeight = () => {
   const currentWeek = document.querySelectorAll('.week--js')[currentWeekIndex];
@@ -383,17 +403,19 @@ const setCurrentWeekHeight = () => {
   archiveWeeks.style.height = `${finalHeight}px`;
 }
 //| SET INDICATORS                                                          |//
-const setIndicators = (id, value) => {
-  value > 7 ? value = 7 : false;
-  const indicators = document.querySelector(`.indicator--js-${id}`).children;
-  const indicator = document.querySelector(`.indicator--js-${id} .indicator__svg--js-${value}`);
-  
-  for (const indicator of indicators) {
-    indicator.classList.contains('indicator__svg--visible')
-    ? indicator.classList.remove('indicator__svg--visible')
-    : false;
-  }
-  indicator.classList.add('indicator__svg--visible');
+const handleEmoji = (id, number) => {
+  number > 7 ? number = 7 : false;
+  const emojis = document.querySelectorAll(`.emoji__svg--js-${id}`);
+
+  [...emojis].forEach((emoji, index) => {
+    if (index === number) {
+      emoji.classList.add('emoji__svg--visible');
+    } else {
+      if (emoji.classList.contains('emoji__svg--visible')) {
+        emoji.classList.remove('emoji__svg--visible');
+      }
+    }
+  });  
 }
 //| CREATE ADD ENTRY BUTTON                                                 |//
 const createAddEntryButton = () => {
@@ -431,7 +453,7 @@ const addArchiveNode = (index, option) => {
   //: add next day entry                                                    ://
   let lastWeekList = archiveWeeks.lastElementChild.lastElementChild;
   lastWeekList.insertAdjacentHTML('beforeend', dayHtml);
-  setIndicators(id, value);
+  handleEmoji(id, value);
   //: add 'add entry button at the end                                      ://
   if (index === hydrappArray.length - 1) {
     if (day === 'monday') {
@@ -447,21 +469,6 @@ const addArchiveNode = (index, option) => {
   const editButton = document.querySelectorAll('.edition__button--js-edit')[index];
   editButton.index = index;
   editButton.addEventListener('click', handleItemEdit);
-}
-//| SET ARCHIVE                                                             |//
-const setArchiveDOM = () => {
-  for (let i = 0; i < hydrappArray.length; i++) {
-    addArchiveNode(i);
-  }
-  //: set the newest week as visible                                        ://
-  const weeks = document.querySelectorAll('.week--js');
-  weeks[currentWeekIndex].classList.add('week--visible');
-  //: set 'remove entry' button on the last entry                           ://
-  handleArchiveLastEntry();
-  //: generate indicators for new entry mode                                ://
-  const indicatorsContainer = document.querySelector('.indicator--js-new');
-  indicatorsContainer.innerHTML = indicators;
-  setIndicators('new', 0);
 }
 //| SET WEEK HEADING                                                        |//
 const updateWeekHeading = () => {
@@ -651,14 +658,14 @@ const enterNewEntryValue = (e) => {
         case newEntryDecrease:
           value !== 0 ? value-- : false;
           newEntryValue.textContent = value;
-          setIndicators('new', value);
+          handleEmoji('new', value);
           break;
 
         case 39:
         case newEntryIncrease:
           value !== waterMaxValue ? value++ : false;
           newEntryValue.textContent = value;
-          setIndicators('new', value);
+          handleEmoji('new', value);
           break;
   
         case 27:
@@ -792,7 +799,7 @@ const handleItemEdit = (e) => {
     
     toggleItemDisplay();
     entryValue.textContent = value;
-    setIndicators(id, value);
+    handleEmoji(id, value);
 
     archive.removeEventListener('click', handleEdition);
     archive.removeEventListener('keydown', handleEdition);
@@ -812,7 +819,7 @@ const handleItemEdit = (e) => {
         e.preventDefault();
         dayValue > 0 ? dayValue-- : false;
         entryValue.textContent = dayValue;
-        setIndicators(id, dayValue);
+        handleEmoji(id, dayValue);
       break;
       
       case 38:
@@ -820,7 +827,7 @@ const handleItemEdit = (e) => {
         e.preventDefault();
         dayValue < waterMaxValue ? dayValue++ : false;
         entryValue.textContent = dayValue;
-        setIndicators(id, dayValue);
+        handleEmoji(id, dayValue);
       break;
 
       case 27:
@@ -869,11 +876,13 @@ const counterNextOnes = document.querySelector('.digit__svg--js-nextOnes');
 const controls = document.querySelector('.controls--js');
 const addBtn = document.querySelector('.controls__button--js-add');
 const removeBtn = document.querySelector('.controls__button--js-remove');
+const emoji = document.querySelector('.emoji--js-controls');
+const emojiAmount = 8;
 //: WATER                                                                   ://
 const water = document.querySelector('.water--js');
-let wavesAmount = 2;
 const wavesContainer = document.querySelector('.waves--js');
 const waves = document.querySelectorAll('.wave--js');
+let wavesAmount = 2;
 let wavesShakeTimeoutId = null;
 
 //: NAVIGATION                                                              ://
@@ -904,10 +913,15 @@ const newEntrySave = document.querySelector('.new-entry__button--js-save');
 ////                                                                       ////
 setData();
 const startValue = hydrappArray[0].value;
-setCounter(startValue, 'initial');
+handleCounter(startValue, 'initial');
 setWaterWaves(wavesAmount);
 handleWaterLevel(startValue);
 handleWaterShake();
+
+emoji.innerHTML = getEmojiHtml('controls');
+handleEmoji('controls', startValue);
+
+
 //setArchiveDOM();
 //updateWeekHeading();
 //toggleMobileMenu(burgerButton);                           // ! FOR TESTS ONLY
