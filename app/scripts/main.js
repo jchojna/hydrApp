@@ -18,9 +18,13 @@ const weekDay = ['sunday','monday','tuesday','wednesday','thursday','friday','sa
 let indicators = '';
 for (let i = 0; i < 8; i++) {
   indicators += `
-  <svg class="indicator__svg indicator__svg--emo-${i+1} indicator__svg--js-${i}">
-  <use href="assets/svg/icons.svg#emoticon-${i}"></use>
-  </svg>`
+    <svg
+      class="emoji__svg emoji__svg--emo-${i+1} emoji__svg--js-${i}"
+      viewBox="0 0 512 512"
+    >
+      <use href="assets/svg/emoji.svg#emo-${i}"></use>
+    </svg>
+  `
 }
 const archiveEmpty = `
 <p class="week__empty">No history yet...</p>
@@ -278,25 +282,41 @@ const setCounter = (value, action, digit) => {
   }
 }
 //| SET WAVES AMOUNT                                                        |//
-const setWaves = (amount) => {
+const setWaterWaves = () => {
   const waveSvg = `
     <svg class="wave__svg" viewBox="0 0 100 10">
       <use href="assets/svg/wave.svg#wave"></use>
     </svg>
   `;
   let wavesSvgs = '';
-  for (let i = 1; i <= amount; i++) {
+  for (let i = 1; i <= wavesAmount; i++) {
     wavesSvgs += waveSvg;
   }
   [...waves].forEach(wave => wave.innerHTML = wavesSvgs);
-
-  const size = window.innerWidth / amount / 10;
-  wavesContainer.style.height = `${size}px`;
-  wavesContainer.style.top = `${-1 * (size - 1)}px`;
+  handleWaterWaves();
 }
 //| HANDLERS                                                                |//
 ////                                                                       ////
-//| HANDLE COUNTER                                                          |//
+//| HANDLE ELEMENTS ON WINDOW RESIZE                                        |//
+const handleWindowResize = () => {
+  const waterValue = hydrappArray[0].value;
+  handleWaterLevel(waterValue);
+  handleWaterWaves();
+
+
+
+
+
+
+
+}
+//| HANDLE WATER WAVES                                                      |//
+const handleWaterWaves = () => {
+  const size = window.innerWidth / wavesAmount / 10;
+  wavesContainer.style.height = `${size}px`;
+  wavesContainer.style.top = `${-1 * (size - 1)}px`;
+}
+//| HANDLE WATER CHANGE                                                     |//
 const handleWaterChange = (e) => {
   const self = e.target || e;
   const key = setDateKey();
@@ -320,6 +340,7 @@ const handleWaterChange = (e) => {
   localStorage.setItem(key, value);
   hydrappArray[0].value = key;
   handleWaterLevel(value);
+  handleWaterShake();
   // firstArchiveEntry.textContent = hydrappArray[0].value;
 }
 /*
@@ -333,21 +354,22 @@ const handleWaterChange = (e) => {
 */
 //| HANDLE WATER LEVEL                                                      |//
 const handleWaterLevel = (value) => {
-  const shakeDuration = 1500;
   const windowHeight = window.innerHeight;
   const offset = windowHeight / waterMaxValue * (waterMaxValue - value);
-
   water.style.top = `${offset}px`;
+}
+//| HANDLE WATER LEVEL                                                      |//
+const handleWaterShake = () => {
+  const shakeDuration = 1500;
+
   water.classList.add('water--shake');
   water.style.animationDuration = `${shakeDuration}ms`
 
   wavesShakeTimeoutId !== null ? clearTimeout(wavesShakeTimeoutId) : false;  
   wavesShakeTimeoutId = setTimeout(() => {
-
     water.classList.remove('water--shake');
     clearTimeout(wavesShakeTimeoutId);
     wavesShakeTimeoutId = null;
-
   }, shakeDuration);
 }
 //| SET CURRENTLY DISPLAYED ARCHIVE WEEK'S HEIGHT                           |//
@@ -849,7 +871,7 @@ const addBtn = document.querySelector('.controls__button--js-add');
 const removeBtn = document.querySelector('.controls__button--js-remove');
 //: WATER                                                                   ://
 const water = document.querySelector('.water--js');
-const wavesAmount = 2;
+let wavesAmount = 2;
 const wavesContainer = document.querySelector('.waves--js');
 const waves = document.querySelectorAll('.wave--js');
 let wavesShakeTimeoutId = null;
@@ -883,8 +905,9 @@ const newEntrySave = document.querySelector('.new-entry__button--js-save');
 setData();
 const startValue = hydrappArray[0].value;
 setCounter(startValue, 'initial');
-setWaves(wavesAmount);
-handleWaterLevel(startValue)
+setWaterWaves(wavesAmount);
+handleWaterLevel(startValue);
+handleWaterShake();
 //setArchiveDOM();
 //updateWeekHeading();
 //toggleMobileMenu(burgerButton);                           // ! FOR TESTS ONLY
@@ -897,6 +920,7 @@ const addNewDayButton = document.querySelector('.entry__button--js-add');
 //| EVENT LISTENERS                                                         |//
 ////                                                                       ////
 controls.addEventListener('click', handleWaterChange);
+window.addEventListener('resize', handleWindowResize);
 //burgerButton.addEventListener('click', toggleMobileMenu);
 //mobileMenu.addEventListener('click', toggleArchive);
 
