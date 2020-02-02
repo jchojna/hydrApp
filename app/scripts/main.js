@@ -11,115 +11,6 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
-//| GLOBAL VARIABLES                                                        |//
-const hydrappArray = [];
-const lastEntryDate = new Date();
-const weekDay = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
-const archiveEmpty = `
-<p class="week__empty">No history yet...</p>
-`;
-const addButtonHtml = `
-<li class="entry entry--add entry--js-add">
-  <button class="button entry__button entry__button--add entry__button--js-add">
-    Add new day..
-  </button>
-</li>
-`;
-//| CLASS FOR ENTRY                                                         |//
-class Entry {
-  constructor(date) {
-    this.key = setDateKey(date);
-    this.value = this.key;
-    this.date = date;
-    this.id = this.date;
-    this.day = date;
-
-    this.weekHtml = `
-      <section class="week week--js">
-        <header class="week__header week__header--js">
-          <button class="button week__button week__button--prev week__button--js-prev">
-            <svg class="week__svg" viewBox="0 0 512 512">
-              <use href="assets/svg/icons.svg#left-arrow"></use>
-            </svg>
-          </button>
-          <h3 class="week__heading week__heading--js">New week</h3>
-          <button class="button week__button week__button--next week__button--js-next">
-            <svg class="week__svg" viewBox="0 0 512 512">
-              <use href="assets/svg/icons.svg#right-arrow"></use>
-            </svg>
-          </button>
-        </header>
-        <ul class="week__list week__list--js"></ul>
-      </section>
-    `;
-
-    this.dayHtml = `
-      <li class="entry entry--js ${this.key}">
-        <header class="entry__header entry__header--js">
-          <p class="entry__heading entry__heading--day">${this.day}</p>
-          <p class="entry__heading entry__heading--date entry__heading--js-date">${this.date}</p>
-        </header>
-        <span class="entry__value entry__value--js">${this.value}</span>
-        <div class="edition edition--js">
-          <button class="button edition__button edition__button--visible edition__button--edit edition__button--js-edit">
-            <svg class="edition__svg edition__svg--edit">
-              <use href="assets/svg/icons.svg#edit-mode"></use>
-            </svg>
-          </button>
-          <button class="button edition__button edition__button--decrease edition__button--js-decrease">
-            <svg class="edition__svg edition__svg--decrease">
-              <use href="assets/svg/icons.svg#down-arrow"></use>
-            </svg>
-          </button>
-          <button class="button edition__button edition__button--increase edition__button--js-increase">
-            <svg class="edition__svg edition__svg--increase">
-              <use href="assets/svg/icons.svg#up-arrow"></use>
-            </svg>
-          </button>
-          <button class="button edition__button edition__button--cancel edition__button--js-cancel">
-            <svg class="edition__svg edition__svg--cancel">
-              <use href="assets/svg/icons.svg#back-arrow"></use>
-            </svg>
-          </button>
-          <button class="button edition__button edition__button--save edition__button--js-save">
-            <svg class="edition__svg edition__svg--save">
-              <use href="assets/svg/icons.svg#save-icon"></use>
-            </svg>
-          </button>
-        </div>
-        <div class="indicator indicator--js-${this.id}">
-          ${emoji}
-        </div>
-      </li>
-    `;
-  }
-
-  get value() {
-    return this._value;
-  }
-  set value(key) {
-    this._value = parseInt(localStorage.getItem(key));
-  }
-  get date() {
-    return this._date;
-  }
-  set date(date) {
-    this._date = getOffsetedDate(date).toISOString().slice(0,10).split('-').reverse().join(' ');
-  }
-  get id() {
-    return this._id;
-  }
-  set id(date) {
-    this._id = date.replace(/\s/g,'');
-  }
-  get day() {
-    return this._day;
-  }
-  set day(date) {
-    const dayIndex = date.getDay();
-    this._day = weekDay[dayIndex];
-  }
-}
 //| FUNCTIONS                                                               |//
 ////                                                                       ////
 //| GET OFFSETED DATE                                                       |//
@@ -294,12 +185,6 @@ const handleWindowResize = () => {
   handleWaterLevel(waterValue);
   handleWaterWaves();
   handleWaterMeasure();
-
-
-
-
-
-
 }
 //| HANDLE WATER WAVES                                                      |//
 const handleWaterWaves = () => {
@@ -333,6 +218,7 @@ const handleWaterChange = (e) => {
   handleWaterLevel(value);
   handleWaterShake();
   handleEmoji('controls', value);
+  handleMessage(value);
   // firstArchiveEntry.textContent = hydrappArray[0].value;
 }
 //| HANDLE WATER LEVEL                                                      |//
@@ -434,6 +320,31 @@ const handleCounter = (value, action, digit) => {
       }
     break;
   }
+}
+//| HANDLE MESSAGE DEPENDING ON AMOUNT OF CONSUMED WATER                    |//
+const handleMessage = (value) => {  
+  message.innerHTML = value === waterMaxValue
+  ? 'It\'s enough for today!'
+
+  : value >= waterMaxValue - 2
+  ? 'Almost there..'
+
+  : value > waterOptimalValue + 1
+  ? 'Woow.. You\'re on fire!'
+
+  : value >= waterOptimalValue - 1
+  ? 'Good job! You reached your optimal water consumption'
+
+  : value >= waterOptimalValue - 3
+  ? 'Keep going.. Yo\'re doing well'
+  
+  : value >= 4
+  ? 'Much better, but still you can do more!'
+  
+  : value >= 2
+  ? 'Still too little..'
+
+  : 'Drink or you will dehydrate!';
 }
 //| SET CURRENTLY DISPLAYED ARCHIVE WEEK'S HEIGHT                           |//
 const setCurrentWeekHeight = () => {
@@ -904,10 +815,12 @@ const appHeader = document.querySelector('.app__header--js');
 //: COUNTER                                                                 ://
 const counter = document.querySelector('.counter--js');
 const waterMaxValue = 20;
+const waterOptimalValue = 12;
 const counterPrevTenths = document.querySelector('.digit__svg--js-prevTenths');
 const counterNextTenths = document.querySelector('.digit__svg--js-nextTenths');
 const counterPrevOnes = document.querySelector('.digit__svg--js-prevOnes');
 const counterNextOnes = document.querySelector('.digit__svg--js-nextOnes');
+const message = document.querySelector('.counter__message--js');
 //: CONTROLS                                                                ://
 const controls = document.querySelector('.controls--js');
 const addBtn = document.querySelector('.controls__button--js-add');
@@ -946,6 +859,116 @@ const newEntryIncrease = document.querySelector('.new-entry__button--js-increase
 const newEntryCancel = document.querySelector('.new-entry__button--js-cancel');
 const newEntrySave = document.querySelector('.new-entry__button--js-save');
 
+////                                                                       ////
+const hydrappArray = [];
+const lastEntryDate = new Date();
+const weekDay = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+const archiveEmpty = `
+<p class="week__empty">No history yet...</p>
+`;
+const addButtonHtml = `
+<li class="entry entry--add entry--js-add">
+  <button class="button entry__button entry__button--add entry__button--js-add">
+    Add new day..
+  </button>
+</li>
+`;
+//| CLASS FOR ENTRY                                                         |//
+class Entry {
+  constructor(date) {
+    this.key = setDateKey(date);
+    this.value = this.key;
+    this.date = date;
+    this.id = this.date;
+    this.day = date;
+
+    this.weekHtml = `
+      <section class="week week--js">
+        <header class="week__header week__header--js">
+          <button class="button week__button week__button--prev week__button--js-prev">
+            <svg class="week__svg" viewBox="0 0 512 512">
+              <use href="assets/svg/icons.svg#left-arrow"></use>
+            </svg>
+          </button>
+          <h3 class="week__heading week__heading--js">New week</h3>
+          <button class="button week__button week__button--next week__button--js-next">
+            <svg class="week__svg" viewBox="0 0 512 512">
+              <use href="assets/svg/icons.svg#right-arrow"></use>
+            </svg>
+          </button>
+        </header>
+        <ul class="week__list week__list--js"></ul>
+      </section>
+    `;
+
+    this.dayHtml = `
+      <li class="entry entry--js ${this.key}">
+        <header class="entry__header entry__header--js">
+          <p class="entry__heading entry__heading--day">${this.day}</p>
+          <p class="entry__heading entry__heading--date entry__heading--js-date">${this.date}</p>
+        </header>
+        <span class="entry__value entry__value--js">${this.value}</span>
+        <div class="edition edition--js">
+          <button class="button edition__button edition__button--visible edition__button--edit edition__button--js-edit">
+            <svg class="edition__svg edition__svg--edit">
+              <use href="assets/svg/icons.svg#edit-mode"></use>
+            </svg>
+          </button>
+          <button class="button edition__button edition__button--decrease edition__button--js-decrease">
+            <svg class="edition__svg edition__svg--decrease">
+              <use href="assets/svg/icons.svg#down-arrow"></use>
+            </svg>
+          </button>
+          <button class="button edition__button edition__button--increase edition__button--js-increase">
+            <svg class="edition__svg edition__svg--increase">
+              <use href="assets/svg/icons.svg#up-arrow"></use>
+            </svg>
+          </button>
+          <button class="button edition__button edition__button--cancel edition__button--js-cancel">
+            <svg class="edition__svg edition__svg--cancel">
+              <use href="assets/svg/icons.svg#back-arrow"></use>
+            </svg>
+          </button>
+          <button class="button edition__button edition__button--save edition__button--js-save">
+            <svg class="edition__svg edition__svg--save">
+              <use href="assets/svg/icons.svg#save-icon"></use>
+            </svg>
+          </button>
+        </div>
+        <div class="indicator indicator--js-${this.id}">
+          ${emoji}
+        </div>
+      </li>
+    `;
+  }
+
+  get value() {
+    return this._value;
+  }
+  set value(key) {
+    this._value = parseInt(localStorage.getItem(key));
+  }
+  get date() {
+    return this._date;
+  }
+  set date(date) {
+    this._date = getOffsetedDate(date).toISOString().slice(0,10).split('-').reverse().join(' ');
+  }
+  get id() {
+    return this._id;
+  }
+  set id(date) {
+    this._id = date.replace(/\s/g,'');
+  }
+  get day() {
+    return this._day;
+  }
+  set day(date) {
+    const dayIndex = date.getDay();
+    this._day = weekDay[dayIndex];
+  }
+}
+
 //| FUNCTION CALLS                                                          |//
 ////                                                                       ////
 setData();
@@ -957,6 +980,7 @@ handleWaterShake();
 setWaterMeasureDOM();
 const measureLevels = document.querySelectorAll('.measure__level--js');
 handleWaterMeasure();
+handleMessage(startValue);
 
 emoji.innerHTML = getEmojiHtml('controls');
 handleEmoji('controls', startValue);

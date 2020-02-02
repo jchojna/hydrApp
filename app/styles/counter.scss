@@ -5,9 +5,9 @@
   column-gap: 10px;
   display: grid;
   grid-template-areas:
-  "head   head"
-  "tenths ones"
-  "text   text";
+  "heading heading"
+  "tenths  ones   "
+  "message message";
   grid-template-columns: repeat(2, 1fr);
   margin: 0 $header-padding-xs * 2 + $burgerBtn-size-xs;
   max-width: 300px;
@@ -16,15 +16,16 @@
   justify-items: center;
 
   &__heading {
-    grid-area: head;
+    grid-area: heading;
     text-align: center;
     margin: 0;
   }
 
-  &__text {
-    grid-area: text;
+  &__message {
+    grid-area: message;
     margin: 0;
     padding: 0;
+    line-height: 1.4;
     text-align: center;
   }
 }
