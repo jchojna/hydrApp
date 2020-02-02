@@ -17,6 +17,7 @@
     right: 0;
     top: 0;
     width: 100%;
+    z-index: 1;
 
     @media only screen and (min-width: $media-md) {
       padding: $header-padding-md;
@@ -35,7 +36,7 @@
     left: 0;
     min-height: 300px;
     position: fixed;
-    top: $header-padding-xs * 2 + $burgerBtn-size-xs;
+    top: 0;
     width: 100%;
   }
 }

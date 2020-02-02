@@ -4,11 +4,13 @@
   left: 0;
   position: absolute;
   right: 0;
-  top: 200px;
+  transition: top 1s cubic-bezier(0.5,-0.5,0.5,1.5);
   width: 100%;
   z-index: -1;
   
-  //animation: skew 2s infinite alternate;
+  &--shake {
+    animation: shake alternate;
+  }
 
   &::after {
     content: '';
@@ -32,11 +34,11 @@
   width: 100%;
 }
 
-
 .wave {
   @include flex-center;
   fill: $cold-darkest-blue;
   width: 100%;
+  animation: waves 15s linear infinite;
 
   &--before,
   &--after {
@@ -50,9 +52,6 @@
     left: 100%;
   }
 
-
-  animation: waves 20s linear infinite;
-  
   &__svg {
     fill: $cold-darkest-blue;
     width: 100%;
@@ -69,11 +68,11 @@
   }
 }
 
-@keyframes skew {
-  0% {
-    transform: skewY(-5deg);
-  }
-  100% {
-    transform: skewY(5deg);
-  }
+@keyframes shake {
+  0% { transform: skewY(0); }
+  20% { transform: skewY(-5deg); }
+  40% { transform: skewY(5deg); }
+  60% { transform: skewY(-2deg); }
+  80% { transform: skewY(2deg); }
+  100% { transform: skewY(0); }
 }

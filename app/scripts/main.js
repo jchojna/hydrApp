@@ -171,10 +171,10 @@ const limit = (max, num, action) => {
   action === 'decrease' ? num <= 0 ? false : num-- : false;
   return num;
 }
-//| HANDLERS                                                                |//
+//| SETTERS                                                                 |//
 ////                                                                       ////
 //| SET LOCAL STORAGE                                                       |//
-const handleData = () => {
+const setData = () => {
   const date = new Date();
   let dateKey = setDateKey(date);
   setNewKeyValue(dateKey, 0);
@@ -194,10 +194,8 @@ const handleData = () => {
     setNewKeyValue(dateKey, 0);
     createEntryObject(date);
   }
-  const counterValue = hydrappArray[0].value;
-  setCounter(counterValue, 'initial');
   // to update
-  // handleCounter('displayValue');
+  // handleWaterChange('displayValue');
 }
 //| SET COUNTER VALUES                                                      |//
 const setCounter = (value, action, digit) => {
@@ -279,10 +277,27 @@ const setCounter = (value, action, digit) => {
     break;
   }
 }
+//| SET WAVES AMOUNT                                                        |//
+const setWaves = (amount) => {
+  const waveSvg = `
+    <svg class="wave__svg" viewBox="0 0 100 10">
+      <use href="assets/svg/wave.svg#wave"></use>
+    </svg>
+  `;
+  let wavesSvgs = '';
+  for (let i = 1; i <= amount; i++) {
+    wavesSvgs += waveSvg;
+  }
+  [...waves].forEach(wave => wave.innerHTML = wavesSvgs);
+
+  const size = window.innerWidth / amount / 10;
+  wavesContainer.style.height = `${size}px`;
+  wavesContainer.style.top = `${-1 * (size - 1)}px`;
+}
+//| HANDLERS                                                                |//
+////                                                                       ////
 //| HANDLE COUNTER                                                          |//
-const handleCounter = (e) => {
-
-
+const handleWaterChange = (e) => {
   const self = e.target || e;
   const key = setDateKey();
   let value = parseInt(hydrappArray[0].value);
@@ -290,7 +305,7 @@ const handleCounter = (e) => {
 
   //. if add button clicked                                               .//
   if (self === addBtn) {
-    if (value >= counterMaxValue) return;
+    if (value >= waterMaxValue) return;
     setCounter(value, 'add', 'prev');
     value++;
     setCounter(value, 'add', 'next');
@@ -302,17 +317,38 @@ const handleCounter = (e) => {
     value--;
     setCounter(value, 'remove', 'prev');
   }
-  console.log('test');
   localStorage.setItem(key, value);
   hydrappArray[0].value = key;
-
-
-
-
-
+  handleWaterLevel(value);
   // firstArchiveEntry.textContent = hydrappArray[0].value;
- 
+}
+/*
+##      ##    ###    ######## ######## ########
+##  ##  ##   ## ##      ##    ##       ##     ##
+##  ##  ##  ##   ##     ##    ##       ##     ##
+##  ##  ## ##     ##    ##    ######   ########
+##  ##  ## #########    ##    ##       ##   ##
+##  ##  ## ##     ##    ##    ##       ##    ##
+ ###  ###  ##     ##    ##    ######## ##     ##
+*/
+//| HANDLE WATER LEVEL                                                      |//
+const handleWaterLevel = (value) => {
+  const shakeDuration = 1500;
+  const windowHeight = window.innerHeight;
+  const offset = windowHeight / waterMaxValue * (waterMaxValue - value);
 
+  water.style.top = `${offset}px`;
+  water.classList.add('water--shake');
+  water.style.animationDuration = `${shakeDuration}ms`
+
+  wavesShakeTimeoutId !== null ? clearTimeout(wavesShakeTimeoutId) : false;  
+  wavesShakeTimeoutId = setTimeout(() => {
+
+    water.classList.remove('water--shake');
+    clearTimeout(wavesShakeTimeoutId);
+    wavesShakeTimeoutId = null;
+
+  }, shakeDuration);
 }
 //| SET CURRENTLY DISPLAYED ARCHIVE WEEK'S HEIGHT                           |//
 const setCurrentWeekHeight = () => {
@@ -598,7 +634,7 @@ const enterNewEntryValue = (e) => {
 
         case 39:
         case newEntryIncrease:
-          value !== counterMaxValue ? value++ : false;
+          value !== waterMaxValue ? value++ : false;
           newEntryValue.textContent = value;
           setIndicators('new', value);
           break;
@@ -760,7 +796,7 @@ const handleItemEdit = (e) => {
       case 38:
       case increaseButton:
         e.preventDefault();
-        dayValue < counterMaxValue ? dayValue++ : false;
+        dayValue < waterMaxValue ? dayValue++ : false;
         entryValue.textContent = dayValue;
         setIndicators(id, dayValue);
       break;
@@ -802,7 +838,7 @@ const handleItemEdit = (e) => {
 ////                                                                       ////
 //: COUNTER                                                                 ://
 const counter = document.querySelector('.counter--js');
-const counterMaxValue = 20;
+const waterMaxValue = 20;
 const counterPrevTenths = document.querySelector('.digit__svg--js-prevTenths');
 const counterNextTenths = document.querySelector('.digit__svg--js-nextTenths');
 const counterPrevOnes = document.querySelector('.digit__svg--js-prevOnes');
@@ -811,6 +847,13 @@ const counterNextOnes = document.querySelector('.digit__svg--js-nextOnes');
 const controls = document.querySelector('.controls--js');
 const addBtn = document.querySelector('.controls__button--js-add');
 const removeBtn = document.querySelector('.controls__button--js-remove');
+//: WATER                                                                   ://
+const water = document.querySelector('.water--js');
+const wavesAmount = 2;
+const wavesContainer = document.querySelector('.waves--js');
+const waves = document.querySelectorAll('.wave--js');
+let wavesShakeTimeoutId = null;
+
 //: NAVIGATION                                                              ://
 const burgerButton = document.querySelector('.burgerBtn--js');
 const mobileMenu = document.querySelector('.mobile-menu--js');
@@ -837,7 +880,11 @@ const newEntrySave = document.querySelector('.new-entry__button--js-save');
 
 //| FUNCTION CALLS                                                          |//
 ////                                                                       ////
-handleData();
+setData();
+const startValue = hydrappArray[0].value;
+setCounter(startValue, 'initial');
+setWaves(wavesAmount);
+handleWaterLevel(startValue)
 //setArchiveDOM();
 //updateWeekHeading();
 //toggleMobileMenu(burgerButton);                           // ! FOR TESTS ONLY
@@ -849,7 +896,7 @@ let entries = document.querySelectorAll('.entry--js');
 const addNewDayButton = document.querySelector('.entry__button--js-add');
 //| EVENT LISTENERS                                                         |//
 ////                                                                       ////
-controls.addEventListener('click', handleCounter);
+controls.addEventListener('click', handleWaterChange);
 //burgerButton.addEventListener('click', toggleMobileMenu);
 //mobileMenu.addEventListener('click', toggleArchive);
 

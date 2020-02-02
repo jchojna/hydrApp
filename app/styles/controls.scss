@@ -7,7 +7,8 @@
   position: fixed;
   right: 0;
   row-gap: $controls-gap-xs;
-  top: $burgerBtn-size-xs + ($header-padding-xs * 2);
+  //top: $burgerBtn-size-xs + ($header-padding-xs * 2);
+  bottom: 0;
 
   &__button {
     @include button;
