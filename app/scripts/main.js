@@ -226,6 +226,11 @@ const handleWaterLevel = (value) => {
   const windowHeight = window.innerHeight;
   const offset = windowHeight / waterMaxValue * (waterMaxValue - value);
   water.style.top = `${offset}px`;
+  if (value === 0) {
+    water.classList.add('water--hidden');
+  } else {
+    water.classList.remove('water--hidden');
+  }
 }
 //| HANDLE WATER LEVEL                                                      |//
 const handleWaterShake = () => {
