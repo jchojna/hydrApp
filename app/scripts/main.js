@@ -218,7 +218,7 @@ const handleWaterChange = (e) => {
   handleWaterLevel(value);
   handleWaterShake();
   handleEmoji('controls', value);
-  handleMessage(value);
+  handleCounterMessage(value);
   // firstArchiveEntry.textContent = hydrappArray[0].value;
 }
 //| HANDLE WATER LEVEL                                                      |//
@@ -327,8 +327,8 @@ const handleCounter = (value, action, digit) => {
   }
 }
 //| HANDLE MESSAGE DEPENDING ON AMOUNT OF CONSUMED WATER                    |//
-const handleMessage = (value) => {  
-  message.innerHTML = value === waterMaxValue
+const handleCounterMessage = (value) => {  
+  counterMessage.innerHTML = value === waterMaxValue
   ? 'It\'s enough for today!'
 
   : value >= waterMaxValue - 2
@@ -350,6 +350,20 @@ const handleMessage = (value) => {
   ? 'Still too little..'
 
   : 'Drink or you will dehydrate!';
+}
+//| HANDLE COUNTER DATE TO DISPLAY                                          |//
+const handleCounterDate = () => {
+
+  const { day, date } = hydrappArray[0];
+
+  counterDay.innerHTML = day;
+  counterDate.innerHTML = date.slice().split(' ').join('.');
+  console.log('hydrappArray[0]', hydrappArray[0]);
+
+
+
+
+
 }
 //| SET CURRENTLY DISPLAYED ARCHIVE WEEK'S HEIGHT                           |//
 const setCurrentWeekHeight = () => {
@@ -825,7 +839,9 @@ const counterPrevTenths = document.querySelector('.digit__svg--js-prevTenths');
 const counterNextTenths = document.querySelector('.digit__svg--js-nextTenths');
 const counterPrevOnes = document.querySelector('.digit__svg--js-prevOnes');
 const counterNextOnes = document.querySelector('.digit__svg--js-nextOnes');
-const message = document.querySelector('.counter__message--js');
+const counterDay = document.querySelector('.counter__day--js');
+const counterDate = document.querySelector('.counter__date--js');
+const counterMessage = document.querySelector('.counter__message--js');
 //: CONTROLS                                                                ://
 const controls = document.querySelector('.controls--js');
 const addBtn = document.querySelector('.controls__button--js-add');
@@ -985,7 +1001,8 @@ handleWaterShake();
 setWaterMeasureDOM();
 const measureLevels = document.querySelectorAll('.measure__level--js');
 handleWaterMeasure();
-handleMessage(startValue);
+handleCounterMessage(startValue);
+handleCounterDate();
 
 emoji.innerHTML = getEmojiHtml('controls');
 handleEmoji('controls', startValue);

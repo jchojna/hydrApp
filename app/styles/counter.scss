@@ -5,7 +5,8 @@
   column-gap: 10px;
   display: grid;
   grid-template-areas:
-  "heading heading"
+  "day     day    "
+  "date    date   "
   "tenths  ones   "
   "message message";
   grid-template-columns: repeat(2, 1fr);
@@ -15,19 +16,22 @@
   align-items: center;
   justify-items: center;
 
-  &__heading {
-    grid-area: heading;
-    text-align: center;
-    margin: 0;
-  }
-
+  &__day,
+  &__date,
   &__message {
-    grid-area: message;
+    grid-area: date;
+    line-height: 1.4;
     margin: 0;
     padding: 0;
-    line-height: 1.4;
     text-align: center;
   }
+
+  &__day {
+    grid-area: day;
+    text-transform: capitalize;
+  }
+  &__date { grid-area: date; }
+  &__message { grid-area: message; }
 }
 
 .digit {
