@@ -1,0 +1,47 @@
+@import 'variables.scss';
+@import 'mixins.scss';
+
+.controls {
+  bottom: 0;
+  display: grid;
+  padding: $header-padding-xs;
+  position: fixed;
+  right: 0;
+  row-gap: $controls-gap-xs;
+
+  &__button {
+    @include button;
+    @include flex-center;
+    fill: $cold-blue;
+    width: $burgerBtn-size-xs;
+  }
+
+  &__svg {
+    pointer-events: none;
+    width: 100%;
+  }
+
+  @media only screen and (min-width: $media-md) {
+
+    & {
+      padding: $header-padding-md;
+      row-gap: $controls-gap-md;
+    
+      &__button {
+        width: $burgerBtn-size-md;
+      }
+    }
+  }
+
+  @media only screen and (min-width: $media-lg) {
+
+    & {
+      padding: $header-padding-lg;
+      row-gap: $controls-gap-lg;
+    
+      &__button {
+        width: $burgerBtn-size-lg;
+      }
+    }
+  }
+}

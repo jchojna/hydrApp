@@ -1,0 +1,62 @@
+@import 'variables.scss';
+@import 'mixins.scss';
+//| LOGO                                                                    |//
+.logo {
+  @include flex-center;
+  max-width: ($burgerBtn-size-xs - 10px) * $logo-aspect-ratio;
+  position: relative;
+  width: 100%;
+
+  &__svg {
+    fill: $cold-blue;
+    width: 100%;
+
+    &--color {
+      fill: $cold-light-blue;
+      height: 100%;
+      left: 0;
+      position: absolute;
+      width: 100%;
+      top: 0;
+    }
+  }
+
+  @media only screen and (min-width: $media-md) {
+    max-width: $burgerBtn-size-md * $logo-aspect-ratio;
+  }
+  
+  @media only screen and (min-width: $media-lg) {
+    max-width: $burgerBtn-size-lg * $logo-aspect-ratio;
+  }
+}
+//| BURGER BUTTON                                                           |//
+.burgerBtn {
+  @include button;
+  @include flex-center;
+  fill: $cold-blue;
+  transition: background-color $time-hover-effect, transform $time-hover-effect;
+  width: $burgerBtn-size-xs;
+
+  &--active {
+    transform: rotate(90deg);
+  }
+
+  &:hover {
+    background-color: $cold-light-blue;
+  }
+
+  &__svg {
+    width: 100%;
+    pointer-events: none;
+  }
+
+  @media only screen and (min-width: $media-md) {
+    width: $burgerBtn-size-md;
+
+  }
+  
+  @media only screen and (min-width: $media-lg) {
+    width: $burgerBtn-size-lg;
+
+  }
+}

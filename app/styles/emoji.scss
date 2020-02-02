@@ -1,0 +1,69 @@
+@import 'variables.scss';
+@import 'mixins.scss';
+
+.emoji {
+  @include flex-center;
+  height: $size-xs-archive-buttons;
+  overflow: hidden;
+  position: relative;
+  width: $size-xs-archive-buttons;
+
+  &--controls {
+    height: $burgerBtn-size-xs;
+    width: $burgerBtn-size-xs;
+  }
+
+  &--new {
+    grid-area: indicator;
+    height: 100%;
+    width: 100%;
+  }
+
+  @media only screen and (min-width: $media-sm) {
+    //height: $size-sm-archive-buttons;
+    //width: $size-sm-archive-buttons;
+  }
+  @media only screen and (min-width: $media-md) {
+
+    &--controls {
+      height: $burgerBtn-size-md;
+      width: $burgerBtn-size-md;
+    }
+  }
+  @media only screen and (min-width: $media-lg) {
+
+    &--controls {
+      height: $burgerBtn-size-lg;
+      width: $burgerBtn-size-lg;
+    }
+  }
+
+  &__svg {
+    @include flex-center;
+    fill: $warm-yellow;
+    height: 100%;
+    left: 0;
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    transform: translateX(100%);
+    transition: opacity $time-edit-mode, transform $time-edit-mode;
+    visibility: hidden;
+    width: 100%;
+    
+    &--emo-0 { fill: $warm-red; }
+    &--emo-1 { fill: $warm-red; }
+    &--emo-2 { fill: $warm-dark-orange; }
+    &--emo-3 { fill: $warm-dark-orange; }
+    &--emo-4 { fill: $warm-orange; }
+    &--emo-5 { fill: $warm-orange; }
+    &--emo-6 { fill: $warm-light-orange; }
+    &--emo-7 { fill: $warm-light-orange; }
+  
+    &--visible {
+      opacity: 1;
+      transform: translateX(0);
+      visibility: inherit;
+    }
+  }
+}

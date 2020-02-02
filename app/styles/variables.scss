@@ -1,18 +1,42 @@
-/////////////////////////////////////////////////////////////////////// COLORS 
+//| COLORS                                                                  |//
+//: BLUE                                                                    ://
 $cold-darkest-blue: #112f44;
 $cold-dark-blue: #274c66;
 $cold-blue: #4a8eb2;
 $cold-light-blue: #d3f3ff;
-
+//: WARM                                                                    ://
 $warm-red: #aa494c;
 $warm-dark-orange: #ba6353;
 $warm-orange: #d68960;
 $warm-light-orange: #e2b673;
 $warm-yellow: #edcf84;
+//| MEDIA                                                                   |//
+$media-sm: 360px;
+$media-md: 768px;
+$media-lg: 1024px;
+//| LAYOUT                                                                  |//
+//: LOGO                                                                    ://
+$logo-aspect-ratio: 512 / 135;
+//: PAGE HEADER                                                             ://
+$header-padding-xs: 10px;
+$header-padding-md: 20px;
+$header-padding-lg: 30px;
+$controls-gap-xs: 10px;
+$controls-gap-md: 15px;
+$controls-gap-lg: 20px;
+//: BURGER BUTTON                                                           ://
+$burgerBtn-size-xs: 50px;
+$burgerBtn-size-md: 60px;
+$burgerBtn-size-lg: 70px;
+$burgerBtn-padding-xs: 15px;
+$burgerBtn-padding-md: 17px;
+$burgerBtn-padding-lg: 20px;
 
-/////////////////////////////////////////////////////////////////////// LAYOUT 
-// HEADER
-$layout-xs-header-height: 64px;
+
+
+
+
+
 
 $size-main-buttons: 30px;
 $size-xs-archive-buttons: 25px;
@@ -22,14 +46,10 @@ $size-xs-archive-add-new: 100px;
 
 $layout-xs-sm-padding: 1rem;
 
-$media-sm: 360px;
-$media-md: 768px;
-$media-lg: 1024px;
-/////////////////////////////////////////////////////////////////// DECORATION 
+//| DECORATION                                                              |//
 $br-items: 5px;
 
-
-///////////////////////////////////////////////////////////////////////// TIME 
+//| TIME                                                                    |//
 
 $time-hover-effect: 0.2s;
 $time-edit-mode: 0.2s;

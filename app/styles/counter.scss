@@ -1,0 +1,90 @@
+@import 'variables.scss';
+@import 'mixins.scss';
+//| COUNTER                                                                 |//
+.counter {
+  $header-height: $header-padding-xs * 2 + $burgerBtn-size-xs;
+  align-items: center;
+  column-gap: 10px;
+  display: grid;
+  grid-template-areas:
+  "day     day    "
+  "date    date   "
+  "tenths  ones   "
+  "message message";
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: 1fr 1fr auto 2fr;
+  height: calc(100vh - #{$header-height});
+  margin: 0 $header-height;
+  max-width: 300px;
+  width: 100%;
+
+  &__day,
+  &__date,
+  &__message {
+    grid-area: date;
+    line-height: 1.4;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+  }
+
+  &__day {
+    align-self: end;
+    grid-area: day;
+    text-transform: capitalize;
+  }
+  &__date {
+    align-self: start;
+    grid-area: date;
+  }
+  &__message { grid-area: message; }
+}
+
+.digit {
+  @include flex-center;
+  position: relative;
+  width: 100%;
+  perspective: 800;
+  transform-style: preserve-3d;
+
+  &--tenths {
+    grid-area: tenths;
+  }
+
+  &--ones {
+    grid-area: ones;
+  }
+
+  &--overlay {
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+
+  &__svg {
+    background-color: $cold-blue;
+    border-radius: 10px;
+    fill: $cold-dark-blue;
+    height: 100%;
+    opacity: 1;
+    padding: 10px 5px;
+    transform: rotateX(0);
+    transform-origin: center top;
+    width: 100%;
+
+    &--rotated {
+      transform: rotateX(270deg);
+      opacity: 0;
+    }
+
+    &--animateIn {
+      transition: opacity 0.3s, transform 0.6s ease-in-out;
+    }
+
+    &--animateOut {
+      transition: opacity 0.3s 0.3s, transform 0.6s ease-in-out;
+    }
+  }
+}

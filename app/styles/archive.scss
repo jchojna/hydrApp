@@ -1,7 +1,7 @@
 @import 'variables.scss';
 @import 'mixins.scss';
 
-////////////////////////////////////////////////////////////////////// ARCHIVE 
+//| ARCHIVE                                                                 |//
 .archive {
   flex-grow: 1;
   width: 100%;
@@ -10,7 +10,7 @@
   flex-direction: column;
   justify-content: flex-end;
   align-items: center;
-  padding-top: $layout-xs-header-height;
+  //padding-top: $header-height-xs;
 
   &__weeks {
     background-color: $cold-dark-blue;
@@ -30,7 +30,7 @@
 ##  ##  ## ##       ##       ##   ##
  ###  ###  ######## ######## ##    ##
 */
-///////////////////////////////////////////////////////////////////////// WEEK 
+//| WEEK                                                                    |//
 .week {
   position: absolute;
   bottom: 0;
@@ -131,7 +131,7 @@
 ##       ##   ###    ##    ##    ##     ##
 ######## ##    ##    ##    ##     ##    ##
 */
-//////////////////////////////////////////////////////////////////////// ENTRY 
+//| ENTRY                                                                   |//
 .entry {
   display: grid;
   grid-template-columns: 1fr repeat(3, auto);
@@ -265,7 +265,7 @@
 ##   ### ##       ##  ##  ##    ##       ##   ###    ##    ##    ##     ##
 ##    ## ########  ###  ###     ######## ##    ##    ##    ##     ##    ##
 */
-//////////////////////////////////////////////////////////////////// NEW ENTRY 
+//| NEW ENTRY                                                               |//
 .new-entry {
   @include flex-center;
   visibility: hidden;
@@ -278,7 +278,7 @@
   height: 100%;
   z-index: 1;
   padding: $layout-xs-sm-padding;
-  padding-top: $layout-xs-header-height;
+  //padding-top: $header-height-xs;
   opacity: 0;
   transition: opacity $time-new-entry, visibility 0s $time-new-entry;
 
@@ -380,7 +380,7 @@
 ##       ##     ##  ##     ##     ##  ##     ## ##   ###
 ######## ########  ####    ##    ####  #######  ##    ##
 */
-///////////////////////////////////////////////////////////////// EDITION MODE 
+//| EDITION MODE                                                            |//
 .edition {
   position: relative;
   display: grid;
@@ -448,64 +448,6 @@
         width: $size-sm-archive-buttons;
         height: $size-sm-archive-buttons;
       }
-    }
-  }
-}
-/*
-#### ##    ## ########  ####  ######     ###    ########  #######  ########
- ##  ###   ## ##     ##  ##  ##    ##   ## ##      ##    ##     ## ##     ##
- ##  ####  ## ##     ##  ##  ##        ##   ##     ##    ##     ## ##     ##
- ##  ## ## ## ##     ##  ##  ##       ##     ##    ##    ##     ## ########
- ##  ##  #### ##     ##  ##  ##       #########    ##    ##     ## ##   ##
- ##  ##   ### ##     ##  ##  ##    ## ##     ##    ##    ##     ## ##    ##
-#### ##    ## ########  ####  ######  ##     ##    ##     #######  ##     ##
-*/
-/////////////////////////////////////////////////////////////////// INDICATORS 
-.indicator {
-  @include flex-center;
-  position: relative;
-  width: $size-xs-archive-buttons;
-  height: $size-xs-archive-buttons;
-  overflow: hidden;
-
-  @media only screen and (min-width: $media-sm) {
-    width: $size-sm-archive-buttons;
-    height: $size-sm-archive-buttons;
-  }
-
-  &--new {
-    height: 100%;
-    width: 100%;
-    grid-area: indicator;
-  }
-
-  &__svg {
-    @include flex-center;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 100%;
-    width: 100%;
-    fill: $warm-yellow;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateX(100%);
-    transition: opacity $time-edit-mode, transform $time-edit-mode;
-    
-    &--emo-1 { fill: $warm-red; }
-    &--emo-2 { fill: $warm-dark-orange; }
-    &--emo-3 { fill: $warm-dark-orange; }
-    &--emo-4 { fill: $warm-orange; }
-    &--emo-5 { fill: $warm-orange; }
-    &--emo-6 { fill: $warm-light-orange; }
-    &--emo-7 { fill: $warm-light-orange; }
-
-    &--visible {
-      opacity: 1;
-      visibility: inherit;
-      transform: translateX(0);
     }
   }
 }
