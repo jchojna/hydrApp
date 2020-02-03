@@ -12,7 +12,7 @@ if ('serviceWorker' in navigator) {
   });
 }
 //| FUNCTIONS                                                               |//
-////                                                                       ////
+//// OVERALL                                                               ////
 //| GET OFFSETED DATE                                                       |//
 const getOffsetedDate = (obj) => {
   const timeZoneOffset = (new Date()).getTimezoneOffset() * 60000;
@@ -78,8 +78,6 @@ const getContainerHeight = (container) => {
   const offsetHeight = 40;
   return childrenHeight;
 }
-//| SETTERS                                                                 |//
-////                                                                       ////
 //| SET LOCAL STORAGE                                                       |//
 const setData = () => {
   const date = new Date();
@@ -104,6 +102,14 @@ const setData = () => {
   // to update
   // handleWaterChange('displayValue');
 }
+//| HANDLE ELEMENTS ON WINDOW RESIZE                                        |//
+const handleWindowResize = () => {
+  const waterValue = hydrappArray[0].value;
+  handleWaterLevel(waterValue);
+  handleWaterWaves();
+  handleWaterMeasure();
+}
+//// APP MAIN SECTION                                                      ////
 //| SET WAVES AMOUNT                                                        |//
 const setWaterWaves = () => {
   const waveSvg = `
@@ -160,59 +166,6 @@ const handleWaterMeasure = () => {
     detailLevel(2);
   });
 }
-//| SET ARCHIVE                                                             |//
-const setArchiveDOM = () => {
-  for (let i = 0; i < hydrappArray.length; i++) {
-    addArchiveEntry(i);
-  }
-  //: set the newest week as visible                                        ://
-  weeks = document.querySelectorAll('.week--js');
-  weekLists = document.querySelectorAll('.week__list--js');
-  weeks[currentWeekIndex].classList.add('week--visible');
-  //: add 'remove entry' button on the last entry                           ://
-  handleArchiveLastEntry();
-  //: generate indicators for new entry mode                                ://
-  //const indicatorsContainer = document.querySelector('.indicator--js-new');
-  //indicatorsContainer.innerHTML = indicators;
-  //handleEmoji('new', 0);
-}
-//| ADD ARCHIVE NODE                                                        |//
-const addArchiveEntry = (index, option) => {
-  const {value, id, day, dayHtml, weekHtml} = hydrappArray[index];
-
-  const addWeek = () => {
-    archiveContainer.insertAdjacentHTML('beforeend', weekHtml);
-    const lastWeek = archiveContainer.lastElementChild;
-    const lastWeekHeader = lastWeek.querySelector('.week__header--js');
-    lastWeekHeader.addEventListener('click', slideWeek);
-  }
-  //: add new week                                                          ://
-  if (((day === 'sunday' || index === 0)) && option !== 'add') addWeek();
-  //: add next day entry                                                    ://
-  weekLists = document.querySelectorAll('.week__list--js');
-  const lastWeekList = weekLists[weekLists.length - 1];
-  lastWeekList.insertAdjacentHTML('beforeend', dayHtml);
-  handleEmoji(id, value);
-  //: add 'add entry button at the end                                      ://
-  if (index === hydrappArray.length - 1) {
-    if (day === 'monday') addWeek();
-    lastWeekList.appendChild(addEntryButton);
-  }
-  updateWeekHeading();
-  //: add event listeners to all edit buttons                               ://
-  const editButtons = document.querySelectorAll('.edition__button--js-edit');
-  const editButton = editButtons[index];
-  editButton.index = index;
-  editButton.addEventListener('click', handleEntryEdit);
-}
-//| HANDLE ELEMENTS ON WINDOW RESIZE                                        |//
-const handleWindowResize = () => {
-  const waterValue = hydrappArray[0].value;
-  handleWaterLevel(waterValue);
-  handleWaterWaves();
-  handleWaterMeasure();
-}
-//// APP MAIN SECTION                                                      ////
 //| HANDLE WATER WAVES                                                      |//
 const handleWaterWaves = () => {
   const size = window.innerWidth / wavesAmount / 10;
@@ -410,7 +363,7 @@ const handleEmoji = (id, number) => {
   });  
 }
 //// APP SIDEBAR                                                           ////
-//| TOGGLE MOBILE MENU                                                      |//
+//| TOGGLE SIDEBAR VISIBILITY                                               |//
 const toggleSidebar = (e) => {
   const self = e.target || e;
   if (self === burgerBtn) {
@@ -418,8 +371,8 @@ const toggleSidebar = (e) => {
     appSidebar.classList.toggle('app__sidebar--visible');
   }
 }
-//| TOGGLE ARCHIVE                                                          |//
-const toggleArchive = (e) => {
+//| TOGGLE SIDEBAR'S TABS                                                   |//
+const toggleSidebarTabs = (e) => {
   const self = e.target;
   const svgIcons = self.lastElementChild;
 
@@ -465,29 +418,51 @@ const toggleArchive = (e) => {
     default: false;
   }
 }
-//| CREATE ADD ENTRY BUTTON                                                 |//
-const createAddEntryButton = () => {
-  const addEntryButton = document.createElement('li');
-  addEntryButton.className = 'entry entry__add';
-  addEntryButton.innerHTML = `
-    <button class="button entry__button entry__button--add entry__button--js-add">
-      Add previous day..
-    </button>
-  `;
-  addEntryButton.addEventListener('click', enterNewEntryValue);
-  return addEntryButton;
+//// ARCHIVE TAB                                                           ////
+//| SET ARCHIVE                                                             |//
+const setArchiveDOM = () => {
+  for (let i = 0; i < hydrappArray.length; i++) {
+    addArchiveEntry(i);
+  }
+  //: set the newest week as visible                                        ://
+  weeks = document.querySelectorAll('.week--js');
+  weekLists = document.querySelectorAll('.week__list--js');
+  weeks[currentWeekIndex].classList.add('week--visible');
+  //: add 'remove entry' button on the last entry                           ://
+  handleArchiveLastEntry();
+  //: generate indicators for new entry mode                                ://
+  const emojiContainer = document.querySelector('.emoji--js-new');
+  emojiContainer.innerHTML = getEmojiHtml('new');
+  handleEmoji('new', 0);
 }
-//| CREATE 'REMOVE ITEM' BUTTON                                             |//
-const createRemoveEntryButton = () => {
-  const removeEntryButton = document.createElement('button');
-  removeEntryButton.className = 'button entry__remove';
-  removeEntryButton.innerHTML = `
-    <svg class="entry__svg" viewBox="0 0 512 512">
-      <use href="assets/svg/icons.svg#remove-icon"></use>
-    </svg>
-  `
-  removeEntryButton.addEventListener('click', removeLastEntry);
-  return removeEntryButton;
+//| ADD ARCHIVE NODE                                                        |//
+const addArchiveEntry = (index, option) => {
+  const {value, id, day, dayHtml, weekHtml} = hydrappArray[index];
+
+  const addWeek = () => {
+    archiveContainer.insertAdjacentHTML('beforeend', weekHtml);
+    const lastWeek = archiveContainer.lastElementChild;
+    const lastWeekHeader = lastWeek.querySelector('.week__header--js');
+    lastWeekHeader.addEventListener('click', slideWeek);
+  }
+  //: add new week                                                          ://
+  if (((day === 'sunday' || index === 0)) && option !== 'add') addWeek();
+  //: add next day entry                                                    ://
+  weekLists = document.querySelectorAll('.week__list--js');
+  const lastWeekList = weekLists[weekLists.length - 1];
+  lastWeekList.insertAdjacentHTML('beforeend', dayHtml);
+  handleEmoji(id, value);
+  //: add 'add entry button at the end                                      ://
+  if (index === hydrappArray.length - 1) {
+    if (day === 'monday') addWeek();
+    lastWeekList.appendChild(addEntryButton);
+  }
+  updateWeekHeading();
+  //: add event listeners to all edit buttons                               ://
+  const editButtons = document.querySelectorAll('.edition__button--js-edit');
+  const editButton = editButtons[index];
+  editButton.index = index;
+  editButton.addEventListener('click', handleEntryEdit);
 }
 //| SET WEEK HEADING                                                        |//
 const updateWeekHeading = () => {
@@ -594,7 +569,31 @@ const slideWeek = (e) => {
     entriesFade('in');
   }
 }
-//| ARCHIVE MODAL << SHOW ARCHIVE                                           |//
+//| CREATE 'REMOVE ITEM' BUTTON                                             |//
+const createRemoveEntryButton = () => {
+  const removeEntryButton = document.createElement('button');
+  removeEntryButton.className = 'button entry__remove';
+  removeEntryButton.innerHTML = `
+    <svg class="entry__svg" viewBox="0 0 512 512">
+      <use href="assets/svg/icons.svg#remove-icon"></use>
+    </svg>
+  `
+  removeEntryButton.addEventListener('click', removeLastEntry);
+  return removeEntryButton;
+}
+//| CREATE ADD ENTRY BUTTON                                                 |//
+const createAddEntryButton = () => {
+  const addEntryButton = document.createElement('li');
+  addEntryButton.className = 'entry entry__add';
+  addEntryButton.innerHTML = `
+    <button class="entry__button entry__button--add entry__button--js-add">
+      Add previous day..
+    </button>
+  `;
+  addEntryButton.addEventListener('click', enterNewEntryValue);
+  return addEntryButton;
+}
+//| ARCHIVE MODAL                                                           |//
 const enterNewEntryValue = (e) => {
   const self = e.keyCode || e.target || e;                // ! e only for tests
   const addEntryButton = document.querySelector('.entry__button--js-add');
@@ -602,22 +601,23 @@ const enterNewEntryValue = (e) => {
   const displayDate = new Date();
   const lastEntryKey = hydrappArray[hydrappArray.length - 1].key;
                                    
-  while (setDateKey(displayDate) !== lastEntryKey) displayDate.setDate(displayDate.getDate() - 1);
+  while (setDateKey(displayDate) !== lastEntryKey) {
+    displayDate.setDate(displayDate.getDate() - 1);
+  }
   displayDate.setDate(displayDate.getDate() - 1);
 
-  const displayEntry = new Entry(displayDate);
-  const day = displayEntry.day;
-  const date = displayEntry.date;
+  const newEntry = new Entry(displayDate);
+  const { day, date } = newEntry;
 
   if (self === 107 || self === addEntryButton) {
     let value = 0;
-    newEntryMode.classList.add('new-entry--visible');
+    newEntryMode.classList.add('newEntry--visible');
     newEntryValue.textContent = value;
     newEntryDay.textContent = day;
     newEntryDate.textContent = date;
   
     const modeOff = () => {
-      newEntryMode.classList.remove('new-entry--visible');
+      newEntryMode.classList.remove('newEntry--visible');
       newEntryMode.removeEventListener('click', handleValue);
       window.removeEventListener('keydown', handleValue);
       window.addEventListener('keydown', enterNewEntryValue);
@@ -794,7 +794,7 @@ const handleEntryEdit = (e) => {
 
       case 40:
       case decreaseButton:
-        e.preventDefault();
+        //e.preventDefault();
         dayValue > 0 ? dayValue-- : false;
         entryValue.textContent = dayValue;
         handleEmoji(id, dayValue);
@@ -802,7 +802,7 @@ const handleEntryEdit = (e) => {
       
       case 38:
       case increaseButton:
-        e.preventDefault();
+        //e.preventDefault();
         dayValue < waterMax ? dayValue++ : false;
         entryValue.textContent = dayValue;
         handleEmoji(id, dayValue);
@@ -810,13 +810,13 @@ const handleEntryEdit = (e) => {
 
       case 27:
       case cancelButton:
-        e.preventDefault();
+        //e.preventDefault();
         exitEditMode();
       break;
 
       case 13:
       case saveButton:
-        e.preventDefault();
+        //e.preventDefault();
         localStorage.setItem(key, dayValue);
         //. setter function                                                 .//
         hydrappArray[itemIndex].value = key;
@@ -882,29 +882,19 @@ const addEntryButton = createAddEntryButton();
 const removeEntryButton = createRemoveEntryButton();
 let currentWeekIndex = 0;
 //: NEW ENTRY                                                               ://
-/* const newEntryMode = document.querySelector('.new-entry--js');
-const newEntryValue = document.querySelector('.new-entry__value--js');
-const newEntryDay = document.querySelector('.new-entry__day--js');
-const newEntryDate = document.querySelector('.new-entry__date--js');
-const newEntryDecrease = document.querySelector('.new-entry__button--js-decrease');
-const newEntryIncrease = document.querySelector('.new-entry__button--js-increase');
-const newEntryCancel = document.querySelector('.new-entry__button--js-cancel');
-const newEntrySave = document.querySelector('.new-entry__button--js-save'); */
+const newEntryMode = document.querySelector('.newEntry--js');
+const newEntryValue = document.querySelector('.newEntry__value--js');
+const newEntryDay = document.querySelector('.newEntry__day--js');
+const newEntryDate = document.querySelector('.newEntry__date--js');
+const newEntryDecrease = document.querySelector('.newEntry__button--js-decrease');
+const newEntryIncrease = document.querySelector('.newEntry__button--js-increase');
+const newEntryCancel = document.querySelector('.newEntry__button--js-cancel');
+const newEntrySave = document.querySelector('.newEntry__button--js-save');
 
 ////                                                                       ////
 const hydrappArray = [];
 const lastEntryDate = new Date();
 const weekDay = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
-const archiveEmpty = `
-<p class="week__empty">No history yet...</p>
-`;
-const addButtonHtml = `
-<li class="entry entry--add entry--js-add">
-  <button class="button entry__button entry__button--add entry__button--js-add">
-    Add new day..
-  </button>
-</li>
-`;
 //| CLASS FOR ENTRY                                                         |//
 class Entry {
   constructor(date) {
@@ -943,27 +933,27 @@ class Entry {
         </header>
         <span class="entry__value entry__value--js">${this.value}</span>
         <div class="edition edition--js">
-          <button class="button edition__button edition__button--visible edition__button--edit edition__button--js-edit">
+          <button class="edition__button edition__button--visible edition__button--edit edition__button--js-edit">
             <svg class="edition__svg edition__svg--edit">
               <use href="assets/svg/icons.svg#edit-mode"></use>
             </svg>
           </button>
-          <button class="button edition__button edition__button--decrease edition__button--js-decrease">
+          <button class="edition__button edition__button--decrease edition__button--js-decrease">
             <svg class="edition__svg edition__svg--decrease">
               <use href="assets/svg/icons.svg#down-arrow"></use>
             </svg>
           </button>
-          <button class="button edition__button edition__button--increase edition__button--js-increase">
+          <button class="edition__button edition__button--increase edition__button--js-increase">
             <svg class="edition__svg edition__svg--increase">
               <use href="assets/svg/icons.svg#up-arrow"></use>
             </svg>
           </button>
-          <button class="button edition__button edition__button--cancel edition__button--js-cancel">
+          <button class="edition__button edition__button--cancel edition__button--js-cancel">
             <svg class="edition__svg edition__svg--cancel">
               <use href="assets/svg/icons.svg#back-arrow"></use>
             </svg>
           </button>
-          <button class="button edition__button edition__button--save edition__button--js-save">
+          <button class="edition__button edition__button--save edition__button--js-save">
             <svg class="edition__svg edition__svg--save">
               <use href="assets/svg/icons.svg#save-icon"></use>
             </svg>
@@ -1017,21 +1007,20 @@ handleWaterShake();
 handleWaterMeasure();
 handleCounterMessage(startValue);
 handleCounterDate();
-
 emoji.innerHTML = getEmojiHtml('controls');
 handleEmoji('controls', startValue);
-
 updateWeekHeading();
+
+
 toggleSidebar(burgerBtn);                           // ! FOR TESTS ONLY
 //enterNewEntryValue(107);                                    // ! FOR TESTS ONLY
 
 //| VARIABLES                                                               |//
 let editButtons = document.querySelectorAll('.edition__button--js-edit');
 let entries = document.querySelectorAll('.entry--js');
-const addNewDayButton = document.querySelector('.entry__button--js-add');
 //| EVENT LISTENERS                                                         |//
 ////                                                                       ////
 controls.addEventListener('click', handleWaterChange);
 window.addEventListener('resize', handleWindowResize);
 burgerBtn.addEventListener('click', toggleSidebar);
-appSidebar.addEventListener('click', toggleArchive);
+appSidebar.addEventListener('click', toggleSidebarTabs);

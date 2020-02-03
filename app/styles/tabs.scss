@@ -82,20 +82,10 @@
   }
 }
 
+.stats,
 .settings {
-  flex-grow: 1;
+  @include flex-center;
   width: 100%;
-
-  &__container {
-    background-color: $cold-dark-blue;
-    height: 0;
-    overflow: hidden;
-    transition: height $tab-expand ease-in-out;
-
-    &--active {
-      height: 60px;
-    }
-  }
 
   &__text {
     margin: 0;

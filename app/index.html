@@ -115,11 +115,11 @@
     </section>
     <!--| end of APP CONTAINER                                             |-->
     <!--//                                                               //|-->
-    <!--| APP SECTIONS                                                     |-->
+    <!--| APP TABS                                                         |-->
     <section class="app__sidebar app__sidebar--js">
       <h2 class="app__heading visuallyhidden">App sidebar</h2>
       <!----                                                              ---->
-      <!--: ARCHIVE TAB                                                  :-->
+      <!--: ARCHIVE TAB                                                    :-->
       <section class="tab tab--archive tab--js-archive">
         <h3 class="tab__header">
           <button class="tab__button tab__button--js-archive">
@@ -169,46 +169,41 @@
       </section>
       <!--:  end of SETTINGS SECTION                                       :-->
       <!----                                                              ---->
-      <!--: ARCHIVE ADD NEW MODAL BOX                                      :-->
-      <section class="new-entry new-entry--js">
-        <h3 class="new-entry__heading visuallyhidden">Add new archive entry</h3>
-        <div class="new-entry__container">
-          <div class="new-entry__display new-entry__display--js">
-            <p class="new-entry__value new-entry__value--js"></p>
-            <p class="new-entry__date new-entry__date--js"></p>
-            <p class="new-entry__day new-entry__day--js"></p>
+      <!--: ARCHIVE ADD NEW ENTRY                                          :-->
+      <section class="newEntry newEntry--js">
+        <h3 class="newEntry__heading visuallyhidden">Add new archive entry</h3>
+        <div class="newEntry__container">
+          <div class="newEntry__display newEntry__display--js">
+            <p class="newEntry__value newEntry__value--js"></p>
+            <p class="newEntry__date newEntry__date--js"></p>
+            <p class="newEntry__day newEntry__day--js"></p>
           </div>
-          <div class="indicator indicator--new indicator--js-new"></div>
-          <button class="button new-entry__button new-entry__button--decrease new-entry__button--js-decrease">
-            <svg class="new-entry__svg new-entry__svg--decrease" viewBox="0 0 512 512">
+          <div class="emoji emoji--new emoji--js-new"></div>
+          <button class="newEntry__button newEntry__button--decrease newEntry__button--js-decrease">
+            <svg class="newEntry__svg newEntry__svg--decrease" viewBox="0 0 512 512">
               <use href="assets/svg/icons.svg#minus-circle"></use>
             </svg>
           </button>
-          <button class="button new-entry__button new-entry__button--increase new-entry__button--js-increase">
-            <svg class="new-entry__svg new-entry__svg--increase" viewBox="0 0 512 512">
+          <button class="newEntry__button newEntry__button--increase newEntry__button--js-increase">
+            <svg class="newEntry__svg newEntry__svg--increase" viewBox="0 0 512 512">
               <use href="assets/svg/icons.svg#plus-circle"></use>
             </svg>
           </button>
-          <button class="button new-entry__button new-entry__button--cancel new-entry__button--js-cancel">
-            <svg class="new-entry__svg new-entry__svg--cancel" viewBox="0 0 512 512">
+          <button class="newEntry__button newEntry__button--cancel newEntry__button--js-cancel">
+            <svg class="newEntry__svg newEntry__svg--cancel" viewBox="0 0 512 512">
               <use href="assets/svg/icons.svg#back-arrow"></use>
             </svg>
           </button>
-          <button class="button new-entry__button new-entry__button--save new-entry__button--js-save">
-            <svg class="new-entry__svg new-entry__svg--save" viewBox="0 0 512 512">
+          <button class="newEntry__button newEntry__button--save newEntry__button--js-save">
+            <svg class="newEntry__svg newEntry__svg--save" viewBox="0 0 512 512">
               <use href="assets/svg/icons.svg#save-icon"></use>
             </svg>
           </button>
-          <!-- <button class="button new-entry__button new-entry__button--date new-entry__button--js-date">
-            <svg class="new-entry__svg new-entry__svg--date" viewBox="0 0 512 512">
-              <use href="assets/svg/icons.svg#save-icon"></use>
-            </svg>
-          </button> -->
         </div>
       </section>
-      <!--| end of APP SECTIONS                                            |-->
+      <!--: end of ARCHIVE ADD NEW ENTRY                                   :-->
     </section>
-    <!--| end of MOBILE MENU                                               |-->
+    <!--| end of APP TABS                                                  |-->
   </main>
   <!-- build:js scripts/vendor.js -->
   <!-- endbuild -->

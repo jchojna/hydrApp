@@ -9,19 +9,19 @@
 @import 'animations.scss';
 
 @import 'overall.scss';
+@import 'app.scss';
 @import 'header.scss';
 @import 'tabs.scss';
 @import 'navigation.scss';
 @import 'buttons.scss';
-@import 'app.scss';
-@import 'counter.scss';
-@import 'controls.scss';
 @import 'emoji.scss';
-@import 'water.scss';
-@import 'measure.scss';
+
 @import 'archiveWeek.scss';
 @import 'archiveEntry.scss';
+@import 'archiveEdition.scss';
+@import 'archiveNewEntry.scss';
 
-@import 'archive.scss';
-@import 'stats.scss';
-@import 'settings.scss';
+@import 'landingControls.scss';
+@import 'landingCounter.scss';
+@import 'landingMeasure.scss';
+@import 'landingWater.scss';
