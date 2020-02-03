@@ -10,16 +10,18 @@
   padding: 5px;
   position: relative;
   border-radius: $br-items;
-  margin-bottom: 11px;
+  margin-bottom: 10px;
   height: 50px;
-  //opacity: 0;
+  //: fade in out effect                                                    ://
+  //transform: translateX(-100%);
   transition:
     background-color $time-edit-buttons,
-    opacity 0.5s;
+    transform $archive-entries-fade-time;
 
-  /* &--visible {
-    opacity: 1;
-  } */
+  //: fade in out effect                                                    ://
+  &--visible {
+    //transform: translateX(0);
+  }
 
   &--fadeIn {
     animation: fade 0.5s;

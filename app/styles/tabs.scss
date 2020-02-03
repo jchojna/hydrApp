@@ -72,22 +72,15 @@
   }
 
   &__container {
+    display: flex;
     background-color: $cold-dark-blue;
     position: relative;
     height: 0;
     overflow: hidden;
     transition: height $tab-expand;
     width: 100%;
-
-    //height: 200px; 
-
   }
 }
-
-.archive {
-  
-}
-
 
 .settings {
   flex-grow: 1;

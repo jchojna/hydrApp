@@ -7,12 +7,14 @@
   bottom: 0;
   right: 0;
   left: 0;
-  top: 20px;
+  top: 0;
   height: 100%;
   visibility: hidden;
   transition: visibility 0s $time-week-slide;
-  padding: 0 $layout-xs-sm-padding;
 
+  &__container {
+    padding: 20px;
+  }
 
   &--visible {
     visibility: visible;
@@ -45,8 +47,8 @@
     grid-gap: 5px;
     background-color: $cold-blue;
     border-radius: $br-items;
+    margin-bottom: 10px;
     padding: 5px;
-    margin-bottom: 11px;
     height: 50px;
   }
 
