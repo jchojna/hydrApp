@@ -182,8 +182,9 @@ const addArchiveEntry = (index, option) => {
 
   const addWeek = () => {
     archiveContainer.insertAdjacentHTML('beforeend', weekHtml);
-    const weekHeader = archiveContainer.querySelector('[class*=header]');
-    weekHeader.addEventListener('click', slideWeek);
+    const lastWeek = archiveContainer.lastElementChild;
+    const lastWeekHeader = lastWeek.querySelector('.week__header--js');
+    lastWeekHeader.addEventListener('click', slideWeek);
   }
   //: add new week                                                          ://
   if (((day === 'sunday' || index === 0)) && option !== 'add') addWeek();
@@ -509,7 +510,7 @@ const entriesFade = (action) => {
   }
 }
 //| TOGGLE ARCHIVE                                                          |//
-const toggleArchive = (e) => {                      // ! to DRY !
+const toggleArchive = (e) => {
   const self = e.target;
   const svgIcons = self.lastElementChild;
 
