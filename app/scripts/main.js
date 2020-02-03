@@ -200,12 +200,11 @@ const addArchiveEntry = (index, option) => {
   }
   updateWeekHeading();
   //: add event listeners to all edit buttons                               ://
-  const editButton = document.querySelectorAll('.edition__button--js-edit')[index];
+  const editButtons = document.querySelectorAll('.edition__button--js-edit');
+  const editButton = editButtons[index];
   editButton.index = index;
-  editButton.addEventListener('click', handleItemEdit);
+  editButton.addEventListener('click', handleEntryEdit);
 }
-//| HANDLERS                                                                |//
-////                                                                       ////
 //| HANDLE ELEMENTS ON WINDOW RESIZE                                        |//
 const handleWindowResize = () => {
   const waterValue = hydrappArray[0].value;
@@ -213,6 +212,7 @@ const handleWindowResize = () => {
   handleWaterWaves();
   handleWaterMeasure();
 }
+//// APP MAIN SECTION                                                      ////
 //| HANDLE WATER WAVES                                                      |//
 const handleWaterWaves = () => {
   const size = window.innerWidth / wavesAmount / 10;
@@ -409,6 +409,62 @@ const handleEmoji = (id, number) => {
     }
   });  
 }
+//// APP SIDEBAR                                                           ////
+//| TOGGLE MOBILE MENU                                                      |//
+const toggleSidebar = (e) => {
+  const self = e.target || e;
+  if (self === burgerBtn) {
+    self.classList.toggle('button--active');
+    appSidebar.classList.toggle('app__sidebar--visible');
+  }
+}
+//| TOGGLE ARCHIVE                                                          |//
+const toggleArchive = (e) => {
+  const self = e.target;
+  const svgIcons = self.lastElementChild;
+
+  switch (self) {
+
+    case archiveTabButton:
+      svgIcons.classList.toggle('tab__svg--active');
+      //: show archive content                                              ://
+      if (svgIcons.classList.contains('tab__svg--active')) {
+        const currentWeek = weeks[currentWeekIndex];
+        const containerHeight = getContainerHeight(currentWeek);
+
+        archiveContainer.style.height = `${containerHeight}px`;
+        entriesFade('in');
+        window.addEventListener('keydown', enterNewEntryValue);
+        window.addEventListener('keydown', removeLastEntry);
+        window.addEventListener('keydown', slideWeek);
+
+      //: show archive content                                              ://
+      } else {
+        archiveContainer.style.height = 0;
+        entriesFade('out');
+        window.removeEventListener('keydown', enterNewEntryValue);
+        window.removeEventListener('keydown', removeLastEntry);
+        window.removeEventListener('keydown', slideWeek);
+      }
+      break;
+    
+    case statsTabButton:
+    case settingTabButton:
+      const container = self.parentNode.nextElementSibling;
+      svgIcons.classList.toggle('tab__svg--active');
+      //: show stats content                                                ://
+      if (svgIcons.classList.contains('tab__svg--active')) {
+        const containerHeight = getContainerHeight(container.firstElementChild)
+        container.style.height = `${containerHeight}px`;
+      //: hide stats content                                                ://
+      } else {
+        container.style.height = 0;
+      }
+      break;
+
+    default: false;
+  }
+}
 //| CREATE ADD ENTRY BUTTON                                                 |//
 const createAddEntryButton = () => {
   const addEntryButton = document.createElement('li');
@@ -482,14 +538,6 @@ const updateWeekHeading = () => {
     weekLists.length > 1 ? setButtonsVisiblity(i) : setButtonsVisiblity(i, 'oneWeek');
   }
 }
-//| TOGGLE MOBILE MENU                                                      |//
-const toggleMobileMenu = (e) => {
-  const self = e.target || e;
-  if (self === burgerBtn) {
-    self.classList.toggle('button--active');
-    appSidebar.classList.toggle('app__sidebar--visible');
-  }
-}
 //| ANIMATE WEEK ENTRIES                                                    |//
 const entriesFade = (action) => {
   const currentWeekList = weekLists[currentWeekIndex];
@@ -507,53 +555,6 @@ const entriesFade = (action) => {
       elem.classList.remove('entry--visible');
       elem.style.transitionDelay = 0;
     });
-  }
-}
-//| TOGGLE ARCHIVE                                                          |//
-const toggleArchive = (e) => {
-  const self = e.target;
-  const svgIcons = self.lastElementChild;
-
-  switch (self) {
-
-    case archiveTabButton:
-      svgIcons.classList.toggle('tab__svg--active');
-      //: show archive content                                              ://
-      if (svgIcons.classList.contains('tab__svg--active')) {
-        const currentWeek = weeks[currentWeekIndex];
-        const containerHeight = getContainerHeight(currentWeek);
-
-        archiveContainer.style.height = `${containerHeight}px`;
-        entriesFade('in');
-        window.addEventListener('keydown', enterNewEntryValue);
-        window.addEventListener('keydown', removeLastEntry);
-        window.addEventListener('keydown', slideWeek);
-
-      //: show archive content                                              ://
-      } else {
-        archiveContainer.style.height = 0;
-        entriesFade('out');
-        window.removeEventListener('keydown', enterNewEntryValue);
-        window.removeEventListener('keydown', removeLastEntry);
-        window.removeEventListener('keydown', slideWeek);
-      }
-      break;
-    
-    case statsTabButton:
-    case settingTabButton:
-      const container = self.parentNode.nextElementSibling;
-      svgIcons.classList.toggle('tab__svg--active');
-      //: show stats content                                                ://
-      if (svgIcons.classList.contains('tab__svg--active')) {
-        const containerHeight = getContainerHeight(container.firstElementChild)
-        container.style.height = `${containerHeight}px`;
-      //: hide stats content                                                ://
-      } else {
-        container.style.height = 0;
-      }
-      break;
-
-    default: false;
   }
 }
 //| SLIDE WEEK                                                              |//
@@ -742,7 +743,7 @@ const removeLastEntry = (e) => {
   }
 }
 //| HANDLE ITEM EDIT                                                        |//
-const handleItemEdit = (e) => {
+const handleEntryEdit = (e) => {
   const itemIndex = e.target.index;
   const entry = document.querySelectorAll('.entry--js')[itemIndex];
   const entryHeader = document.querySelectorAll('.entry__header--js')[itemIndex];
@@ -774,15 +775,19 @@ const handleItemEdit = (e) => {
     entryValue.textContent = value;
     handleEmoji(id, value);
 
-    archive.removeEventListener('click', handleEdition);
-    archive.removeEventListener('keydown', handleEdition);
+    archiveContainer.removeEventListener('click', handleEdition);
+    archiveContainer.removeEventListener('keydown', handleEdition);
     window.addEventListener('keydown', slideWeek);
   }
   //: HANDLE EDITION                                                        ://
   const handleEdition = (e) => {
     const self = e.keyCode || e.target;
     let dayValue = parseInt(entryValue.textContent);
-    const glassCounter = document.querySelector('.glass__counter--js');
+
+    // update main counter here
+    //const glassCounter = document.querySelector('.glass__counter--js');
+    // update main counter here
+
     const {key, id} = hydrappArray[itemIndex];
 
     switch (self) {
@@ -815,15 +820,18 @@ const handleItemEdit = (e) => {
         localStorage.setItem(key, dayValue);
         //. setter function                                                 .//
         hydrappArray[itemIndex].value = key;
-        glassCounter.textContent = hydrappArray[0].value;
+
+        // update main counter here
+        //glassCounter.textContent = hydrappArray[0].value;
+        // update main counter here
         exitEditMode();
       break;
     }
   }
   //: FUNCTION CALLS                                                        ://
   toggleItemDisplay();
-  archive.addEventListener('click', handleEdition);
-  archive.addEventListener('keydown', handleEdition);
+  archiveContainer.addEventListener('click', handleEdition);
+  archiveContainer.addEventListener('keydown', handleEdition);
   window.removeEventListener('keydown', slideWeek);
 }
 //| END OF HANDLE ITEM EDIT                                                 |//
@@ -861,12 +869,8 @@ const levelAverage = document.querySelector('.level--js-average');
 const levelOptimal = document.querySelector('.level--js-optimal');
 //: MENU                                                                    ://
 const burgerBtn = document.querySelector('.button--js-burger');
+//: SIDEBAR                                                                 ://
 const appSidebar = document.querySelector('.app__sidebar--js');
-//const mobileMenuArchiveSection = document.querySelector('.mobile-menu__section--js-archive');
-//const mobileMenuStatsSection = document.querySelector('.mobile-menu__section--js-stats');
-//const mobileMenuSettingsSection = document.querySelector('.mobile-menu__section--js-settings');
-
-
 const archiveTabButton = document.querySelector('.tab__button--js-archive');
 const statsTabButton = document.querySelector('.tab__button--js-stats');
 const settingTabButton = document.querySelector('.tab__button--js-settings');
@@ -874,8 +878,6 @@ const settingTabButton = document.querySelector('.tab__button--js-settings');
 const archiveContainer = document.querySelector('.tab__container--js-archive');
 let weeks = null;
 let weekLists = null;
-const prevWeekButton = document.querySelector('.archive__button--js-prev');
-const nextWeekButton = document.querySelector('.archive__button--js-next');
 const addEntryButton = createAddEntryButton();
 const removeEntryButton = createRemoveEntryButton();
 let currentWeekIndex = 0;
@@ -1020,7 +1022,7 @@ emoji.innerHTML = getEmojiHtml('controls');
 handleEmoji('controls', startValue);
 
 updateWeekHeading();
-toggleMobileMenu(burgerBtn);                           // ! FOR TESTS ONLY
+toggleSidebar(burgerBtn);                           // ! FOR TESTS ONLY
 //enterNewEntryValue(107);                                    // ! FOR TESTS ONLY
 
 //| VARIABLES                                                               |//
@@ -1031,5 +1033,5 @@ const addNewDayButton = document.querySelector('.entry__button--js-add');
 ////                                                                       ////
 controls.addEventListener('click', handleWaterChange);
 window.addEventListener('resize', handleWindowResize);
-burgerBtn.addEventListener('click', toggleMobileMenu);
+burgerBtn.addEventListener('click', toggleSidebar);
 appSidebar.addEventListener('click', toggleArchive);
