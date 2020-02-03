@@ -1,0 +1,76 @@
+@import 'variables.scss';
+@import 'mixins.scss';
+
+.tab {
+  flex-grow: 1;
+  width: 100%;
+  font-weight: 300;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: stretch;
+  //padding-top: $header-height-xs;
+
+  &__header {}
+
+  &__button {
+    @include button;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: $cold-blue;
+    fill: $cold-blue;
+    width: 100%;
+    padding: $header-padding-xs;
+
+    // display: grid in buttons doesn't work correctly on Chrome
+    &::before {
+      content: '';
+      width: $burgerBtn-size-xs;
+    }
+
+
+    &:hover {
+      fill: $cold-light-blue;
+      color: $cold-light-blue;
+      background-color: lighten($cold-darkest-blue, 3%);
+    }
+
+    @media only screen and (min-width: $media-md) {
+      padding: $header-padding-md;
+  
+    }
+    
+    @media only screen and (min-width: $media-lg) {
+      padding: $header-padding-lg;
+  
+    }
+  }
+
+  &__heading {
+    font-weight: 700;
+    font-size: 2em;
+  }
+
+  &__svg {
+    width: $burgerBtn-size-xs;
+  }
+
+  /* &__weeks {
+    background-color: $cold-dark-blue;
+    position: relative;
+    width: 100%;
+    height: 0;
+    overflow: hidden;
+    transition: height $time-mobmenu-expand;
+  } */
+
+
+
+
+
+
+
+
+
+}

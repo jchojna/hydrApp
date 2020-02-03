@@ -31,6 +31,15 @@ $burgerBtn-size-lg: 70px;
 $burgerBtn-padding-xs: 15px;
 $burgerBtn-padding-md: 17px;
 $burgerBtn-padding-lg: 20px;
+//| SIDEBAR                                                                 |//
+$sidebar-toggle: 0.4s;
+
+//| TIME                                                                    |//
+$time-hover-effect: 0.2s;
+
+
+
+
 
 
 
@@ -49,16 +58,13 @@ $layout-xs-sm-padding: 1rem;
 //| DECORATION                                                              |//
 $br-items: 5px;
 
-//| TIME                                                                    |//
 
-$time-hover-effect: 0.2s;
+$time-mobmenu-expand: 0.7s;
 $time-edit-mode: 0.2s;
 $time-edit-buttons: 0.5s;
 $time-week-slide: 0.5s;
 $time-week-entries: 0.6s;
-// MOBILE MENU
-$time-mobmenu-expand: 0.7s;
-$time-mobmenu-main: 0.4s;
+$time-toggle-sidebar: 0.4s;
 
 $time-new-entry: 0.5s;
 

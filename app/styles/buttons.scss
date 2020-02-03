@@ -1,0 +1,38 @@
+@import 'variables.scss';
+@import 'mixins.scss';
+
+//| BURGER BUTTON                                                           |//
+.button {
+  @include button;
+  @include flex-center;
+  fill: $cold-blue;
+  transition: fill $time-hover-effect, transform $time-hover-effect;
+  width: $burgerBtn-size-xs;
+
+  &--burger {
+
+  }
+
+  &--active {
+    transform: rotate(180deg);
+  }
+
+  &:hover {
+    fill: $cold-light-blue;
+  }
+
+  &__svg {
+    width: 100%;
+    pointer-events: none;
+  }
+
+  @media only screen and (min-width: $media-md) {
+    width: $burgerBtn-size-md;
+
+  }
+  
+  @media only screen and (min-width: $media-lg) {
+    width: $burgerBtn-size-lg;
+
+  }
+}

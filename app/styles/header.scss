@@ -29,34 +29,3 @@
     max-width: $burgerBtn-size-lg * $logo-aspect-ratio;
   }
 }
-//| BURGER BUTTON                                                           |//
-.burgerBtn {
-  @include button;
-  @include flex-center;
-  fill: $cold-blue;
-  transition: background-color $time-hover-effect, transform $time-hover-effect;
-  width: $burgerBtn-size-xs;
-
-  &--active {
-    transform: rotate(90deg);
-  }
-
-  &:hover {
-    background-color: $cold-light-blue;
-  }
-
-  &__svg {
-    width: 100%;
-    pointer-events: none;
-  }
-
-  @media only screen and (min-width: $media-md) {
-    width: $burgerBtn-size-md;
-
-  }
-  
-  @media only screen and (min-width: $media-lg) {
-    width: $burgerBtn-size-lg;
-
-  }
-}

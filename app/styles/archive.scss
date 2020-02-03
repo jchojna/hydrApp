@@ -1,26 +1,6 @@
 @import 'variables.scss';
 @import 'mixins.scss';
 
-//| ARCHIVE                                                                 |//
-.archive {
-  flex-grow: 1;
-  width: 100%;
-  font-weight: 300;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items: center;
-  //padding-top: $header-height-xs;
-
-  &__weeks {
-    background-color: $cold-dark-blue;
-    position: relative;
-    width: 100%;
-    height: 0;
-    overflow: hidden;
-    transition: height $time-mobmenu-expand;
-  }
-}
 /*
 ##      ## ######## ######## ##    ##
 ##  ##  ## ##       ##       ##   ##

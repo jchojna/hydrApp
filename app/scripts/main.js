@@ -499,10 +499,9 @@ const updateWeekHeading = () => {
 //| TOGGLE MOBILE MENU                                                      |//
 const toggleMobileMenu = (e) => {
   const self = e.target || e;
-  if (self === burgerButton) {
-
-    self.classList.toggle('burger-button--active');
-    mobileMenu.classList.toggle('mobile-menu--visible');
+  if (self === burgerBtn) {
+    self.classList.toggle('button--active');
+    appSidebar.classList.toggle('app__sidebar--visible');
   }
 }
 //| ANIMATE WEEK ENTRIES                                                    |//
@@ -851,8 +850,8 @@ const counterDate = document.querySelector('.counter__date--js');
 const counterMessage = document.querySelector('.counter__message--js');
 //: CONTROLS                                                                ://
 const controls = document.querySelector('.controls--js');
-const addBtn = document.querySelector('.controls__button--js-add');
-const removeBtn = document.querySelector('.controls__button--js-remove');
+const addBtn = document.querySelector('.button--js-add');
+const removeBtn = document.querySelector('.button--js-remove');
 const emoji = document.querySelector('.emoji--js-controls');
 const emojiAmount = 8;
 //: WATER                                                                   ://
@@ -865,8 +864,8 @@ const measure = document.querySelector('.measure--js');
 const levelAverage = document.querySelector('.level--js-average');
 const levelOptimal = document.querySelector('.level--js-optimal');
 //: MENU                                                                    ://
-const burgerButton = document.querySelector('.burgerBtn--js');
-//const mobileMenu = document.querySelector('.mobile-menu--js');
+const burgerBtn = document.querySelector('.button--js-burger');
+const appSidebar = document.querySelector('.app__sidebar--js');
 //const mobileMenuArchiveSection = document.querySelector('.mobile-menu__section--js-archive');
 //const mobileMenuStatsSection = document.querySelector('.mobile-menu__section--js-stats');
 //const mobileMenuSettingsSection = document.querySelector('.mobile-menu__section--js-settings');
@@ -1018,7 +1017,7 @@ handleEmoji('controls', startValue);
 
 //setArchiveDOM();
 //updateWeekHeading();
-//toggleMobileMenu(burgerButton);                           // ! FOR TESTS ONLY
+toggleMobileMenu(burgerBtn);                           // ! FOR TESTS ONLY
 //enterNewEntryValue(107);                                    // ! FOR TESTS ONLY
 
 //| VARIABLES                                                               |//
@@ -1029,7 +1028,7 @@ const addNewDayButton = document.querySelector('.entry__button--js-add');
 ////                                                                       ////
 controls.addEventListener('click', handleWaterChange);
 window.addEventListener('resize', handleWindowResize);
-//burgerButton.addEventListener('click', toggleMobileMenu);
+burgerBtn.addEventListener('click', toggleMobileMenu);
 //mobileMenu.addEventListener('click', toggleArchive);
 
 //window.addEventListener('mousedown', () => console.log('down'))

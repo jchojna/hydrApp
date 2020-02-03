@@ -17,7 +17,7 @@
     right: 0;
     top: 0;
     width: 100%;
-    z-index: 1;
+    z-index: 2;
 
     @media only screen and (min-width: $media-md) {
       padding: $header-padding-md;
@@ -29,8 +29,8 @@
   
     }
   }
-  //: APP CONTAINER                                                         ://
-  &__container {
+  //: APP MAIN PANEL                                                        ://
+  &__main {
     align-items: flex-end;
     display: flex;
     bottom: 0;
@@ -40,5 +40,70 @@
     position: fixed;
     top: 0;
     width: 100%;
+  }
+  //: APP SIDEBAR                                                             ://
+  &__sidebar {
+    align-items: center;
+    background-color: $cold-darkest-blue;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    left: 0;
+    overflow: auto;
+    position: fixed;
+    top: 0;
+    transform: translateY(-100%);
+    transition: transform $sidebar-toggle, visibility 0s $sidebar-toggle;
+    visibility: hidden;
+    width: 100%;
+    z-index: 1;
+
+    &--visible {
+      visibility: visible;
+      transform: translateY(0);
+      transition: transform $sidebar-toggle, visibility 0s;
+    }
+
+    /* &__section {
+      @include flex-center;
+      justify-content: space-between;
+      width: 100%;
+      fill: $cold-blue;
+      padding: 0 $layout-xs-sm-padding;
+      grid-template-columns: 1fr 40px;
+      cursor: pointer;
+
+      &::before { // needed to make heading in the center
+        content: "";
+        width: $size-main-buttons;
+      }
+
+      &:hover {
+        fill: $cold-light-blue;
+        background-color: lighten($cold-darkest-blue, 3%);
+      }
+    }
+
+    &__title {
+      color: $cold-light-blue;
+      margin: 15px 0;
+      font-size: 1.5rem;
+      font-weight: normal;
+      text-align: center;
+      pointer-events: none;
+      width: 200px;
+    }
+
+    &__svg {
+      width: $size-main-buttons;
+      height: $size-main-buttons;
+      pointer-events: none;
+      transition: transform 0.4s;
+
+      &--active {
+        transform: rotate(135deg);
+      }
+    } */
   }
 }
