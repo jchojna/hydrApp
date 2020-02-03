@@ -6,7 +6,7 @@
   @include button;
   @include flex-center;
   fill: $cold-blue;
-  transition: fill $time-hover-effect, transform $time-hover-effect;
+  transition: fill $button-time-active, transform $button-time-active;
   width: $burgerBtn-size-xs;
 
   &--burger {
