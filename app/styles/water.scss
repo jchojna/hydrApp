@@ -1,3 +1,9 @@
+@import 'variables.scss';
+@import 'mixins.scss';
+
+$verticalTranslation: 1s cubic-bezier(0.5,-0.5,0.5,1.5);
+
+//| WATER                                                                   |//
 .water {
   background-color: $cold-darkest-blue;
   bottom: 0;
@@ -7,7 +13,7 @@
   right: 0;
   transition:
     opacity 0.5s,
-    top 1s cubic-bezier(0.5,-0.5,0.5,1.5),
+    top $verticalTranslation,
     visibility 0s;
   width: 100%;
   z-index: -1;
@@ -17,7 +23,7 @@
     visibility: hidden;
     transition:
       opacity 0.5s,
-      top 1s cubic-bezier(0.5,-0.5,0.5,1.5),
+      top $verticalTranslation,
       visibility 0s 0.5s;
   }
   
@@ -29,14 +35,13 @@
     content: '';
     background-color: $cold-darkest-blue;
     position: absolute;
-    bottom: -100px;
+    bottom: -95px;
     left: 0;
     right: 0;
     height: 100px;
     width: 100%;
   }
 }
-
 //| WAVES                                                                   |//
 .waves {
   height: 5vw;
@@ -68,5 +73,20 @@
   &__svg {
     fill: $cold-darkest-blue;
     width: 100%;
+  }
+}
+//| WATER LEVELS                                                            |//
+.level {
+  border-top: 5px dashed $cold-light-blue;
+  left: 50px;
+  position: absolute;
+  width: 100%;
+  transition: bottom $verticalTranslation;
+
+  &--average {
+    border-color: $cold-blue;
+  }
+
+  &--optimal {
   }
 }

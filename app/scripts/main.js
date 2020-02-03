@@ -122,8 +122,8 @@ const setWaterWaves = () => {
 */
 //| SET WATER MEASURE                                                       |//
 const setWaterMeasureDOM = () => {
-  for (let i = 0; i <= waterMaxValue; i++) {
-    const digit = waterMaxValue - i;
+  for (let i = 0; i <= waterMax; i++) {
+    const digit = waterMax - i;
     measure.innerHTML += `
       <li class="measure__level measure__level--js">
         <span class="measure__mark"></span>
@@ -135,7 +135,7 @@ const setWaterMeasureDOM = () => {
 //| HANDLE WATER MEASURE APPEARANCE                                         |//
 const handleWaterMeasure = () => {
   const headerHeight = appHeader.clientHeight;
-  const interval = window.innerHeight / waterMaxValue;
+  const interval = window.innerHeight / waterMax;
 
   [...measureLevels].forEach((level, index) => {
     const detailLevel = (everyNth) => {
@@ -150,7 +150,7 @@ const handleWaterMeasure = () => {
     const mark = level.firstElementChild;
     const digit = level.lastElementChild;
     const isLevelOnEnd = level.offsetTop < headerHeight + 10
-    || index === waterMaxValue;
+    || index === waterMax;
 
     !isLevelOnEnd
     ? level.classList.add('measure__level--visible')
@@ -201,7 +201,7 @@ const handleWaterChange = (e) => {
 
   //. if add button clicked                                               .//
   if (self === addBtn) {
-    if (value >= waterMaxValue) return;
+    if (value >= waterMax) return;
     handleCounter(value, 'add', 'prev');
     value++;
     handleCounter(value, 'add', 'next');
@@ -224,13 +224,18 @@ const handleWaterChange = (e) => {
 //| HANDLE WATER LEVEL                                                      |//
 const handleWaterLevel = (value) => {
   const windowHeight = window.innerHeight;
-  const offset = windowHeight / waterMaxValue * (waterMaxValue - value);
-  water.style.top = `${offset}px`;
+  const waterOffset = windowHeight / waterMax * (waterMax - value);
+  const averageOffset = windowHeight / waterMax * (waterAverage);
+  const optimalOffset = windowHeight / waterMax * (waterOptimal);
+
+  water.style.top = `${waterOffset}px`;
   if (value === 0) {
     water.classList.add('water--hidden');
   } else {
     water.classList.remove('water--hidden');
   }
+  levelAverage.style.bottom = `${averageOffset}px`;
+  levelOptimal.style.bottom = `${optimalOffset}px`;
 }
 //| HANDLE WATER LEVEL                                                      |//
 const handleWaterShake = () => {
@@ -328,19 +333,19 @@ const handleCounter = (value, action, digit) => {
 }
 //| HANDLE MESSAGE DEPENDING ON AMOUNT OF CONSUMED WATER                    |//
 const handleCounterMessage = (value) => {  
-  counterMessage.innerHTML = value === waterMaxValue
+  counterMessage.innerHTML = value === waterMax
   ? 'It\'s enough for today!'
 
-  : value >= waterMaxValue - 2
+  : value >= waterMax - 2
   ? 'Almost there..'
 
-  : value > waterOptimalValue + 1
+  : value > waterOptimal + 1
   ? 'Woow.. You\'re on fire!'
 
-  : value >= waterOptimalValue - 1
+  : value >= waterOptimal - 1
   ? 'Good job! You reached your optimal water consumption'
 
-  : value >= waterOptimalValue - 3
+  : value >= waterOptimal - 3
   ? 'Keep going.. Yo\'re doing well'
   
   : value >= 4
@@ -636,7 +641,7 @@ const enterNewEntryValue = (e) => {
 
         case 39:
         case newEntryIncrease:
-          value !== waterMaxValue ? value++ : false;
+          value !== waterMax ? value++ : false;
           newEntryValue.textContent = value;
           handleEmoji('new', value);
           break;
@@ -798,7 +803,7 @@ const handleItemEdit = (e) => {
       case 38:
       case increaseButton:
         e.preventDefault();
-        dayValue < waterMaxValue ? dayValue++ : false;
+        dayValue < waterMax ? dayValue++ : false;
         entryValue.textContent = dayValue;
         handleEmoji(id, dayValue);
       break;
@@ -831,10 +836,12 @@ const handleItemEdit = (e) => {
 //| VARIABLES                                                               |//
 ////                                                                       ////
 const appHeader = document.querySelector('.app__header--js');
+//: WATER VALUE                                                             ://
+const waterMax = 20;
+let waterOptimal = 12;
+let waterAverage = 7;
 //: COUNTER                                                                 ://
 const counter = document.querySelector('.counter--js');
-const waterMaxValue = 20;
-const waterOptimalValue = 12;
 const counterPrevTenths = document.querySelector('.digit__svg--js-prevTenths');
 const counterNextTenths = document.querySelector('.digit__svg--js-nextTenths');
 const counterPrevOnes = document.querySelector('.digit__svg--js-prevOnes');
@@ -855,30 +862,31 @@ const waves = document.querySelectorAll('.wave--js');
 let wavesAmount = 2;
 let wavesShakeTimeoutId = null;
 const measure = document.querySelector('.measure--js');
-
-//: NAVIGATION                                                              ://
+const levelAverage = document.querySelector('.level--js-average');
+const levelOptimal = document.querySelector('.level--js-optimal');
+//: MENU                                                                    ://
 const burgerButton = document.querySelector('.burgerBtn--js');
-const mobileMenu = document.querySelector('.mobile-menu--js');
-const mobileMenuArchiveSection = document.querySelector('.mobile-menu__section--js-archive');
-const mobileMenuStatsSection = document.querySelector('.mobile-menu__section--js-stats');
-const mobileMenuSettingsSection = document.querySelector('.mobile-menu__section--js-settings');
+//const mobileMenu = document.querySelector('.mobile-menu--js');
+//const mobileMenuArchiveSection = document.querySelector('.mobile-menu__section--js-archive');
+//const mobileMenuStatsSection = document.querySelector('.mobile-menu__section--js-stats');
+//const mobileMenuSettingsSection = document.querySelector('.mobile-menu__section--js-settings');
 //: ARCHIVE                                                                 ://
-const archive = document.querySelector('.archive--js');
+/* const archive = document.querySelector('.archive--js');
 const archiveWeeks = document.querySelector('.archive__weeks--js');
 const prevWeekButton = document.querySelector('.archive__button--js-prev');
 const nextWeekButton = document.querySelector('.archive__button--js-next');
 const addEntryButton = createAddEntryButton();
 const removeEntryButton = createRemoveEntryButton();
-let currentWeekIndex = 0;
+let currentWeekIndex = 0; */
 //: NEW ENTRY                                                               ://
-const newEntryMode = document.querySelector('.new-entry--js');
+/* const newEntryMode = document.querySelector('.new-entry--js');
 const newEntryValue = document.querySelector('.new-entry__value--js');
 const newEntryDay = document.querySelector('.new-entry__day--js');
 const newEntryDate = document.querySelector('.new-entry__date--js');
 const newEntryDecrease = document.querySelector('.new-entry__button--js-decrease');
 const newEntryIncrease = document.querySelector('.new-entry__button--js-increase');
 const newEntryCancel = document.querySelector('.new-entry__button--js-cancel');
-const newEntrySave = document.querySelector('.new-entry__button--js-save');
+const newEntrySave = document.querySelector('.new-entry__button--js-save'); */
 
 ////                                                                       ////
 const hydrappArray = [];
@@ -993,13 +1001,13 @@ class Entry {
 //| FUNCTION CALLS                                                          |//
 ////                                                                       ////
 setData();
-const startValue = hydrappArray[0].value;
-handleCounter(startValue, 'initial');
+setWaterMeasureDOM();
 setWaterWaves(wavesAmount);
+const startValue = hydrappArray[0].value;
+const measureLevels = document.querySelectorAll('.measure__level--js');
+handleCounter(startValue, 'initial');
 handleWaterLevel(startValue);
 handleWaterShake();
-setWaterMeasureDOM();
-const measureLevels = document.querySelectorAll('.measure__level--js');
 handleWaterMeasure();
 handleCounterMessage(startValue);
 handleCounterDate();
