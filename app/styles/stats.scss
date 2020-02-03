@@ -8,7 +8,7 @@
     background-color: $cold-dark-blue;
     height: 0;
     overflow: hidden;
-    transition: height $time-mobmenu-expand ease-in-out;
+    transition: height $tab-expand ease-in-out;
 
     &--active {
       height: 60px;

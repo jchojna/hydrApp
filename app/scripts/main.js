@@ -71,6 +71,13 @@ const getEmojiHtml = (id) => {
   }
   return emojiHtml;
 }
+//| GET CONTAINER'S HEIGHT                                                  |//
+const getContainerHeight = (container) => {
+  const childrenArray = [...container.children];
+  const childrenHeight = childrenArray.reduce((a,b) => a + b.clientHeight, 0);
+  const offsetHeight = 40;
+  return childrenHeight + offsetHeight;
+}
 //| SETTERS                                                                 |//
 ////                                                                       ////
 //| SET LOCAL STORAGE                                                       |//
@@ -111,15 +118,6 @@ const setWaterWaves = () => {
   [...waves].forEach(wave => wave.innerHTML = wavesSvgs);
   handleWaterWaves();
 }
-/*
-##     ## ########    ###     ######  ##     ## ########  ########
-###   ### ##         ## ##   ##    ## ##     ## ##     ## ##
-#### #### ##        ##   ##  ##       ##     ## ##     ## ##
-## ### ## ######   ##     ##  ######  ##     ## ########  ######
-##     ## ##       #########       ## ##     ## ##   ##   ##
-##     ## ##       ##     ## ##    ## ##     ## ##    ##  ##
-##     ## ######## ##     ##  ######   #######  ##     ## ########
-*/
 //| SET WATER MEASURE                                                       |//
 const setWaterMeasureDOM = () => {
   for (let i = 0; i <= waterMax; i++) {
@@ -168,14 +166,25 @@ const setArchiveDOM = () => {
     addArchiveNode(i);
   }
   //: set the newest week as visible                                        ://
-  const weeks = document.querySelectorAll('.week--js');
+  weeks = document.querySelectorAll('.week--js');
   weeks[currentWeekIndex].classList.add('week--visible');
   //: set 'remove entry' button on the last entry                           ://
-  handleArchiveLastEntry();
+  //handleArchiveLastEntry();
   //: generate indicators for new entry mode                                ://
-  const indicatorsContainer = document.querySelector('.indicator--js-new');
-  indicatorsContainer.innerHTML = indicators;
-  handleEmoji('new', 0);
+  //const indicatorsContainer = document.querySelector('.indicator--js-new');
+  //indicatorsContainer.innerHTML = indicators;
+  //handleEmoji('new', 0);
+
+
+
+
+
+
+
+
+
+
+
 }
 //| HANDLERS                                                                |//
 ////                                                                       ////
@@ -363,22 +372,9 @@ const handleCounterDate = () => {
 
   counterDay.innerHTML = day;
   counterDate.innerHTML = date.slice().split(' ').join('.');
-  console.log('hydrappArray[0]', hydrappArray[0]);
 
 
 
-
-
-}
-//| SET CURRENTLY DISPLAYED ARCHIVE WEEK'S HEIGHT                           |//
-const setCurrentWeekHeight = () => {
-  const currentWeek = document.querySelectorAll('.week--js')[currentWeekIndex];
-  const childrenArray = [...currentWeek.children];
-  const childrenHeight = childrenArray.reduce((a,b) => a + b.clientHeight, 0);
-  const offsetHeight = 40;
-  const finalHeight = childrenHeight + offsetHeight;
-
-  archiveWeeks.style.height = `${finalHeight}px`;
 }
 //| SET INDICATORS                                                          |//
 const handleEmoji = (id, number) => {
@@ -421,32 +417,55 @@ const createRemoveEntryButton = () => {
 }
 //| ADD ARCHIVE NODE                                                        |//
 const addArchiveNode = (index, option) => {
+
   const {value, id, day, dayHtml, weekHtml} = hydrappArray[index];
+
   //: add new week                                                          ://
   if (((day === 'sunday' || index === 0)) && option !== 'add') {
-    archiveWeeks.insertAdjacentHTML('beforeend', weekHtml);                // ! TO REFACTOR
-    const weekHeader = archiveWeeks.lastElementChild.firstElementChild;
+
+    // ! TO REFACTOR
+
+    archiveContainer.insertAdjacentHTML('beforeend', weekHtml);
+    const weekHeader = archiveContainer.querySelector('[class*=header]');
     weekHeader.addEventListener('click', slideWeek);
   }
+
   //: add next day entry                                                    ://
-  let lastWeekList = archiveWeeks.lastElementChild.lastElementChild;
+  let lastWeekList = archiveContainer.lastElementChild.lastElementChild;
   lastWeekList.insertAdjacentHTML('beforeend', dayHtml);
-  handleEmoji(id, value);
+
+  //handleEmoji(id, value);
   //: add 'add entry button at the end                                      ://
   if (index === hydrappArray.length - 1) {
     if (day === 'monday') {
-      archiveWeeks.insertAdjacentHTML('beforeend', weekHtml);              // ! TO REFACTOR
-      const weekHeader = archiveWeeks.lastElementChild.firstElementChild;
+
+      // ! TO REFACTOR
+
+      archiveContainer.insertAdjacentHTML('beforeend', weekHtml);
+      const weekHeader = archiveContainer.querySelector('[class*=header]');
+
       weekHeader.addEventListener('click', slideWeek);
     };
-    lastWeekList = archiveWeeks.lastElementChild.lastElementChild;
+    lastWeekList = archiveContainer.lastElementChild.lastElementChild;
     lastWeekList.appendChild(addEntryButton);
   }
+
+  //console.log(index, weekHeader.clientHeight);
   updateWeekHeading();
   //: add event listeners to all edit buttons                               ://
   const editButton = document.querySelectorAll('.edition__button--js-edit')[index];
   editButton.index = index;
   editButton.addEventListener('click', handleItemEdit);
+
+
+
+
+
+
+
+
+
+
 }
 //| SET WEEK HEADING                                                        |//
 const updateWeekHeading = () => {
@@ -526,40 +545,47 @@ const entriesFade = (action) => {
 const toggleArchive = (e) => {                      // ! to DRY !
   const self = e.target;
   const svgIcons = self.lastElementChild;
-  const section = self.nextElementSibling;
+  const container = self.parentNode.nextElementSibling;
 
   switch (self) {
 
-    case mobileMenuArchiveSection:
-      svgIcons.classList.toggle('mobile-menu__svg--active');
-      if (svgIcons.classList.contains('mobile-menu__svg--active')) {
+    case archiveTabButton:
+      svgIcons.classList.toggle('tab__svg--active');
+      //: show archive content                                              ://
+      if (svgIcons.classList.contains('tab__svg--active')) {
 
-        setCurrentWeekHeight();
-        entriesFade('in');
+        const containerHeight = getContainerHeight(weeks[currentWeekIndex])
+        container.style.height = `${containerHeight}px`;
+        //entriesFade('in');
         window.addEventListener('keydown', enterNewEntryValue);
         window.addEventListener('keydown', removeLastEntry);
         window.addEventListener('keydown', slideWeek);
 
+      //: show archive content                                              ://
       } else {
 
-        section.style.height = 0;
-        entriesFade('out');
+        container.style.height = 0;
+        //entriesFade('out');
         window.removeEventListener('keydown', enterNewEntryValue);
         window.removeEventListener('keydown', removeLastEntry);
         window.removeEventListener('keydown', slideWeek);
-
       }
       break;
     
-    case mobileMenuStatsSection:
-      svgIcons.classList.toggle('mobile-menu__svg--active');
-      section.classList.toggle('stats__container--active');
+    case statsTabButton:
+    case settingTabButton:
+      svgIcons.classList.toggle('tab__svg--active');
+      //: show stats content                                                ://
+      if (svgIcons.classList.contains('tab__svg--active')) {
+        const containerHeight = getContainerHeight(container)
+        container.style.height = `${containerHeight}px`;
+      //: hide stats content                                                ://
+      } else {
+        container.style.height = 0;
+      }
       break;
 
-    case mobileMenuSettingsSection:
-      svgIcons.classList.toggle('mobile-menu__svg--active');
-      section.classList.toggle('settings__container--active');
-      break;
+    default: false;
   }
 }
 //| SLIDE WEEK                                                              |//
@@ -567,19 +593,19 @@ const slideWeek = (e) => {
   const self = e.keyCode || e.target;
   const prevWeekButton = document.querySelectorAll('.week__button--js-prev')[currentWeekIndex];
   const nextWeekButton = document.querySelectorAll('.week__button--js-next')[currentWeekIndex];
-  const weeksAmount = archiveWeeks.children.length;
+  const weeksAmount = archiveContainer.children.length;
 
   const handleSlide = (direction) => {
     //: handle previous section                                             ://
-    archiveWeeks.children[currentWeekIndex].className = `week week--js week--slide-out-to-${direction === 'toLeft' ? 'right' : 'left'}`;
+    archiveContainer.children[currentWeekIndex].className = `week week--js week--slide-out-to-${direction === 'toLeft' ? 'right' : 'left'}`;
     const previousWeekIndex = currentWeekIndex;
     //: change index                                                        ://
-    currentWeekIndex = limit(archiveWeeks.children.length - 1, currentWeekIndex, direction === 'toLeft' ? 'decrease' : 'increase');
+    currentWeekIndex = limit(archiveContainer.children.length - 1, currentWeekIndex, direction === 'toLeft' ? 'decrease' : 'increase');
     //: handle next section                                                 ://
     if (currentWeekIndex !== previousWeekIndex) {
-      archiveWeeks.children[currentWeekIndex].classList = `week week--js week--visible week--slide-in-from-${direction === 'toLeft' ? 'left' : 'right'}`;
+      archiveContainer.children[currentWeekIndex].classList = `week week--js week--visible week--slide-in-from-${direction === 'toLeft' ? 'left' : 'right'}`;
     } else {
-      archiveWeeks.children[currentWeekIndex].classList = 'week week--js week--visible';
+      archiveContainer.children[currentWeekIndex].classList = 'week week--js week--visible';
     }
   }
   if (weeksAmount > 1) {
@@ -869,14 +895,19 @@ const appSidebar = document.querySelector('.app__sidebar--js');
 //const mobileMenuArchiveSection = document.querySelector('.mobile-menu__section--js-archive');
 //const mobileMenuStatsSection = document.querySelector('.mobile-menu__section--js-stats');
 //const mobileMenuSettingsSection = document.querySelector('.mobile-menu__section--js-settings');
+
+
+const archiveTabButton = document.querySelector('.tab__button--js-archive');
+const statsTabButton = document.querySelector('.tab__button--js-stats');
+const settingTabButton = document.querySelector('.tab__button--js-settings');
 //: ARCHIVE                                                                 ://
-/* const archive = document.querySelector('.archive--js');
-const archiveWeeks = document.querySelector('.archive__weeks--js');
+const archiveContainer = document.querySelector('.tab__container--js-archive');
+let weeks = null;
 const prevWeekButton = document.querySelector('.archive__button--js-prev');
 const nextWeekButton = document.querySelector('.archive__button--js-next');
 const addEntryButton = createAddEntryButton();
 const removeEntryButton = createRemoveEntryButton();
-let currentWeekIndex = 0; */
+let currentWeekIndex = 0;
 //: NEW ENTRY                                                               ://
 /* const newEntryMode = document.querySelector('.new-entry--js');
 const newEntryValue = document.querySelector('.new-entry__value--js');
@@ -913,13 +944,13 @@ class Entry {
     this.weekHtml = `
       <section class="week week--js">
         <header class="week__header week__header--js">
-          <button class="button week__button week__button--prev week__button--js-prev">
+          <button class="week__button week__button--prev week__button--js-prev">
             <svg class="week__svg" viewBox="0 0 512 512">
               <use href="assets/svg/icons.svg#left-arrow"></use>
             </svg>
           </button>
           <h3 class="week__heading week__heading--js">New week</h3>
-          <button class="button week__button week__button--next week__button--js-next">
+          <button class="week__button week__button--next week__button--js-next">
             <svg class="week__svg" viewBox="0 0 512 512">
               <use href="assets/svg/icons.svg#right-arrow"></use>
             </svg>
@@ -1000,6 +1031,7 @@ class Entry {
 //| FUNCTION CALLS                                                          |//
 ////                                                                       ////
 setData();
+setArchiveDOM();
 setWaterMeasureDOM();
 setWaterWaves(wavesAmount);
 const startValue = hydrappArray[0].value;
@@ -1015,8 +1047,7 @@ emoji.innerHTML = getEmojiHtml('controls');
 handleEmoji('controls', startValue);
 
 
-//setArchiveDOM();
-//updateWeekHeading();
+updateWeekHeading();
 toggleMobileMenu(burgerBtn);                           // ! FOR TESTS ONLY
 //enterNewEntryValue(107);                                    // ! FOR TESTS ONLY
 
@@ -1029,7 +1060,4 @@ const addNewDayButton = document.querySelector('.entry__button--js-add');
 controls.addEventListener('click', handleWaterChange);
 window.addEventListener('resize', handleWindowResize);
 burgerBtn.addEventListener('click', toggleMobileMenu);
-//mobileMenu.addEventListener('click', toggleArchive);
-
-//window.addEventListener('mousedown', () => console.log('down'))
-//window.addEventListener('mouseup', () => console.log('up'))
+appSidebar.addEventListener('click', toggleArchive);
