@@ -166,9 +166,10 @@ const handleWaterChange = (e) => {
   hydrappArray[0].value = key;
   handleWaterLevel(value);
   handleWaterShake();
-  handleEmoji('controls', value);
   handleCounterMessage(value);
   firstEntryValue.textContent = hydrappArray[0].value;
+  handleEmoji('controls', value);
+  handleEmoji(hydrappArray[0].id, value);
 }
 //| HANDLE WATER MEASURE APPEARANCE                                         |//
 const handleWaterMeasure = () => {
