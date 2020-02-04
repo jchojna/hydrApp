@@ -234,90 +234,10 @@ const handleWaterShake = () => {
   }, shakeDuration);
 }
 //| SET COUNTER VALUES                                                      |//
-/* const handleCounter = (value, action, digit) => {
-  const tenthsValue = Math.floor(value / 10);
-  const onesValue = value % 10;
-  const hrefPrefix = 'assets/svg/digits.svg#digit-';
-  const tenthsHref = hrefPrefix + tenthsValue;
-  const onesHref = hrefPrefix + onesValue;
-
-  switch (action) {
-
-    case 'initial':
-      counterPrevTenths.firstElementChild.setAttribute('href', tenthsHref);
-      counterPrevOnes.firstElementChild.setAttribute('href', onesHref);
-      counterNextTenths.firstElementChild.setAttribute('href', tenthsHref);
-      counterNextOnes.firstElementChild.setAttribute('href', onesHref);
-    break;
-
-    case 'add':
-
-      if (digit === 'prev') {
-        counterPrevOnes.firstElementChild.setAttribute('href', onesHref);
-        counterNextOnes.classList.add('digit__svg--rotated');
-        counterNextOnes.classList.remove('digit__svg--animateIn');
-        counterNextOnes.classList.remove('digit__svg--animateOut');
-        const timeoutId = setTimeout(() => {
-          counterNextOnes.classList.remove('digit__svg--rotated');
-          counterNextOnes.classList.add('digit__svg--animateIn');
-          clearTimeout(timeoutId);
-        }, 50);
-
-      } else if (digit === 'next') {
-        counterNextOnes.firstElementChild.setAttribute('href', onesHref);
-
-        if (onesValue === 0) {
-          counterNextTenths.firstElementChild.setAttribute('href', tenthsHref);
-          counterNextTenths.classList.add('digit__svg--rotated');
-          counterNextTenths.classList.remove('digit__svg--animateIn');
-          counterNextTenths.classList.remove('digit__svg--animateOut');
-          const timeoutId = setTimeout(() => {
-            counterNextTenths.classList.remove('digit__svg--rotated');
-            counterNextTenths.classList.add('digit__svg--animateIn');
-            clearTimeout(timeoutId);
-          }, 200);
-        }
-      }
-    break;
-
-    case 'remove':
-      
-      if (digit === 'prev') {
-        
-        counterPrevOnes.firstElementChild.setAttribute('href', onesHref);
-        counterNextOnes.classList.remove('digit__svg--rotated');
-        counterNextOnes.classList.remove('digit__svg--animateIn');
-        counterNextOnes.classList.remove('digit__svg--animateOut');
-
-        if (onesValue === 9) {
-          counterPrevTenths.firstElementChild.setAttribute('href', tenthsHref);
-          counterNextTenths.classList.remove('digit__svg--rotated');
-          counterNextTenths.classList.remove('digit__svg--animateIn');
-          counterNextTenths.classList.remove('digit__svg--animateOut');
-          const timeoutId = setTimeout(() => {
-            counterNextTenths.classList.add('digit__svg--rotated');
-            counterNextTenths.classList.add('digit__svg--animateOut');
-            clearTimeout(timeoutId);
-          }, 200);
-        }
-        
-        const timeoutId = setTimeout(() => {
-          counterNextOnes.classList.add('digit__svg--rotated');
-          counterNextOnes.classList.add('digit__svg--animateOut');
-          clearTimeout(timeoutId);
-        }, 50);
-
-      } else if (digit === 'next') {
-        counterNextOnes.firstElementChild.setAttribute('href', onesHref);
-      }
-    break;
-  }
-} */
-
 const handleCounter = (currentValue, newValue) => {
 
   const getTenthsValue = (value) => Math.floor(value / 10);
-  const getOnesValue = (value) => value !== 0 ? value % 10 : 0;
+  const getOnesValue = (value) => value % 10;
 
   const hrefPrefix = 'assets/svg/digits.svg#digit-';
   const currentTenthsValue = getTenthsValue(currentValue);
@@ -339,83 +259,75 @@ const handleCounter = (currentValue, newValue) => {
   const newOnesValue = getOnesValue(newValue);
   const newTenthsHref = hrefPrefix + newTenthsValue;
   const newOnesHref = hrefPrefix + newOnesValue;
+  const tenthsTimeout = 200;
+  const onesTimeout = 50;
+
+  const removeAnimations = (digits) => {
+    if (digits === 'tenths') {
+      counterNextTenths.classList.remove('digit__svg--animateIn');
+      counterNextTenths.classList.remove('digit__svg--animateOut');
+    } else if (digits === 'ones') {
+      counterNextOnes.classList.remove('digit__svg--animateIn');
+      counterNextOnes.classList.remove('digit__svg--animateOut');
+    }
+  } 
 
   if (newTenthsValue > currentTenthsValue) {
 
     counterNextTenths.firstElementChild.setAttribute('href', newTenthsHref);
     counterPrevTenths.firstElementChild.setAttribute('href', currentTenthsHref);
     counterNextTenths.classList.add('digit__svg--rotated');
-    counterNextTenths.classList.remove('digit__svg--animateIn');
-    counterNextTenths.classList.remove('digit__svg--animateOut');
+    removeAnimations('tenths');
 
     const timeoutId = setTimeout(() => {
       counterNextTenths.classList.remove('digit__svg--rotated');
       counterNextTenths.classList.add('digit__svg--animateIn');
       clearTimeout(timeoutId);
-    }, 200);
+    }, tenthsTimeout);
 
   } else if (newTenthsValue < currentTenthsValue) {
 
     counterNextTenths.firstElementChild.setAttribute('href', currentTenthsHref);
     counterPrevTenths.firstElementChild.setAttribute('href', newTenthsHref);
     counterNextTenths.classList.remove('digit__svg--rotated');
-    counterNextTenths.classList.remove('digit__svg--animateIn');
-    counterNextTenths.classList.remove('digit__svg--animateOut');
+    removeAnimations('tenths');
 
     const timeoutId = setTimeout(() => {
       counterNextTenths.classList.add('digit__svg--rotated');
       counterNextTenths.classList.add('digit__svg--animateOut');
       clearTimeout(timeoutId);
-    }, 200);
+    }, tenthsTimeout);
   }
 
   if (newValue > currentValue
   && (newOnesValue > currentOnesValue || newOnesValue === 0)) {
 
-    counterPrevOnes.firstElementChild.setAttribute('href', currentOnesHref);
     counterNextOnes.firstElementChild.setAttribute('href', newOnesHref);
+    counterPrevOnes.firstElementChild.setAttribute('href', currentOnesHref);
     counterNextOnes.classList.add('digit__svg--rotated');
-    counterNextOnes.classList.remove('digit__svg--animateIn');
-    counterNextOnes.classList.remove('digit__svg--animateOut');
+    removeAnimations('ones');
 
     const timeoutId = setTimeout(() => {
       counterNextOnes.classList.remove('digit__svg--rotated');
       counterNextOnes.classList.add('digit__svg--animateIn');
       clearTimeout(timeoutId);
-    }, 50);
+    }, onesTimeout);
     
 
   } else if (newValue < currentValue
   && newOnesValue < currentOnesValue || currentOnesValue === 0) {
         
-    counterPrevOnes.firstElementChild.setAttribute('href', newOnesHref);
     counterNextOnes.firstElementChild.setAttribute('href', currentOnesHref);
+    counterPrevOnes.firstElementChild.setAttribute('href', newOnesHref);
     counterNextOnes.classList.remove('digit__svg--rotated');
-    counterNextOnes.classList.remove('digit__svg--animateIn');
-    counterNextOnes.classList.remove('digit__svg--animateOut');
+    removeAnimations('ones');
     
     const timeoutId = setTimeout(() => {
       counterNextOnes.classList.add('digit__svg--rotated');
       counterNextOnes.classList.add('digit__svg--animateOut');
       clearTimeout(timeoutId);
-    }, 50);
+    }, onesTimeout);
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
 //| HANDLE MESSAGE DEPENDING ON AMOUNT OF CONSUMED WATER                    |//
 const handleCounterMessage = (value) => {  
