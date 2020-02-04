@@ -428,23 +428,24 @@ const setArchiveDOM = () => {
 //| ADD ARCHIVE NODE                                                        |//
 const addArchiveEntry = (index, option) => {
   const {value, id, day, dayHtml, weekHtml} = hydrappArray[index];
-
+  //: function adding new week DOM node                                     ://
   const addWeek = () => {
     archiveContainer.insertAdjacentHTML('beforeend', weekHtml);
     const lastWeek = archiveContainer.lastElementChild;
     const lastWeekHeader = lastWeek.querySelector('.week__header--js');
     lastWeekHeader.addEventListener('click', slideWeek);
+    weekLists = document.querySelectorAll('.week__list--js');
   }
   //: add new week                                                          ://
   if (((day === 'sunday' || index === 0)) && option !== 'add') addWeek();
   //: add next day entry                                                    ://
-  weekLists = document.querySelectorAll('.week__list--js');
   const lastWeekList = weekLists[weekLists.length - 1];
   lastWeekList.insertAdjacentHTML('beforeend', dayHtml);
   handleEmoji(id, value);
   //: add 'add entry button at the end                                      ://
   if (index === hydrappArray.length - 1) {
     if (day === 'monday') addWeek();
+    const lastWeekList = weekLists[weekLists.length - 1];
     lastWeekList.appendChild(addEntryButton);
   }
   updateWeekHeading();
@@ -645,7 +646,7 @@ const enterNewEntryValue = (e) => {
         case 13:
         case newEntrySave:
           e.preventDefault();
-          addNewEntry(e, value);
+          addNewEntry(value);
           modeOff();
           break;
       }
@@ -657,42 +658,41 @@ const enterNewEntryValue = (e) => {
   }
 }
 //| ADD NEW ENTRY                                                           |//
-const addNewEntry = (e, value) => {
-  const self = e.keyCode || e.target;
-  if (self === 13 || self === newEntrySave) {
-    e.preventDefault();
-    let lastEntryIndex = hydrappArray.length - 1;
-    let lastEntry = document.querySelectorAll('.entry--js')[lastEntryIndex];
-    lastEntry.classList.remove('entry--last');
+const addNewEntry = (value) => {
 
-    lastEntryDate.setDate(lastEntryDate.getDate() - 1);
-    const newEntryKey = setDateKey(lastEntryDate);
-    
-    //: handle local storage and array of objects                           ://
-    setNewKeyValue(newEntryKey, value);
-    const newEntry = new Entry(lastEntryDate);
-    newEntry.value = newEntryKey;
-    [...hydrappArray, newEntry];
+  let lastEntryIndex = hydrappArray.length - 1;
+  let lastEntry = document.querySelectorAll('.entry--js')[lastEntryIndex];
+  lastEntry.classList.remove('entry--last');
 
-    //: create new entry node                                               ://
-    lastEntryIndex = hydrappArray.length - 1;
-    addArchiveEntry(lastEntryIndex, 'add');
-    lastEntry = document.querySelectorAll('.entry--js')[lastEntryIndex];
-    lastEntry.classList.add('entry--visible');
-    lastEntry.classList.add('entry--fadeIn');
-    //: jump to the last week                                               ://
-    const currentWeek = weeks[currentWeekIndex];
-    const lastWeekIndex = weeks.length - 1;
-    const lastWeek = weeks[lastWeekIndex];
-    if (currentWeekIndex !== lastWeekIndex) {
-      currentWeekIndex = lastWeekIndex;
-      currentWeek.className = 'week week--js week--slide-out-to-left';
-      lastWeek.className = 'week week--js week--visible week--slide-in-from-right';
-    }
-    handleArchiveContainerHeight(lastWeek);
-    handleArchiveLastEntry();
-    updateWeekHeading();
+  lastEntryDate.setDate(lastEntryDate.getDate() - 1);
+  const newEntryKey = setDateKey(lastEntryDate);
+  
+  //: handle local storage and array of objects                           ://
+  setNewKeyValue(newEntryKey, value);
+  const newEntry = new Entry(lastEntryDate);
+  newEntry.value = newEntryKey;
+  hydrappArray = [...hydrappArray, newEntry];
+
+  //: create new entry node                                               ://
+  lastEntryIndex = hydrappArray.length - 1;
+  addArchiveEntry(lastEntryIndex, 'add');
+  lastEntry = document.querySelectorAll('.entry--js')[lastEntryIndex];
+  lastEntry.classList.add('entry--visible');
+  lastEntry.classList.add('entry--fadeIn');
+  //: jump to the last week                                               ://
+  weeks = archiveContainer.children;
+  const currentWeek = weeks[currentWeekIndex];
+  console.log('weeks', weeks);
+  const lastWeekIndex = weeks.length - 1;
+  const lastWeek = weeks[lastWeekIndex];
+  if (currentWeekIndex !== lastWeekIndex) {
+    currentWeekIndex = lastWeekIndex;
+    currentWeek.className = 'week week--js week--slide-out-to-left';
+    lastWeek.className = 'week week--js week--visible week--slide-in-from-right';
   }
+  handleArchiveContainerHeight(lastWeek);
+  handleArchiveLastEntry();
+  updateWeekHeading();
 }
 //| ADJUST LAST ITEM OF LIST AND REMOVE BUTTON                              |//
 const handleArchiveLastEntry = () => {
