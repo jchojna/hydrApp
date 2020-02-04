@@ -175,7 +175,7 @@ const handleWaterMeasure = () => {
 const handleWaterWaves = () => {
   const size = water.clientWidth / wavesAmount / 10;
   wavesContainer.style.height = `${size}px`;
-  wavesContainer.style.top = `${-1 * (size - 1)}px`;
+  wavesContainer.style.top = `${-1 * (size - 3)}px`;
 }
 //| HANDLE WATER CHANGE                                                     |//
 const handleWaterChange = (e) => {
@@ -375,7 +375,18 @@ const toggleSidebar = (e) => {
     self.classList.toggle('button--active');
     appSidebar.classList.toggle('app__sidebar--visible');
     appLanding.classList.toggle('app__landing--onSide');
-    handleWaterWaves();
+    //: update waves height and offset during css transition                ://
+    clearInterval(wavesIntervalId);
+    clearTimeout(wavesTimeoutId);
+    if (window.innerWidth >= mediaMd) {
+      wavesIntervalId = setInterval(() => {
+        handleWaterWaves();
+      }, 10);
+      wavesTimeoutId = setTimeout(() => {
+        clearInterval(wavesIntervalId);
+        clearTimeout(wavesTimeoutId);
+      }, 1000);
+    }
   }
 }
 //| TOGGLE SIDEBAR'S TABS                                                   |//
@@ -847,6 +858,9 @@ const handleEntryEdit = (e) => {
 ////                                                                       ////
 const appHeader = document.querySelector('.app__header--js');
 const appLanding = document.querySelector('.app__landing--js');
+//: MEDIA                                                                   ://
+const mediaMd = 768;
+const mediaLg = 1200;
 //: WATER VALUE                                                             ://
 const waterMax = 20;
 let waterMin = 12;
@@ -872,6 +886,8 @@ const wavesContainer = document.querySelector('.waves--js');
 const waves = document.querySelectorAll('.wave--js');
 let wavesAmount = 2;
 let wavesShakeTimeoutId = null;
+let wavesIntervalId = null;
+let wavesTimeoutId = null;
 const measure = document.querySelector('.graph__measure--js');
 const levelAvg = document.querySelector('.graph__level--js-avg');
 const levelMin = document.querySelector('.graph__level--js-min');
