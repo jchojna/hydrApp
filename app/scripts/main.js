@@ -55,6 +55,12 @@ const limit = (max, num, action) => {
   action === 'decrease' ? num <= 0 ? false : num-- : false;
   return num;
 }
+//| FIND FIRST ENCOUNTERED PARENT OF GIVEN NODE WITH A GIVEN CLASS          |//
+const findFirstParentOfClass = (node, classname) => {
+  while (!node.parentNode.classList.contains(classname)
+  && node.parentNode.tagName !== 'HTML') node = node.parentNode;
+  return node.parentNode;
+}
 //| GET EMOJIS HTML STRING                                                  |//
 const getEmojiHtml = (id) => {
   let emojiHtml = '';
@@ -101,6 +107,12 @@ const handleWindowResize = () => {
   handleWaterLevel(waterValue);
   handleWaterWaves();
   handleWaterMeasure();
+}
+//| HANDLE CONTAINER'S HEIGHT BASED ON ELEMENT'S CHILDREN TOTAL HEIGHT      |//
+const handleContainerHeight = (container, elements) => {
+  const childrenArray = [...elements.children];
+  const childrenHeight = childrenArray.reduce((a,b) => a + b.clientHeight, 0);
+  container.style.height = `${childrenHeight}px`;
 }
 //// APP MAIN SECTION                                                      ////
 //| SET WAVES AMOUNT                                                        |//
@@ -367,45 +379,47 @@ const toggleSidebar = (e) => {
 //| TOGGLE SIDEBAR'S TABS                                                   |//
 const toggleSidebarTabs = (e) => {
   const self = e.target;
-  const svgIcons = self.lastElementChild;
 
-  switch (self) {
+  if(self === archiveTabButton
+  || self === statsTabButton 
+  || self === settingTabButton) {
 
-    case archiveTabButton:
-      svgIcons.classList.toggle('tab__svg--active');
-      //: show archive content                                              ://
-      if (svgIcons.classList.contains('tab__svg--active')) {
-        const currentWeek = weeks[currentWeekIndex];
-        handleArchiveContainerHeight(currentWeek);
-        entriesFade('in');
-        window.addEventListener('keydown', enterNewEntryValue);
-        window.addEventListener('keydown', removeLastEntry);
-        window.addEventListener('keydown', slideWeek);
-
-      //: show archive content                                              ://
-      } else {
-        archiveContainer.style.height = 0;
-        entriesFade('out');
-        window.removeEventListener('keydown', enterNewEntryValue);
-        window.removeEventListener('keydown', removeLastEntry);
-        window.removeEventListener('keydown', slideWeek);
-      }
-      break;
+    const parentContainer = findFirstParentOfClass(self, 'tab');
+    const svgIcon = parentContainer.querySelector('.tab__svg');
+    const tabContainer = parentContainer.querySelector('.tab__container');
+    const isActive = svgIcon.classList.contains('tab__svg--active');
     
-    case statsTabButton:
-    case settingTabButton:
-      const container = self.parentNode.nextElementSibling;
-      svgIcons.classList.toggle('tab__svg--active');
-      //: show stats content                                                ://
-      if (svgIcons.classList.contains('tab__svg--active')) {
-        handleArchiveContainerHeight(container.firstElementChild);
-      //: hide stats content                                                ://
-      } else {
-        container.style.height = 0;
-      }
-      break;
-
-    default: false;
+    switch (self) {
+      case archiveTabButton:
+        //: show archive content                                              ://
+        if (!isActive) {
+          const currentWeek = weeks[currentWeekIndex];
+          handleContainerHeight(archiveContainer, currentWeek);
+          window.addEventListener('keydown', enterNewEntryValue);
+          window.addEventListener('keydown', removeLastEntry);
+          window.addEventListener('keydown', slideWeek);
+  
+        //: hide archive content                                              ://
+        } else {
+          archiveContainer.style.height = 0;
+          window.removeEventListener('keydown', enterNewEntryValue);
+          window.removeEventListener('keydown', removeLastEntry);
+          window.removeEventListener('keydown', slideWeek);
+        }
+        break;
+      case statsTabButton:
+      case settingTabButton:
+        //: show stats content                                                ://
+        if (!isActive) {
+          handleContainerHeight(tabContainer, tabContainer.firstElementChild);
+        //: hide stats content                                                ://
+        } else {
+          tabContainer.style.height = 0;
+        }
+        break;
+      default: false;
+    }
+    svgIcon.classList.toggle('tab__svg--active');
   }
 }
 //// ARCHIVE TAB                                                           ////
@@ -454,12 +468,6 @@ const addArchiveEntry = (index, option) => {
   const editButton = editButtons[index];
   editButton.index = index;
   editButton.addEventListener('click', handleEntryEdit);
-}
-//| HANDLE ARCHIVE CONTAINER'S HEIGHT                                       |//
-const handleArchiveContainerHeight = (container) => {
-  const childrenArray = [...container.children];
-  const childrenHeight = childrenArray.reduce((a,b) => a + b.clientHeight, 0);
-  archiveContainer.style.height = `${childrenHeight}px`;
 }
 //| SET WEEK HEADING                                                        |//
 const updateWeekHeading = () => {
@@ -561,7 +569,7 @@ const slideWeek = (e) => {
         handleSlide('toRight');
         break;
     }
-    handleArchiveContainerHeight(weeks[currentWeekIndex]);
+    handleContainerHeight(archiveContainer, weeks[currentWeekIndex]);
     entriesFade('in');
   }
 }
@@ -690,7 +698,7 @@ const addNewEntry = (value) => {
     currentWeek.className = 'week week--js week--slide-out-to-left';
     lastWeek.className = 'week week--js week--visible week--slide-in-from-right';
   }
-  handleArchiveContainerHeight(lastWeek);
+  handleContainerHeight(archiveContainer, lastWeek);
   handleArchiveLastEntry();
   updateWeekHeading();
 }
@@ -735,7 +743,7 @@ const removeLastEntry = (e) => {
       //: add remove button on current last item                            ://
       handleArchiveLastEntry();
       updateWeekHeading();
-      handleArchiveContainerHeight(lastWeek);
+      handleContainerHeight(archiveContainer, lastWeek);
     }
   }
 }
@@ -887,6 +895,10 @@ const newEntryDecrease = document.querySelector('.newEntry__button--js-decrease'
 const newEntryIncrease = document.querySelector('.newEntry__button--js-increase');
 const newEntryCancel = document.querySelector('.newEntry__button--js-cancel');
 const newEntrySave = document.querySelector('.newEntry__button--js-save');
+//: STATS                                                                   ://
+const statsContainer = document.querySelector('.tab__container--js-stats');
+//: SETTINGS                                                                ://
+const settingsContainer = document.querySelector('.tab__container--js-settings');
 
 ////                                                                       ////
 let hydrappArray = [];
