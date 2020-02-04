@@ -39,7 +39,7 @@
     min-height: 300px;
     position: fixed;
     top: 0;
-    width: 100%;
+    width: 90%;
   }
   //: APP SIDEBAR                                                             ://
   &__sidebar {
@@ -64,36 +64,5 @@
       transform: translateY(0);
       transition: transform $sidebar-toggle, visibility 0s;
     }
-
-    /* &__section {
-      @include flex-center;
-      justify-content: space-between;
-      width: 100%;
-      fill: $cold-blue;
-      padding: 0 $layout-xs-sm-padding;
-      grid-template-columns: 1fr 40px;
-      cursor: pointer;
-
-      &::before { // needed to make heading in the center
-        content: "";
-        width: $size-main-buttons;
-      }
-
-      &:hover {
-        fill: $cold-light-blue;
-        background-color: lighten($cold-darkest-blue, 3%);
-      }
-    }
-
-    &__title {
-      color: $cold-light-blue;
-      margin: 15px 0;
-      font-size: 1.5rem;
-      font-weight: normal;
-      text-align: center;
-      pointer-events: none;
-      width: 200px;
-    }
-    } */
   }
 }

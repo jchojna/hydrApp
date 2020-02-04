@@ -134,9 +134,9 @@ const setWaterMeasureDOM = () => {
   for (let i = 0; i <= waterMax; i++) {
     const digit = waterMax - i;
     measure.innerHTML += `
-      <li class="measure__level measure__level--js">
-        <span class="measure__mark"></span>
-        <span class="measure__digit">${digit}</span>
+      <li class="measurePart measurePart--js">
+        <span class="measurePart__mark"></span>
+        <span class="measurePart__digit">${digit}</span>
       </li>
     `
   }
@@ -149,11 +149,11 @@ const handleWaterMeasure = () => {
   [...measureLevels].forEach((level, index) => {
     const detailLevel = (everyNth) => {
       if (index % everyNth === 0) {
-        mark.classList.add('measure__mark--large');
-        digit.classList.add('measure__digit--visible');
+        mark.classList.add('measurePart__mark--large');
+        digit.classList.add('measurePart__digit--visible');
       } else {
-        mark.classList.remove('measure__mark--large');
-        digit.classList.remove('measure__digit--visible');
+        mark.classList.remove('measurePart__mark--large');
+        digit.classList.remove('measurePart__digit--visible');
       }
     }
     const mark = level.firstElementChild;
@@ -162,8 +162,8 @@ const handleWaterMeasure = () => {
     || index === waterMax;
 
     !isLevelOnEnd
-    ? level.classList.add('measure__level--visible')
-    : level.classList.remove('measure__level--visible');
+    ? level.classList.add('measurePart--visible')
+    : level.classList.remove('measurePart--visible');
 
     interval <= 20 ? detailLevel(5) :
     interval <= 30 ? detailLevel(4) :
@@ -173,7 +173,7 @@ const handleWaterMeasure = () => {
 }
 //| HANDLE WATER WAVES                                                      |//
 const handleWaterWaves = () => {
-  const size = window.innerWidth / wavesAmount / 10;
+  const size = water.clientWidth / wavesAmount / 10;
   wavesContainer.style.height = `${size}px`;
   wavesContainer.style.top = `${-1 * (size - 1)}px`;
 }
@@ -210,8 +210,8 @@ const handleWaterChange = (e) => {
 const handleWaterLevel = (value) => {
   const windowHeight = window.innerHeight;
   const waterOffset = windowHeight / waterMax * (waterMax - value);
-  const averageOffset = windowHeight / waterMax * (waterAverage);
-  const optimalOffset = windowHeight / waterMax * (waterOptimal);
+  const avgOffset = windowHeight / waterMax * (waterAvg);
+  const minOffset = windowHeight / waterMax * (waterMin);
 
   water.style.top = `${waterOffset}px`;
   if (value === 0) {
@@ -219,8 +219,8 @@ const handleWaterLevel = (value) => {
   } else {
     water.classList.remove('water--hidden');
   }
-  levelAverage.style.bottom = `${averageOffset}px`;
-  levelOptimal.style.bottom = `${optimalOffset}px`;
+  levelAvg.style.bottom = `${avgOffset}px`;
+  levelMin.style.bottom = `${minOffset}px`;
 }
 //| HANDLE WATER LEVEL                                                      |//
 const handleWaterShake = () => {
@@ -324,13 +324,13 @@ const handleCounterMessage = (value) => {
   : value >= waterMax - 2
   ? 'Almost there..'
 
-  : value > waterOptimal + 1
+  : value > waterMin + 1
   ? 'Woow.. You\'re on fire!'
 
-  : value >= waterOptimal - 1
+  : value >= waterMin - 1
   ? 'Good job! You reached your optimal water consumption'
 
-  : value >= waterOptimal - 3
+  : value >= waterMin - 3
   ? 'Keep going.. Yo\'re doing well'
   
   : value >= 4
@@ -846,8 +846,8 @@ const handleEntryEdit = (e) => {
 const appHeader = document.querySelector('.app__header--js');
 //: WATER VALUE                                                             ://
 const waterMax = 20;
-let waterOptimal = 12;
-let waterAverage = 7;
+let waterMin = 12;
+let waterAvg = 7;
 //: COUNTER                                                                 ://
 const counter = document.querySelector('.counter--js');
 const counterPrevTenths = document.querySelector('.digit__svg--js-prevTenths');
@@ -869,9 +869,9 @@ const wavesContainer = document.querySelector('.waves--js');
 const waves = document.querySelectorAll('.wave--js');
 let wavesAmount = 2;
 let wavesShakeTimeoutId = null;
-const measure = document.querySelector('.measure--js');
-const levelAverage = document.querySelector('.level--js-average');
-const levelOptimal = document.querySelector('.level--js-optimal');
+const measure = document.querySelector('.graph__measure--js');
+const levelAvg = document.querySelector('.graph__level--js-avg');
+const levelMin = document.querySelector('.graph__level--js-min');
 //: MENU                                                                    ://
 const burgerBtn = document.querySelector('.button--js-burger');
 //: SIDEBAR                                                                 ://
@@ -1009,7 +1009,7 @@ setArchiveDOM();
 setWaterMeasureDOM();
 setWaterWaves(wavesAmount);
 const startValue = hydrappArray[0].value;
-const measureLevels = document.querySelectorAll('.measure__level--js');
+const measureLevels = document.querySelectorAll('.measurePart--js');
 handleCounter(startValue, 'initial');
 handleWaterLevel(startValue);
 handleWaterShake();
@@ -1021,7 +1021,7 @@ handleEmoji('controls', startValue);
 updateWeekHeading();
 
 
-toggleSidebar(burgerBtn);                           // ! FOR TESTS ONLY
+//toggleSidebar(burgerBtn);                           // ! FOR TESTS ONLY
 //enterNewEntryValue(107);                                    // ! FOR TESTS ONLY
 
 //| VARIABLES                                                               |//
