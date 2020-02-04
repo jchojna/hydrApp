@@ -34,6 +34,9 @@ $burgerBtn-padding-lg: 20px;
 
 $button-time-active: 0.3s;
 //| SIDEBAR                                                                 |//
+$header-height-xs: $header-padding-xs * 2 + $burgerBtn-size-xs;
+$header-height-md: $header-padding-md * 2 + $burgerBtn-size-md;
+$header-height-lg: $header-padding-lg * 2 + $burgerBtn-size-lg;
 $sidebar-toggle: 0.4s;
 
 $tab-expand: 0.6s;

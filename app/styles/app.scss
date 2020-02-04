@@ -13,6 +13,7 @@
     display: flex;
     justify-content: space-between;
     padding: $header-padding-xs;
+    pointer-events: none;
     position: fixed;
     right: 0;
     top: 0;
@@ -57,10 +58,11 @@
     bottom: 0;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     right: 0;
     overflow: auto;
     position: fixed;
+    padding-top: $header-height-xs;
     top: 0;
     transform: translateY(-100%);
     transition: transform $sidebar-toggle, visibility 0s $sidebar-toggle;
@@ -77,6 +79,7 @@
     @media only screen and (min-width: $media-md) {
 
       & {
+        padding-top: $header-height-md;
         transform: translateX(100%);
         transition: transform $sidebar-toggle, visibility 0s $sidebar-toggle;
         width: 50%;
@@ -86,6 +89,13 @@
           transform: translateX(0);
           transition: transform $sidebar-toggle, visibility 0s;
         }
+      }
+    }
+
+    @media only screen and (min-width: $media-lg) {
+
+      & {
+        padding-top: $header-height-lg;
       }
     }
   }

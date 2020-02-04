@@ -354,14 +354,9 @@ const handleCounterMessage = (value) => {
 }
 //| HANDLE COUNTER DATE TO DISPLAY                                          |//
 const handleCounterDate = () => {
-
   const { day, date } = hydrappArray[0];
-
   counterDay.innerHTML = day;
   counterDate.innerHTML = date.slice().split(' ').join('.');
-
-
-
 }
 //| SET INDICATORS                                                          |//
 const handleEmoji = (id, number) => {
@@ -840,15 +835,17 @@ const handleEntryEdit = (e) => {
       case 13:
       case saveButton:
         //e.preventDefault();
-        handleCounter(hydrappArray[0].value, dayValue);
+        if (itemIndex === 0) {
+          handleCounter(hydrappArray[0].value, dayValue);
+          handleWaterLevel(dayValue);
+          handleWaterShake();
+          handleCounterMessage(dayValue);
+          handleEmoji('controls', dayValue);
+        }
         //: change global values (must be after counter handler             ://
         //: which uses previous value before change                         ://
         localStorage.setItem(key, dayValue);
         hydrappArray[itemIndex].value = key;
-        handleWaterLevel(dayValue);
-        handleWaterShake();
-        handleCounterMessage(dayValue);
-        handleEmoji('controls', dayValue);
         exitEditMode();
       break;
     }
