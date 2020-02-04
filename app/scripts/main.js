@@ -71,13 +71,6 @@ const getEmojiHtml = (id) => {
   }
   return emojiHtml;
 }
-//| GET CONTAINER'S HEIGHT                                                  |//
-const getContainerHeight = (container) => {
-  const childrenArray = [...container.children];
-  const childrenHeight = childrenArray.reduce((a,b) => a + b.clientHeight, 0);
-  const offsetHeight = 40;
-  return childrenHeight;
-}
 //| SET LOCAL STORAGE                                                       |//
 const setData = () => {
   const date = new Date();
@@ -383,9 +376,7 @@ const toggleSidebarTabs = (e) => {
       //: show archive content                                              ://
       if (svgIcons.classList.contains('tab__svg--active')) {
         const currentWeek = weeks[currentWeekIndex];
-        const containerHeight = getContainerHeight(currentWeek);
-
-        archiveContainer.style.height = `${containerHeight}px`;
+        handleArchiveContainerHeight(currentWeek);
         entriesFade('in');
         window.addEventListener('keydown', enterNewEntryValue);
         window.addEventListener('keydown', removeLastEntry);
@@ -407,8 +398,7 @@ const toggleSidebarTabs = (e) => {
       svgIcons.classList.toggle('tab__svg--active');
       //: show stats content                                                ://
       if (svgIcons.classList.contains('tab__svg--active')) {
-        const containerHeight = getContainerHeight(container.firstElementChild)
-        container.style.height = `${containerHeight}px`;
+        handleArchiveContainerHeight(container.firstElementChild);
       //: hide stats content                                                ://
       } else {
         container.style.height = 0;
@@ -463,6 +453,12 @@ const addArchiveEntry = (index, option) => {
   const editButton = editButtons[index];
   editButton.index = index;
   editButton.addEventListener('click', handleEntryEdit);
+}
+//| HANDLE ARCHIVE CONTAINER'S HEIGHT                                       |//
+const handleArchiveContainerHeight = (container) => {
+  const childrenArray = [...container.children];
+  const childrenHeight = childrenArray.reduce((a,b) => a + b.clientHeight, 0);
+  archiveContainer.style.height = `${childrenHeight}px`;
 }
 //| SET WEEK HEADING                                                        |//
 const updateWeekHeading = () => {
@@ -564,8 +560,7 @@ const slideWeek = (e) => {
         handleSlide('toRight');
         break;
     }
-    const containerHeight = getContainerHeight(weeks[currentWeekIndex]);
-    archiveContainer.style.height = `${containerHeight}px`;
+    handleArchiveContainerHeight(weeks[currentWeekIndex]);
     entriesFade('in');
   }
 }
@@ -661,7 +656,7 @@ const enterNewEntryValue = (e) => {
     window.removeEventListener('keydown', slideWeek);
   }
 }
-//| ADD NEW ITEM << SHOW ARCHIVE                                            |//
+//| ADD NEW ENTRY                                                           |//
 const addNewEntry = (e, value) => {
   const self = e.keyCode || e.target;
   if (self === 13 || self === newEntrySave) {
@@ -677,7 +672,8 @@ const addNewEntry = (e, value) => {
     setNewKeyValue(newEntryKey, value);
     const newEntry = new Entry(lastEntryDate);
     newEntry.value = newEntryKey;
-    hydrappArray.push(newEntry);
+    [...hydrappArray, newEntry];
+
     //: create new entry node                                               ://
     lastEntryIndex = hydrappArray.length - 1;
     addArchiveEntry(lastEntryIndex, 'add');
@@ -685,17 +681,17 @@ const addNewEntry = (e, value) => {
     lastEntry.classList.add('entry--visible');
     lastEntry.classList.add('entry--fadeIn');
     //: jump to the last week                                               ://
-    const weeks = archiveWeeks.children;
     const currentWeek = weeks[currentWeekIndex];
     const lastWeekIndex = weeks.length - 1;
     const lastWeek = weeks[lastWeekIndex];
     if (currentWeekIndex !== lastWeekIndex) {
-      currentWeekIndex = archiveWeeks.children.length - 1;
+      currentWeekIndex = lastWeekIndex;
       currentWeek.className = 'week week--js week--slide-out-to-left';
       lastWeek.className = 'week week--js week--visible week--slide-in-from-right';
     }
+    handleArchiveContainerHeight(lastWeek);
     handleArchiveLastEntry();
-    setCurrentWeekHeight();
+    updateWeekHeading();
   }
 }
 //| ADJUST LAST ITEM OF LIST AND REMOVE BUTTON                              |//
@@ -715,6 +711,7 @@ const removeLastEntry = (e) => {
   const lastEntryIndex = hydrappArray.length - 1;
   const {day, key} = hydrappArray[lastEntryIndex];
   const lastEntryNode = document.querySelectorAll('.entry--js')[lastEntryIndex];
+  let lastWeek = weeks[weeks.length - 1];
 
   if (self === 109 || self === removeEntryButton) {
 
@@ -725,10 +722,10 @@ const removeLastEntry = (e) => {
       lastEntryNode.parentNode.removeChild(lastEntryNode);
       //: removing last week section after deleting last day of that week   ://
       if (day === 'monday') {
-        const weekToRemove = archiveWeeks.lastElementChild;
+        const weekToRemove = archiveContainer.lastElementChild;
         const ifVisible = weekToRemove.classList.contains('week--visible');
-        archiveWeeks.removeChild(archiveWeeks.lastElementChild);
-        const lastWeek = archiveWeeks.lastElementChild;
+        archiveContainer.removeChild(archiveContainer.lastElementChild);
+        lastWeek = archiveContainer.lastElementChild;
         const lastWeekList = lastWeek.lastElementChild;
         if (ifVisible) {
           lastWeek.className = 'week week--js week--visible week--slide-in-from-left';currentWeekIndex--;
@@ -738,7 +735,7 @@ const removeLastEntry = (e) => {
       //: add remove button on current last item                            ://
       handleArchiveLastEntry();
       updateWeekHeading();
-      setCurrentWeekHeight();
+      handleArchiveContainerHeight(lastWeek);
     }
   }
 }
@@ -892,7 +889,7 @@ const newEntryCancel = document.querySelector('.newEntry__button--js-cancel');
 const newEntrySave = document.querySelector('.newEntry__button--js-save');
 
 ////                                                                       ////
-const hydrappArray = [];
+let hydrappArray = [];
 const lastEntryDate = new Date();
 const weekDay = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
 //| CLASS FOR ENTRY                                                         |//
