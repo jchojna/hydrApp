@@ -26,13 +26,14 @@
 
   //: WATER LEVELS                                                          ://
   &__level {
-    border-top: 5px dashed $cold-light-blue;
-    left: 0;
+    border-bottom: 5px dashed $cold-light-blue;
+    left: 10px;
     position: absolute;
-    width: 100%;
+    right: 0;
     transition: bottom $verticalTranslation;
   
     &--avg {
+      color: $cold-blue;
       border-color: $cold-blue;
     }
   
@@ -53,11 +54,11 @@
 
   &__mark {
     background-color: $cold-blue;
-    height: 5px;
-    width: 5px;
+    height: 6px;
+    width: 6px;
 
     &--large {
-      height: 5px;
+      height: 6px;
       width: 10px;
     }
   }
@@ -66,7 +67,7 @@
     color: $cold-blue;
     font-size: 1em;
     font-weight: 700;
-    line-height: 1;
+    line-height: 0;
     margin-left: 10px;
     visibility: hidden;
 
@@ -93,7 +94,7 @@
   @media only screen and (min-width: $media-lg) {
 
     &__mark {
-      height: 7px;
+      height: 8px;
       width: 15px;
   
       &--large {
