@@ -141,6 +141,35 @@ const setWaterMeasureDOM = () => {
     `
   }
 }
+//| HANDLE WATER CHANGE                                                     |//
+const handleWaterChange = (e) => {
+  const self = e.target || e;
+  const key = setDateKey();
+  let value = parseInt(hydrappArray[0].value);
+  const firstEntryValue = document.querySelector('.entry__value--js');
+
+  //. if add button clicked                                               .//
+  if (self === addBtn) {
+    if (value >= waterMax) return;
+    handleCounter(value, 'add', 'prev');
+    value++;
+    handleCounter(value, 'add', 'next');
+
+  //. if remove button clicked                                            .//
+  } else if (self === removeBtn) {
+    if (value <= 0) return;
+    handleCounter(value, 'remove', 'next');
+    value--;
+    handleCounter(value, 'remove', 'prev');
+  }
+  localStorage.setItem(key, value);
+  hydrappArray[0].value = key;
+  handleWaterLevel(value);
+  handleWaterShake();
+  handleEmoji('controls', value);
+  handleCounterMessage(value);
+  firstEntryValue.textContent = hydrappArray[0].value;
+}
 //| HANDLE WATER MEASURE APPEARANCE                                         |//
 const handleWaterMeasure = () => {
   const headerHeight = appHeader.clientHeight;
@@ -176,35 +205,6 @@ const handleWaterWaves = () => {
   const size = water.clientWidth / wavesAmount / 10;
   wavesContainer.style.height = `${size}px`;
   wavesContainer.style.top = `${-1 * (size - 3)}px`;
-}
-//| HANDLE WATER CHANGE                                                     |//
-const handleWaterChange = (e) => {
-  const self = e.target || e;
-  const key = setDateKey();
-  let value = parseInt(hydrappArray[0].value);
-  // const firstArchiveEntry = document.querySelector('.entry__value--js');
-
-  //. if add button clicked                                               .//
-  if (self === addBtn) {
-    if (value >= waterMax) return;
-    handleCounter(value, 'add', 'prev');
-    value++;
-    handleCounter(value, 'add', 'next');
-
-  //. if remove button clicked                                            .//
-  } else if (self === removeBtn) {
-    if (value <= 0) return;
-    handleCounter(value, 'remove', 'next');
-    value--;
-    handleCounter(value, 'remove', 'prev');
-  }
-  localStorage.setItem(key, value);
-  hydrappArray[0].value = key;
-  handleWaterLevel(value);
-  handleWaterShake();
-  handleEmoji('controls', value);
-  handleCounterMessage(value);
-  // firstArchiveEntry.textContent = hydrappArray[0].value;
 }
 //| HANDLE WATER LEVEL                                                      |//
 const handleWaterLevel = (value) => {
