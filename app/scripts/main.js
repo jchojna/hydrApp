@@ -12,7 +12,7 @@ if ('serviceWorker' in navigator) {
   });
 }
 //| FUNCTIONS                                                               |//
-////                                                                       ////
+//// OVERALL                                                               ////
 //| GET OFFSETED DATE                                                       |//
 const getOffsetedDate = (obj) => {
   const timeZoneOffset = (new Date()).getTimezoneOffset() * 60000;
@@ -55,6 +55,12 @@ const limit = (max, num, action) => {
   action === 'decrease' ? num <= 0 ? false : num-- : false;
   return num;
 }
+//| FIND FIRST ENCOUNTERED PARENT OF GIVEN NODE WITH A GIVEN CLASS          |//
+const findFirstParentOfClass = (node, classname) => {
+  while (!node.parentNode.classList.contains(classname)
+  && node.parentNode.tagName !== 'HTML') node = node.parentNode;
+  return node.parentNode;
+}
 //| GET EMOJIS HTML STRING                                                  |//
 const getEmojiHtml = (id) => {
   let emojiHtml = '';
@@ -71,8 +77,6 @@ const getEmojiHtml = (id) => {
   }
   return emojiHtml;
 }
-//| SETTERS                                                                 |//
-////                                                                       ////
 //| SET LOCAL STORAGE                                                       |//
 const setData = () => {
   const date = new Date();
@@ -97,6 +101,20 @@ const setData = () => {
   // to update
   // handleWaterChange('displayValue');
 }
+//| HANDLE ELEMENTS ON WINDOW RESIZE                                        |//
+const handleWindowResize = () => {
+  const waterValue = hydrappArray[0].value;
+  handleWaterLevel(waterValue);
+  handleWaterWaves();
+  handleWaterMeasure();
+}
+//| HANDLE CONTAINER'S HEIGHT BASED ON ELEMENT'S CHILDREN TOTAL HEIGHT      |//
+const handleContainerHeight = (container, elements) => {
+  const childrenArray = [...elements.children];
+  const childrenHeight = childrenArray.reduce((a,b) => a + b.clientHeight, 0);
+  container.style.height = `${childrenHeight}px`;
+}
+//// APP MAIN SECTION                                                      ////
 //| SET WAVES AMOUNT                                                        |//
 const setWaterWaves = () => {
   const waveSvg = `
@@ -111,50 +129,67 @@ const setWaterWaves = () => {
   [...waves].forEach(wave => wave.innerHTML = wavesSvgs);
   handleWaterWaves();
 }
-/*
-##     ## ########    ###     ######  ##     ## ########  ########
-###   ### ##         ## ##   ##    ## ##     ## ##     ## ##
-#### #### ##        ##   ##  ##       ##     ## ##     ## ##
-## ### ## ######   ##     ##  ######  ##     ## ########  ######
-##     ## ##       #########       ## ##     ## ##   ##   ##
-##     ## ##       ##     ## ##    ## ##     ## ##    ##  ##
-##     ## ######## ##     ##  ######   #######  ##     ## ########
-*/
 //| SET WATER MEASURE                                                       |//
 const setWaterMeasureDOM = () => {
-  for (let i = 0; i <= waterMaxValue; i++) {
-    const digit = waterMaxValue - i;
+  for (let i = 0; i <= waterMax; i++) {
+    const digit = waterMax - i;
     measure.innerHTML += `
-      <li class="measure__level measure__level--js">
-        <span class="measure__mark"></span>
-        <span class="measure__digit">${digit}</span>
+      <li class="measurePart measurePart--js">
+        <span class="measurePart__mark"></span>
+        <span class="measurePart__digit">${digit}</span>
       </li>
     `
   }
 }
+//| HANDLE WATER CHANGE                                                     |//
+const handleWaterChange = (e) => {
+  const self = e.target || e;
+  const key = setDateKey();
+  let value = parseInt(hydrappArray[0].value);
+  const firstEntryValue = document.querySelector('.entry__value--js');
+
+  //. if add button clicked                                               .//
+  if (self === addBtn) {
+    if (value >= waterMax) return;
+    handleCounter(value, ++value);
+
+  //. if remove button clicked                                            .//
+  } else if (self === removeBtn) {
+    if (value <= 0) return;
+    handleCounter(value, --value);
+  }
+  localStorage.setItem(key, value);
+  hydrappArray[0].value = key;
+  handleWaterLevel(value);
+  handleWaterShake();
+  handleCounterMessage(value);
+  firstEntryValue.textContent = hydrappArray[0].value;
+  handleEmoji('controls', value);
+  handleEmoji(hydrappArray[0].id, value);
+}
 //| HANDLE WATER MEASURE APPEARANCE                                         |//
 const handleWaterMeasure = () => {
   const headerHeight = appHeader.clientHeight;
-  const interval = window.innerHeight / waterMaxValue;
+  const interval = window.innerHeight / waterMax;
 
   [...measureLevels].forEach((level, index) => {
     const detailLevel = (everyNth) => {
       if (index % everyNth === 0) {
-        mark.classList.add('measure__mark--large');
-        digit.classList.add('measure__digit--visible');
+        mark.classList.add('measurePart__mark--large');
+        digit.classList.add('measurePart__digit--visible');
       } else {
-        mark.classList.remove('measure__mark--large');
-        digit.classList.remove('measure__digit--visible');
+        mark.classList.remove('measurePart__mark--large');
+        digit.classList.remove('measurePart__digit--visible');
       }
     }
     const mark = level.firstElementChild;
     const digit = level.lastElementChild;
     const isLevelOnEnd = level.offsetTop < headerHeight + 10
-    || index === waterMaxValue;
+    || index === waterMax;
 
     !isLevelOnEnd
-    ? level.classList.add('measure__level--visible')
-    : level.classList.remove('measure__level--visible');
+    ? level.classList.add('measurePart--visible')
+    : level.classList.remove('measurePart--visible');
 
     interval <= 20 ? detailLevel(5) :
     interval <= 30 ? detailLevel(4) :
@@ -162,75 +197,27 @@ const handleWaterMeasure = () => {
     detailLevel(2);
   });
 }
-//| SET ARCHIVE                                                             |//
-const setArchiveDOM = () => {
-  for (let i = 0; i < hydrappArray.length; i++) {
-    addArchiveNode(i);
-  }
-  //: set the newest week as visible                                        ://
-  const weeks = document.querySelectorAll('.week--js');
-  weeks[currentWeekIndex].classList.add('week--visible');
-  //: set 'remove entry' button on the last entry                           ://
-  handleArchiveLastEntry();
-  //: generate indicators for new entry mode                                ://
-  const indicatorsContainer = document.querySelector('.indicator--js-new');
-  indicatorsContainer.innerHTML = indicators;
-  handleEmoji('new', 0);
-}
-//| HANDLERS                                                                |//
-////                                                                       ////
-//| HANDLE ELEMENTS ON WINDOW RESIZE                                        |//
-const handleWindowResize = () => {
-  const waterValue = hydrappArray[0].value;
-  handleWaterLevel(waterValue);
-  handleWaterWaves();
-  handleWaterMeasure();
-}
 //| HANDLE WATER WAVES                                                      |//
 const handleWaterWaves = () => {
-  const size = window.innerWidth / wavesAmount / 10;
+  const size = water.clientWidth / wavesAmount / 10;
   wavesContainer.style.height = `${size}px`;
-  wavesContainer.style.top = `${-1 * (size - 1)}px`;
-}
-//| HANDLE WATER CHANGE                                                     |//
-const handleWaterChange = (e) => {
-  const self = e.target || e;
-  const key = setDateKey();
-  let value = parseInt(hydrappArray[0].value);
-  // const firstArchiveEntry = document.querySelector('.entry__value--js');
-
-  //. if add button clicked                                               .//
-  if (self === addBtn) {
-    if (value >= waterMaxValue) return;
-    handleCounter(value, 'add', 'prev');
-    value++;
-    handleCounter(value, 'add', 'next');
-
-  //. if remove button clicked                                            .//
-  } else if (self === removeBtn) {
-    if (value <= 0) return;
-    handleCounter(value, 'remove', 'next');
-    value--;
-    handleCounter(value, 'remove', 'prev');
-  }
-  localStorage.setItem(key, value);
-  hydrappArray[0].value = key;
-  handleWaterLevel(value);
-  handleWaterShake();
-  handleEmoji('controls', value);
-  handleCounterMessage(value);
-  // firstArchiveEntry.textContent = hydrappArray[0].value;
+  wavesContainer.style.top = `${-1 * (size - 3)}px`;
 }
 //| HANDLE WATER LEVEL                                                      |//
 const handleWaterLevel = (value) => {
   const windowHeight = window.innerHeight;
-  const offset = windowHeight / waterMaxValue * (waterMaxValue - value);
-  water.style.top = `${offset}px`;
+  const waterOffset = windowHeight / waterMax * (waterMax - value);
+  const avgOffset = windowHeight / waterMax * (waterAvg);
+  const minOffset = windowHeight / waterMax * (waterMin);
+
+  water.style.top = `${waterOffset}px`;
   if (value === 0) {
     water.classList.add('water--hidden');
   } else {
     water.classList.remove('water--hidden');
   }
+  levelAvg.style.bottom = `${avgOffset}px`;
+  levelMin.style.bottom = `${minOffset}px`;
 }
 //| HANDLE WATER LEVEL                                                      |//
 const handleWaterShake = () => {
@@ -247,100 +234,114 @@ const handleWaterShake = () => {
   }, shakeDuration);
 }
 //| SET COUNTER VALUES                                                      |//
-const handleCounter = (value, action, digit) => {
-  const tenthsValue = Math.floor(value / 10);
-  const onesValue = value % 10;
+const handleCounter = (currentValue, newValue) => {
+
+  const getTenthsValue = (value) => Math.floor(value / 10);
+  const getOnesValue = (value) => value % 10;
+
   const hrefPrefix = 'assets/svg/digits.svg#digit-';
-  const tenthsHref = hrefPrefix + tenthsValue;
-  const onesHref = hrefPrefix + onesValue;
+  const currentTenthsValue = getTenthsValue(currentValue);
+  const currentOnesValue = getOnesValue(currentValue);
+  const currentTenthsHref = hrefPrefix + currentTenthsValue;
+  const currentOnesHref = hrefPrefix + currentOnesValue;
+  //: set counter on page load                                              ://
+  if (newValue === undefined) {
+    counterPrevTenths.firstElementChild.setAttribute('href', currentTenthsHref);
+    counterPrevOnes.firstElementChild.setAttribute('href', currentOnesHref);
+    counterNextTenths.firstElementChild.setAttribute('href', currentTenthsHref);
+    counterNextOnes.firstElementChild.setAttribute('href', currentOnesHref);
+    return;
+  }
+  //: return false if value did not change                                  ://
+  if (newValue === currentValue) return;
 
-  switch (action) {
+  const newTenthsValue = getTenthsValue(newValue);
+  const newOnesValue = getOnesValue(newValue);
+  const newTenthsHref = hrefPrefix + newTenthsValue;
+  const newOnesHref = hrefPrefix + newOnesValue;
+  const tenthsTimeout = 200;
+  const onesTimeout = 50;
 
-    case 'initial':
-      counterPrevTenths.firstElementChild.setAttribute('href', tenthsHref);
-      counterPrevOnes.firstElementChild.setAttribute('href', onesHref);
-      counterNextTenths.firstElementChild.setAttribute('href', tenthsHref);
-      counterNextOnes.firstElementChild.setAttribute('href', onesHref);
-    break;
+  const removeAnimations = (digits) => {
+    if (digits === 'tenths') {
+      counterNextTenths.classList.remove('digit__svg--animateIn');
+      counterNextTenths.classList.remove('digit__svg--animateOut');
+    } else if (digits === 'ones') {
+      counterNextOnes.classList.remove('digit__svg--animateIn');
+      counterNextOnes.classList.remove('digit__svg--animateOut');
+    }
+  } 
 
-    case 'add':
+  if (newValue > currentValue && newTenthsValue !== currentTenthsValue) {
 
-      if (digit === 'prev') {
-        counterPrevOnes.firstElementChild.setAttribute('href', onesHref);
-        counterNextOnes.classList.add('digit__svg--rotated');
-        counterNextOnes.classList.remove('digit__svg--animateIn');
-        counterNextOnes.classList.remove('digit__svg--animateOut');
-        const timeoutId = setTimeout(() => {
-          counterNextOnes.classList.remove('digit__svg--rotated');
-          counterNextOnes.classList.add('digit__svg--animateIn');
-          clearTimeout(timeoutId);
-        }, 50);
+    counterNextTenths.firstElementChild.setAttribute('href', newTenthsHref);
+    counterPrevTenths.firstElementChild.setAttribute('href', currentTenthsHref);
+    counterNextTenths.classList.add('digit__svg--rotated');
+    removeAnimations('tenths');
 
-      } else if (digit === 'next') {
-        counterNextOnes.firstElementChild.setAttribute('href', onesHref);
+    const timeoutId = setTimeout(() => {
+      counterNextTenths.classList.remove('digit__svg--rotated');
+      counterNextTenths.classList.add('digit__svg--animateIn');
+      clearTimeout(timeoutId);
+    }, tenthsTimeout);
 
-        if (onesValue === 0) {
-          counterNextTenths.firstElementChild.setAttribute('href', tenthsHref);
-          counterNextTenths.classList.add('digit__svg--rotated');
-          counterNextTenths.classList.remove('digit__svg--animateIn');
-          counterNextTenths.classList.remove('digit__svg--animateOut');
-          const timeoutId = setTimeout(() => {
-            counterNextTenths.classList.remove('digit__svg--rotated');
-            counterNextTenths.classList.add('digit__svg--animateIn');
-            clearTimeout(timeoutId);
-          }, 200);
-        }
-      }
-    break;
+  } else if (newValue < currentValue && newTenthsValue !== currentTenthsValue) {
 
-    case 'remove':
-      
-      if (digit === 'prev') {
+    counterNextTenths.firstElementChild.setAttribute('href', currentTenthsHref);
+    counterPrevTenths.firstElementChild.setAttribute('href', newTenthsHref);
+    counterNextTenths.classList.remove('digit__svg--rotated');
+    removeAnimations('tenths');
+
+    const timeoutId = setTimeout(() => {
+      counterNextTenths.classList.add('digit__svg--rotated');
+      counterNextTenths.classList.add('digit__svg--animateOut');
+      clearTimeout(timeoutId);
+    }, tenthsTimeout);
+  }
+
+  if (newValue > currentValue && newOnesValue !== currentOnesValue) {
+
+    counterNextOnes.firstElementChild.setAttribute('href', newOnesHref);
+    counterPrevOnes.firstElementChild.setAttribute('href', currentOnesHref);
+    counterNextOnes.classList.add('digit__svg--rotated');
+    removeAnimations('ones');
+
+    const timeoutId = setTimeout(() => {
+      counterNextOnes.classList.remove('digit__svg--rotated');
+      counterNextOnes.classList.add('digit__svg--animateIn');
+      clearTimeout(timeoutId);
+    }, onesTimeout);
+    
+
+  } else if (newValue < currentValue && newOnesValue !== currentOnesValue) {
         
-        counterPrevOnes.firstElementChild.setAttribute('href', onesHref);
-        counterNextOnes.classList.remove('digit__svg--rotated');
-        counterNextOnes.classList.remove('digit__svg--animateIn');
-        counterNextOnes.classList.remove('digit__svg--animateOut');
-
-        if (onesValue === 9) {
-          counterPrevTenths.firstElementChild.setAttribute('href', tenthsHref);
-          counterNextTenths.classList.remove('digit__svg--rotated');
-          counterNextTenths.classList.remove('digit__svg--animateIn');
-          counterNextTenths.classList.remove('digit__svg--animateOut');
-          const timeoutId = setTimeout(() => {
-            counterNextTenths.classList.add('digit__svg--rotated');
-            counterNextTenths.classList.add('digit__svg--animateOut');
-            clearTimeout(timeoutId);
-          }, 200);
-        }
-        
-        const timeoutId = setTimeout(() => {
-          counterNextOnes.classList.add('digit__svg--rotated');
-          counterNextOnes.classList.add('digit__svg--animateOut');
-          clearTimeout(timeoutId);
-        }, 50);
-
-      } else if (digit === 'next') {
-        counterNextOnes.firstElementChild.setAttribute('href', onesHref);
-      }
-    break;
+    counterNextOnes.firstElementChild.setAttribute('href', currentOnesHref);
+    counterPrevOnes.firstElementChild.setAttribute('href', newOnesHref);
+    counterNextOnes.classList.remove('digit__svg--rotated');
+    removeAnimations('ones');
+    
+    const timeoutId = setTimeout(() => {
+      counterNextOnes.classList.add('digit__svg--rotated');
+      counterNextOnes.classList.add('digit__svg--animateOut');
+      clearTimeout(timeoutId);
+    }, onesTimeout);
   }
 }
 //| HANDLE MESSAGE DEPENDING ON AMOUNT OF CONSUMED WATER                    |//
 const handleCounterMessage = (value) => {  
-  counterMessage.innerHTML = value === waterMaxValue
+  counterMessage.innerHTML = value === waterMax
   ? 'It\'s enough for today!'
 
-  : value >= waterMaxValue - 2
+  : value >= waterMax - 2
   ? 'Almost there..'
 
-  : value > waterOptimalValue + 1
+  : value > waterMin + 1
   ? 'Woow.. You\'re on fire!'
 
-  : value >= waterOptimalValue - 1
+  : value >= waterMin - 1
   ? 'Good job! You reached your optimal water consumption'
 
-  : value >= waterOptimalValue - 3
+  : value >= waterMin - 3
   ? 'Keep going.. Yo\'re doing well'
   
   : value >= 4
@@ -358,22 +359,9 @@ const handleCounterDate = () => {
 
   counterDay.innerHTML = day;
   counterDate.innerHTML = date.slice().split(' ').join('.');
-  console.log('hydrappArray[0]', hydrappArray[0]);
 
 
 
-
-
-}
-//| SET CURRENTLY DISPLAYED ARCHIVE WEEK'S HEIGHT                           |//
-const setCurrentWeekHeight = () => {
-  const currentWeek = document.querySelectorAll('.week--js')[currentWeekIndex];
-  const childrenArray = [...currentWeek.children];
-  const childrenHeight = childrenArray.reduce((a,b) => a + b.clientHeight, 0);
-  const offsetHeight = 40;
-  const finalHeight = childrenHeight + offsetHeight;
-
-  archiveWeeks.style.height = `${finalHeight}px`;
 }
 //| SET INDICATORS                                                          |//
 const handleEmoji = (id, number) => {
@@ -390,62 +378,124 @@ const handleEmoji = (id, number) => {
     }
   });  
 }
-//| CREATE ADD ENTRY BUTTON                                                 |//
-const createAddEntryButton = () => {
-  const addEntryButton = document.createElement('li');
-  addEntryButton.className = 'entry entry__add';
-  addEntryButton.innerHTML = `
-    <button class="button entry__button entry__button--add entry__button--js-add">
-      Add previous day..
-    </button>
-  `;
-  addEntryButton.addEventListener('click', enterNewEntryValue);
-  return addEntryButton;
+//// APP SIDEBAR                                                           ////
+//| TOGGLE SIDEBAR VISIBILITY                                               |//
+const toggleSidebar = (e) => {
+  const self = e.target || e;
+  if (self === burgerBtn) {
+    self.classList.toggle('button--active');
+    appSidebar.classList.toggle('app__sidebar--visible');
+    appLanding.classList.toggle('app__landing--onSide');
+    //: update waves height and offset during css transition                ://
+    clearInterval(wavesIntervalId);
+    clearTimeout(wavesTimeoutId);
+    if (window.innerWidth >= mediaMd) {
+      wavesIntervalId = setInterval(() => {
+        handleWaterWaves();
+      }, 10);
+      wavesTimeoutId = setTimeout(() => {
+        clearInterval(wavesIntervalId);
+        clearTimeout(wavesTimeoutId);
+      }, 1000);
+    }
+  }
 }
-//| CREATE 'REMOVE ITEM' BUTTON                                             |//
-const createRemoveEntryButton = () => {
-  const removeEntryButton = document.createElement('button');
-  removeEntryButton.className = 'button entry__remove';
-  removeEntryButton.innerHTML = `
-    <svg class="entry__svg" viewBox="0 0 512 512">
-      <use href="assets/svg/icons.svg#remove-icon"></use>
-    </svg>
-  `
-  removeEntryButton.addEventListener('click', removeLastEntry);
-  return removeEntryButton;
+//| TOGGLE SIDEBAR'S TABS                                                   |//
+const toggleSidebarTabs = (e) => {
+  const self = e.target;
+
+  if(self === archiveTabButton
+  || self === statsTabButton 
+  || self === settingTabButton) {
+
+    const parentContainer = findFirstParentOfClass(self, 'tab');
+    const svgIcon = parentContainer.querySelector('.tab__svg');
+    const tabContainer = parentContainer.querySelector('.tab__container');
+    const isActive = svgIcon.classList.contains('tab__svg--active');
+    
+    switch (self) {
+      case archiveTabButton:
+        //: show archive content                                              ://
+        if (!isActive) {
+          const currentWeek = weeks[currentWeekIndex];
+          handleContainerHeight(archiveContainer, currentWeek);
+          window.addEventListener('keydown', enterNewEntryValue);
+          window.addEventListener('keydown', removeLastEntry);
+          window.addEventListener('keydown', slideWeek);
+  
+        //: hide archive content                                              ://
+        } else {
+          archiveContainer.style.height = 0;
+          window.removeEventListener('keydown', enterNewEntryValue);
+          window.removeEventListener('keydown', removeLastEntry);
+          window.removeEventListener('keydown', slideWeek);
+        }
+        break;
+      case statsTabButton:
+      case settingTabButton:
+        //: show stats content                                                ://
+        if (!isActive) {
+          handleContainerHeight(tabContainer, tabContainer.firstElementChild);
+        //: hide stats content                                                ://
+        } else {
+          tabContainer.style.height = 0;
+        }
+        break;
+      default: false;
+    }
+    svgIcon.classList.toggle('tab__svg--active');
+  }
+}
+//// ARCHIVE TAB                                                           ////
+//| SET ARCHIVE                                                             |//
+const setArchiveDOM = () => {
+  for (let i = 0; i < hydrappArray.length; i++) {
+    addArchiveEntry(i);
+  }
+  //: set the newest week as visible                                        ://
+  weeks = document.querySelectorAll('.week--js');
+  weekLists = document.querySelectorAll('.week__list--js');
+  weeks[currentWeekIndex].classList.add('week--visible');
+  //: add 'remove entry' button on the last entry                           ://
+  handleArchiveLastEntry();
+  //: generate indicators for new entry mode                                ://
+  const emojiContainer = document.querySelector('.emoji--js-new');
+  emojiContainer.innerHTML = getEmojiHtml('new');
+  handleEmoji('new', 0);
 }
 //| ADD ARCHIVE NODE                                                        |//
-const addArchiveNode = (index, option) => {
+const addArchiveEntry = (index, option) => {
   const {value, id, day, dayHtml, weekHtml} = hydrappArray[index];
-  //: add new week                                                          ://
-  if (((day === 'sunday' || index === 0)) && option !== 'add') {
-    archiveWeeks.insertAdjacentHTML('beforeend', weekHtml);                // ! TO REFACTOR
-    const weekHeader = archiveWeeks.lastElementChild.firstElementChild;
-    weekHeader.addEventListener('click', slideWeek);
+  //: function adding new week DOM node                                     ://
+  const addWeek = () => {
+    archiveContainer.insertAdjacentHTML('beforeend', weekHtml);
+    const lastWeek = archiveContainer.lastElementChild;
+    const lastWeekHeader = lastWeek.querySelector('.week__header--js');
+    lastWeekHeader.addEventListener('click', slideWeek);
+    weekLists = document.querySelectorAll('.week__list--js');
   }
+  //: add new week                                                          ://
+  if (((day === 'sunday' || index === 0)) && option !== 'add') addWeek();
   //: add next day entry                                                    ://
-  let lastWeekList = archiveWeeks.lastElementChild.lastElementChild;
+  const lastWeekList = weekLists[weekLists.length - 1];
   lastWeekList.insertAdjacentHTML('beforeend', dayHtml);
   handleEmoji(id, value);
   //: add 'add entry button at the end                                      ://
   if (index === hydrappArray.length - 1) {
-    if (day === 'monday') {
-      archiveWeeks.insertAdjacentHTML('beforeend', weekHtml);              // ! TO REFACTOR
-      const weekHeader = archiveWeeks.lastElementChild.firstElementChild;
-      weekHeader.addEventListener('click', slideWeek);
-    };
-    lastWeekList = archiveWeeks.lastElementChild.lastElementChild;
+    if (day === 'monday') addWeek();
+    const lastWeekList = weekLists[weekLists.length - 1];
     lastWeekList.appendChild(addEntryButton);
   }
   updateWeekHeading();
   //: add event listeners to all edit buttons                               ://
-  const editButton = document.querySelectorAll('.edition__button--js-edit')[index];
+  const editButtons = document.querySelectorAll('.edition__button--js-edit');
+  const editButton = editButtons[index];
   editButton.index = index;
-  editButton.addEventListener('click', handleItemEdit);
+  editButton.addEventListener('click', handleEntryEdit);
 }
 //| SET WEEK HEADING                                                        |//
 const updateWeekHeading = () => {
-  const weekLists = document.querySelectorAll('.week__list--js');
+  weekLists = document.querySelectorAll('.week__list--js');
   const weekHeadings = document.querySelectorAll('.week__heading--js');
   //: GET DATE                                                              ://
   const getDate = (element) => {
@@ -479,6 +529,7 @@ const updateWeekHeading = () => {
         break;
     }
   }
+
   for (let i = 0; i < weekLists.length; i++) {
     const entries = weekLists[i].querySelectorAll('.entry--js');
     const startDate = getDate(entries[entries.length - 1]);
@@ -491,18 +542,9 @@ const updateWeekHeading = () => {
     weekLists.length > 1 ? setButtonsVisiblity(i) : setButtonsVisiblity(i, 'oneWeek');
   }
 }
-//| TOGGLE MOBILE MENU                                                      |//
-const toggleMobileMenu = (e) => {
-  const self = e.target || e;
-  if (self === burgerButton) {
-
-    self.classList.toggle('burger-button--active');
-    mobileMenu.classList.toggle('mobile-menu--visible');
-  }
-}
 //| ANIMATE WEEK ENTRIES                                                    |//
 const entriesFade = (action) => {
-  const currentWeekList = document.querySelectorAll('.week__list--js')[currentWeekIndex];
+  const currentWeekList = weekLists[currentWeekIndex];
   let delay = 0;
 
   if (action === 'in') {
@@ -511,6 +553,7 @@ const entriesFade = (action) => {
       elem.style.transitionDelay = `${delay}s`;
       delay += 0.1;
     });
+
   } else if (action === 'out') {
     [...currentWeekList.children].reverse().forEach(elem => {
       elem.classList.remove('entry--visible');
@@ -518,66 +561,27 @@ const entriesFade = (action) => {
     });
   }
 }
-//| TOGGLE ARCHIVE                                                          |//
-const toggleArchive = (e) => {                      // ! to DRY !
-  const self = e.target;
-  const svgIcons = self.lastElementChild;
-  const section = self.nextElementSibling;
-
-  switch (self) {
-
-    case mobileMenuArchiveSection:
-      svgIcons.classList.toggle('mobile-menu__svg--active');
-      if (svgIcons.classList.contains('mobile-menu__svg--active')) {
-
-        setCurrentWeekHeight();
-        entriesFade('in');
-        window.addEventListener('keydown', enterNewEntryValue);
-        window.addEventListener('keydown', removeLastEntry);
-        window.addEventListener('keydown', slideWeek);
-
-      } else {
-
-        section.style.height = 0;
-        entriesFade('out');
-        window.removeEventListener('keydown', enterNewEntryValue);
-        window.removeEventListener('keydown', removeLastEntry);
-        window.removeEventListener('keydown', slideWeek);
-
-      }
-      break;
-    
-    case mobileMenuStatsSection:
-      svgIcons.classList.toggle('mobile-menu__svg--active');
-      section.classList.toggle('stats__container--active');
-      break;
-
-    case mobileMenuSettingsSection:
-      svgIcons.classList.toggle('mobile-menu__svg--active');
-      section.classList.toggle('settings__container--active');
-      break;
-  }
-}
 //| SLIDE WEEK                                                              |//
 const slideWeek = (e) => {
   const self = e.keyCode || e.target;
   const prevWeekButton = document.querySelectorAll('.week__button--js-prev')[currentWeekIndex];
   const nextWeekButton = document.querySelectorAll('.week__button--js-next')[currentWeekIndex];
-  const weeksAmount = archiveWeeks.children.length;
+  const weeksAmount = archiveContainer.children.length;
 
   const handleSlide = (direction) => {
     //: handle previous section                                             ://
-    archiveWeeks.children[currentWeekIndex].className = `week week--js week--slide-out-to-${direction === 'toLeft' ? 'right' : 'left'}`;
+    archiveContainer.children[currentWeekIndex].className = `week week--js week--slide-out-to-${direction === 'toLeft' ? 'right' : 'left'}`;
     const previousWeekIndex = currentWeekIndex;
     //: change index                                                        ://
-    currentWeekIndex = limit(archiveWeeks.children.length - 1, currentWeekIndex, direction === 'toLeft' ? 'decrease' : 'increase');
+    currentWeekIndex = limit(archiveContainer.children.length - 1, currentWeekIndex, direction === 'toLeft' ? 'decrease' : 'increase');
     //: handle next section                                                 ://
     if (currentWeekIndex !== previousWeekIndex) {
-      archiveWeeks.children[currentWeekIndex].classList = `week week--js week--visible week--slide-in-from-${direction === 'toLeft' ? 'left' : 'right'}`;
+      archiveContainer.children[currentWeekIndex].classList = `week week--js week--visible week--slide-in-from-${direction === 'toLeft' ? 'left' : 'right'}`;
     } else {
-      archiveWeeks.children[currentWeekIndex].classList = 'week week--js week--visible';
+      archiveContainer.children[currentWeekIndex].classList = 'week week--js week--visible';
     }
   }
+
   if (weeksAmount > 1) {
     switch (self) {
       case 37:
@@ -589,11 +593,35 @@ const slideWeek = (e) => {
         handleSlide('toRight');
         break;
     }
-    setCurrentWeekHeight();
+    handleContainerHeight(archiveContainer, weeks[currentWeekIndex]);
     entriesFade('in');
   }
 }
-//| ARCHIVE MODAL << SHOW ARCHIVE                                           |//
+//| CREATE 'REMOVE ITEM' BUTTON                                             |//
+const createRemoveEntryButton = () => {
+  const removeEntryButton = document.createElement('button');
+  removeEntryButton.className = 'button entry__remove';
+  removeEntryButton.innerHTML = `
+    <svg class="entry__svg" viewBox="0 0 512 512">
+      <use href="assets/svg/icons.svg#remove-icon"></use>
+    </svg>
+  `
+  removeEntryButton.addEventListener('click', removeLastEntry);
+  return removeEntryButton;
+}
+//| CREATE ADD ENTRY BUTTON                                                 |//
+const createAddEntryButton = () => {
+  const addEntryButton = document.createElement('li');
+  addEntryButton.className = 'entry entry__add';
+  addEntryButton.innerHTML = `
+    <button class="entry__button entry__button--add entry__button--js-add">
+      Add previous day..
+    </button>
+  `;
+  addEntryButton.addEventListener('click', enterNewEntryValue);
+  return addEntryButton;
+}
+//| ARCHIVE MODAL                                                           |//
 const enterNewEntryValue = (e) => {
   const self = e.keyCode || e.target || e;                // ! e only for tests
   const addEntryButton = document.querySelector('.entry__button--js-add');
@@ -601,22 +629,23 @@ const enterNewEntryValue = (e) => {
   const displayDate = new Date();
   const lastEntryKey = hydrappArray[hydrappArray.length - 1].key;
                                    
-  while (setDateKey(displayDate) !== lastEntryKey) displayDate.setDate(displayDate.getDate() - 1);
+  while (setDateKey(displayDate) !== lastEntryKey) {
+    displayDate.setDate(displayDate.getDate() - 1);
+  }
   displayDate.setDate(displayDate.getDate() - 1);
 
-  const displayEntry = new Entry(displayDate);
-  const day = displayEntry.day;
-  const date = displayEntry.date;
+  const newEntry = new Entry(displayDate);
+  const { day, date } = newEntry;
 
   if (self === 107 || self === addEntryButton) {
     let value = 0;
-    newEntryMode.classList.add('new-entry--visible');
+    newEntryMode.classList.add('newEntry--visible');
     newEntryValue.textContent = value;
     newEntryDay.textContent = day;
     newEntryDate.textContent = date;
   
     const modeOff = () => {
-      newEntryMode.classList.remove('new-entry--visible');
+      newEntryMode.classList.remove('newEntry--visible');
       newEntryMode.removeEventListener('click', handleValue);
       window.removeEventListener('keydown', handleValue);
       window.addEventListener('keydown', enterNewEntryValue);
@@ -636,7 +665,7 @@ const enterNewEntryValue = (e) => {
 
         case 39:
         case newEntryIncrease:
-          value !== waterMaxValue ? value++ : false;
+          value !== waterMax ? value++ : false;
           newEntryValue.textContent = value;
           handleEmoji('new', value);
           break;
@@ -649,7 +678,7 @@ const enterNewEntryValue = (e) => {
         case 13:
         case newEntrySave:
           e.preventDefault();
-          addNewEntry(e, value);
+          addNewEntry(value);
           modeOff();
           break;
       }
@@ -660,44 +689,43 @@ const enterNewEntryValue = (e) => {
     window.removeEventListener('keydown', slideWeek);
   }
 }
-//| ADD NEW ITEM << SHOW ARCHIVE                                            |//
-const addNewEntry = (e, value) => {
-  const self = e.keyCode || e.target;
-  if (self === 13 || self === newEntrySave) {
-    e.preventDefault();
-    let lastEntryIndex = hydrappArray.length - 1;
-    let lastEntry = document.querySelectorAll('.entry--js')[lastEntryIndex];
-    lastEntry.classList.remove('entry--last');
+//| ADD NEW ENTRY                                                           |//
+const addNewEntry = (value) => {
 
-    lastEntryDate.setDate(lastEntryDate.getDate() - 1);
-    const newEntryKey = setDateKey(lastEntryDate);
-    
-    //: handle local storage and array of objects                           ://
-    setNewKeyValue(newEntryKey, value);
-    const newEntry = new Entry(lastEntryDate);
-    newEntry.value = newEntryKey;
-    hydrappArray.push(newEntry);
-    //: create new entry node                                               ://
-    lastEntryIndex = hydrappArray.length - 1;
-    addArchiveNode(lastEntryIndex, 'add');
-    lastEntry = document.querySelectorAll('.entry--js')[lastEntryIndex];
-    lastEntry.classList.add('entry--visible');
-    lastEntry.classList.add('entry--fadeIn');
-    //: jump to the last week                                               ://
-    const weeks = archiveWeeks.children;
-    const currentWeek = weeks[currentWeekIndex];
-    const lastWeekIndex = weeks.length - 1;
-    const lastWeek = weeks[lastWeekIndex];
-    if (currentWeekIndex !== lastWeekIndex) {
-      currentWeekIndex = archiveWeeks.children.length - 1;
-      currentWeek.className = 'week week--js week--slide-out-to-left';
-      lastWeek.className = 'week week--js week--visible week--slide-in-from-right';
-    }
-    handleArchiveLastEntry();
-    setCurrentWeekHeight();
+  let lastEntryIndex = hydrappArray.length - 1;
+  let lastEntry = document.querySelectorAll('.entry--js')[lastEntryIndex];
+  lastEntry.classList.remove('entry--last');
+
+  lastEntryDate.setDate(lastEntryDate.getDate() - 1);
+  const newEntryKey = setDateKey(lastEntryDate);
+  
+  //: handle local storage and array of objects                           ://
+  setNewKeyValue(newEntryKey, value);
+  const newEntry = new Entry(lastEntryDate);
+  newEntry.value = newEntryKey;
+  hydrappArray = [...hydrappArray, newEntry];
+
+  //: create new entry node                                               ://
+  lastEntryIndex = hydrappArray.length - 1;
+  addArchiveEntry(lastEntryIndex, 'add');
+  lastEntry = document.querySelectorAll('.entry--js')[lastEntryIndex];
+  lastEntry.classList.add('entry--visible');
+  lastEntry.classList.add('entry--fadeIn');
+  //: jump to the last week                                               ://
+  weeks = archiveContainer.children;
+  const currentWeek = weeks[currentWeekIndex];
+  const lastWeekIndex = weeks.length - 1;
+  const lastWeek = weeks[lastWeekIndex];
+  if (currentWeekIndex !== lastWeekIndex) {
+    currentWeekIndex = lastWeekIndex;
+    currentWeek.className = 'week week--js week--slide-out-to-left';
+    lastWeek.className = 'week week--js week--visible week--slide-in-from-right';
   }
+  handleContainerHeight(archiveContainer, lastWeek);
+  handleArchiveLastEntry();
+  updateWeekHeading();
 }
-//| ADJUST LAST ITEM OF LIST                                                |//
+//| ADJUST LAST ITEM OF LIST AND REMOVE BUTTON                              |//
 const handleArchiveLastEntry = () => {
   const entries = document.querySelectorAll('.entry--js');
   const lastEntry = entries[entries.length - 1];
@@ -714,6 +742,7 @@ const removeLastEntry = (e) => {
   const lastEntryIndex = hydrappArray.length - 1;
   const {day, key} = hydrappArray[lastEntryIndex];
   const lastEntryNode = document.querySelectorAll('.entry--js')[lastEntryIndex];
+  let lastWeek = weeks[weeks.length - 1];
 
   if (self === 109 || self === removeEntryButton) {
 
@@ -724,10 +753,10 @@ const removeLastEntry = (e) => {
       lastEntryNode.parentNode.removeChild(lastEntryNode);
       //: removing last week section after deleting last day of that week   ://
       if (day === 'monday') {
-        const weekToRemove = archiveWeeks.lastElementChild;
+        const weekToRemove = archiveContainer.lastElementChild;
         const ifVisible = weekToRemove.classList.contains('week--visible');
-        archiveWeeks.removeChild(archiveWeeks.lastElementChild);
-        const lastWeek = archiveWeeks.lastElementChild;
+        archiveContainer.removeChild(archiveContainer.lastElementChild);
+        lastWeek = archiveContainer.lastElementChild;
         const lastWeekList = lastWeek.lastElementChild;
         if (ifVisible) {
           lastWeek.className = 'week week--js week--visible week--slide-in-from-left';currentWeekIndex--;
@@ -737,12 +766,12 @@ const removeLastEntry = (e) => {
       //: add remove button on current last item                            ://
       handleArchiveLastEntry();
       updateWeekHeading();
-      setCurrentWeekHeight();
+      handleContainerHeight(archiveContainer, lastWeek);
     }
   }
 }
 //| HANDLE ITEM EDIT                                                        |//
-const handleItemEdit = (e) => {
+const handleEntryEdit = (e) => {
   const itemIndex = e.target.index;
   const entry = document.querySelectorAll('.entry--js')[itemIndex];
   const entryHeader = document.querySelectorAll('.entry__header--js')[itemIndex];
@@ -774,22 +803,21 @@ const handleItemEdit = (e) => {
     entryValue.textContent = value;
     handleEmoji(id, value);
 
-    archive.removeEventListener('click', handleEdition);
-    archive.removeEventListener('keydown', handleEdition);
+    archiveContainer.removeEventListener('click', handleEdition);
+    archiveContainer.removeEventListener('keydown', handleEdition);
     window.addEventListener('keydown', slideWeek);
   }
   //: HANDLE EDITION                                                        ://
   const handleEdition = (e) => {
     const self = e.keyCode || e.target;
     let dayValue = parseInt(entryValue.textContent);
-    const glassCounter = document.querySelector('.glass__counter--js');
     const {key, id} = hydrappArray[itemIndex];
 
     switch (self) {
 
       case 40:
       case decreaseButton:
-        e.preventDefault();
+        //e.preventDefault();
         dayValue > 0 ? dayValue-- : false;
         entryValue.textContent = dayValue;
         handleEmoji(id, dayValue);
@@ -797,33 +825,38 @@ const handleItemEdit = (e) => {
       
       case 38:
       case increaseButton:
-        e.preventDefault();
-        dayValue < waterMaxValue ? dayValue++ : false;
+        //e.preventDefault();
+        dayValue < waterMax ? dayValue++ : false;
         entryValue.textContent = dayValue;
         handleEmoji(id, dayValue);
       break;
 
       case 27:
       case cancelButton:
-        e.preventDefault();
+        //e.preventDefault();
         exitEditMode();
       break;
 
       case 13:
       case saveButton:
-        e.preventDefault();
+        //e.preventDefault();
+        handleCounter(hydrappArray[0].value, dayValue);
+        //: change global values (must be after counter handler             ://
+        //: which uses previous value before change                         ://
         localStorage.setItem(key, dayValue);
-        //. setter function                                                 .//
         hydrappArray[itemIndex].value = key;
-        glassCounter.textContent = hydrappArray[0].value;
+        handleWaterLevel(dayValue);
+        handleWaterShake();
+        handleCounterMessage(dayValue);
+        handleEmoji('controls', dayValue);
         exitEditMode();
       break;
     }
   }
   //: FUNCTION CALLS                                                        ://
   toggleItemDisplay();
-  archive.addEventListener('click', handleEdition);
-  archive.addEventListener('keydown', handleEdition);
+  archiveContainer.addEventListener('click', handleEdition);
+  archiveContainer.addEventListener('keydown', handleEdition);
   window.removeEventListener('keydown', slideWeek);
 }
 //| END OF HANDLE ITEM EDIT                                                 |//
@@ -831,10 +864,16 @@ const handleItemEdit = (e) => {
 //| VARIABLES                                                               |//
 ////                                                                       ////
 const appHeader = document.querySelector('.app__header--js');
+const appLanding = document.querySelector('.app__landing--js');
+//: MEDIA                                                                   ://
+const mediaMd = 768;
+const mediaLg = 1200;
+//: WATER VALUE                                                             ://
+const waterMax = 20;
+let waterMin = 7;
+let waterAvg = 12;
 //: COUNTER                                                                 ://
 const counter = document.querySelector('.counter--js');
-const waterMaxValue = 20;
-const waterOptimalValue = 12;
 const counterPrevTenths = document.querySelector('.digit__svg--js-prevTenths');
 const counterNextTenths = document.querySelector('.digit__svg--js-nextTenths');
 const counterPrevOnes = document.querySelector('.digit__svg--js-prevOnes');
@@ -844,8 +883,8 @@ const counterDate = document.querySelector('.counter__date--js');
 const counterMessage = document.querySelector('.counter__message--js');
 //: CONTROLS                                                                ://
 const controls = document.querySelector('.controls--js');
-const addBtn = document.querySelector('.controls__button--js-add');
-const removeBtn = document.querySelector('.controls__button--js-remove');
+const addBtn = document.querySelector('.button--js-add');
+const removeBtn = document.querySelector('.button--js-remove');
 const emoji = document.querySelector('.emoji--js-controls');
 const emojiAmount = 8;
 //: WATER                                                                   ://
@@ -854,46 +893,43 @@ const wavesContainer = document.querySelector('.waves--js');
 const waves = document.querySelectorAll('.wave--js');
 let wavesAmount = 2;
 let wavesShakeTimeoutId = null;
-const measure = document.querySelector('.measure--js');
-
-//: NAVIGATION                                                              ://
-const burgerButton = document.querySelector('.burgerBtn--js');
-const mobileMenu = document.querySelector('.mobile-menu--js');
-const mobileMenuArchiveSection = document.querySelector('.mobile-menu__section--js-archive');
-const mobileMenuStatsSection = document.querySelector('.mobile-menu__section--js-stats');
-const mobileMenuSettingsSection = document.querySelector('.mobile-menu__section--js-settings');
+let wavesIntervalId = null;
+let wavesTimeoutId = null;
+const measure = document.querySelector('.graph__measure--js');
+const levelAvg = document.querySelector('.graph__level--js-avg');
+const levelMin = document.querySelector('.graph__level--js-min');
+//: MENU                                                                    ://
+const burgerBtn = document.querySelector('.button--js-burger');
+//: SIDEBAR                                                                 ://
+const appSidebar = document.querySelector('.app__sidebar--js');
+const archiveTabButton = document.querySelector('.tab__button--js-archive');
+const statsTabButton = document.querySelector('.tab__button--js-stats');
+const settingTabButton = document.querySelector('.tab__button--js-settings');
 //: ARCHIVE                                                                 ://
-const archive = document.querySelector('.archive--js');
-const archiveWeeks = document.querySelector('.archive__weeks--js');
-const prevWeekButton = document.querySelector('.archive__button--js-prev');
-const nextWeekButton = document.querySelector('.archive__button--js-next');
+const archiveContainer = document.querySelector('.tab__container--js-archive');
+let weeks = null;
+let weekLists = null;
 const addEntryButton = createAddEntryButton();
 const removeEntryButton = createRemoveEntryButton();
 let currentWeekIndex = 0;
 //: NEW ENTRY                                                               ://
-const newEntryMode = document.querySelector('.new-entry--js');
-const newEntryValue = document.querySelector('.new-entry__value--js');
-const newEntryDay = document.querySelector('.new-entry__day--js');
-const newEntryDate = document.querySelector('.new-entry__date--js');
-const newEntryDecrease = document.querySelector('.new-entry__button--js-decrease');
-const newEntryIncrease = document.querySelector('.new-entry__button--js-increase');
-const newEntryCancel = document.querySelector('.new-entry__button--js-cancel');
-const newEntrySave = document.querySelector('.new-entry__button--js-save');
+const newEntryMode = document.querySelector('.newEntry--js');
+const newEntryValue = document.querySelector('.newEntry__value--js');
+const newEntryDay = document.querySelector('.newEntry__day--js');
+const newEntryDate = document.querySelector('.newEntry__date--js');
+const newEntryDecrease = document.querySelector('.newEntry__button--js-decrease');
+const newEntryIncrease = document.querySelector('.newEntry__button--js-increase');
+const newEntryCancel = document.querySelector('.newEntry__button--js-cancel');
+const newEntrySave = document.querySelector('.newEntry__button--js-save');
+//: STATS                                                                   ://
+const statsContainer = document.querySelector('.tab__container--js-stats');
+//: SETTINGS                                                                ://
+const settingsContainer = document.querySelector('.tab__container--js-settings');
 
 ////                                                                       ////
-const hydrappArray = [];
+let hydrappArray = [];
 const lastEntryDate = new Date();
 const weekDay = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
-const archiveEmpty = `
-<p class="week__empty">No history yet...</p>
-`;
-const addButtonHtml = `
-<li class="entry entry--add entry--js-add">
-  <button class="button entry__button entry__button--add entry__button--js-add">
-    Add new day..
-  </button>
-</li>
-`;
 //| CLASS FOR ENTRY                                                         |//
 class Entry {
   constructor(date) {
@@ -905,20 +941,22 @@ class Entry {
 
     this.weekHtml = `
       <section class="week week--js">
+      <div class="week__container">
         <header class="week__header week__header--js">
-          <button class="button week__button week__button--prev week__button--js-prev">
+          <button class="week__button week__button--prev week__button--js-prev">
             <svg class="week__svg" viewBox="0 0 512 512">
               <use href="assets/svg/icons.svg#left-arrow"></use>
             </svg>
           </button>
           <h3 class="week__heading week__heading--js">New week</h3>
-          <button class="button week__button week__button--next week__button--js-next">
+          <button class="week__button week__button--next week__button--js-next">
             <svg class="week__svg" viewBox="0 0 512 512">
               <use href="assets/svg/icons.svg#right-arrow"></use>
             </svg>
           </button>
         </header>
         <ul class="week__list week__list--js"></ul>
+      </div>
       </section>
     `;
 
@@ -930,34 +968,34 @@ class Entry {
         </header>
         <span class="entry__value entry__value--js">${this.value}</span>
         <div class="edition edition--js">
-          <button class="button edition__button edition__button--visible edition__button--edit edition__button--js-edit">
+          <button class="edition__button edition__button--visible edition__button--edit edition__button--js-edit">
             <svg class="edition__svg edition__svg--edit">
               <use href="assets/svg/icons.svg#edit-mode"></use>
             </svg>
           </button>
-          <button class="button edition__button edition__button--decrease edition__button--js-decrease">
+          <button class="edition__button edition__button--decrease edition__button--js-decrease">
             <svg class="edition__svg edition__svg--decrease">
               <use href="assets/svg/icons.svg#down-arrow"></use>
             </svg>
           </button>
-          <button class="button edition__button edition__button--increase edition__button--js-increase">
+          <button class="edition__button edition__button--increase edition__button--js-increase">
             <svg class="edition__svg edition__svg--increase">
               <use href="assets/svg/icons.svg#up-arrow"></use>
             </svg>
           </button>
-          <button class="button edition__button edition__button--cancel edition__button--js-cancel">
+          <button class="edition__button edition__button--cancel edition__button--js-cancel">
             <svg class="edition__svg edition__svg--cancel">
               <use href="assets/svg/icons.svg#back-arrow"></use>
             </svg>
           </button>
-          <button class="button edition__button edition__button--save edition__button--js-save">
+          <button class="edition__button edition__button--save edition__button--js-save">
             <svg class="edition__svg edition__svg--save">
               <use href="assets/svg/icons.svg#save-icon"></use>
             </svg>
           </button>
         </div>
-        <div class="indicator indicator--js-${this.id}">
-          ${emoji}
+        <div class="emoji emoji--js-${this.id}">
+          ${getEmojiHtml(this.id)}
         </div>
       </li>
     `;
@@ -993,36 +1031,31 @@ class Entry {
 //| FUNCTION CALLS                                                          |//
 ////                                                                       ////
 setData();
-const startValue = hydrappArray[0].value;
-handleCounter(startValue, 'initial');
+setArchiveDOM();
+setWaterMeasureDOM();
 setWaterWaves(wavesAmount);
+const startValue = hydrappArray[0].value;
+const measureLevels = document.querySelectorAll('.measurePart--js');
+handleCounter(startValue);
 handleWaterLevel(startValue);
 handleWaterShake();
-setWaterMeasureDOM();
-const measureLevels = document.querySelectorAll('.measure__level--js');
 handleWaterMeasure();
 handleCounterMessage(startValue);
 handleCounterDate();
-
 emoji.innerHTML = getEmojiHtml('controls');
 handleEmoji('controls', startValue);
+updateWeekHeading();
 
 
-//setArchiveDOM();
-//updateWeekHeading();
-//toggleMobileMenu(burgerButton);                           // ! FOR TESTS ONLY
+toggleSidebar(burgerBtn);                           // ! FOR TESTS ONLY
 //enterNewEntryValue(107);                                    // ! FOR TESTS ONLY
 
 //| VARIABLES                                                               |//
 let editButtons = document.querySelectorAll('.edition__button--js-edit');
 let entries = document.querySelectorAll('.entry--js');
-const addNewDayButton = document.querySelector('.entry__button--js-add');
 //| EVENT LISTENERS                                                         |//
 ////                                                                       ////
 controls.addEventListener('click', handleWaterChange);
 window.addEventListener('resize', handleWindowResize);
-//burgerButton.addEventListener('click', toggleMobileMenu);
-//mobileMenu.addEventListener('click', toggleArchive);
-
-//window.addEventListener('mousedown', () => console.log('down'))
-//window.addEventListener('mouseup', () => console.log('up'))
+burgerBtn.addEventListener('click', toggleSidebar);
+appSidebar.addEventListener('click', toggleSidebarTabs);
