@@ -29,8 +29,8 @@
   
     }
   }
-  //: APP MAIN PANEL                                                        ://
-  &__main {
+  //: APP LANDING PANEL                                                     ://
+  &__landing {
     align-items: flex-end;
     display: flex;
     bottom: 0;
@@ -39,7 +39,16 @@
     min-height: 300px;
     position: fixed;
     top: 0;
-    width: 90%;
+    transition: width $sidebar-toggle;
+    width: 100%;
+
+    @media only screen and (min-width: $media-md) {
+      padding: $header-padding-md;
+  
+      &--onSide {
+        width: 50%;
+      }
+    }
   }
   //: APP SIDEBAR                                                             ://
   &__sidebar {
@@ -49,7 +58,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    left: 0;
+    right: 0;
     overflow: auto;
     position: fixed;
     top: 0;
@@ -63,6 +72,21 @@
       visibility: visible;
       transform: translateY(0);
       transition: transform $sidebar-toggle, visibility 0s;
+    }
+
+    @media only screen and (min-width: $media-md) {
+
+      & {
+        transform: translateX(100%);
+        transition: transform $sidebar-toggle, visibility 0s $sidebar-toggle;
+        width: 50%;
+
+        &--visible {
+          visibility: visible;
+          transform: translateX(0);
+          transition: transform $sidebar-toggle, visibility 0s;
+        }
+      }
     }
   }
 }

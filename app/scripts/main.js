@@ -374,6 +374,8 @@ const toggleSidebar = (e) => {
   if (self === burgerBtn) {
     self.classList.toggle('button--active');
     appSidebar.classList.toggle('app__sidebar--visible');
+    appLanding.classList.toggle('app__landing--onSide');
+    handleWaterWaves();
   }
 }
 //| TOGGLE SIDEBAR'S TABS                                                   |//
@@ -844,6 +846,7 @@ const handleEntryEdit = (e) => {
 //| VARIABLES                                                               |//
 ////                                                                       ////
 const appHeader = document.querySelector('.app__header--js');
+const appLanding = document.querySelector('.app__landing--js');
 //: WATER VALUE                                                             ://
 const waterMax = 20;
 let waterMin = 12;
