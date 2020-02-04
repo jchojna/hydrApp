@@ -714,7 +714,6 @@ const addNewEntry = (value) => {
   //: jump to the last week                                               ://
   weeks = archiveContainer.children;
   const currentWeek = weeks[currentWeekIndex];
-  console.log('weeks', weeks);
   const lastWeekIndex = weeks.length - 1;
   const lastWeek = weeks[lastWeekIndex];
   if (currentWeekIndex !== lastWeekIndex) {
@@ -846,6 +845,10 @@ const handleEntryEdit = (e) => {
         //: which uses previous value before change                         ://
         localStorage.setItem(key, dayValue);
         hydrappArray[itemIndex].value = key;
+        handleWaterLevel(dayValue);
+        handleWaterShake();
+        handleCounterMessage(dayValue);
+        handleEmoji('controls', dayValue);
         exitEditMode();
       break;
     }
