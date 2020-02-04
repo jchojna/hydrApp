@@ -26,7 +26,7 @@
 
   //: WATER LEVELS                                                          ://
   &__level {
-    border-bottom: 5px dashed $cold-light-blue;
+    border-bottom: 3px dashed $cold-light-blue;
     left: 10px;
     position: absolute;
     right: 0;
@@ -39,6 +39,16 @@
   
     &--min {
       
+    }
+
+    @media only screen and (min-width: $media-md) {
+  
+      border-width: 4px;
+    }
+
+    @media only screen and (min-width: $media-lg) {
+  
+      border-width: 5px;
     }
   }
 }

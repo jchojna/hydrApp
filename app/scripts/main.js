@@ -317,6 +317,21 @@ const handleCounter = (value, action, digit) => {
     break;
   }
 }
+//| HANDLE COUNTER ON ARCHIVE CHANGE                                        |//
+const handleCounterOnArchiveChange = (updatedValue) => {
+  const currentValue = hydrappArray[0].value;
+  if (updatedValue > currentValue) {
+
+    handleCounter(currentValue, 'add', 'prev');
+    handleCounter(updatedValue, 'add', 'next');
+    
+  } else if (updatedValue < currentValue) {
+
+    handleCounter(currentValue, 'remove', 'next');
+    handleCounter(updatedValue, 'remove', 'prev');
+
+  } else return;
+}
 //| HANDLE MESSAGE DEPENDING ON AMOUNT OF CONSUMED WATER                    |//
 const handleCounterMessage = (value) => {  
   counterMessage.innerHTML = value === waterMax
@@ -836,13 +851,11 @@ const handleEntryEdit = (e) => {
       case 13:
       case saveButton:
         //e.preventDefault();
+        handleCounterOnArchiveChange(dayValue);
+        //: change global values (must be after counter handler             ://
+        //: which uses previous value before change                         ://
         localStorage.setItem(key, dayValue);
-        //. setter function                                                 .//
         hydrappArray[itemIndex].value = key;
-
-        // update main counter here
-        //glassCounter.textContent = hydrappArray[0].value;
-        // update main counter here
         exitEditMode();
       break;
     }
@@ -864,8 +877,8 @@ const mediaMd = 768;
 const mediaLg = 1200;
 //: WATER VALUE                                                             ://
 const waterMax = 20;
-let waterMin = 12;
-let waterAvg = 7;
+let waterMin = 7;
+let waterAvg = 12;
 //: COUNTER                                                                 ://
 const counter = document.querySelector('.counter--js');
 const counterPrevTenths = document.querySelector('.digit__svg--js-prevTenths');
@@ -1041,7 +1054,7 @@ handleEmoji('controls', startValue);
 updateWeekHeading();
 
 
-//toggleSidebar(burgerBtn);                           // ! FOR TESTS ONLY
+toggleSidebar(burgerBtn);                           // ! FOR TESTS ONLY
 //enterNewEntryValue(107);                                    // ! FOR TESTS ONLY
 
 //| VARIABLES                                                               |//
