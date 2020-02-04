@@ -151,16 +151,12 @@ const handleWaterChange = (e) => {
   //. if add button clicked                                               .//
   if (self === addBtn) {
     if (value >= waterMax) return;
-    handleCounter(value, 'add', 'prev');
-    value++;
-    handleCounter(value, 'add', 'next');
+    handleCounter(value, ++value);
 
   //. if remove button clicked                                            .//
   } else if (self === removeBtn) {
     if (value <= 0) return;
-    handleCounter(value, 'remove', 'next');
-    value--;
-    handleCounter(value, 'remove', 'prev');
+    handleCounter(value, --value);
   }
   localStorage.setItem(key, value);
   hydrappArray[0].value = key;
@@ -238,7 +234,7 @@ const handleWaterShake = () => {
   }, shakeDuration);
 }
 //| SET COUNTER VALUES                                                      |//
-const handleCounter = (value, action, digit) => {
+/* const handleCounter = (value, action, digit) => {
   const tenthsValue = Math.floor(value / 10);
   const onesValue = value % 10;
   const hrefPrefix = 'assets/svg/digits.svg#digit-';
@@ -316,21 +312,110 @@ const handleCounter = (value, action, digit) => {
       }
     break;
   }
-}
-//| HANDLE COUNTER ON ARCHIVE CHANGE                                        |//
-const handleCounterOnArchiveChange = (updatedValue) => {
-  const currentValue = hydrappArray[0].value;
-  if (updatedValue > currentValue) {
+} */
 
-    handleCounter(currentValue, 'add', 'prev');
-    handleCounter(updatedValue, 'add', 'next');
+const handleCounter = (currentValue, newValue) => {
+
+  const getTenthsValue = (value) => Math.floor(value / 10);
+  const getOnesValue = (value) => value !== 0 ? value % 10 : 0;
+
+  const hrefPrefix = 'assets/svg/digits.svg#digit-';
+  const currentTenthsValue = getTenthsValue(currentValue);
+  const currentOnesValue = getOnesValue(currentValue);
+  const currentTenthsHref = hrefPrefix + currentTenthsValue;
+  const currentOnesHref = hrefPrefix + currentOnesValue;
+  //: set counter on page load                                              ://
+  if (newValue === undefined) {
+    counterPrevTenths.firstElementChild.setAttribute('href', currentTenthsHref);
+    counterPrevOnes.firstElementChild.setAttribute('href', currentOnesHref);
+    counterNextTenths.firstElementChild.setAttribute('href', currentTenthsHref);
+    counterNextOnes.firstElementChild.setAttribute('href', currentOnesHref);
+    return;
+  }
+  //: return false if value did not change                                  ://
+  if (newValue === currentValue) return;
+
+  const newTenthsValue = getTenthsValue(newValue);
+  const newOnesValue = getOnesValue(newValue);
+  const newTenthsHref = hrefPrefix + newTenthsValue;
+  const newOnesHref = hrefPrefix + newOnesValue;
+
+  if (newTenthsValue > currentTenthsValue) {
+
+    counterNextTenths.firstElementChild.setAttribute('href', newTenthsHref);
+    counterPrevTenths.firstElementChild.setAttribute('href', currentTenthsHref);
+    counterNextTenths.classList.add('digit__svg--rotated');
+    counterNextTenths.classList.remove('digit__svg--animateIn');
+    counterNextTenths.classList.remove('digit__svg--animateOut');
+
+    const timeoutId = setTimeout(() => {
+      counterNextTenths.classList.remove('digit__svg--rotated');
+      counterNextTenths.classList.add('digit__svg--animateIn');
+      clearTimeout(timeoutId);
+    }, 200);
+
+  } else if (newTenthsValue < currentTenthsValue) {
+
+    counterNextTenths.firstElementChild.setAttribute('href', currentTenthsHref);
+    counterPrevTenths.firstElementChild.setAttribute('href', newTenthsHref);
+    counterNextTenths.classList.remove('digit__svg--rotated');
+    counterNextTenths.classList.remove('digit__svg--animateIn');
+    counterNextTenths.classList.remove('digit__svg--animateOut');
+
+    const timeoutId = setTimeout(() => {
+      counterNextTenths.classList.add('digit__svg--rotated');
+      counterNextTenths.classList.add('digit__svg--animateOut');
+      clearTimeout(timeoutId);
+    }, 200);
+  }
+
+  if (newValue > currentValue
+  && (newOnesValue > currentOnesValue || newOnesValue === 0)) {
+
+    counterPrevOnes.firstElementChild.setAttribute('href', currentOnesHref);
+    counterNextOnes.firstElementChild.setAttribute('href', newOnesHref);
+    counterNextOnes.classList.add('digit__svg--rotated');
+    counterNextOnes.classList.remove('digit__svg--animateIn');
+    counterNextOnes.classList.remove('digit__svg--animateOut');
+
+    const timeoutId = setTimeout(() => {
+      counterNextOnes.classList.remove('digit__svg--rotated');
+      counterNextOnes.classList.add('digit__svg--animateIn');
+      clearTimeout(timeoutId);
+    }, 50);
     
-  } else if (updatedValue < currentValue) {
 
-    handleCounter(currentValue, 'remove', 'next');
-    handleCounter(updatedValue, 'remove', 'prev');
+  } else if (newValue < currentValue
+  && newOnesValue < currentOnesValue || currentOnesValue === 0) {
+        
+    counterPrevOnes.firstElementChild.setAttribute('href', newOnesHref);
+    counterNextOnes.firstElementChild.setAttribute('href', currentOnesHref);
+    counterNextOnes.classList.remove('digit__svg--rotated');
+    counterNextOnes.classList.remove('digit__svg--animateIn');
+    counterNextOnes.classList.remove('digit__svg--animateOut');
+    
+    const timeoutId = setTimeout(() => {
+      counterNextOnes.classList.add('digit__svg--rotated');
+      counterNextOnes.classList.add('digit__svg--animateOut');
+      clearTimeout(timeoutId);
+    }, 50);
+  }
 
-  } else return;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 //| HANDLE MESSAGE DEPENDING ON AMOUNT OF CONSUMED WATER                    |//
 const handleCounterMessage = (value) => {  
@@ -851,7 +936,7 @@ const handleEntryEdit = (e) => {
       case 13:
       case saveButton:
         //e.preventDefault();
-        handleCounterOnArchiveChange(dayValue);
+        handleCounter(hydrappArray[0].value, dayValue);
         //: change global values (must be after counter handler             ://
         //: which uses previous value before change                         ://
         localStorage.setItem(key, dayValue);
@@ -1043,7 +1128,7 @@ setWaterMeasureDOM();
 setWaterWaves(wavesAmount);
 const startValue = hydrappArray[0].value;
 const measureLevels = document.querySelectorAll('.measurePart--js');
-handleCounter(startValue, 'initial');
+handleCounter(startValue);
 handleWaterLevel(startValue);
 handleWaterShake();
 handleWaterMeasure();
