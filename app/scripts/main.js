@@ -272,7 +272,7 @@ const handleCounter = (currentValue, newValue) => {
     }
   } 
 
-  if (newTenthsValue > currentTenthsValue) {
+  if (newValue > currentValue && newTenthsValue !== currentTenthsValue) {
 
     counterNextTenths.firstElementChild.setAttribute('href', newTenthsHref);
     counterPrevTenths.firstElementChild.setAttribute('href', currentTenthsHref);
@@ -285,7 +285,7 @@ const handleCounter = (currentValue, newValue) => {
       clearTimeout(timeoutId);
     }, tenthsTimeout);
 
-  } else if (newTenthsValue < currentTenthsValue) {
+  } else if (newValue < currentValue && newTenthsValue !== currentTenthsValue) {
 
     counterNextTenths.firstElementChild.setAttribute('href', currentTenthsHref);
     counterPrevTenths.firstElementChild.setAttribute('href', newTenthsHref);
@@ -299,8 +299,7 @@ const handleCounter = (currentValue, newValue) => {
     }, tenthsTimeout);
   }
 
-  if (newValue > currentValue
-  && (newOnesValue > currentOnesValue || newOnesValue === 0)) {
+  if (newValue > currentValue && newOnesValue !== currentOnesValue) {
 
     counterNextOnes.firstElementChild.setAttribute('href', newOnesHref);
     counterPrevOnes.firstElementChild.setAttribute('href', currentOnesHref);
@@ -314,8 +313,7 @@ const handleCounter = (currentValue, newValue) => {
     }, onesTimeout);
     
 
-  } else if (newValue < currentValue
-  && newOnesValue < currentOnesValue || currentOnesValue === 0) {
+  } else if (newValue < currentValue && newOnesValue !== currentOnesValue) {
         
     counterNextOnes.firstElementChild.setAttribute('href', currentOnesHref);
     counterPrevOnes.firstElementChild.setAttribute('href', newOnesHref);
@@ -814,11 +812,6 @@ const handleEntryEdit = (e) => {
   const handleEdition = (e) => {
     const self = e.keyCode || e.target;
     let dayValue = parseInt(entryValue.textContent);
-
-    // update main counter here
-    //const glassCounter = document.querySelector('.glass__counter--js');
-    // update main counter here
-
     const {key, id} = hydrappArray[itemIndex];
 
     switch (self) {
