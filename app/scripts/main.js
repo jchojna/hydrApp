@@ -61,21 +61,18 @@ const findFirstParentOfClass = (node, classname) => {
   && node.parentNode.tagName !== 'HTML') node = node.parentNode;
   return node.parentNode;
 }
-//| GET EMOJIS HTML STRING                                                  |//
-const getEmojiHtml = (id) => {
-  let emojiHtml = '';
-
-  for (let i = 0; i < emojiAmount; i++) {
-    emojiHtml += `
-      <svg
-        class="emoji__svg emoji__svg--emo-${i} emoji__svg--js-${id}"
-        viewBox="0 0 512 512"
-      >
-        <use href="assets/svg/emoji.svg#emo-${i}"></use>
-      </svg>
-    `
-  }
-  return emojiHtml;
+//| HANDLE ELEMENTS ON WINDOW RESIZE                                        |//
+const handleWindowResize = () => {
+  const waterValue = hydrappArray[0].value;
+  handleWaterLevel(waterValue);
+  handleWaterWaves();
+  handleWaterMeasure();
+}
+//| HANDLE CONTAINER'S HEIGHT BASED ON ELEMENT'S CHILDREN TOTAL HEIGHT      |//
+const handleContainerHeight = (container, elements) => {
+  const childrenArray = [...elements.children];
+  const childrenHeight = childrenArray.reduce((a,b) => a + b.clientHeight, 0);
+  container.style.height = `${childrenHeight}px`;
 }
 //| SET LOCAL STORAGE                                                       |//
 const setData = () => {
@@ -101,18 +98,37 @@ const setData = () => {
   // to update
   // handleWaterChange('displayValue');
 }
-//| HANDLE ELEMENTS ON WINDOW RESIZE                                        |//
-const handleWindowResize = () => {
-  const waterValue = hydrappArray[0].value;
-  handleWaterLevel(waterValue);
-  handleWaterWaves();
-  handleWaterMeasure();
+//// EMOJI                                                                 ////
+//| GET EMOJIS HTML STRING                                                  |//
+const getEmojiHtml = (id) => {
+  let emojiHtml = '';
+
+  for (let i = 0; i < emojiAmount; i++) {
+    emojiHtml += `
+      <svg
+        class="emoji__svg emoji__svg--emo-${i} emoji__svg--js-${id}"
+        viewBox="0 0 512 512"
+      >
+        <use href="assets/svg/emoji.svg#emo-${i}"></use>
+      </svg>
+    `
+  }
+  return emojiHtml;
 }
-//| HANDLE CONTAINER'S HEIGHT BASED ON ELEMENT'S CHILDREN TOTAL HEIGHT      |//
-const handleContainerHeight = (container, elements) => {
-  const childrenArray = [...elements.children];
-  const childrenHeight = childrenArray.reduce((a,b) => a + b.clientHeight, 0);
-  container.style.height = `${childrenHeight}px`;
+//| SET INDICATORS                                                          |//
+const handleEmoji = (id, number) => {
+  number > 7 ? number = 7 : false;
+  const emojis = document.querySelectorAll(`.emoji__svg--js-${id}`);
+
+  [...emojis].forEach((emoji, index) => {
+    if (index === number) {
+      emoji.classList.add('emoji__svg--visible');
+    } else {
+      if (emoji.classList.contains('emoji__svg--visible')) {
+        emoji.classList.remove('emoji__svg--visible');
+      }
+    }
+  });  
 }
 //// APP MAIN SECTION                                                      ////
 //| SET WAVES AMOUNT                                                        |//
@@ -358,20 +374,28 @@ const handleCounterDate = () => {
   counterDay.innerHTML = day;
   counterDate.innerHTML = date.slice().split(' ').join('.');
 }
-//| SET INDICATORS                                                          |//
-const handleEmoji = (id, number) => {
-  number > 7 ? number = 7 : false;
-  const emojis = document.querySelectorAll(`.emoji__svg--js-${id}`);
+//| GET CONSUMED WATER AVERAGE VALUE                                        |//
+const getWaterAverage = () => {
 
-  [...emojis].forEach((emoji, index) => {
-    if (index === number) {
-      emoji.classList.add('emoji__svg--visible');
-    } else {
-      if (emoji.classList.contains('emoji__svg--visible')) {
-        emoji.classList.remove('emoji__svg--visible');
-      }
-    }
-  });  
+  const waterAverage = [...hydrappArray]
+    .map(elem => elem.value)
+    .reduce((a,b) => a + b) / hydrappArray.length;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 //// APP SIDEBAR                                                           ////
 //| TOGGLE SIDEBAR VISIBILITY                                               |//
@@ -812,7 +836,6 @@ const handleEntryEdit = (e) => {
 
       case 40:
       case decreaseButton:
-        //e.preventDefault();
         dayValue > 0 ? dayValue-- : false;
         entryValue.textContent = dayValue;
         handleEmoji(id, dayValue);
@@ -820,7 +843,6 @@ const handleEntryEdit = (e) => {
       
       case 38:
       case increaseButton:
-        //e.preventDefault();
         dayValue < waterMax ? dayValue++ : false;
         entryValue.textContent = dayValue;
         handleEmoji(id, dayValue);
@@ -828,13 +850,11 @@ const handleEntryEdit = (e) => {
 
       case 27:
       case cancelButton:
-        //e.preventDefault();
         exitEditMode();
       break;
 
       case 13:
       case saveButton:
-        //e.preventDefault();
         if (itemIndex === 0) {
           handleCounter(hydrappArray[0].value, dayValue);
           handleWaterLevel(dayValue);
@@ -1042,6 +1062,8 @@ handleCounterDate();
 emoji.innerHTML = getEmojiHtml('controls');
 handleEmoji('controls', startValue);
 updateWeekHeading();
+
+getWaterAverage();
 
 
 toggleSidebar(burgerBtn);                           // ! FOR TESTS ONLY
