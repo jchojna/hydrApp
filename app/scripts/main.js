@@ -74,10 +74,21 @@ const handleContainerHeight = (container, elements) => {
   const childrenHeight = childrenArray.reduce((a,b) => a + b.clientHeight, 0);
   container.style.height = `${childrenHeight}px`;
 }
+/*
+########     ###    ########    ###
+##     ##   ## ##      ##      ## ##
+##     ##  ##   ##     ##     ##   ##
+##     ## ##     ##    ##    ##     ##
+##     ## #########    ##    #########
+##     ## ##     ##    ##    ##     ##
+########  ##     ##    ##    ##     ##
+*/
 //| SET LOCAL STORAGE                                                       |//
 const setData = () => {
   const date = new Date();
   let dateKey = setDateKey(date);
+
+
   setNewKeyValue(dateKey, 0);
   let hydrappKeys = getHydrappKeys();
   const oldestKey = hydrappKeys[hydrappKeys.length - 1];
@@ -938,6 +949,26 @@ const settingsContainer = document.querySelector('.tab__container--js-settings')
 let hydrappArray = [];
 const lastEntryDate = new Date();
 const weekDay = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+/*
+      ##  ######   #######  ##    ##
+      ## ##    ## ##     ## ###   ##
+      ## ##       ##     ## ####  ##
+      ##  ######  ##     ## ## ## ##
+##    ##       ## ##     ## ##  ####
+##    ## ##    ## ##     ## ##   ###
+ ######   ######   #######  ##    ##
+*/
+const hydrappJson = {
+  'userName': 'Kuba',
+  'userAge': 32,
+  'userWeight': 68,
+  'userHeight': 181,
+  'entries': hydrappArray
+
+
+}
+
+
 //| CLASS FOR ENTRY                                                         |//
 class Entry {
   constructor(date) {
@@ -1039,6 +1070,7 @@ class Entry {
 //| FUNCTION CALLS                                                          |//
 ////                                                                       ////
 setData();
+
 setArchiveDOM();
 setWaterMeasureDOM();
 setWaterWaves(wavesAmount);
@@ -1056,7 +1088,7 @@ updateWeekHeading();
 handleWaterAverage();
 
 
-toggleSidebar(burgerBtn);                           // ! FOR TESTS ONLY
+//toggleSidebar(burgerBtn);                           // ! FOR TESTS ONLY
 //enterNewEntryValue(107);                                    // ! FOR TESTS ONLY
 
 //| VARIABLES                                                               |//

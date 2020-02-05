@@ -1,0 +1,11 @@
+.user {
+
+  &__button {
+    @include button;
+    border: 1px solid #000;
+  }
+
+  &__svg {
+    width: 100%;
+  }
+}
