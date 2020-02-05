@@ -37,7 +37,6 @@
     bottom: 0;
     justify-content: center;
     left: 0;
-    min-height: 400px;
     padding-top: $burgerBtn-size-xs + ($header-padding-xs * 2);
     position: fixed;
     top: 0;
@@ -45,10 +44,18 @@
     width: 100%;
 
     @media only screen and (min-width: $media-md) {
-      padding: $header-padding-md;
+      padding-top: $burgerBtn-size-md + ($header-padding-md * 2);
   
       &--onSide {
         width: 50%;
+      }
+    }
+
+    @media only screen and (min-width: $media-lg) {
+      padding-top: $burgerBtn-size-lg + ($header-padding-lg * 2);
+  
+      &--onSide {
+        width: 60%;
       }
     }
   }
@@ -97,6 +104,7 @@
 
       & {
         padding-top: $header-height-lg;
+        width: 40%;
       }
     }
   }

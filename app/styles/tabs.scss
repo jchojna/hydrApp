@@ -43,7 +43,7 @@
       color: $cold-light-blue;
       background-color: lighten($cold-darkest-blue, 3%);
     }
-
+    
     @media only screen and (min-width: $media-md) {
       padding: $header-padding-md;
     }

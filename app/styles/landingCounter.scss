@@ -13,7 +13,7 @@
   "message message";
   grid-template-columns: repeat(2, 1fr);
   grid-template-rows: 1fr 1fr auto 2fr;
-  height: calc(100vh - #{$header-height});
+  height: 100%;
   margin: 0 $header-height;
   max-width: 300px;
   width: 100%;
@@ -22,7 +22,7 @@
   &__day,
   &__date,
   &__message {
-    grid-area: date;
+    font-weight: 700;
     line-height: 1.4;
     margin: 0;
     padding: 0;
@@ -31,14 +31,64 @@
 
   &__day {
     align-self: end;
+    font-size: 1.8em;
     grid-area: day;
     text-transform: capitalize;
   }
+
   &__date {
     align-self: start;
+    color: $cold-blue;
+    font-size: 1.3em;
     grid-area: date;
   }
-  &__message { grid-area: message; }
+
+  &__message {
+    color: $cold-blue;
+    grid-area: message;
+  }
+
+  @media only screen and (min-width: $media-md) {
+
+    & {
+      column-gap: 20px;
+      max-width: 350px;
+
+      &__day {
+        font-size: 2.5em;
+
+      }
+
+      &__date {
+        font-size: 1.8em;
+      }
+
+      &__message {
+        font-size: 1.3em;
+      }
+    }    
+  }
+  
+  @media only screen and (min-width: $media-lg) {
+
+    & {
+      column-gap: 30px;
+      max-width: 400px;
+
+      &__day {
+        font-size: 3.5em;
+
+      }
+
+      &__date {
+        font-size: 2.5em;
+      }
+
+      &__message {
+        font-size: 1.5em;
+      }
+    }
+  }
 }
 
 .digit {
@@ -70,7 +120,7 @@
     fill: $cold-dark-blue;
     height: 100%;
     opacity: 1;
-    padding: 10px 5px;
+    padding: 10px;
     transform: rotateX(0);
     transform-origin: center top;
     width: 100%;
@@ -86,6 +136,36 @@
 
     &--animateOut {
       transition: opacity 0.3s 0.3s, transform 0.6s ease-in-out;
+    }
+  }
+
+  @media only screen and (min-width: $media-sm) {
+
+    & {
+
+      &__svg {
+        padding: 15px;
+      }
+    }
+  }
+
+  @media only screen and (min-width: $media-md) {
+
+    & {
+
+      &__svg {
+        padding: 20px;
+      }
+    }
+  }
+  
+  @media only screen and (min-width: $media-lg) {
+
+    & {
+
+      &__svg {
+        padding: 25px;
+      }
     }
   }
 }
