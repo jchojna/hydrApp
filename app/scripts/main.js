@@ -130,7 +130,7 @@ const handleEmoji = (id, number) => {
     }
   });  
 }
-//// APP MAIN SECTION                                                      ////
+//// WATER                                                                 ////
 //| SET WAVES AMOUNT                                                        |//
 const setWaterWaves = () => {
   const waveSvg = `
@@ -250,6 +250,15 @@ const handleWaterShake = () => {
     wavesShakeTimeoutId = null;
   }, shakeDuration);
 }
+//| HANDLE CONSUMED WATER AVERAGE VALUE                                     |//
+const handleWaterAverage = () => {
+  const interval = window.innerHeight / waterMax;
+  const waterAverage = [...hydrappArray]
+    .map(elem => elem.value)
+    .reduce((a,b) => a + b) / hydrappArray.length;
+  levelAvg.style.bottom = `${waterAverage * interval}px`;
+}
+//// COUNTER                                                               ////
 //| SET COUNTER VALUES                                                      |//
 const handleCounter = (currentValue, newValue) => {
 
@@ -374,14 +383,6 @@ const handleCounterDate = () => {
   const { day, date } = hydrappArray[0];
   counterDay.innerHTML = day;
   counterDate.innerHTML = date.slice().split(' ').join('.');
-}
-//| HANDLE CONSUMED WATER AVERAGE VALUE                                     |//
-const handleWaterAverage = () => {
-  const interval = window.innerHeight / waterMax;
-  const waterAverage = [...hydrappArray]
-    .map(elem => elem.value)
-    .reduce((a,b) => a + b) / hydrappArray.length;
-  levelAvg.style.bottom = `${waterAverage * interval}px`;
 }
 //// APP SIDEBAR                                                           ////
 //| TOGGLE SIDEBAR VISIBILITY                                               |//
@@ -547,25 +548,6 @@ const updateWeekHeading = () => {
     weekLists.length > 1 ? setButtonsVisiblity(i) : setButtonsVisiblity(i, 'oneWeek');
   }
 }
-//| ANIMATE WEEK ENTRIES                                                    |//
-const entriesFade = (action) => {
-  const currentWeekList = weekLists[currentWeekIndex];
-  let delay = 0;
-
-  if (action === 'in') {
-    [...currentWeekList.children].forEach(elem => {
-      elem.classList.add('entry--visible');
-      elem.style.transitionDelay = `${delay}s`;
-      delay += 0.1;
-    });
-
-  } else if (action === 'out') {
-    [...currentWeekList.children].reverse().forEach(elem => {
-      elem.classList.remove('entry--visible');
-      elem.style.transitionDelay = 0;
-    });
-  }
-}
 //| SLIDE WEEK                                                              |//
 const slideWeek = (e) => {
   const self = e.keyCode || e.target;
@@ -602,6 +584,7 @@ const slideWeek = (e) => {
     entriesFade('in');
   }
 }
+//// ENTRY HANDLERS                                                        ////
 //| CREATE 'REMOVE ITEM' BUTTON                                             |//
 const createRemoveEntryButton = () => {
   const removeEntryButton = document.createElement('button');
@@ -865,6 +848,25 @@ const handleEntryEdit = (e) => {
   archiveContainer.addEventListener('keydown', handleEdition);
   window.removeEventListener('keydown', slideWeek);
 }
+//| ANIMATE WEEK ENTRIES                                                    |//
+const entriesFade = (action) => {
+  const currentWeekList = weekLists[currentWeekIndex];
+  let delay = 0;
+
+  if (action === 'in') {
+    [...currentWeekList.children].forEach(elem => {
+      elem.classList.add('entry--visible');
+      elem.style.transitionDelay = `${delay}s`;
+      delay += 0.1;
+    });
+
+  } else if (action === 'out') {
+    [...currentWeekList.children].reverse().forEach(elem => {
+      elem.classList.remove('entry--visible');
+      elem.style.transitionDelay = 0;
+    });
+  }
+}
 //| END OF HANDLE ITEM EDIT                                                 |//
 
 //| VARIABLES                                                               |//
@@ -1054,7 +1056,7 @@ updateWeekHeading();
 handleWaterAverage();
 
 
-//toggleSidebar(burgerBtn);                           // ! FOR TESTS ONLY
+toggleSidebar(burgerBtn);                           // ! FOR TESTS ONLY
 //enterNewEntryValue(107);                                    // ! FOR TESTS ONLY
 
 //| VARIABLES                                                               |//
