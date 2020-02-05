@@ -14,7 +14,6 @@ $warm-yellow: #edcf84;
 $media-sm: 360px;
 $media-md: 768px;
 $media-lg: 1024px;
-//| LAYOUT                                                                  |//
 //: LOGO                                                                    ://
 $logo-aspect-ratio: 512 / 135;
 //: PAGE HEADER                                                             ://
@@ -31,6 +30,10 @@ $burgerBtn-size-lg: 70px;
 $burgerBtn-padding-xs: 15px;
 $burgerBtn-padding-md: 17px;
 $burgerBtn-padding-lg: 20px;
+//: WATER                                                                   ://
+$water-measure-size-xs: 3px;
+$water-measure-size-md: 4px;
+$water-measure-size-lg: 5px;
 
 $button-time-active: 0.3s;
 //| SIDEBAR                                                                 |//

@@ -23,7 +23,6 @@
     position: relative;
   }
 
-
   //: WATER LEVELS                                                          ://
   &__level {
     border-bottom: 3px dashed $cold-light-blue;
@@ -52,7 +51,7 @@
     }
   }
 }
-
+//: MEASURE SEGMENT                                                         ://
 .measurePart {
   align-items: center;
   display: flex;
@@ -64,12 +63,14 @@
 
   &__mark {
     background-color: $cold-blue;
-    height: 6px;
-    width: 6px;
+    border-radius: 0 $water-measure-size-xs/2 $water-measure-size-xs/2 0;
+    height: $water-measure-size-xs;
+    width: $water-measure-size-xs * 3;
 
     &--large {
-      height: 6px;
-      width: 10px;
+      border-radius: 0 $water-measure-size-xs $water-measure-size-xs 0;
+      height: $water-measure-size-xs * 2;
+      width: $water-measure-size-xs * 3;
     }
   }
 
@@ -89,10 +90,14 @@
   @media only screen and (min-width: $media-md) {
 
     &__mark {
-      width: 10px;
+      border-radius: 0 $water-measure-size-md/2 $water-measure-size-md/2 0;
+      height: $water-measure-size-md;
+      width: $water-measure-size-md * 3;
   
       &--large {
-        width: 20px;
+        border-radius: 0 $water-measure-size-md $water-measure-size-md 0;
+        height: $water-measure-size-md * 2;
+        width: $water-measure-size-md * 3;
       }
     }
 
@@ -104,11 +109,14 @@
   @media only screen and (min-width: $media-lg) {
 
     &__mark {
-      height: 8px;
-      width: 15px;
+      border-radius: 0 $water-measure-size-lg/2 $water-measure-size-lg/2 0;
+      height: $water-measure-size-lg;
+      width: $water-measure-size-lg * 3;
   
       &--large {
-        width: 25px;
+        border-radius: 0 $water-measure-size-lg $water-measure-size-lg 0;
+        height: $water-measure-size-lg * 2;
+        width: $water-measure-size-lg * 3;
       }
     }
 

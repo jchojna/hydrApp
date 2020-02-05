@@ -1051,11 +1051,10 @@ handleCounterDate();
 emoji.innerHTML = getEmojiHtml('controls');
 handleEmoji('controls', startValue);
 updateWeekHeading();
-
 handleWaterAverage();
 
 
-toggleSidebar(burgerBtn);                           // ! FOR TESTS ONLY
+//toggleSidebar(burgerBtn);                           // ! FOR TESTS ONLY
 //enterNewEntryValue(107);                                    // ! FOR TESTS ONLY
 
 //| VARIABLES                                                               |//
