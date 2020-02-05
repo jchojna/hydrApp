@@ -1,5 +1,6 @@
 //| COLORS                                                                  |//
 //: BLUE                                                                    ://
+$blue-black: #041927;
 $cold-darkest-blue: #112f44;
 $cold-dark-blue: #274c66;
 $cold-blue: #4a8eb2;
@@ -14,7 +15,6 @@ $warm-yellow: #edcf84;
 $media-sm: 360px;
 $media-md: 768px;
 $media-lg: 1024px;
-//| LAYOUT                                                                  |//
 //: LOGO                                                                    ://
 $logo-aspect-ratio: 512 / 135;
 //: PAGE HEADER                                                             ://
@@ -25,15 +25,22 @@ $controls-gap-xs: 10px;
 $controls-gap-md: 15px;
 $controls-gap-lg: 20px;
 //: BURGER BUTTON                                                           ://
-$burgerBtn-size-xs: 50px;
+$burgerBtn-size-xs: 45px;
 $burgerBtn-size-md: 60px;
 $burgerBtn-size-lg: 70px;
 $burgerBtn-padding-xs: 15px;
 $burgerBtn-padding-md: 17px;
 $burgerBtn-padding-lg: 20px;
+//: WATER                                                                   ://
+$water-measure-size-xs: 3px;
+$water-measure-size-md: 4px;
+$water-measure-size-lg: 5px;
 
 $button-time-active: 0.3s;
 //| SIDEBAR                                                                 |//
+$header-height-xs: $header-padding-xs * 2 + $burgerBtn-size-xs;
+$header-height-md: $header-padding-md * 2 + $burgerBtn-size-md;
+$header-height-lg: $header-padding-lg * 2 + $burgerBtn-size-lg;
 $sidebar-toggle: 0.4s;
 
 $tab-expand: 0.6s;

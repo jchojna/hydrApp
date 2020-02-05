@@ -61,21 +61,18 @@ const findFirstParentOfClass = (node, classname) => {
   && node.parentNode.tagName !== 'HTML') node = node.parentNode;
   return node.parentNode;
 }
-//| GET EMOJIS HTML STRING                                                  |//
-const getEmojiHtml = (id) => {
-  let emojiHtml = '';
-
-  for (let i = 0; i < emojiAmount; i++) {
-    emojiHtml += `
-      <svg
-        class="emoji__svg emoji__svg--emo-${i} emoji__svg--js-${id}"
-        viewBox="0 0 512 512"
-      >
-        <use href="assets/svg/emoji.svg#emo-${i}"></use>
-      </svg>
-    `
-  }
-  return emojiHtml;
+//| HANDLE ELEMENTS ON WINDOW RESIZE                                        |//
+const handleWindowResize = () => {
+  const waterValue = hydrappArray[0].value;
+  handleWaterLevel(waterValue);
+  handleWaterWaves();
+  handleWaterMeasure();
+}
+//| HANDLE CONTAINER'S HEIGHT BASED ON ELEMENT'S CHILDREN TOTAL HEIGHT      |//
+const handleContainerHeight = (container, elements) => {
+  const childrenArray = [...elements.children];
+  const childrenHeight = childrenArray.reduce((a,b) => a + b.clientHeight, 0);
+  container.style.height = `${childrenHeight}px`;
 }
 //| SET LOCAL STORAGE                                                       |//
 const setData = () => {
@@ -101,20 +98,39 @@ const setData = () => {
   // to update
   // handleWaterChange('displayValue');
 }
-//| HANDLE ELEMENTS ON WINDOW RESIZE                                        |//
-const handleWindowResize = () => {
-  const waterValue = hydrappArray[0].value;
-  handleWaterLevel(waterValue);
-  handleWaterWaves();
-  handleWaterMeasure();
+//// EMOJI                                                                 ////
+//| GET EMOJIS HTML STRING                                                  |//
+const getEmojiHtml = (id) => {
+  let emojiHtml = '';
+
+  for (let i = 0; i < emojiAmount; i++) {
+    emojiHtml += `
+      <svg
+        class="emoji__svg emoji__svg--emo-${i} emoji__svg--js-${id}"
+        viewBox="0 0 512 512"
+      >
+        <use href="assets/svg/emoji.svg#emo-${i}"></use>
+      </svg>
+    `
+  }
+  return emojiHtml;
 }
-//| HANDLE CONTAINER'S HEIGHT BASED ON ELEMENT'S CHILDREN TOTAL HEIGHT      |//
-const handleContainerHeight = (container, elements) => {
-  const childrenArray = [...elements.children];
-  const childrenHeight = childrenArray.reduce((a,b) => a + b.clientHeight, 0);
-  container.style.height = `${childrenHeight}px`;
+//| SET INDICATORS                                                          |//
+const handleEmoji = (id, number) => {
+  number > 7 ? number = 7 : false;
+  const emojis = document.querySelectorAll(`.emoji__svg--js-${id}`);
+
+  [...emojis].forEach((emoji, index) => {
+    if (index === number) {
+      emoji.classList.add('emoji__svg--visible');
+    } else {
+      if (emoji.classList.contains('emoji__svg--visible')) {
+        emoji.classList.remove('emoji__svg--visible');
+      }
+    }
+  });  
 }
-//// APP MAIN SECTION                                                      ////
+//// WATER                                                                 ////
 //| SET WAVES AMOUNT                                                        |//
 const setWaterWaves = () => {
   const waveSvg = `
@@ -163,6 +179,7 @@ const handleWaterChange = (e) => {
   handleWaterLevel(value);
   handleWaterShake();
   handleCounterMessage(value);
+  handleWaterAverage();
   firstEntryValue.textContent = hydrappArray[0].value;
   handleEmoji('controls', value);
   handleEmoji(hydrappArray[0].id, value);
@@ -201,14 +218,14 @@ const handleWaterMeasure = () => {
 const handleWaterWaves = () => {
   const size = water.clientWidth / wavesAmount / 10;
   wavesContainer.style.height = `${size}px`;
-  wavesContainer.style.top = `${-1 * (size - 3)}px`;
+  wavesContainer.style.top = `${-1 * (size - 1)}px`;
 }
 //| HANDLE WATER LEVEL                                                      |//
 const handleWaterLevel = (value) => {
-  const windowHeight = window.innerHeight;
-  const waterOffset = windowHeight / waterMax * (waterMax - value);
-  const avgOffset = windowHeight / waterMax * (waterAvg);
-  const minOffset = windowHeight / waterMax * (waterMin);
+  const landingHeight = appLanding.clientHeight;
+  const waterOffset = landingHeight / waterMax * (waterMax - value);
+  const avgOffset = landingHeight / waterMax * (waterAvg);
+  const minOffset = landingHeight / waterMax * (waterMin);
 
   water.style.top = `${waterOffset}px`;
   if (value === 0) {
@@ -233,6 +250,15 @@ const handleWaterShake = () => {
     wavesShakeTimeoutId = null;
   }, shakeDuration);
 }
+//| HANDLE CONSUMED WATER AVERAGE VALUE                                     |//
+const handleWaterAverage = () => {
+  const interval = window.innerHeight / waterMax;
+  const waterAverage = [...hydrappArray]
+    .map(elem => elem.value)
+    .reduce((a,b) => a + b) / hydrappArray.length;
+  levelAvg.style.bottom = `${waterAverage * interval}px`;
+}
+//// COUNTER                                                               ////
 //| SET COUNTER VALUES                                                      |//
 const handleCounter = (currentValue, newValue) => {
 
@@ -354,29 +380,9 @@ const handleCounterMessage = (value) => {
 }
 //| HANDLE COUNTER DATE TO DISPLAY                                          |//
 const handleCounterDate = () => {
-
   const { day, date } = hydrappArray[0];
-
   counterDay.innerHTML = day;
   counterDate.innerHTML = date.slice().split(' ').join('.');
-
-
-
-}
-//| SET INDICATORS                                                          |//
-const handleEmoji = (id, number) => {
-  number > 7 ? number = 7 : false;
-  const emojis = document.querySelectorAll(`.emoji__svg--js-${id}`);
-
-  [...emojis].forEach((emoji, index) => {
-    if (index === number) {
-      emoji.classList.add('emoji__svg--visible');
-    } else {
-      if (emoji.classList.contains('emoji__svg--visible')) {
-        emoji.classList.remove('emoji__svg--visible');
-      }
-    }
-  });  
 }
 //// APP SIDEBAR                                                           ////
 //| TOGGLE SIDEBAR VISIBILITY                                               |//
@@ -542,25 +548,6 @@ const updateWeekHeading = () => {
     weekLists.length > 1 ? setButtonsVisiblity(i) : setButtonsVisiblity(i, 'oneWeek');
   }
 }
-//| ANIMATE WEEK ENTRIES                                                    |//
-const entriesFade = (action) => {
-  const currentWeekList = weekLists[currentWeekIndex];
-  let delay = 0;
-
-  if (action === 'in') {
-    [...currentWeekList.children].forEach(elem => {
-      elem.classList.add('entry--visible');
-      elem.style.transitionDelay = `${delay}s`;
-      delay += 0.1;
-    });
-
-  } else if (action === 'out') {
-    [...currentWeekList.children].reverse().forEach(elem => {
-      elem.classList.remove('entry--visible');
-      elem.style.transitionDelay = 0;
-    });
-  }
-}
 //| SLIDE WEEK                                                              |//
 const slideWeek = (e) => {
   const self = e.keyCode || e.target;
@@ -597,6 +584,7 @@ const slideWeek = (e) => {
     entriesFade('in');
   }
 }
+//// ENTRY HANDLERS                                                        ////
 //| CREATE 'REMOVE ITEM' BUTTON                                             |//
 const createRemoveEntryButton = () => {
   const removeEntryButton = document.createElement('button');
@@ -724,6 +712,7 @@ const addNewEntry = (value) => {
   handleContainerHeight(archiveContainer, lastWeek);
   handleArchiveLastEntry();
   updateWeekHeading();
+  handleWaterAverage();
 }
 //| ADJUST LAST ITEM OF LIST AND REMOVE BUTTON                              |//
 const handleArchiveLastEntry = () => {
@@ -767,6 +756,7 @@ const removeLastEntry = (e) => {
       handleArchiveLastEntry();
       updateWeekHeading();
       handleContainerHeight(archiveContainer, lastWeek);
+      handleWaterAverage();
     }
   }
 }
@@ -817,7 +807,6 @@ const handleEntryEdit = (e) => {
 
       case 40:
       case decreaseButton:
-        //e.preventDefault();
         dayValue > 0 ? dayValue-- : false;
         entryValue.textContent = dayValue;
         handleEmoji(id, dayValue);
@@ -825,7 +814,6 @@ const handleEntryEdit = (e) => {
       
       case 38:
       case increaseButton:
-        //e.preventDefault();
         dayValue < waterMax ? dayValue++ : false;
         entryValue.textContent = dayValue;
         handleEmoji(id, dayValue);
@@ -833,22 +821,23 @@ const handleEntryEdit = (e) => {
 
       case 27:
       case cancelButton:
-        //e.preventDefault();
         exitEditMode();
       break;
 
       case 13:
       case saveButton:
-        //e.preventDefault();
-        handleCounter(hydrappArray[0].value, dayValue);
+        if (itemIndex === 0) {
+          handleCounter(hydrappArray[0].value, dayValue);
+          handleWaterLevel(dayValue);
+          handleWaterShake();
+          handleCounterMessage(dayValue);
+          handleEmoji('controls', dayValue);
+        }
         //: change global values (must be after counter handler             ://
         //: which uses previous value before change                         ://
         localStorage.setItem(key, dayValue);
         hydrappArray[itemIndex].value = key;
-        handleWaterLevel(dayValue);
-        handleWaterShake();
-        handleCounterMessage(dayValue);
-        handleEmoji('controls', dayValue);
+        handleWaterAverage();
         exitEditMode();
       break;
     }
@@ -858,6 +847,25 @@ const handleEntryEdit = (e) => {
   archiveContainer.addEventListener('click', handleEdition);
   archiveContainer.addEventListener('keydown', handleEdition);
   window.removeEventListener('keydown', slideWeek);
+}
+//| ANIMATE WEEK ENTRIES                                                    |//
+const entriesFade = (action) => {
+  const currentWeekList = weekLists[currentWeekIndex];
+  let delay = 0;
+
+  if (action === 'in') {
+    [...currentWeekList.children].forEach(elem => {
+      elem.classList.add('entry--visible');
+      elem.style.transitionDelay = `${delay}s`;
+      delay += 0.1;
+    });
+
+  } else if (action === 'out') {
+    [...currentWeekList.children].reverse().forEach(elem => {
+      elem.classList.remove('entry--visible');
+      elem.style.transitionDelay = 0;
+    });
+  }
 }
 //| END OF HANDLE ITEM EDIT                                                 |//
 
@@ -1045,6 +1053,7 @@ handleCounterDate();
 emoji.innerHTML = getEmojiHtml('controls');
 handleEmoji('controls', startValue);
 updateWeekHeading();
+handleWaterAverage();
 
 
 toggleSidebar(burgerBtn);                           // ! FOR TESTS ONLY

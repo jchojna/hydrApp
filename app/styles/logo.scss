@@ -9,6 +9,7 @@
 
   &__svg {
     fill: $cold-blue;
+    pointer-events: all;
     width: 100%;
 
     &--color {

@@ -13,6 +13,7 @@
     display: flex;
     justify-content: space-between;
     padding: $header-padding-xs;
+    pointer-events: none;
     position: fixed;
     right: 0;
     top: 0;
@@ -31,22 +32,30 @@
   }
   //: APP LANDING PANEL                                                     ://
   &__landing {
-    align-items: flex-end;
+    align-items: flex-start;
     display: flex;
     bottom: 0;
     justify-content: center;
     left: 0;
-    min-height: 300px;
+    padding-top: $burgerBtn-size-xs + ($header-padding-xs * 2);
     position: fixed;
     top: 0;
     transition: width $sidebar-toggle;
     width: 100%;
 
     @media only screen and (min-width: $media-md) {
-      padding: $header-padding-md;
+      padding-top: $burgerBtn-size-md + ($header-padding-md * 2);
   
       &--onSide {
         width: 50%;
+      }
+    }
+
+    @media only screen and (min-width: $media-lg) {
+      padding-top: $burgerBtn-size-lg + ($header-padding-lg * 2);
+  
+      &--onSide {
+        width: 60%;
       }
     }
   }
@@ -55,12 +64,14 @@
     align-items: center;
     background-color: $cold-darkest-blue;
     bottom: 0;
+    box-shadow: 0 0 40px 10px $blue-black;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     right: 0;
     overflow: auto;
     position: fixed;
+    padding-top: $header-height-xs;
     top: 0;
     transform: translateY(-100%);
     transition: transform $sidebar-toggle, visibility 0s $sidebar-toggle;
@@ -77,6 +88,7 @@
     @media only screen and (min-width: $media-md) {
 
       & {
+        padding-top: $header-height-md;
         transform: translateX(100%);
         transition: transform $sidebar-toggle, visibility 0s $sidebar-toggle;
         width: 50%;
@@ -86,6 +98,14 @@
           transform: translateX(0);
           transition: transform $sidebar-toggle, visibility 0s;
         }
+      }
+    }
+
+    @media only screen and (min-width: $media-lg) {
+
+      & {
+        padding-top: $header-height-lg;
+        width: 40%;
       }
     }
   }

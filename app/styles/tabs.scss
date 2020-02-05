@@ -2,21 +2,20 @@
 @import 'mixins.scss';
 
 .tab {
-  //flex-grow: 1
   align-items: stretch;
   display: flex;
   flex-direction: column;
-  //justify-content: flex-end;
   width: 100%;
 
   &--archive {
-
+    flex-grow: 1;
+    justify-content: flex-end;
   }
   &--stats {
 
   }
-  &--setting {
-
+  &--settings {
+    flex-grow: 1
   }
 
   &__header {
@@ -44,7 +43,7 @@
       color: $cold-light-blue;
       background-color: lighten($cold-darkest-blue, 3%);
     }
-
+    
     @media only screen and (min-width: $media-md) {
       padding: $header-padding-md;
     }
