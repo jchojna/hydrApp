@@ -179,6 +179,7 @@ const handleWaterChange = (e) => {
   handleWaterLevel(value);
   handleWaterShake();
   handleCounterMessage(value);
+  handleWaterAverage();
   firstEntryValue.textContent = hydrappArray[0].value;
   handleEmoji('controls', value);
   handleEmoji(hydrappArray[0].id, value);
@@ -374,28 +375,13 @@ const handleCounterDate = () => {
   counterDay.innerHTML = day;
   counterDate.innerHTML = date.slice().split(' ').join('.');
 }
-//| GET CONSUMED WATER AVERAGE VALUE                                        |//
-const getWaterAverage = () => {
-
+//| HANDLE CONSUMED WATER AVERAGE VALUE                                     |//
+const handleWaterAverage = () => {
+  const interval = window.innerHeight / waterMax;
   const waterAverage = [...hydrappArray]
     .map(elem => elem.value)
     .reduce((a,b) => a + b) / hydrappArray.length;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  levelAvg.style.bottom = `${waterAverage * interval}px`;
 }
 //// APP SIDEBAR                                                           ////
 //| TOGGLE SIDEBAR VISIBILITY                                               |//
@@ -743,6 +729,7 @@ const addNewEntry = (value) => {
   handleContainerHeight(archiveContainer, lastWeek);
   handleArchiveLastEntry();
   updateWeekHeading();
+  handleWaterAverage();
 }
 //| ADJUST LAST ITEM OF LIST AND REMOVE BUTTON                              |//
 const handleArchiveLastEntry = () => {
@@ -786,6 +773,7 @@ const removeLastEntry = (e) => {
       handleArchiveLastEntry();
       updateWeekHeading();
       handleContainerHeight(archiveContainer, lastWeek);
+      handleWaterAverage();
     }
   }
 }
@@ -866,6 +854,7 @@ const handleEntryEdit = (e) => {
         //: which uses previous value before change                         ://
         localStorage.setItem(key, dayValue);
         hydrappArray[itemIndex].value = key;
+        handleWaterAverage();
         exitEditMode();
       break;
     }
@@ -1063,7 +1052,7 @@ emoji.innerHTML = getEmojiHtml('controls');
 handleEmoji('controls', startValue);
 updateWeekHeading();
 
-getWaterAverage();
+handleWaterAverage();
 
 
 toggleSidebar(burgerBtn);                           // ! FOR TESTS ONLY
