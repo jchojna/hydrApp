@@ -5,9 +5,10 @@
   bottom: 0;
   display: grid;
   padding: $header-padding-xs;
-  position: absolute;
+  position: fixed;
   right: 0;
   row-gap: $controls-gap-xs;
+  z-index: 1;
 
   &__button {
     @include button;
@@ -25,6 +26,7 @@
 
     & {
       padding: $header-padding-md;
+      position: absolute;
       row-gap: $controls-gap-md;
     
       &__button {

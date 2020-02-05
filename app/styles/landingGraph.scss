@@ -27,6 +27,7 @@
   &__level {
     border-bottom: $water-measure-size-xs dashed $cold-light-blue;
     font-weight: 700;
+    font-size: 0.7em;
     left: 5px;
     position: absolute;
     right: 0;
@@ -44,12 +45,14 @@
     @media only screen and (min-width: $media-md) {
   
       border-width: $water-measure-size-md;
+      font-size: 0.9em;
       left: 10px;
     }
 
     @media only screen and (min-width: $media-lg) {
   
       border-width: $water-measure-size-lg;
+      font-size: 1.1em;
       left: 15px;
     }
   }

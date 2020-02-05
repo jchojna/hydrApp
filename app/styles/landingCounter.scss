@@ -17,6 +17,7 @@
   margin: 0 $header-height;
   max-width: 300px;
   width: 100%;
+  z-index: 1;
 
   &__day,
   &__date,

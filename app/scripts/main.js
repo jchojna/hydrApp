@@ -222,10 +222,10 @@ const handleWaterWaves = () => {
 }
 //| HANDLE WATER LEVEL                                                      |//
 const handleWaterLevel = (value) => {
-  const windowHeight = window.innerHeight;
-  const waterOffset = windowHeight / waterMax * (waterMax - value);
-  const avgOffset = windowHeight / waterMax * (waterAvg);
-  const minOffset = windowHeight / waterMax * (waterMin);
+  const landingHeight = appLanding.clientHeight;
+  const waterOffset = landingHeight / waterMax * (waterMax - value);
+  const avgOffset = landingHeight / waterMax * (waterAvg);
+  const minOffset = landingHeight / waterMax * (waterMin);
 
   water.style.top = `${waterOffset}px`;
   if (value === 0) {
