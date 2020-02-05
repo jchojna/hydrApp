@@ -111,6 +111,7 @@
   }
   //: APP USER                                                              ://
   &__user {
+    @include flex-center;
     background-color: $cold-dark-blue;
     height: 100%;
     left: 0;

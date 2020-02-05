@@ -1,8 +1,63 @@
 .user {
+  display: grid;
+  grid-template-areas:
+  "label label"
+  "input input"
+  "prev  next ";
+  grid-template-columns: repeat(2, 1fr);
+  left: 0;
+  margin: 0 20px;
+  position: absolute;
+  right: 0;
+  visibility: hidden;
+
+  &--visible {
+    visibility: visible;
+  }
+
+  &__label {
+    color: $cold-blue;
+    font-weight: 700;
+    font-size: 1.8em;
+    grid-area: label;
+    text-align: center;
+
+  }
+
+  &__input {
+    background-color: transparent;
+    border: 2px solid $cold-blue;
+    border-radius: 50px;
+    color: $cold-light-blue;
+    font-size: 1.4em;
+    grid-area: input;
+    margin: 20px 0;
+    min-height: 50px;
+    outline: none;
+    padding: 10px 20px;
+
+    &:focus {
+      border-color: $cold-light-blue;
+    }
+  }
 
   &__button {
     @include button;
-    border: 1px solid #000;
+    @include flex-center;
+    fill: $cold-blue;
+    width: $burgerBtn-size-xs;
+
+    &--prev {
+      grid-area: prev;
+      justify-self: start;
+      
+    }
+
+    &--next {
+      grid-area: next;
+      justify-self: end;
+
+    }
   }
 
   &__svg {
