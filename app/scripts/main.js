@@ -218,7 +218,7 @@ const handleWaterMeasure = () => {
 const handleWaterWaves = () => {
   const size = water.clientWidth / wavesAmount / 10;
   wavesContainer.style.height = `${size}px`;
-  wavesContainer.style.top = `${-1 * (size - 3)}px`;
+  wavesContainer.style.top = `${-1 * (size - 1)}px`;
 }
 //| HANDLE WATER LEVEL                                                      |//
 const handleWaterLevel = (value) => {
