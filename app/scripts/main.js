@@ -158,7 +158,7 @@ const setUserDOM = () => {
 //| HANDLE USER DETAILS                                                     |//
 const handleUserDetails = (e) => {
   e.preventDefault();
-  const self = e.target;
+  const self = e.key || e.target;
 
   const toggleDetail = (current, next, action, timeout) => {
     const hiddenSide = action === 'prev' ? 'Right' : 'Left';
@@ -177,32 +177,23 @@ const handleUserDetails = (e) => {
     }, timeout);
   }
 
-  if (self.tagName === 'BUTTON') {
+  if (self.tagName === 'BUTTON' || self === 'Enter' || self === 'Escape') {
 
     const toggleTime = 300;
-    const { index, action } = self;
+    const { action } = self;
     const maxIndex = userDetails.length - 1;
 
-    if (action === 'prev') {
-      const currentDetail = userDetails[index + 1];
-      const nextDetail = userDetails[index];
-      toggleDetail(currentDetail, nextDetail, action, toggleTime);
+    if (action === 'prev' || self === 'Escape') {
+      const currentDetail = userDetails[currentUserIndex];
+      const nextDetail = userDetails[currentUserIndex - 1];
+      toggleDetail(currentDetail, nextDetail, 'prev', toggleTime);
+      currentUserIndex--;
 
-
-    } else if (action === 'next') {
-      const currentDetail = userDetails[index];
-
+    } else if (action === 'next' || self === 'Enter') {
+      const currentDetail = userDetails[currentUserIndex];
       //: AQUIRE USER DATA AND GO TO LANDING SECTION                        ://
-      if (index >= maxIndex) {
-        if (isInputValid(index)) {
-
-
-
-
-
-
-
-
+      if (currentUserIndex >= maxIndex) {
+        if (isInputValid(currentUserIndex)) {
 
 
 
@@ -213,23 +204,25 @@ const handleUserDetails = (e) => {
         }
       //: GO TO NEXT USER DETAIL                                            ://
       } else {
-        var nextDetail = userDetails[index + 1];
-        if (isInputValid(index)) {
-          if (index === 0) {
-            const userName = userIputs[index].value;
+        var nextDetail = userDetails[currentUserIndex + 1];
+        if (isInputValid(currentUserIndex)) {
+          if (currentUserIndex === 0) {
+            const userName = userIputs[currentUserIndex].value;
             const userAgeLabel = document.querySelector('.user__label--js-age');
             const newLabelContent = `Hello ${userName}, how old are you?`;
             userAgeLabel.textContent = newLabelContent;
             hydrappJson.userName = userName;
           }
-          toggleDetail(currentDetail, nextDetail, action, toggleTime);
+          toggleDetail(currentDetail, nextDetail, 'next', toggleTime);
+          currentUserIndex++;
         }
       }
     }
   }
 }
 //| FILTER USER INPUTS                                                      |//
-const filterUserInput = (e) => {  
+const filterUserInput = (e) => {
+  if (e.keyCode  === 13 || e.keyCode  === 27) return false;
   const self = e.target;
   const { value } = self;
   const filteredValue = value.match(/\d/g);
@@ -271,7 +264,6 @@ const isInputValid = (index) => {
     input.focus();
     return false;
   }
-  console.log('inputValue', inputValue);
 
   if (index === 0) return true;
   if (inputValue < limitMin || inputValue > limitMax) {
@@ -1274,6 +1266,7 @@ appSidebar.addEventListener('click', toggleSidebarTabs);
 
 // if () - condition if user form should be displayed
 //: USER DATA                                                               ://
+let currentUserIndex = 0;
 const userDetails = document.querySelectorAll('.user--js');
 const userPrevButtons = document.querySelectorAll('.user__button--js-prev');
 const userNextButtons = document.querySelectorAll('.user__button--js-next');
@@ -1293,3 +1286,9 @@ const userAlerts = document.querySelectorAll('.user__alert--js');
 [...userIputs]
 .filter((input, index) => index !== 0)
 .forEach(input => input.addEventListener('keyup', filterUserInput));
+
+appUser.addEventListener('keypress', (e) => {
+  if (e.keyCode  === 13 || e.keyCode  === 27) e.preventDefault();
+});
+
+appUser.addEventListener('keyup', handleUserDetails);
