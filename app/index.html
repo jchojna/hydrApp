@@ -60,7 +60,7 @@
     <form class="app__user app__user--js">
       <h2 class="app__heading visuallyhidden">User data</h2>
       <!--: USER NAME                                                      :-->
-      <div class="user user--js">
+      <div class="user user--visible user--js">
         <label for="userName" class="user__label">
           Hello stranger, what's your name?
         </label>
@@ -77,16 +77,15 @@
         </button>
       </div>
       <!--: USER AGE                                                       :-->
-      <div class="user user--visible user--js">
+      <div class="user user--js">
         <label for="userAge" class="user__label">
           What's your age?
         </label>
         <input
           id="userAge"
           class="user__input user__input--js-age"
-          type="number"
-          min="1"
-          max="120"
+          type="text"
+          maxlength="3"
         >
         <button class="user__button user__button--prev user__button--js-prev">
           <svg class="user__svg" viewBox="0 0 512 512">
@@ -107,9 +106,8 @@
         <input
           id="userWeight"
           class="user__input user__input--js-weight"
-          type="number"
-          min="1"
-          max="200"
+          type="text"
+          maxlength="3"
         >
         <button class="user__button user__button--prev user__button--js-prev">
           <svg class="user__svg" viewBox="0 0 512 512">
@@ -130,9 +128,8 @@
         <input
           id="userHeight"
           class="user__input user__input--js-height"
-          type="number"
-          min="1"
-          max="250"
+          type="text"
+          maxlength="3"
         >
         <button class="user__button user__button--prev user__button--js-prev">
           <svg class="user__svg" viewBox="0 0 512 512">

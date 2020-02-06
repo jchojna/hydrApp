@@ -144,9 +144,66 @@ const handleUserDetails = (e) => {
     } else if (action === 'next') {
       const currentDetail = userDetails[index];
       const nextDetail = userDetails[index + 1];
-      toggleDetail(currentDetail, nextDetail, action, toggleTime);
+      if (isInputValid(index)) {
+        toggleDetail(currentDetail, nextDetail, action, toggleTime);
+      }
     }
   }
+}
+//| FILTER USER INPUTS                                                      |//
+const filterUserInput = (e) => {  
+  const self = e.target;
+  const { value } = self;
+  const filteredValue = value.match(/\d/g);
+  const outputValue = filteredValue ? filteredValue.join('') : '';
+  self.value = outputValue;
+}
+//| VALIDATE USER INPUTS                                                    |//
+const isInputValid = (index) => {
+
+  const handleInputAlert = () => {
+
+
+
+  }
+
+  const input = userIputs[index];
+  const inputValue = parseInt(input.value);
+  const limits = [
+    { min: null, max: null},
+    { min: 10, max: 120},
+    { min: 8, max: 200},
+    { min: 70, max: 250}
+  ]
+  const limitMin = limits[index].min;
+  const limitMax = limits[index].max;
+
+  if (index === 0) return true;
+  if (!inputValue) {
+    input.focus();
+    return false;
+  }
+
+  if (inputValue < limitMin || inputValue > limitMax) {
+    handleInputAlert(limitMin, limitMax);
+    return false;
+  } else return true;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 //// EMOJI                                                                 ////
 //| GET EMOJIS HTML STRING                                                  |//
@@ -930,12 +987,6 @@ const mediaLg = 1200;
 const waterMax = 20;
 let waterMin = 7;
 let waterAvg = 12;
-//: USER DATA                                                               ://
-const userDetails = document.querySelectorAll('.user--js');
-const userPrevButtons = document.querySelectorAll('.user__button--js-prev');
-const userNextButtons = document.querySelectorAll('.user__button--js-next');
-const userSendButton = document.querySelector('.user__button--js-send');
-
 
 
 
@@ -1152,6 +1203,18 @@ window.addEventListener('resize', handleWindowResize);
 burgerBtn.addEventListener('click', toggleSidebar);
 appSidebar.addEventListener('click', toggleSidebarTabs);
 
+
+// if () - condition if user form should be displayed
+//: USER DATA                                                               ://
+const userDetails = document.querySelectorAll('.user--js');
+const userPrevButtons = document.querySelectorAll('.user__button--js-prev');
+const userNextButtons = document.querySelectorAll('.user__button--js-next');
+const userSendButton = document.querySelector('.user__button--js-send');
+const userIputs = document.querySelectorAll('[class*=user__input--js]');
+const userAgeInput = document.querySelector('.user__input--js-age');
+const userWeightInput = document.querySelector('.user__input--js-weight');
+const userHeightInput = document.querySelector('.user__input--js-height');
+
 [...userPrevButtons].forEach((button, index) => {
   button.index = index;
   button.action = 'prev';
@@ -1163,3 +1226,7 @@ appSidebar.addEventListener('click', toggleSidebarTabs);
   button.addEventListener('click', handleUserDetails);
 });
 userSendButton.addEventListener('click', handleUserDetails);
+
+userAgeInput.addEventListener('keyup', filterUserInput);
+userWeightInput.addEventListener('keyup', filterUserInput);
+userHeightInput.addEventListener('keyup', filterUserInput);

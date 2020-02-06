@@ -54,6 +54,7 @@
     min-height: 50px;
     outline: none;
     padding: 10px 20px;
+    text-align: center;
 
     &:focus {
       border-color: $cold-light-blue;
@@ -76,6 +77,10 @@
       grid-area: next;
       justify-self: end;
 
+    }
+
+    &:hover {
+      fill: $cold-light-blue;
     }
   }
 
