@@ -209,23 +209,18 @@ const handleUserDetails = (e) => {
       if (currentDetailIndex >= maxIndex) {
         if (isInputValid(currentDetailIndex)) {
           //. update JSON object                                            .//
+          hydrappJson.userName = userInputs[0].value;
           hydrappJson.userAge = getInputValue(1);
           hydrappJson.userWeight = getInputValue(2);
           hydrappJson.userHeight = getInputValue(3);
           const date = new Date();
           hydrappJson.entries = [new Entry(date)];
-
-
-
-
-
-
-
-          console.log(hydrappJson);
+          //. set JSON object as local storage item                         .//
+          const keyName = `hydrapp-${hydrappJson.userName}`;
+          localStorage.setItem(keyName, JSON.stringify(hydrappJson));
           //. change user section visibility                                .//
           toggleDetail(currentDetail, null, 'next', toggleTime);
           appUser.classList.add('app__user--hidden');
-
         }
       //: GO TO NEXT USER DETAIL                                            ://
       } else {
