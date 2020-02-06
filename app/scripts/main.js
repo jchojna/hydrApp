@@ -253,7 +253,7 @@ const createUser = () => {
             // date of creation etc..
 
             const date = new Date();
-            hydrappJson.entries = [new Entry(date)];
+            hydrappJson.entries = [new Entry(date, 0)];
             loadApp();
             //. set JSON object as local storage item                         .//
             const keyName = `hydrapp-${hydrappJson.userName}`;
@@ -727,6 +727,73 @@ const toggleSidebarTabs = (e) => {
   }
 }
 //// ARCHIVE TAB                                                           ////
+//| RETURN ARCHIVE WEEK HTML CODE                                           |//
+const getWeekHtml = () => {
+  return `
+    <section class="week week--js">
+    <div class="week__container">
+      <header class="week__header week__header--js">
+        <button class="week__button week__button--prev week__button--js-prev">
+          <svg class="week__svg" viewBox="0 0 512 512">
+            <use href="assets/svg/icons.svg#left-arrow"></use>
+          </svg>
+        </button>
+        <h3 class="week__heading week__heading--js">New week</h3>
+        <button class="week__button week__button--next week__button--js-next">
+          <svg class="week__svg" viewBox="0 0 512 512">
+            <use href="assets/svg/icons.svg#right-arrow"></use>
+          </svg>
+        </button>
+      </header>
+      <ul class="week__list week__list--js"></ul>
+    </div>
+    </section>
+  `;
+}
+//| RETURN ARCHIVE ENTRY HTML CODE                                          |//
+const getEntryHtml = (index) => {
+
+  const { date, day, id, value } = hydrappJson.entries[index];
+  return `
+    <li class="entry entry--js">
+      <header class="entry__header entry__header--js">
+        <p class="entry__heading entry__heading--day">${day}</p>
+        <p class="entry__heading entry__heading--date entry__heading--js-date">${date}</p>
+      </header>
+      <span class="entry__value entry__value--js">${value}</span>
+      <div class="edition edition--js">
+        <button class="edition__button edition__button--visible edition__button--edit edition__button--js-edit">
+          <svg class="edition__svg edition__svg--edit">
+            <use href="assets/svg/icons.svg#edit-mode"></use>
+          </svg>
+        </button>
+        <button class="edition__button edition__button--decrease edition__button--js-decrease">
+          <svg class="edition__svg edition__svg--decrease">
+            <use href="assets/svg/icons.svg#down-arrow"></use>
+          </svg>
+        </button>
+        <button class="edition__button edition__button--increase edition__button--js-increase">
+          <svg class="edition__svg edition__svg--increase">
+            <use href="assets/svg/icons.svg#up-arrow"></use>
+          </svg>
+        </button>
+        <button class="edition__button edition__button--cancel edition__button--js-cancel">
+          <svg class="edition__svg edition__svg--cancel">
+            <use href="assets/svg/icons.svg#back-arrow"></use>
+          </svg>
+        </button>
+        <button class="edition__button edition__button--save edition__button--js-save">
+          <svg class="edition__svg edition__svg--save">
+            <use href="assets/svg/icons.svg#save-icon"></use>
+          </svg>
+        </button>
+      </div>
+      <div class="emoji emoji--js-${id}">
+        ${getEmojiHtml(id)}
+      </div>
+    </li>
+  `;
+}
 //| SET ARCHIVE                                                             |//
 const setArchiveDOM = () => {
   const { entries } = hydrappJson;
@@ -745,8 +812,16 @@ const setArchiveDOM = () => {
   handleEmoji('new', 0);
 }
 //| ADD ARCHIVE NODE                                                        |//
+
+
+
+
+
+
 const addArchiveEntry = (index, option) => {
-  const {value, id, day, dayHtml, weekHtml} = hydrappJson.entries[index];
+  const {value, id, day} = hydrappJson.entries[index];
+  const weekHtml = getWeekHtml();
+  const entryHtml = getEntryHtml(index);
   //: function adding new week DOM node                                     ://
   const addWeek = () => {
     archiveContainer.insertAdjacentHTML('beforeend', weekHtml);
@@ -759,7 +834,7 @@ const addArchiveEntry = (index, option) => {
   if (((day === 'sunday' || index === 0)) && option !== 'add') addWeek();
   //: add next day entry                                                    ://
   const lastWeekList = weekLists[weekLists.length - 1];
-  lastWeekList.insertAdjacentHTML('beforeend', dayHtml);
+  lastWeekList.insertAdjacentHTML('beforeend', entryHtml);
   handleEmoji(id, value);
   //: add 'add entry button at the end                                      ://
   if (index === hydrappArray.length - 1) {
@@ -774,6 +849,12 @@ const addArchiveEntry = (index, option) => {
   editButton.index = index;
   editButton.addEventListener('click', handleEntryEdit);
 }
+
+
+
+
+
+
 //| SET WEEK HEADING                                                        |//
 const updateWeekHeading = () => {
   weekLists = document.querySelectorAll('.week__list--js');
@@ -1214,79 +1295,17 @@ const weekDay = ['sunday','monday','tuesday','wednesday','thursday','friday','sa
 let hydrappJson = {};
 //| CLASS FOR ENTRY                                                         |//
 class Entry {
-  constructor(date) {
-    //this.key = setDateKey(date);
+  constructor(date, value) {
     this.value = 0;
     this._date = date;
     this._id = this.date;
     this._day = date;
-
-    this.weekHtml = `
-      <section class="week week--js">
-      <div class="week__container">
-        <header class="week__header week__header--js">
-          <button class="week__button week__button--prev week__button--js-prev">
-            <svg class="week__svg" viewBox="0 0 512 512">
-              <use href="assets/svg/icons.svg#left-arrow"></use>
-            </svg>
-          </button>
-          <h3 class="week__heading week__heading--js">New week</h3>
-          <button class="week__button week__button--next week__button--js-next">
-            <svg class="week__svg" viewBox="0 0 512 512">
-              <use href="assets/svg/icons.svg#right-arrow"></use>
-            </svg>
-          </button>
-        </header>
-        <ul class="week__list week__list--js"></ul>
-      </div>
-      </section>
-    `;
-
-    this.dayHtml = `
-      <li class="entry entry--js">
-        <header class="entry__header entry__header--js">
-          <p class="entry__heading entry__heading--day">${this.day}</p>
-          <p class="entry__heading entry__heading--date entry__heading--js-date">${this.date}</p>
-        </header>
-        <span class="entry__value entry__value--js">${this.value}</span>
-        <div class="edition edition--js">
-          <button class="edition__button edition__button--visible edition__button--edit edition__button--js-edit">
-            <svg class="edition__svg edition__svg--edit">
-              <use href="assets/svg/icons.svg#edit-mode"></use>
-            </svg>
-          </button>
-          <button class="edition__button edition__button--decrease edition__button--js-decrease">
-            <svg class="edition__svg edition__svg--decrease">
-              <use href="assets/svg/icons.svg#down-arrow"></use>
-            </svg>
-          </button>
-          <button class="edition__button edition__button--increase edition__button--js-increase">
-            <svg class="edition__svg edition__svg--increase">
-              <use href="assets/svg/icons.svg#up-arrow"></use>
-            </svg>
-          </button>
-          <button class="edition__button edition__button--cancel edition__button--js-cancel">
-            <svg class="edition__svg edition__svg--cancel">
-              <use href="assets/svg/icons.svg#back-arrow"></use>
-            </svg>
-          </button>
-          <button class="edition__button edition__button--save edition__button--js-save">
-            <svg class="edition__svg edition__svg--save">
-              <use href="assets/svg/icons.svg#save-icon"></use>
-            </svg>
-          </button>
-        </div>
-        <div class="emoji emoji--js-${this.id}">
-          ${getEmojiHtml(this.id)}
-        </div>
-      </li>
-    `;
   }
-  /* get value() {
-    return this._value;
+  /* get _value() {
+    return this.value;
   }
-  set value(id) {
-    this._value = id;
+  set _value(value) {
+    this.value = value;
   } */
   get _date() {
     return this.date;
@@ -1333,7 +1352,7 @@ if (hydrappUser) {
 
 
 
-//toggleSidebar(burgerBtn);                                 // ! FOR TESTS ONLY
+toggleSidebar(burgerBtn);                                 // ! FOR TESTS ONLY
 //enterNewEntryValue(107);                                  // ! FOR TESTS ONLY
 
 //| VARIABLES                                                               |//
