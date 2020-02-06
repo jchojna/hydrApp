@@ -110,6 +110,15 @@ const addEntryToJson = (date) => {
   const newEntry = new Entry(date);
   hydrappJson.entries = [...hydrappJson.entries, newEntry];
 }
+//| EXPORT JSON OBJECT TO LOCAL STORAGE                                     |//
+const exportJsonToLS = (user) => {
+  localStorage.setItem(`hydrapp-${user}`, JSON.stringify(hydrappJson));
+}
+//| IMPORT JSON OBJECT FROM LOCAL STORAGE                                     |//
+const importJsonFromLS = (user) => {
+  hydrappJson = JSON.parse(localStorage.getItem(`hydrapp-${user}`));
+}
+//| TRIGGER FUNCTIONS LOADING APP                                           |//
 const loadApp = () => {
   const startValue = hydrappJson.entries[0].value;
   setArchiveDOM();
@@ -416,30 +425,31 @@ const setWaterMeasureDOM = () => {
 }
 //| HANDLE WATER CHANGE                                                     |//
 const handleWaterChange = (e) => {
-  const self = e.target || e;
-  const key = setDateKey();
-  let { value } = hydrappJson.entries[0];
+  const self = e.target;
+  const { waterMax } = hydrappJson;
+  let { value, id } = hydrappJson.entries[0];
   const firstEntryValue = document.querySelector('.entry__value--js');
 
-  //. if add button clicked                                               .//
+  //. if add button clicked                                                 .//
   if (self === addBtn) {
     if (value >= waterMax) return;
     handleCounter(value, ++value);
 
-  //. if remove button clicked                                            .//
+  //. if remove button clicked                                              .//
   } else if (self === removeBtn) {
     if (value <= 0) return;
     handleCounter(value, --value);
   }
-  localStorage.setItem(key, value);
-  hydrappArray[0].value = key;
+  //. value has been changed                                                .//
+  hydrappJson.entries[0].value = value;
+  exportJsonToLS('Jakub');
   handleWaterLevel(value);
   handleWaterShake();
   handleCounterMessage(value);
   handleWaterAverage();
-  firstEntryValue.textContent = hydrappArray[0].value;
+  firstEntryValue.textContent = value;
   handleEmoji('controls', value);
-  handleEmoji(hydrappArray[0].id, value);
+  handleEmoji(id, value);
 }
 //| HANDLE WATER MEASURE APPEARANCE                                         |//
 const handleWaterMeasure = () => {
@@ -519,7 +529,7 @@ const handleWaterAverage = () => {
     .reduce((a,b) => a + b) / entries.length;
   levelAvg.style.bottom = `${waterAverage * interval}px`;
   hydrappJson.waterAvg = waterAverage;
-  localStorage.setItem(`hydrapp-${userName}`, JSON.stringify(hydrappJson));
+  exportJsonToLS('Jakub');
 }
 //// COUNTER                                                               ////
 //| SET COUNTER VALUES                                                      |//
@@ -1309,9 +1319,8 @@ class Entry {
 /* const date = new Date();
 const testEntry = new Entry(date);
 console.log('testEntry', testEntry); */
-const userName = 'Jakub';
 
-const hydrappUser = localStorage.getItem(`hydrapp-${userName}`);
+const hydrappUser = localStorage.getItem('hydrapp-Jakub');
 if (hydrappUser) {
   hydrappJson = JSON.parse(hydrappUser);
   loadApp();
