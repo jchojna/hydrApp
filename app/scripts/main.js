@@ -812,12 +812,6 @@ const setArchiveDOM = () => {
   handleEmoji('new', 0);
 }
 //| ADD ARCHIVE NODE                                                        |//
-
-
-
-
-
-
 const addArchiveEntry = (index, option) => {
   const {value, id, day} = hydrappJson.entries[index];
   const weekHtml = getWeekHtml();
@@ -849,12 +843,6 @@ const addArchiveEntry = (index, option) => {
   editButton.index = index;
   editButton.addEventListener('click', handleEntryEdit);
 }
-
-
-
-
-
-
 //| SET WEEK HEADING                                                        |//
 const updateWeekHeading = () => {
   weekLists = document.querySelectorAll('.week__list--js');
@@ -1137,13 +1125,13 @@ const handleEntryEdit = (e) => {
     entry.classList.toggle('entry--edit-mode');
     entryHeader.classList.toggle('entry__header--edit-mode');
 
-    itemIndex === hydrappArray.length - 1
+    itemIndex === hydrappJson.entries.length - 1
     ? removeEntryButton.classList.toggle('entry__remove--hidden')
     : false;
   }
   //: EXIT EDIT MODE                                                        ://
   const exitEditMode = () => {
-    const {value, id} = hydrappArray[itemIndex];
+    const {value, id} = hydrappJson.entries[itemIndex];
     
     toggleItemDisplay();
     entryValue.textContent = value;
@@ -1157,7 +1145,8 @@ const handleEntryEdit = (e) => {
   const handleEdition = (e) => {
     const self = e.keyCode || e.target;
     let dayValue = parseInt(entryValue.textContent);
-    const {key, id} = hydrappArray[itemIndex];
+    const { waterMax } = hydrappJson;
+    const { id, value } = hydrappJson.entries[itemIndex];
 
     switch (self) {
 
@@ -1183,16 +1172,14 @@ const handleEntryEdit = (e) => {
       case 13:
       case saveButton:
         if (itemIndex === 0) {
-          handleCounter(hydrappArray[0].value, dayValue);
+          handleCounter(value, dayValue);
           handleWaterLevel(dayValue);
           handleWaterShake();
           handleCounterMessage(dayValue);
           handleEmoji('controls', dayValue);
         }
-        //: change global values (must be after counter handler             ://
-        //: which uses previous value before change                         ://
-        localStorage.setItem(key, dayValue);
-        hydrappArray[itemIndex].value = key;
+        hydrappJson.entries[itemIndex].value = dayValue;
+        exportJsonToLS('Jakub');
         handleWaterAverage();
         exitEditMode();
       break;
