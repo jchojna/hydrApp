@@ -78,6 +78,8 @@ const handleContainerHeight = (container, elements) => {
 const setData = () => {
   const date = new Date();
   let dateKey = setDateKey(date);
+
+
   setNewKeyValue(dateKey, 0);
   let hydrappKeys = getHydrappKeys();
   const oldestKey = hydrappKeys[hydrappKeys.length - 1];
@@ -95,8 +97,202 @@ const setData = () => {
     setNewKeyValue(dateKey, 0);
     createEntryObject(date);
   }
-  // to update
-  // handleWaterChange('displayValue');
+}
+//| ADD NEW ENTRY TO ARRAY IN JSON                                          |//
+const addEntryToJson = (date) => {
+  const newEntry = new Entry(date);
+  hydrappJson.entries = [...hydrappJson.entries, newEntry];
+}
+/*
+##     ##  ######  ######## ########
+##     ## ##    ## ##       ##     ##
+##     ## ##       ##       ##     ##
+##     ##  ######  ######   ########
+##     ##       ## ##       ##   ##
+##     ## ##    ## ##       ##    ##
+ #######   ######  ######## ##     ##
+*/
+//// USER DATA                                                             ////
+//| CREATE USER DOM NODES                                                   |//
+const setUserDOM = () => {
+  const userDetails = [
+    { id: 'Name', question: 'What\'s your name, dear guest?' },
+    { id: 'Age', question: 'What\'s your age?' },
+    { id: 'Weight', question: 'And what\'s your weight?' },
+    { id: 'Height', question: 'At last, what\'s your height?' }
+  ];
+  
+  for (let i = 0; i < userDetails.length; i++) {
+    const { id, question } = userDetails[i];
+    
+    const userDetailHtml = `
+      <div class="user ${i === 0 ? 'user--visible' : ''} user--js">
+        <label
+          for="user${id}"
+          class="user__label user__label--js-${id.toLowerCase()}"
+        >
+          ${question}
+        </label>
+        <input
+          id="user${id}"
+          class="user__input user__input--js"
+          type="text"
+          maxlength="${i === 0 ? 20 : 3}"
+          autofocus=${i === 0 ? true : false}
+        >
+        ${i !== 0 ? `
+          <div class="user__alert user__alert--js">
+            <p class="user__alertText"></p>
+          </div>
+          <button class="user__button user__button--prev user__button--js-prev">
+            <svg class="user__svg" viewBox="0 0 512 512">
+              <use href="assets/svg/icons.svg#left-arrow"></use>
+            </svg>
+          </button>
+        ` : ''}
+        <button class="user__button user__button--next user__button--js-next">
+          <svg class="user__svg" viewBox="0 0 512 512">
+            <use href="assets/svg/icons.svg#right-arrow"></use>
+          </svg>
+        </button>
+      </div>
+    `;
+    appUser.innerHTML += userDetailHtml;
+  }
+}
+//| HANDLE USER DETAILS                                                     |//
+const handleUserDetails = (e) => {
+  e.preventDefault();
+  const self = e.key || e.target;
+
+  //: TOGGLE VISIBILITY OF USER DETAIL WINDOW                               ://
+  const toggleDetail = (current, next, action, timeout) => {
+    const hiddenSide = action === 'prev' ? 'Right' : 'Left';
+    const visibleSide = action === 'prev' ? 'Left' : 'Right';
+    const nextInput = next ? next.querySelector('.user__input--js') : false;
+
+    current.classList.add(`user--hidden${hiddenSide}`);
+    current.classList.remove('user--visible');
+    next ? next.classList.add(`user--hidden${visibleSide}`) : false;
+
+    detailToggleTimeoutId = setTimeout(() => {
+      if (next) {
+        next.classList.add('user--visible');
+        next.classList.remove(`user--hidden${visibleSide}`);
+        nextInput.focus();
+      }
+      clearTimeout(detailToggleTimeoutId);
+      detailToggleTimeoutId = null;
+    }, timeout);
+  }
+  //: RETURN USER INPUT VALUE AS INTEGER                                    ://
+  const getInputValue = (index) => parseInt(userInputs[index].value);
+
+  if ((self.tagName === 'BUTTON' || self === 'Enter' || self === 'Escape')
+  && detailToggleTimeoutId === null) {
+
+    const toggleTime = 300;
+    const { action } = self;
+    const maxIndex = userDetails.length - 1;
+
+    if (action === 'prev' || self === 'Escape') {
+      const currentDetail = userDetails[currentDetailIndex];
+      const nextDetail = userDetails[currentDetailIndex - 1];
+      if (currentDetailIndex > 0) {
+        toggleDetail(currentDetail, nextDetail, 'prev', toggleTime);
+        currentDetailIndex--;
+      }
+
+    } else if (action === 'next' || self === 'Enter') {
+      const currentDetail = userDetails[currentDetailIndex];
+      //: AQUIRE USER DATA AND GO TO LANDING SECTION                        ://
+      if (currentDetailIndex >= maxIndex) {
+        if (isInputValid(currentDetailIndex)) {
+          //. update JSON object                                            .//
+          hydrappJson.userName = userInputs[0].value;
+          hydrappJson.userAge = getInputValue(1);
+          hydrappJson.userWeight = getInputValue(2);
+          hydrappJson.userHeight = getInputValue(3);
+          const date = new Date();
+          hydrappJson.entries = [new Entry(date)];
+          //. set JSON object as local storage item                         .//
+          const keyName = `hydrapp-${hydrappJson.userName}`;
+          localStorage.setItem(keyName, JSON.stringify(hydrappJson));
+          //. change user section visibility                                .//
+          toggleDetail(currentDetail, null, 'next', toggleTime);
+          appUser.classList.add('app__user--hidden');
+        }
+      //: GO TO NEXT USER DETAIL                                            ://
+      } else {
+        var nextDetail = userDetails[currentDetailIndex + 1];
+        if (isInputValid(currentDetailIndex)) {
+          if (currentDetailIndex === 0) {
+            const userName = userInputs[currentDetailIndex].value;
+            const userAgeLabel = document.querySelector('.user__label--js-age');
+            const newLabelContent = `Hello ${userName}, how old are you?`;
+            userAgeLabel.textContent = newLabelContent;
+            hydrappJson.userName = userName;
+          }
+          toggleDetail(currentDetail, nextDetail, 'next', toggleTime);
+          currentDetailIndex++;
+        }
+      }
+    }
+  }
+}
+//| FILTER USER INPUTS                                                      |//
+const filterUserInput = (e) => {
+  if (e.keyCode  === 13 || e.keyCode  === 27) return false;
+  const self = e.target;
+  const { value } = self;
+  const filteredValue = value.match(/\d/g);
+  const outputValue = filteredValue ? filteredValue.join('') : '';
+  self.value = outputValue;
+}
+//| VALIDATE USER INPUTS                                                    |//
+const isInputValid = (index) => {
+
+  const handleInputAlert = (index, min, max) => {
+    index = index - 1; // there's no alerts for first user detail
+    const alert = userAlerts[index];
+    const alertText = alert.firstElementChild;
+    const valNames = ['Age', 'Weight', 'Height'];
+    const valName = valNames[index];
+    const alertTextContent = `${valName} should be between ${min} and ${max}`;
+
+    if (!min && !max) {
+      alert.style.height = '';
+      alertText.textContent = '';
+    } else {
+      alertText.textContent = alertTextContent;
+      alert.style.height = `${alertText.clientHeight}px`;
+    }
+  }
+
+  const input = userInputs[index];
+  const inputValue = index === 0 ? input.value : parseInt(input.value);
+  const limits = [
+    { min: null, max: null},
+    { min: 10, max: 120},
+    { min: 8, max: 200},
+    { min: 70, max: 250}
+  ]
+  const limitMin = limits[index].min;
+  const limitMax = limits[index].max;
+
+  if (!inputValue) {
+    input.focus();
+    return false;
+  }
+
+  if (index === 0) return true;
+  if (inputValue < limitMin || inputValue > limitMax) {
+    handleInputAlert(index, limitMin, limitMax);
+    return false;
+  } else {
+    handleInputAlert(index);
+    return true;
+  }
 }
 //// EMOJI                                                                 ////
 //| GET EMOJIS HTML STRING                                                  |//
@@ -725,7 +921,7 @@ const handleArchiveLastEntry = () => {
     lastEntry.classList.add('entry--last');
   }
 }
-//| REMOVE LAST ITEM << SHOW ARCHIVE                                        |//
+//| REMOVE LAST ITEM                                                        |//
 const removeLastEntry = (e) => {
   const self = e.keyCode || e. target;
   const lastEntryIndex = hydrappArray.length - 1;
@@ -871,8 +1067,6 @@ const entriesFade = (action) => {
 
 //| VARIABLES                                                               |//
 ////                                                                       ////
-const appHeader = document.querySelector('.app__header--js');
-const appLanding = document.querySelector('.app__landing--js');
 //: MEDIA                                                                   ://
 const mediaMd = 768;
 const mediaLg = 1200;
@@ -880,6 +1074,11 @@ const mediaLg = 1200;
 const waterMax = 20;
 let waterMin = 7;
 let waterAvg = 12;
+//: APP                                                                     ://
+const appHeader = document.querySelector('.app__header--js');
+const appUser = document.querySelector('.app__user--js');
+const appLanding = document.querySelector('.app__landing--js');
+const appSidebar = document.querySelector('.app__sidebar--js');
 //: COUNTER                                                                 ://
 const counter = document.querySelector('.counter--js');
 const counterPrevTenths = document.querySelector('.digit__svg--js-prevTenths');
@@ -909,7 +1108,6 @@ const levelMin = document.querySelector('.graph__level--js-min');
 //: MENU                                                                    ://
 const burgerBtn = document.querySelector('.button--js-burger');
 //: SIDEBAR                                                                 ://
-const appSidebar = document.querySelector('.app__sidebar--js');
 const archiveTabButton = document.querySelector('.tab__button--js-archive');
 const statsTabButton = document.querySelector('.tab__button--js-stats');
 const settingTabButton = document.querySelector('.tab__button--js-settings');
@@ -938,6 +1136,18 @@ const settingsContainer = document.querySelector('.tab__container--js-settings')
 let hydrappArray = [];
 const lastEntryDate = new Date();
 const weekDay = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+/*
+      ##  ######   #######  ##    ##
+      ## ##    ## ##     ## ###   ##
+      ## ##       ##     ## ####  ##
+      ##  ######  ##     ## ## ## ##
+##    ##       ## ##     ## ##  ####
+##    ## ##    ## ##     ## ##   ###
+ ######   ######   #######  ##    ##
+*/
+const hydrappJson = {};
+
+
 //| CLASS FOR ENTRY                                                         |//
 class Entry {
   constructor(date) {
@@ -1038,7 +1248,12 @@ class Entry {
 
 //| FUNCTION CALLS                                                          |//
 ////                                                                       ////
+// if () - condition if user form should be displayed
+setUserDOM();
+
 setData();
+console.log('hydrappArray', hydrappArray);
+
 setArchiveDOM();
 setWaterMeasureDOM();
 setWaterWaves(wavesAmount);
@@ -1056,8 +1271,8 @@ updateWeekHeading();
 handleWaterAverage();
 
 
-toggleSidebar(burgerBtn);                           // ! FOR TESTS ONLY
-//enterNewEntryValue(107);                                    // ! FOR TESTS ONLY
+//toggleSidebar(burgerBtn);                                 // ! FOR TESTS ONLY
+//enterNewEntryValue(107);                                  // ! FOR TESTS ONLY
 
 //| VARIABLES                                                               |//
 let editButtons = document.querySelectorAll('.edition__button--js-edit');
@@ -1068,3 +1283,32 @@ controls.addEventListener('click', handleWaterChange);
 window.addEventListener('resize', handleWindowResize);
 burgerBtn.addEventListener('click', toggleSidebar);
 appSidebar.addEventListener('click', toggleSidebarTabs);
+
+
+// if () - condition if user form should be displayed
+//: USER DATA                                                               ://
+let currentDetailIndex = 0;
+let detailToggleTimeoutId = null;
+const userDetails = document.querySelectorAll('.user--js');
+const userPrevButtons = document.querySelectorAll('.user__button--js-prev');
+const userNextButtons = document.querySelectorAll('.user__button--js-next');
+const userInputs = document.querySelectorAll('.user__input--js');
+const userAlerts = document.querySelectorAll('.user__alert--js');
+
+[...userPrevButtons].forEach((button, index) => {
+  button.index = index;
+  button.action = 'prev';
+  button.addEventListener('click', handleUserDetails);
+});
+[...userNextButtons].forEach((button, index) => {
+  button.index = index;
+  button.action = 'next';
+  button.addEventListener('click', handleUserDetails);
+});
+[...userInputs]
+.filter((input, index) => index !== 0)
+.forEach(input => input.addEventListener('keyup', filterUserInput));
+appUser.addEventListener('keypress', (e) => {
+  if (e.keyCode  === 13 || e.keyCode  === 27) e.preventDefault();
+});
+appUser.addEventListener('keyup', handleUserDetails);

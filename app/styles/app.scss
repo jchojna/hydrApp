@@ -59,7 +59,7 @@
       }
     }
   }
-  //: APP SIDEBAR                                                             ://
+  //: APP SIDEBAR                                                           ://
   &__sidebar {
     align-items: center;
     background-color: $cold-darkest-blue;
@@ -107,6 +107,25 @@
         padding-top: $header-height-lg;
         width: 40%;
       }
+    }
+  }
+  //: APP USER                                                              ://
+  &__user {
+    @include flex-center;
+    background-color: $cold-dark-blue;
+    height: 100%;
+    left: 0;
+    opacity: 1;
+    position: fixed;
+    top: 0;
+    visibility: visible;
+    width: 100%;
+    z-index: 2;
+
+    &--hidden {
+      opacity: 0;
+      transition: opacity $user-detail-toggle, visibility 0s $user-detail-toggle;
+      visibility: hidden;
     }
   }
 }
