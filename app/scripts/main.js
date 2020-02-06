@@ -133,6 +133,7 @@ const setUserDOM = () => {
           class="user__input user__input--js"
           type="text"
           maxlength="${i === 0 ? 20 : 3}"
+          autofocus=${i === 0 ? true : false}
         >
         ${i !== 0 ? `
           <div class="user__alert user__alert--js">
@@ -162,6 +163,7 @@ const handleUserDetails = (e) => {
   const toggleDetail = (current, next, action, timeout) => {
     const hiddenSide = action === 'prev' ? 'Right' : 'Left';
     const visibleSide = action === 'prev' ? 'Left' : 'Right';
+    const nextInput = next.querySelector('.user__input--js');
 
     current.classList.add(`user--hidden${hiddenSide}`);
     current.classList.remove('user--visible');
@@ -170,6 +172,7 @@ const handleUserDetails = (e) => {
     const timeoutId = setTimeout(() => {
       next.classList.add('user--visible');
       next.classList.remove(`user--hidden${visibleSide}`);
+      nextInput.focus();
       clearTimeout(timeoutId);
     }, timeout);
   }
@@ -215,13 +218,9 @@ const handleUserDetails = (e) => {
           if (index === 0) {
             const userName = userIputs[index].value;
             const userAgeLabel = document.querySelector('.user__label--js-age');
-            const labelContent = userAgeLabel.textContent.toLowerCase();
-            const newLabelContent = `Hello ${userName}, ${labelContent}`;
-
+            const newLabelContent = `Hello ${userName}, how old are you?`;
             userAgeLabel.textContent = newLabelContent;
             hydrappJson.userName = userName;
-
-
           }
           toggleDetail(currentDetail, nextDetail, action, toggleTime);
         }
@@ -258,7 +257,7 @@ const isInputValid = (index) => {
   }
 
   const input = userIputs[index];
-  const inputValue = parseInt(input.value);
+  const inputValue = index === 0 ? input.value : parseInt(input.value);
   const limits = [
     { min: null, max: null},
     { min: 10, max: 120},
@@ -268,12 +267,13 @@ const isInputValid = (index) => {
   const limitMin = limits[index].min;
   const limitMax = limits[index].max;
 
-  if (index === 0) return true;
   if (!inputValue) {
     input.focus();
     return false;
   }
+  console.log('inputValue', inputValue);
 
+  if (index === 0) return true;
   if (inputValue < limitMin || inputValue > limitMax) {
     handleInputAlert(index, limitMin, limitMax);
     return false;
