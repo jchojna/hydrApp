@@ -106,8 +106,6 @@ const setData = () => {
     setNewKeyValue(dateKey, 0);
     createEntryObject(date);
   }
-  // to update
-  // handleWaterChange('displayValue');
 }
 //// USER DATA                                                             ////
 //| HANDLE USER DETAILS                                                     |//
@@ -134,6 +132,7 @@ const handleUserDetails = (e) => {
 
     const toggleTime = 300;
     const { index, action } = self;
+    const maxIndex = userDetails.length - 1;
 
     if (action === 'prev') {
       const currentDetail = userDetails[index + 1];
@@ -143,9 +142,38 @@ const handleUserDetails = (e) => {
 
     } else if (action === 'next') {
       const currentDetail = userDetails[index];
-      const nextDetail = userDetails[index + 1];
-      if (isInputValid(index)) {
-        toggleDetail(currentDetail, nextDetail, action, toggleTime);
+
+      //: AQUIRE USER DATA AND GO TO LANDING SECTION                        ://
+      if (index >= maxIndex) {
+        if (isInputValid(index)) {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        }
+      //: GO TO NEXT USER DETAIL                                            ://
+      } else {
+        var nextDetail = userDetails[index + 1];
+        if (isInputValid(index)) {
+          if (index === 0) {
+            const userName = userIputs[index].value;
+            hydrappJson.userName = userName;
+
+            
+          }
+          toggleDetail(currentDetail, nextDetail, action, toggleTime);
+        }
       }
     }
   }
@@ -162,9 +190,12 @@ const filterUserInput = (e) => {
 const isInputValid = (index) => {
 
   const handleInputAlert = (index, min, max) => {
-    const alert = userAlerts[index - 1];
+    index = index - 1; // there's no alerts for first user detail
+    const alert = userAlerts[index];
     const alertText = alert.firstElementChild;
-    const alertTextContent = `The value should be between ${min} and ${max}`
+    const valNames = ['Age', 'Weight', 'Height'];
+    const valName = valNames[index];
+    const alertTextContent = `${valName} should be between ${min} and ${max}`;
 
     if (!min && !max) {
       alert.style.height = '';
@@ -1055,15 +1086,7 @@ const weekDay = ['sunday','monday','tuesday','wednesday','thursday','friday','sa
 ##    ## ##    ## ##     ## ##   ###
  ######   ######   #######  ##    ##
 */
-const hydrappJson = {
-  'userName': 'Kuba',
-  'userAge': 32,
-  'userWeight': 68,
-  'userHeight': 181,
-  'entries': hydrappArray
-
-
-}
+const hydrappJson = {};
 
 
 //| CLASS FOR ENTRY                                                         |//
@@ -1204,11 +1227,7 @@ appSidebar.addEventListener('click', toggleSidebarTabs);
 const userDetails = document.querySelectorAll('.user--js');
 const userPrevButtons = document.querySelectorAll('.user__button--js-prev');
 const userNextButtons = document.querySelectorAll('.user__button--js-next');
-const userSendButton = document.querySelector('.user__button--js-send');
-const userIputs = document.querySelectorAll('[class*=user__input--js]');
-const userAgeInput = document.querySelector('.user__input--js-age');
-const userWeightInput = document.querySelector('.user__input--js-weight');
-const userHeightInput = document.querySelector('.user__input--js-height');
+const userIputs = document.querySelectorAll('.user__input--js');
 const userAlerts = document.querySelectorAll('.user__alert--js');
 
 [...userPrevButtons].forEach((button, index) => {
@@ -1221,8 +1240,6 @@ const userAlerts = document.querySelectorAll('.user__alert--js');
   button.action = 'next';
   button.addEventListener('click', handleUserDetails);
 });
-userSendButton.addEventListener('click', handleUserDetails);
-
-userAgeInput.addEventListener('keyup', filterUserInput);
-userWeightInput.addEventListener('keyup', filterUserInput);
-userHeightInput.addEventListener('keyup', filterUserInput);
+[...userIputs]
+.filter((input, index) => index !== 0)
+.forEach(input => input.addEventListener('keyup', filterUserInput));
