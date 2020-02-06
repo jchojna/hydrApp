@@ -109,6 +109,60 @@ const setData = () => {
   // to update
   // handleWaterChange('displayValue');
 }
+//// USER DATA                                                             ////
+//| HANDLE USER DETAILS                                                     |//
+const handleUserDetails = (e) => {
+  e.preventDefault();
+  const self = e.target;
+
+  if (self.tagName === 'BUTTON') {
+
+    const toggleTime = 300;
+    const { index, action } = self;
+
+    if (action === 'prev') {
+      const currentDetail = userDetails[index + 1];
+      const nextDetail = userDetails[index];
+
+      currentDetail.classList.add('user--hiddenRight');
+      currentDetail.classList.remove('user--visible');
+      nextDetail.classList.add('user--hiddenLeft');
+
+      const timeoutId = setTimeout(() => {
+        nextDetail.classList.add('user--visible');
+        nextDetail.classList.remove('user--hiddenLeft');
+        clearTimeout(timeoutId);
+      }, toggleTime);
+
+
+    } else if (action === 'next') {
+      const currentDetail = userDetails[index];
+      const nextDetail = userDetails[index + 1];
+
+      currentDetail.classList.add('user--hiddenLeft');
+      currentDetail.classList.remove('user--visible');
+      nextDetail.classList.add('user--hiddenRight');
+
+      const timeoutId = setTimeout(() => {
+        nextDetail.classList.add('user--visible');
+        nextDetail.classList.remove('user--hiddenRight');
+        clearTimeout(timeoutId);
+      }, toggleTime);
+    }
+    
+
+
+
+
+
+
+
+
+
+
+
+  }
+}
 //// EMOJI                                                                 ////
 //| GET EMOJIS HTML STRING                                                  |//
 const getEmojiHtml = (id) => {
@@ -891,6 +945,18 @@ const mediaLg = 1200;
 const waterMax = 20;
 let waterMin = 7;
 let waterAvg = 12;
+//: USER DATA                                                               ://
+const userDetails = document.querySelectorAll('.user--js');
+const userPrevButtons = document.querySelectorAll('.user__button--js-prev');
+const userNextButtons = document.querySelectorAll('.user__button--js-next');
+const userSendButton = document.querySelector('.user__button--js-send');
+
+
+
+
+
+
+
 //: COUNTER                                                                 ://
 const counter = document.querySelector('.counter--js');
 const counterPrevTenths = document.querySelector('.digit__svg--js-prevTenths');
@@ -1100,3 +1166,15 @@ controls.addEventListener('click', handleWaterChange);
 window.addEventListener('resize', handleWindowResize);
 burgerBtn.addEventListener('click', toggleSidebar);
 appSidebar.addEventListener('click', toggleSidebarTabs);
+
+[...userPrevButtons].forEach((button, index) => {
+  button.index = index;
+  button.action = 'prev';
+  button.addEventListener('click', handleUserDetails);
+});
+[...userNextButtons].forEach((button, index) => {
+  button.index = index;
+  button.action = 'next';
+  button.addEventListener('click', handleUserDetails);
+});
+userSendButton.addEventListener('click', handleUserDetails);
