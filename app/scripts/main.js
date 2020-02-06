@@ -115,6 +115,21 @@ const handleUserDetails = (e) => {
   e.preventDefault();
   const self = e.target;
 
+  const toggleDetail = (current, next, action, timeout) => {
+    const hiddenSide = action === 'prev' ? 'Right' : 'Left';
+    const visibleSide = action === 'prev' ? 'Left' : 'Right';
+
+    current.classList.add(`user--hidden${hiddenSide}`);
+    current.classList.remove('user--visible');
+    next.classList.add(`user--hidden${visibleSide}`);
+
+    const timeoutId = setTimeout(() => {
+      next.classList.add('user--visible');
+      next.classList.remove(`user--hidden${visibleSide}`);
+      clearTimeout(timeoutId);
+    }, timeout);
+  }
+
   if (self.tagName === 'BUTTON') {
 
     const toggleTime = 300;
@@ -123,44 +138,14 @@ const handleUserDetails = (e) => {
     if (action === 'prev') {
       const currentDetail = userDetails[index + 1];
       const nextDetail = userDetails[index];
-
-      currentDetail.classList.add('user--hiddenRight');
-      currentDetail.classList.remove('user--visible');
-      nextDetail.classList.add('user--hiddenLeft');
-
-      const timeoutId = setTimeout(() => {
-        nextDetail.classList.add('user--visible');
-        nextDetail.classList.remove('user--hiddenLeft');
-        clearTimeout(timeoutId);
-      }, toggleTime);
+      toggleDetail(currentDetail, nextDetail, action, toggleTime);
 
 
     } else if (action === 'next') {
       const currentDetail = userDetails[index];
       const nextDetail = userDetails[index + 1];
-
-      currentDetail.classList.add('user--hiddenLeft');
-      currentDetail.classList.remove('user--visible');
-      nextDetail.classList.add('user--hiddenRight');
-
-      const timeoutId = setTimeout(() => {
-        nextDetail.classList.add('user--visible');
-        nextDetail.classList.remove('user--hiddenRight');
-        clearTimeout(timeoutId);
-      }, toggleTime);
+      toggleDetail(currentDetail, nextDetail, action, toggleTime);
     }
-    
-
-
-
-
-
-
-
-
-
-
-
   }
 }
 //// EMOJI                                                                 ////
