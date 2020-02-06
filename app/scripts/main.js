@@ -169,31 +169,35 @@ const handleUserDetails = (e) => {
     current.classList.remove('user--visible');
     next.classList.add(`user--hidden${visibleSide}`);
 
-    const timeoutId = setTimeout(() => {
+    detailToggleTimeoutId = setTimeout(() => {
       next.classList.add('user--visible');
       next.classList.remove(`user--hidden${visibleSide}`);
       nextInput.focus();
-      clearTimeout(timeoutId);
+      clearTimeout(detailToggleTimeoutId);
+      detailToggleTimeoutId = null;
     }, timeout);
   }
 
-  if (self.tagName === 'BUTTON' || self === 'Enter' || self === 'Escape') {
+  if ((self.tagName === 'BUTTON' || self === 'Enter' || self === 'Escape')
+  && detailToggleTimeoutId === null) {
 
     const toggleTime = 300;
     const { action } = self;
     const maxIndex = userDetails.length - 1;
 
     if (action === 'prev' || self === 'Escape') {
-      const currentDetail = userDetails[currentUserIndex];
-      const nextDetail = userDetails[currentUserIndex - 1];
-      toggleDetail(currentDetail, nextDetail, 'prev', toggleTime);
-      currentUserIndex--;
+      const currentDetail = userDetails[currentDetailIndex];
+      const nextDetail = userDetails[currentDetailIndex - 1];
+      if (currentDetailIndex > 0) {
+        toggleDetail(currentDetail, nextDetail, 'prev', toggleTime);
+        currentDetailIndex--;
+      }
 
     } else if (action === 'next' || self === 'Enter') {
-      const currentDetail = userDetails[currentUserIndex];
+      const currentDetail = userDetails[currentDetailIndex];
       //: AQUIRE USER DATA AND GO TO LANDING SECTION                        ://
-      if (currentUserIndex >= maxIndex) {
-        if (isInputValid(currentUserIndex)) {
+      if (currentDetailIndex >= maxIndex) {
+        if (isInputValid(currentDetailIndex)) {
 
 
 
@@ -204,17 +208,17 @@ const handleUserDetails = (e) => {
         }
       //: GO TO NEXT USER DETAIL                                            ://
       } else {
-        var nextDetail = userDetails[currentUserIndex + 1];
-        if (isInputValid(currentUserIndex)) {
-          if (currentUserIndex === 0) {
-            const userName = userIputs[currentUserIndex].value;
+        var nextDetail = userDetails[currentDetailIndex + 1];
+        if (isInputValid(currentDetailIndex)) {
+          if (currentDetailIndex === 0) {
+            const userName = userIputs[currentDetailIndex].value;
             const userAgeLabel = document.querySelector('.user__label--js-age');
             const newLabelContent = `Hello ${userName}, how old are you?`;
             userAgeLabel.textContent = newLabelContent;
             hydrappJson.userName = userName;
           }
           toggleDetail(currentDetail, nextDetail, 'next', toggleTime);
-          currentUserIndex++;
+          currentDetailIndex++;
         }
       }
     }
@@ -1266,7 +1270,8 @@ appSidebar.addEventListener('click', toggleSidebarTabs);
 
 // if () - condition if user form should be displayed
 //: USER DATA                                                               ://
-let currentUserIndex = 0;
+let currentDetailIndex = 0;
+let detailToggleTimeoutId = null;
 const userDetails = document.querySelectorAll('.user--js');
 const userPrevButtons = document.querySelectorAll('.user__button--js-prev');
 const userNextButtons = document.querySelectorAll('.user__button--js-next');
@@ -1286,9 +1291,7 @@ const userAlerts = document.querySelectorAll('.user__alert--js');
 [...userIputs]
 .filter((input, index) => index !== 0)
 .forEach(input => input.addEventListener('keyup', filterUserInput));
-
 appUser.addEventListener('keypress', (e) => {
   if (e.keyCode  === 13 || e.keyCode  === 27) e.preventDefault();
 });
-
 appUser.addEventListener('keyup', handleUserDetails);
