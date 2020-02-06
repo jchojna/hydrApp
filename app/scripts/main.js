@@ -110,6 +110,22 @@ const addEntryToJson = (date) => {
   const newEntry = new Entry(date);
   hydrappJson.entries = [...hydrappJson.entries, newEntry];
 }
+const loadApp = () => {
+  const startValue = hydrappJson.entries[0].value;
+  setArchiveDOM();
+  setWaterMeasureDOM();
+  setWaterWaves(wavesAmount);
+  handleCounter(startValue);
+  handleWaterLevel(startValue);
+  handleWaterShake();
+  handleWaterMeasure();
+  handleCounterMessage(startValue);
+  handleCounterDate();
+  emoji.innerHTML = getEmojiHtml('controls');
+  handleEmoji('controls', startValue);
+  updateWeekHeading();
+  handleWaterAverage();
+}
 /*
 ##     ##  ######  ######## ########
 ##     ## ##    ## ##       ##     ##
@@ -222,8 +238,14 @@ const createUser = () => {
             hydrappJson.userAge = getInputValue(1);
             hydrappJson.userWeight = getInputValue(2);
             hydrappJson.userHeight = getInputValue(3);
+            hydrappJson.waterMax = 20,
+            hydrappJson.waterMin = 8,
+            hydrappJson.waterAvg = 0
+            // date of creation etc..
+
             const date = new Date();
             hydrappJson.entries = [new Entry(date)];
+            loadApp();
             //. set JSON object as local storage item                         .//
             const keyName = `hydrapp-${hydrappJson.userName}`;
             localStorage.setItem(keyName, JSON.stringify(hydrappJson));
@@ -381,6 +403,7 @@ const setWaterWaves = () => {
 }
 //| SET WATER MEASURE                                                       |//
 const setWaterMeasureDOM = () => {
+  const { waterMax } = hydrappJson;
   for (let i = 0; i <= waterMax; i++) {
     const digit = waterMax - i;
     measure.innerHTML += `
@@ -395,7 +418,7 @@ const setWaterMeasureDOM = () => {
 const handleWaterChange = (e) => {
   const self = e.target || e;
   const key = setDateKey();
-  let value = parseInt(hydrappArray[0].value);
+  let { value } = hydrappJson.entries[0];
   const firstEntryValue = document.querySelector('.entry__value--js');
 
   //. if add button clicked                                               .//
@@ -421,7 +444,9 @@ const handleWaterChange = (e) => {
 //| HANDLE WATER MEASURE APPEARANCE                                         |//
 const handleWaterMeasure = () => {
   const headerHeight = appHeader.clientHeight;
-  const interval = window.innerHeight / waterMax;
+  const { waterMax } = hydrappJson;
+  const interval = appLanding.clientHeight / waterMax;
+  const measureLevels = document.querySelectorAll('.measurePart--js');
 
   [...measureLevels].forEach((level, index) => {
     const detailLevel = (everyNth) => {
@@ -456,6 +481,7 @@ const handleWaterWaves = () => {
 }
 //| HANDLE WATER LEVEL                                                      |//
 const handleWaterLevel = (value) => {
+  const { waterMax, waterMin, waterAvg } = hydrappJson;
   const landingHeight = appLanding.clientHeight;
   const waterOffset = landingHeight / waterMax * (waterMax - value);
   const avgOffset = landingHeight / waterMax * (waterAvg);
@@ -486,11 +512,14 @@ const handleWaterShake = () => {
 }
 //| HANDLE CONSUMED WATER AVERAGE VALUE                                     |//
 const handleWaterAverage = () => {
-  const interval = window.innerHeight / waterMax;
-  const waterAverage = [...hydrappArray]
+  const { waterMax, entries } = hydrappJson;
+  const interval = appLanding.clientHeight / waterMax;
+  const waterAverage = [...entries]
     .map(elem => elem.value)
-    .reduce((a,b) => a + b) / hydrappArray.length;
+    .reduce((a,b) => a + b) / entries.length;
   levelAvg.style.bottom = `${waterAverage * interval}px`;
+  hydrappJson.waterAvg = waterAverage;
+  localStorage.setItem(`hydrapp-${userName}`, JSON.stringify(hydrappJson));
 }
 //// COUNTER                                                               ////
 //| SET COUNTER VALUES                                                      |//
@@ -588,7 +617,8 @@ const handleCounter = (currentValue, newValue) => {
   }
 }
 //| HANDLE MESSAGE DEPENDING ON AMOUNT OF CONSUMED WATER                    |//
-const handleCounterMessage = (value) => {  
+const handleCounterMessage = (value) => {
+  const { waterMax, waterMin, waterAvg } = hydrappJson;
   counterMessage.innerHTML = value === waterMax
   ? 'It\'s enough for today!'
 
@@ -614,7 +644,7 @@ const handleCounterMessage = (value) => {
 }
 //| HANDLE COUNTER DATE TO DISPLAY                                          |//
 const handleCounterDate = () => {
-  const { day, date } = hydrappArray[0];
+  const { day, date } = hydrappJson.entries[0];
   counterDay.innerHTML = day;
   counterDate.innerHTML = date.slice().split(' ').join('.');
 }
@@ -689,7 +719,8 @@ const toggleSidebarTabs = (e) => {
 //// ARCHIVE TAB                                                           ////
 //| SET ARCHIVE                                                             |//
 const setArchiveDOM = () => {
-  for (let i = 0; i < hydrappArray.length; i++) {
+  const { entries } = hydrappJson;
+  for (let i = 0; i < entries.length; i++) {
     addArchiveEntry(i);
   }
   //: set the newest week as visible                                        ://
@@ -705,7 +736,7 @@ const setArchiveDOM = () => {
 }
 //| ADD ARCHIVE NODE                                                        |//
 const addArchiveEntry = (index, option) => {
-  const {value, id, day, dayHtml, weekHtml} = hydrappArray[index];
+  const {value, id, day, dayHtml, weekHtml} = hydrappJson.entries[index];
   //: function adding new week DOM node                                     ://
   const addWeek = () => {
     archiveContainer.insertAdjacentHTML('beforeend', weekHtml);
@@ -1108,10 +1139,6 @@ const entriesFade = (action) => {
 //: MEDIA                                                                   ://
 const mediaMd = 768;
 const mediaLg = 1200;
-//: WATER VALUE                                                             ://
-const waterMax = 20;
-let waterMin = 7;
-let waterAvg = 12;
 //: APP                                                                     ://
 const appHeader = document.querySelector('.app__header--js');
 const appUser = document.querySelector('.app__user--js');
@@ -1174,26 +1201,15 @@ const settingsContainer = document.querySelector('.tab__container--js-settings')
 let hydrappArray = [];
 const lastEntryDate = new Date();
 const weekDay = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
-/*
-      ##  ######   #######  ##    ##
-      ## ##    ## ##     ## ###   ##
-      ## ##       ##     ## ####  ##
-      ##  ######  ##     ## ## ## ##
-##    ##       ## ##     ## ##  ####
-##    ## ##    ## ##     ## ##   ###
- ######   ######   #######  ##    ##
-*/
 let hydrappJson = {};
-
-
 //| CLASS FOR ENTRY                                                         |//
 class Entry {
   constructor(date) {
-    this.key = setDateKey(date);
-    this.value = this.key;
-    this.date = date;
-    this.id = this.date;
-    this.day = date;
+    //this.key = setDateKey(date);
+    this.value = 0;
+    this._date = date;
+    this._id = this.date;
+    this._day = date;
 
     this.weekHtml = `
       <section class="week week--js">
@@ -1217,7 +1233,7 @@ class Entry {
     `;
 
     this.dayHtml = `
-      <li class="entry entry--js ${this.key}">
+      <li class="entry entry--js">
         <header class="entry__header entry__header--js">
           <p class="entry__heading entry__heading--day">${this.day}</p>
           <p class="entry__heading entry__heading--date entry__heading--js-date">${this.date}</p>
@@ -1256,60 +1272,56 @@ class Entry {
       </li>
     `;
   }
-
-  get value() {
+  /* get value() {
     return this._value;
   }
-  set value(key) {
-    this._value = parseInt(localStorage.getItem(key));
+  set value(id) {
+    this._value = id;
+  } */
+  get _date() {
+    return this.date;
   }
-  get date() {
-    return this._date;
+  set _date(date) {
+    this.date = getOffsetedDate(date)
+    .toISOString()
+    .slice(0,10)
+    .split('-')
+    .reverse()
+    .join(' ');
   }
-  set date(date) {
-    this._date = getOffsetedDate(date).toISOString().slice(0,10).split('-').reverse().join(' ');
+  get _id() {
+    return this.id;
   }
-  get id() {
-    return this._id;
+  set _id(date) {
+    this.id = date.replace(/\s/g,'');
   }
-  set id(date) {
-    this._id = date.replace(/\s/g,'');
+  get _day() {
+    return this.day;
   }
-  get day() {
-    return this._day;
-  }
-  set day(date) {
+  set _day(date) {
     const dayIndex = date.getDay();
-    this._day = weekDay[dayIndex];
+    this.day = weekDay[dayIndex];
   }
 }
 
 //| FUNCTION CALLS                                                          |//
 ////                                                                       ////
-const hydrappUser = localStorage.getItem('hydrapp-Jakub');
+/* const date = new Date();
+const testEntry = new Entry(date);
+console.log('testEntry', testEntry); */
+const userName = 'Jakub';
+
+const hydrappUser = localStorage.getItem(`hydrapp-${userName}`);
 if (hydrappUser) {
   hydrappJson = JSON.parse(hydrappUser);
+  loadApp();
+
 } else {
   createUser();
 }
 
-setData();
+//setData();
 
-setArchiveDOM();
-setWaterMeasureDOM();
-setWaterWaves(wavesAmount);
-const startValue = hydrappArray[0].value;
-const measureLevels = document.querySelectorAll('.measurePart--js');
-handleCounter(startValue);
-handleWaterLevel(startValue);
-handleWaterShake();
-handleWaterMeasure();
-handleCounterMessage(startValue);
-handleCounterDate();
-emoji.innerHTML = getEmojiHtml('controls');
-handleEmoji('controls', startValue);
-updateWeekHeading();
-handleWaterAverage();
 
 
 //toggleSidebar(burgerBtn);                                 // ! FOR TESTS ONLY
