@@ -98,6 +98,11 @@ const setData = () => {
     createEntryObject(date);
   }
 }
+//| ADD NEW ENTRY TO ARRAY IN JSON                                          |//
+const addEntryToJson = (date) => {
+  const newEntry = new Entry(date);
+  hydrappJson.entries = [...hydrappJson.entries, newEntry];
+}
 /*
 ##     ##  ######  ######## ########
 ##     ## ##    ## ##       ##     ##
@@ -160,23 +165,28 @@ const handleUserDetails = (e) => {
   e.preventDefault();
   const self = e.key || e.target;
 
+  //: TOGGLE VISIBILITY OF USER DETAIL WINDOW                               ://
   const toggleDetail = (current, next, action, timeout) => {
     const hiddenSide = action === 'prev' ? 'Right' : 'Left';
     const visibleSide = action === 'prev' ? 'Left' : 'Right';
-    const nextInput = next.querySelector('.user__input--js');
+    const nextInput = next ? next.querySelector('.user__input--js') : false;
 
     current.classList.add(`user--hidden${hiddenSide}`);
     current.classList.remove('user--visible');
-    next.classList.add(`user--hidden${visibleSide}`);
+    next ? next.classList.add(`user--hidden${visibleSide}`) : false;
 
     detailToggleTimeoutId = setTimeout(() => {
-      next.classList.add('user--visible');
-      next.classList.remove(`user--hidden${visibleSide}`);
-      nextInput.focus();
+      if (next) {
+        next.classList.add('user--visible');
+        next.classList.remove(`user--hidden${visibleSide}`);
+        nextInput.focus();
+      }
       clearTimeout(detailToggleTimeoutId);
       detailToggleTimeoutId = null;
     }, timeout);
   }
+  //: RETURN USER INPUT VALUE AS INTEGER                                    ://
+  const getInputValue = (index) => parseInt(userInputs[index].value);
 
   if ((self.tagName === 'BUTTON' || self === 'Enter' || self === 'Escape')
   && detailToggleTimeoutId === null) {
@@ -198,7 +208,23 @@ const handleUserDetails = (e) => {
       //: AQUIRE USER DATA AND GO TO LANDING SECTION                        ://
       if (currentDetailIndex >= maxIndex) {
         if (isInputValid(currentDetailIndex)) {
+          //. update JSON object                                            .//
+          hydrappJson.userAge = getInputValue(1);
+          hydrappJson.userWeight = getInputValue(2);
+          hydrappJson.userHeight = getInputValue(3);
+          const date = new Date();
+          hydrappJson.entries = [new Entry(date)];
 
+
+
+
+
+
+
+          console.log(hydrappJson);
+          //. change user section visibility                                .//
+          toggleDetail(currentDetail, null, 'next', toggleTime);
+          appUser.classList.add('app__user--hidden');
 
 
 
@@ -211,7 +237,7 @@ const handleUserDetails = (e) => {
         var nextDetail = userDetails[currentDetailIndex + 1];
         if (isInputValid(currentDetailIndex)) {
           if (currentDetailIndex === 0) {
-            const userName = userIputs[currentDetailIndex].value;
+            const userName = userInputs[currentDetailIndex].value;
             const userAgeLabel = document.querySelector('.user__label--js-age');
             const newLabelContent = `Hello ${userName}, how old are you?`;
             userAgeLabel.textContent = newLabelContent;
@@ -253,7 +279,7 @@ const isInputValid = (index) => {
     }
   }
 
-  const input = userIputs[index];
+  const input = userInputs[index];
   const inputValue = index === 0 ? input.value : parseInt(input.value);
   const limits = [
     { min: null, max: null},
@@ -1236,6 +1262,7 @@ class Entry {
 setUserDOM();
 
 setData();
+console.log('hydrappArray', hydrappArray);
 
 setArchiveDOM();
 setWaterMeasureDOM();
@@ -1275,7 +1302,7 @@ let detailToggleTimeoutId = null;
 const userDetails = document.querySelectorAll('.user--js');
 const userPrevButtons = document.querySelectorAll('.user__button--js-prev');
 const userNextButtons = document.querySelectorAll('.user__button--js-next');
-const userIputs = document.querySelectorAll('.user__input--js');
+const userInputs = document.querySelectorAll('.user__input--js');
 const userAlerts = document.querySelectorAll('.user__alert--js');
 
 [...userPrevButtons].forEach((button, index) => {
@@ -1288,7 +1315,7 @@ const userAlerts = document.querySelectorAll('.user__alert--js');
   button.action = 'next';
   button.addEventListener('click', handleUserDetails);
 });
-[...userIputs]
+[...userInputs]
 .filter((input, index) => index !== 0)
 .forEach(input => input.addEventListener('keyup', filterUserInput));
 appUser.addEventListener('keypress', (e) => {
