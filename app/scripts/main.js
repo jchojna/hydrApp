@@ -161,10 +161,18 @@ const filterUserInput = (e) => {
 //| VALIDATE USER INPUTS                                                    |//
 const isInputValid = (index) => {
 
-  const handleInputAlert = () => {
+  const handleInputAlert = (index, min, max) => {
+    const alert = userAlerts[index - 1];
+    const alertText = alert.firstElementChild;
+    const alertTextContent = `The value should be between ${min} and ${max}`
 
-
-
+    if (!min && !max) {
+      alert.style.height = '';
+      alertText.textContent = '';
+    } else {
+      alertText.textContent = alertTextContent;
+      alert.style.height = `${alertText.clientHeight}px`;
+    }
   }
 
   const input = userIputs[index];
@@ -185,25 +193,12 @@ const isInputValid = (index) => {
   }
 
   if (inputValue < limitMin || inputValue > limitMax) {
-    handleInputAlert(limitMin, limitMax);
+    handleInputAlert(index, limitMin, limitMax);
     return false;
-  } else return true;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  } else {
+    handleInputAlert(index);
+    return true;
+  }
 }
 //// EMOJI                                                                 ////
 //| GET EMOJIS HTML STRING                                                  |//
@@ -1214,6 +1209,7 @@ const userIputs = document.querySelectorAll('[class*=user__input--js]');
 const userAgeInput = document.querySelector('.user__input--js-age');
 const userWeightInput = document.querySelector('.user__input--js-weight');
 const userHeightInput = document.querySelector('.user__input--js-height');
+const userAlerts = document.querySelectorAll('.user__alert--js');
 
 [...userPrevButtons].forEach((button, index) => {
   button.index = index;
