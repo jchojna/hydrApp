@@ -111,19 +111,21 @@ const setData = () => {
 //| CREATE USER DOM NODES                                                   |//
 const setUserDOM = () => {
   const userDetails = [
-    { id: 'Name', question: 'Hello Stranger, what\'s your name?' },
+    { id: 'Name', question: 'What\'s your name, dear guest?' },
     { id: 'Age', question: 'What\'s your age?' },
     { id: 'Weight', question: 'And what\'s your weight?' },
     { id: 'Height', question: 'At last, what\'s your height?' }
   ];
   
   for (let i = 0; i < userDetails.length; i++) {
-
     const { id, question } = userDetails[i];
     
     const userDetailHtml = `
       <div class="user ${i === 0 ? 'user--visible' : ''} user--js">
-        <label for="user${id}" class="user__label">
+        <label
+          for="user${id}"
+          class="user__label user__label--js-${id.toLowerCase()}"
+        >
           ${question}
         </label>
         <input
@@ -212,6 +214,11 @@ const handleUserDetails = (e) => {
         if (isInputValid(index)) {
           if (index === 0) {
             const userName = userIputs[index].value;
+            const userAgeLabel = document.querySelector('.user__label--js-age');
+            const labelContent = userAgeLabel.textContent.toLowerCase();
+            const newLabelContent = `Hello ${userName}, ${labelContent}`;
+
+            userAgeLabel.textContent = newLabelContent;
             hydrappJson.userName = userName;
 
 
