@@ -74,15 +74,6 @@ const handleContainerHeight = (container, elements) => {
   const childrenHeight = childrenArray.reduce((a,b) => a + b.clientHeight, 0);
   container.style.height = `${childrenHeight}px`;
 }
-/*
-########     ###    ########    ###
-##     ##   ## ##      ##      ## ##
-##     ##  ##   ##     ##     ##   ##
-##     ## ##     ##    ##    ##     ##
-##     ## #########    ##    #########
-##     ## ##     ##    ##    ##     ##
-########  ##     ##    ##    ##     ##
-*/
 //| SET LOCAL STORAGE                                                       |//
 const setData = () => {
   const date = new Date();
@@ -107,7 +98,60 @@ const setData = () => {
     createEntryObject(date);
   }
 }
+/*
+##     ##  ######  ######## ########
+##     ## ##    ## ##       ##     ##
+##     ## ##       ##       ##     ##
+##     ##  ######  ######   ########
+##     ##       ## ##       ##   ##
+##     ## ##    ## ##       ##    ##
+ #######   ######  ######## ##     ##
+*/
 //// USER DATA                                                             ////
+//| CREATE USER DOM NODES                                                   |//
+const setUserDOM = () => {
+  const userDetails = [
+    { id: 'Name', question: 'Hello Stranger, what\'s your name?' },
+    { id: 'Age', question: 'What\'s your age?' },
+    { id: 'Weight', question: 'And what\'s your weight?' },
+    { id: 'Height', question: 'At last, what\'s your height?' }
+  ];
+  
+  for (let i = 0; i < userDetails.length; i++) {
+
+    const { id, question } = userDetails[i];
+    
+    const userDetailHtml = `
+      <div class="user ${i === 0 ? 'user--visible' : ''} user--js">
+        <label for="user${id}" class="user__label">
+          ${question}
+        </label>
+        <input
+          id="user${id}"
+          class="user__input user__input--js"
+          type="text"
+          maxlength="${i === 0 ? 20 : 3}"
+        >
+        ${i !== 0 ? `
+          <div class="user__alert user__alert--js">
+            <p class="user__alertText"></p>
+          </div>
+          <button class="user__button user__button--prev user__button--js-prev">
+            <svg class="user__svg" viewBox="0 0 512 512">
+              <use href="assets/svg/icons.svg#left-arrow"></use>
+            </svg>
+          </button>
+        ` : ''}
+        <button class="user__button user__button--next user__button--js-next">
+          <svg class="user__svg" viewBox="0 0 512 512">
+            <use href="assets/svg/icons.svg#right-arrow"></use>
+          </svg>
+        </button>
+      </div>
+    `;
+    appUser.innerHTML += userDetailHtml;
+  }
+}
 //| HANDLE USER DETAILS                                                     |//
 const handleUserDetails = (e) => {
   e.preventDefault();
@@ -170,7 +214,7 @@ const handleUserDetails = (e) => {
             const userName = userIputs[index].value;
             hydrappJson.userName = userName;
 
-            
+
           }
           toggleDetail(currentDetail, nextDetail, action, toggleTime);
         }
@@ -858,7 +902,7 @@ const handleArchiveLastEntry = () => {
     lastEntry.classList.add('entry--last');
   }
 }
-//| REMOVE LAST ITEM << SHOW ARCHIVE                                        |//
+//| REMOVE LAST ITEM                                                        |//
 const removeLastEntry = (e) => {
   const self = e.keyCode || e. target;
   const lastEntryIndex = hydrappArray.length - 1;
@@ -1004,8 +1048,6 @@ const entriesFade = (action) => {
 
 //| VARIABLES                                                               |//
 ////                                                                       ////
-const appHeader = document.querySelector('.app__header--js');
-const appLanding = document.querySelector('.app__landing--js');
 //: MEDIA                                                                   ://
 const mediaMd = 768;
 const mediaLg = 1200;
@@ -1013,12 +1055,11 @@ const mediaLg = 1200;
 const waterMax = 20;
 let waterMin = 7;
 let waterAvg = 12;
-
-
-
-
-
-
+//: APP                                                                     ://
+const appHeader = document.querySelector('.app__header--js');
+const appUser = document.querySelector('.app__user--js');
+const appLanding = document.querySelector('.app__landing--js');
+const appSidebar = document.querySelector('.app__sidebar--js');
 //: COUNTER                                                                 ://
 const counter = document.querySelector('.counter--js');
 const counterPrevTenths = document.querySelector('.digit__svg--js-prevTenths');
@@ -1048,7 +1089,6 @@ const levelMin = document.querySelector('.graph__level--js-min');
 //: MENU                                                                    ://
 const burgerBtn = document.querySelector('.button--js-burger');
 //: SIDEBAR                                                                 ://
-const appSidebar = document.querySelector('.app__sidebar--js');
 const archiveTabButton = document.querySelector('.tab__button--js-archive');
 const statsTabButton = document.querySelector('.tab__button--js-stats');
 const settingTabButton = document.querySelector('.tab__button--js-settings');
@@ -1189,6 +1229,9 @@ class Entry {
 
 //| FUNCTION CALLS                                                          |//
 ////                                                                       ////
+// if () - condition if user form should be displayed
+setUserDOM();
+
 setData();
 
 setArchiveDOM();
@@ -1208,8 +1251,8 @@ updateWeekHeading();
 handleWaterAverage();
 
 
-//toggleSidebar(burgerBtn);                           // ! FOR TESTS ONLY
-//enterNewEntryValue(107);                                    // ! FOR TESTS ONLY
+//toggleSidebar(burgerBtn);                                 // ! FOR TESTS ONLY
+//enterNewEntryValue(107);                                  // ! FOR TESTS ONLY
 
 //| VARIABLES                                                               |//
 let editButtons = document.querySelectorAll('.edition__button--js-edit');
