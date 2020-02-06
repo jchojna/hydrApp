@@ -226,11 +226,6 @@ const handleUserDetails = (e) => {
           toggleDetail(currentDetail, null, 'next', toggleTime);
           appUser.classList.add('app__user--hidden');
 
-
-
-
-
-
         }
       //: GO TO NEXT USER DETAIL                                            ://
       } else {
