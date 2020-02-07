@@ -19,23 +19,16 @@ const getOffsetedDate = (obj) => {
   return (new Date(obj - timeZoneOffset));
 }
 //| CREATE HYDRAPP DATE KEY                                                 |//
-const setDateKey = (obj) => {
+const getDateId = (obj) => {
   const timeZoneOffset = (new Date()).getTimezoneOffset() * 60000;
   let dateObj = obj || new Date();
   dateObj = (new Date(dateObj - timeZoneOffset));
-
-  const prefix = 'hydrApp-';
-  const dateStr = dateObj.toISOString().slice(0,10);
-  return prefix.concat(dateStr);
-}
-//| CREATE ARRAY OF HYDRAPP LOCAL STORAGE KEYS                              |//
-const getHydrappKeys = () => {
-  const regex = /hydrApp-/;
-  return Object
-  .keys(localStorage)
-  .filter(key => regex.test(key))
-  .sort()
-  .reverse();
+  return dateObj
+  .toISOString()
+  .slice(0,10)
+  .split('-')
+  .reverse()
+  .join('');
 }
 //| CREATE ARRAY OF HYDRAPP LOCAL STORAGE USER KEYS                         |//
 const getHydrappUsers = () => {
@@ -43,12 +36,6 @@ const getHydrappUsers = () => {
   return Object
   .keys(localStorage)
   .filter(key => regex.test(key))
-}
-//| CREATE KEY VALUE PAIR IN LOCAL STORAGE                                  |//
-const setNewKeyValue = (key, value) => {
-  if ( !localStorage.getItem(key) ) {
-    localStorage.setItem(key, value);
-  };
 }
 //| LOOPED RANGE OF VALUES                                                  |//
 const range = (max, num, action) => {
@@ -70,7 +57,7 @@ const findFirstParentOfClass = (node, classname) => {
 }
 //| HANDLE ELEMENTS ON WINDOW RESIZE                                        |//
 const handleWindowResize = () => {
-  const waterValue = hydrappArray[0].value;
+  const waterValue = hydrappJson.entries[0].value;
   handleWaterLevel(waterValue);
   handleWaterWaves();
   handleWaterMeasure();
@@ -81,45 +68,13 @@ const handleContainerHeight = (container, elements) => {
   const childrenHeight = childrenArray.reduce((a,b) => a + b.clientHeight, 0);
   container.style.height = `${childrenHeight}px`;
 }
-//| SET LOCAL STORAGE                                                       |//
-const setData = () => {
-  const date = new Date();
-  let dateKey = setDateKey(date);
-
-
-  setNewKeyValue(dateKey, 0);
-  let hydrappKeys = getHydrappKeys();
-  const oldestKey = hydrappKeys[hydrappKeys.length - 1];
-  //: create object for each key                                            ://
-  const createEntryObject = (date) => {
-    const newEntry = new Entry(date);
-    hydrappArray.push(newEntry);
-  }
-  //: first object of array                                                 ://
-  createEntryObject(date);
-  //: autocomplete the rest of keys if needed                               ://
-  while (dateKey !== oldestKey) {
-    dateKey = setDateKey(date.setDate(date.getDate() - 1));
-    lastEntryDate.setDate(lastEntryDate.getDate() - 1);
-    setNewKeyValue(dateKey, 0);
-    createEntryObject(date);
-  }
-}
-//| ADD NEW ENTRY TO ARRAY IN JSON                                          |//
-const addEntryToJson = (date) => {
-  const newEntry = new Entry(date);
-  hydrappJson.entries = [...hydrappJson.entries, newEntry];
-}
 //| EXPORT JSON OBJECT TO LOCAL STORAGE                                     |//
 const exportJsonToLS = (user) => {
   localStorage.setItem(`hydrapp-${user}`, JSON.stringify(hydrappJson));
 }
-//| IMPORT JSON OBJECT FROM LOCAL STORAGE                                     |//
-const importJsonFromLS = (user) => {
-  hydrappJson = JSON.parse(localStorage.getItem(`hydrapp-${user}`));
-}
 //| TRIGGER FUNCTIONS LOADING APP                                           |//
 const loadApp = () => {
+  updateJsonOnDateChange();
   const startValue = hydrappJson.entries[0].value;
   setArchiveDOM();
   setWaterMeasureDOM();
@@ -251,9 +206,8 @@ const createUser = () => {
             hydrappJson.waterMin = 8,
             hydrappJson.waterAvg = 0
             // date of creation etc..
-
             const date = new Date();
-            hydrappJson.entries = [new Entry(date, 0)];
+            hydrappJson.entries = [new Entry(date)];
             loadApp();
             //. set JSON object as local storage item                         .//
             const keyName = `hydrapp-${hydrappJson.userName}`;
@@ -794,8 +748,23 @@ const getEntryHtml = (index) => {
     </li>
   `;
 }
+//| UPDATE JSON OBJECT WHEN DATE HAS BEEN CHANGED                           |//
+const updateJsonOnDateChange = () => {
+  let currentDate = new Date();
+  let currentDateId = getDateId(currentDate);
+  let newEntries = [];
+  const lastEntryDateId = hydrappJson.entries[0].id;
+
+  while (currentDateId !== lastEntryDateId) {
+    newEntries = [...newEntries, new Entry(currentDate)];
+    currentDateId = getDateId(currentDate.setDate(currentDate.getDate() - 1));
+  }
+  hydrappJson.entries = [...newEntries, ...hydrappJson.entries];
+  exportJsonToLS('Jakub');
+}
 //| SET ARCHIVE                                                             |//
 const setArchiveDOM = () => {
+
   const { entries } = hydrappJson;
   for (let i = 0; i < entries.length; i++) {
     addArchiveEntry(i);
@@ -1282,17 +1251,18 @@ const weekDay = ['sunday','monday','tuesday','wednesday','thursday','friday','sa
 let hydrappJson = {};
 //| CLASS FOR ENTRY                                                         |//
 class Entry {
-  constructor(date, value) {
+  constructor(date) {
     this.value = 0;
+    //this.dateObj = date;
     this._date = date;
     this._id = this.date;
     this._day = date;
   }
-  /* get _value() {
-    return this.value;
+  /* get _dateObj() {
+    return this.dateObj;
   }
-  set _value(value) {
-    this.value = value;
+  set _dateObj(date) {
+    this.dateObj = getOffsetedDate(date);
   } */
   get _date() {
     return this.date;
@@ -1319,7 +1289,6 @@ class Entry {
     this.day = weekDay[dayIndex];
   }
 }
-
 //| FUNCTION CALLS                                                          |//
 ////                                                                       ////
 /* const date = new Date();
@@ -1330,13 +1299,9 @@ const hydrappUser = localStorage.getItem('hydrapp-Jakub');
 if (hydrappUser) {
   hydrappJson = JSON.parse(hydrappUser);
   loadApp();
-
 } else {
   createUser();
 }
-
-//setData();
-
 
 
 toggleSidebar(burgerBtn);                                 // ! FOR TESTS ONLY
