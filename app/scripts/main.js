@@ -207,7 +207,8 @@ const createUser = () => {
             hydrappJson.waterAvg = 0
             // date of creation etc..
             const date = new Date();
-            hydrappJson.entries = [new Entry(date)];
+            const newEntry = new Entry(date);
+            hydrappJson.entries = [newEntry];
             loadApp();
             //. set JSON object as local storage item                         .//
             const keyName = `hydrapp-${hydrappJson.userName}`;
@@ -708,8 +709,9 @@ const getWeekHtml = () => {
 const getEntryHtml = (index) => {
 
   const { date, day, id, value } = hydrappJson.entries[index];
+  const dateId = date.split(' ').join('-');
   return `
-    <li class="entry entry--js">
+    <li class="entry entry--js dateId-${dateId}">
       <header class="entry__header entry__header--js">
         <p class="entry__heading entry__heading--day">${day}</p>
         <p class="entry__heading entry__heading--date entry__heading--js-date">${date}</p>
@@ -750,13 +752,14 @@ const getEntryHtml = (index) => {
 }
 //| UPDATE JSON OBJECT WHEN DATE HAS BEEN CHANGED                           |//
 const updateJsonOnDateChange = () => {
-  let currentDate = new Date();
+  const currentDate = new Date();
   let currentDateId = getDateId(currentDate);
   let newEntries = [];
   const lastEntryDateId = hydrappJson.entries[0].id;
 
   while (currentDateId !== lastEntryDateId) {
-    newEntries = [...newEntries, new Entry(currentDate)];
+    const newEntry = new Entry(currentDate);
+    newEntries = [...newEntries, newEntry];
     currentDateId = getDateId(currentDate.setDate(currentDate.getDate() - 1));
   }
   hydrappJson.entries = [...newEntries, ...hydrappJson.entries];
@@ -800,7 +803,7 @@ const addArchiveEntry = (index, option) => {
   lastWeekList.insertAdjacentHTML('beforeend', entryHtml);
   handleEmoji(id, value);
   //: add 'add entry button at the end                                      ://
-  if (index === hydrappArray.length - 1) {
+  if (index === hydrappJson.entries.length - 1) {
     if (day === 'monday') addWeek();
     const lastWeekList = weekLists[weekLists.length - 1];
     lastWeekList.appendChild(addEntryButton);
@@ -818,12 +821,8 @@ const updateWeekHeading = () => {
   const weekHeadings = document.querySelectorAll('.week__heading--js');
   //: GET DATE                                                              ://
   const getDate = (element) => {
-    if (element) {
-      const filtered = element.className.split(' ').filter(a => /hydrApp/.test(a));
-      return filtered.toString().slice(10).split('-').reverse().join('.');
-    } else {
-      return false;
-    }
+    const dateId = element.className.split(' ').filter(a => /dateId-/.test(a));
+    return dateId.toString().replace(/dateId-/,'').split('-').join('.');
   }
   //: SET BUTTONS VISIBILITY                                                ://
   const setButtonsVisiblity = (index, option) => {
@@ -848,16 +847,22 @@ const updateWeekHeading = () => {
         break;
     }
   }
-
   for (let i = 0; i < weekLists.length; i++) {
     const entries = weekLists[i].querySelectorAll('.entry--js');
-    const startDate = getDate(entries[entries.length - 1]);
-    const endDate = getDate(entries[0]);
     const heading = weekHeadings[i];
-
-    heading.textContent = `${startDate
-    ? (startDate === endDate ? startDate : `${startDate.slice(0,5)} - ${endDate}`)
-    : 'New Week'}`;
+    
+    if (entries.length === 0) {
+      heading.textContent = 'New Week';
+    } else {
+      const currentWeekFirstEntry = entries[entries.length - 1];
+      const currentWeekLastEntry = entries[0];
+      const startDate = getDate(currentWeekFirstEntry);
+      const endDate = getDate(currentWeekLastEntry);
+  
+      heading.textContent = startDate === endDate
+      ? startDate
+      : `${startDate.slice(0,5)} - ${endDate}`;
+    }
     weekLists.length > 1 ? setButtonsVisiblity(i) : setButtonsVisiblity(i, 'oneWeek');
   }
 }
@@ -926,15 +931,18 @@ const createAddEntryButton = () => {
 const enterNewEntryValue = (e) => {
   const self = e.keyCode || e.target || e;                // ! e only for tests
   const addEntryButton = document.querySelector('.entry__button--js-add');
-  //: set day and date for display                                          ://
+  //: find date for display                                                 ://
   const displayDate = new Date();
-  const lastEntryKey = hydrappArray[hydrappArray.length - 1].key;
-                                   
-  while (setDateKey(displayDate) !== lastEntryKey) {
+  let displayDateId = getDateId(displayDate);
+  const { entries, waterMax } = hydrappJson;
+  const oldestEntryIndex = entries.length - 1;
+  const oldestEntryDateId = entries[oldestEntryIndex].id;
+  while (displayDateId !== oldestEntryDateId) {
     displayDate.setDate(displayDate.getDate() - 1);
+    displayDateId = getDateId(displayDate);
   }
   displayDate.setDate(displayDate.getDate() - 1);
-
+  //: create new Entry object                                               ://
   const newEntry = new Entry(displayDate);
   const { day, date } = newEntry;
 
@@ -959,16 +967,22 @@ const enterNewEntryValue = (e) => {
   
         case 37:
         case newEntryDecrease:
-          value !== 0 ? value-- : false;
-          newEntryValue.textContent = value;
-          handleEmoji('new', value);
+          if (value > 0) {
+            value--;
+            newEntry.value--;
+            newEntryValue.textContent = value;
+            handleEmoji('new', value);
+          }
           break;
 
         case 39:
         case newEntryIncrease:
-          value !== waterMax ? value++ : false;
-          newEntryValue.textContent = value;
-          handleEmoji('new', value);
+          if (value < waterMax) {
+            value++;
+            newEntry.value++;
+            newEntryValue.textContent = value;
+            handleEmoji('new', value);
+          }
           break;
   
         case 27:
@@ -979,7 +993,7 @@ const enterNewEntryValue = (e) => {
         case 13:
         case newEntrySave:
           e.preventDefault();
-          addNewEntry(value);
+          addNewEntry(newEntry);
           modeOff();
           break;
       }
@@ -991,23 +1005,18 @@ const enterNewEntryValue = (e) => {
   }
 }
 //| ADD NEW ENTRY                                                           |//
-const addNewEntry = (value) => {
+const addNewEntry = (entry) => {
 
-  let lastEntryIndex = hydrappArray.length - 1;
+  let lastEntryIndex = hydrappJson.entries.length - 1;
   let lastEntry = document.querySelectorAll('.entry--js')[lastEntryIndex];
   lastEntry.classList.remove('entry--last');
-
-  lastEntryDate.setDate(lastEntryDate.getDate() - 1);
-  const newEntryKey = setDateKey(lastEntryDate);
   
   //: handle local storage and array of objects                           ://
-  setNewKeyValue(newEntryKey, value);
-  const newEntry = new Entry(lastEntryDate);
-  newEntry.value = newEntryKey;
-  hydrappArray = [...hydrappArray, newEntry];
+  const { entries } = hydrappJson;
+  hydrappJson.entries = [...entries, entry];
 
   //: create new entry node                                               ://
-  lastEntryIndex = hydrappArray.length - 1;
+  lastEntryIndex = hydrappJson.entries.length - 1;
   addArchiveEntry(lastEntryIndex, 'add');
   lastEntry = document.querySelectorAll('.entry--js')[lastEntryIndex];
   lastEntry.classList.add('entry--visible');
@@ -1245,7 +1254,6 @@ const statsContainer = document.querySelector('.tab__container--js-stats');
 const settingsContainer = document.querySelector('.tab__container--js-settings');
 
 ////                                                                       ////
-let hydrappArray = [];
 const lastEntryDate = new Date();
 const weekDay = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
 let hydrappJson = {};
