@@ -1050,18 +1050,20 @@ const handleArchiveLastEntry = () => {
 //| REMOVE LAST ITEM                                                        |//
 const removeLastEntry = (e) => {
   const self = e.keyCode || e. target;
-  const lastEntryIndex = hydrappArray.length - 1;
-  const {day, key} = hydrappArray[lastEntryIndex];
+  const { entries } = hydrappJson;
+  const lastEntryIndex = entries.length - 1;
+  const {day, key} = entries[lastEntryIndex];
   const lastEntryNode = document.querySelectorAll('.entry--js')[lastEntryIndex];
   let lastWeek = weeks[weeks.length - 1];
 
   if (self === 109 || self === removeEntryButton) {
 
-    if (hydrappArray.length > 1) {
-      hydrappArray.pop();
-      localStorage.removeItem(key);
-      lastEntryDate.setDate(lastEntryDate.getDate() + 1);
+    if (entries.length > 1) {
+      hydrappJson.entries = [...entries]
+      .filter((entry, index) => index !== lastEntryIndex);
+      exportJsonToLS('Jakub');
       lastEntryNode.parentNode.removeChild(lastEntryNode);
+
       //: removing last week section after deleting last day of that week   ://
       if (day === 'monday') {
         const weekToRemove = archiveContainer.lastElementChild;
@@ -1077,7 +1079,7 @@ const removeLastEntry = (e) => {
       //: add remove button on current last item                            ://
       handleArchiveLastEntry();
       updateWeekHeading();
-      handleContainerHeight(archiveContainer, lastWeek);
+      handleContainerHeight(archiveContainer, lastWeekList);
       handleWaterAverage();
     }
   }
