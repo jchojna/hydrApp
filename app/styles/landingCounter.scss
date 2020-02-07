@@ -115,12 +115,10 @@
   }
 
   &__svg {
-    background-color: $cold-blue;
     border-radius: 10px;
-    fill: $cold-dark-blue;
+    fill: $cold-blue;
     height: 100%;
     opacity: 1;
-    padding: 10px;
     transform: rotateX(0);
     transform-origin: center top;
     width: 100%;
@@ -144,7 +142,7 @@
     & {
 
       &__svg {
-        padding: 15px;
+        //padding: 15px;
       }
     }
   }
@@ -154,7 +152,7 @@
     & {
 
       &__svg {
-        padding: 20px;
+        //padding: 20px;
       }
     }
   }
@@ -164,7 +162,7 @@
     & {
 
       &__svg {
-        padding: 25px;
+        //padding: 25px;
       }
     }
   }
