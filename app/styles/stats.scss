@@ -1,0 +1,35 @@
+@import 'variables.scss';
+@import 'mixins.scss';
+
+.stats {
+  border-collapse: collapse;
+  display: flex;
+  flex-direction: column;
+  padding: 30px;
+  width: 100%;
+
+  &__header {
+    background-color: $cold-darkest-blue;
+  }
+  
+  &__body {
+
+  }
+
+  &__row {
+    display: flex;
+    
+  }
+
+  &__cell {
+    padding: 8px;
+    width: 50%;
+    text-align: left;
+
+
+    &--header {
+      width: 100%;
+      text-align: center;
+    }
+  }
+}

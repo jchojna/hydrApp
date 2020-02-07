@@ -74,21 +74,9 @@
     display: flex;
     background-color: $cold-dark-blue;
     position: relative;
-    height: 0;
+    //height: 0;  // ! delete after
     overflow: hidden;
     transition: height $tab-expand;
     width: 100%;
-  }
-}
-
-.stats,
-.settings {
-  @include flex-center;
-  width: 100%;
-
-  &__text {
-    margin: 0;
-    padding: 20px;
-    text-align: center;
   }
 }

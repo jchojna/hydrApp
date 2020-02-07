@@ -77,6 +77,7 @@ const loadApp = () => {
   updateJsonOnDateChange();
   const startValue = hydrappJson.entries[0].value;
   setArchiveDOM();
+  //setStatsDOM();
   setWaterMeasureDOM();
   setWaterWaves(wavesAmount);
   handleCounter(startValue);
@@ -90,15 +91,6 @@ const loadApp = () => {
   updateWeekHeading();
   handleWaterAverage();
 }
-/*
-##     ##  ######  ######## ########
-##     ## ##    ## ##       ##     ##
-##     ## ##       ##       ##     ##
-##     ##  ######  ######   ########
-##     ##       ## ##       ##   ##
-##     ## ##    ## ##       ##    ##
- #######   ######  ######## ##     ##
-*/
 //// USER DATA                                                             ////
 const createUser = () => {
   //| CREATE USER DOM NODES                                                 |//
@@ -902,6 +894,24 @@ const slideWeek = (e) => {
     entriesFade('in');
   }
 }
+//// STATS TAB                                                             ////
+//| SET STATS DOM STRUCTURE BASED ON USER'S JSON OBJECT                     |//
+const setStatsDOM = () => {
+  const stats = `
+
+
+
+
+
+
+
+
+
+
+
+  `
+  statsContent.innerHTML = stats;
+}
 //// ENTRY HANDLERS                                                        ////
 //| CREATE 'REMOVE ITEM' BUTTON                                             |//
 const createRemoveEntryButton = () => {
@@ -1243,6 +1253,11 @@ let weekLists = null;
 const addEntryButton = createAddEntryButton();
 const removeEntryButton = createRemoveEntryButton();
 let currentWeekIndex = 0;
+//: STATS                                                                   ://
+const statsContent = document.querySelector('.stats--js');
+
+
+
 //: NEW ENTRY                                                               ://
 const newEntryMode = document.querySelector('.newEntry--js');
 const newEntryValue = document.querySelector('.newEntry__value--js');
