@@ -1070,16 +1070,18 @@ const removeLastEntry = (e) => {
         const ifVisible = weekToRemove.classList.contains('week--visible');
         archiveContainer.removeChild(archiveContainer.lastElementChild);
         lastWeek = archiveContainer.lastElementChild;
-        const lastWeekList = lastWeek.lastElementChild;
         if (ifVisible) {
           lastWeek.className = 'week week--js week--visible week--slide-in-from-left';currentWeekIndex--;
         }
+        const weekLists = document.querySelectorAll('.week__list--js');
+        const lastWeekList = weekLists[weekLists.length - 1];
         lastWeekList.appendChild(addEntryButton);
       }
+      lastWeek = archiveContainer.lastElementChild;
       //: add remove button on current last item                            ://
       handleArchiveLastEntry();
       updateWeekHeading();
-      handleContainerHeight(archiveContainer, lastWeekList);
+      handleContainerHeight(archiveContainer, lastWeek);
       handleWaterAverage();
     }
   }
@@ -1117,8 +1119,8 @@ const handleEntryEdit = (e) => {
     entryValue.textContent = value;
     handleEmoji(id, value);
 
-    archiveContainer.removeEventListener('click', handleEdition);
-    archiveContainer.removeEventListener('keydown', handleEdition);
+    window.removeEventListener('click', handleEdition);
+    window.removeEventListener('keydown', handleEdition);
     window.addEventListener('keydown', slideWeek);
   }
   //: HANDLE EDITION                                                        ://
@@ -1167,8 +1169,8 @@ const handleEntryEdit = (e) => {
   }
   //: FUNCTION CALLS                                                        ://
   toggleItemDisplay();
-  archiveContainer.addEventListener('click', handleEdition);
-  archiveContainer.addEventListener('keydown', handleEdition);
+  window.addEventListener('click', handleEdition);
+  window.addEventListener('keydown', handleEdition);
   window.removeEventListener('keydown', slideWeek);
 }
 //| ANIMATE WEEK ENTRIES                                                    |//
@@ -1256,7 +1258,6 @@ const statsContainer = document.querySelector('.tab__container--js-stats');
 const settingsContainer = document.querySelector('.tab__container--js-settings');
 
 ////                                                                       ////
-const lastEntryDate = new Date();
 const weekDay = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
 let hydrappJson = {};
 //| CLASS FOR ENTRY                                                         |//
