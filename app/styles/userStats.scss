@@ -1,8 +1,9 @@
 .user {
   align-items: center;
   display: grid;
-  grid-gap: 5px;
-  grid-template-columns: 100px 1fr auto;
+  grid-gap: 10px;
+  grid-template-columns: 2fr 1fr $cardIcon-size-xs;
+  min-height: 50px;
   padding: $cardItem-padding;
 
   &:not(:last-child) {
@@ -32,7 +33,11 @@
     min-width: 50px;
     position: absolute;
     top: 0;
-    width: 80%;
+    width: 100%;
+
+    &--visible {
+      visibility: visible;
+    }
   }
 
   &__edit {

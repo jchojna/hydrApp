@@ -92,7 +92,7 @@ const loadApp = () => {
   updateJsonOnDateChange();
   const startValue = hydrappJson.entries[0].value;
   setArchiveDOM();
-  //setStatsDOM();
+  setStatsDOM();
   setWaterMeasureDOM();
   setWaterWaves(wavesAmount);
   handleCounter(startValue);
@@ -106,6 +106,144 @@ const loadApp = () => {
   updateWeekHeading();
   handleWaterAverage();
 }
+//// HTML CODE                                                             ////
+//| RETURN EMOJIS HTML STRING                                               |//
+const getEmojiHtml = (id) => {
+  let emojiHtml = `<div class="emoji emoji--js-${id}">`;
+
+  for (let i = 0; i < emojiAmount; i++) {
+    emojiHtml += `
+      <svg
+        class="emoji__svg emoji__svg--emo-${i} emoji__svg--js-${id}"
+        viewBox="0 0 512 512"
+      >
+        <use href="assets/svg/emoji.svg#emo-${i}"></use>
+      </svg>
+    `
+  }
+  emojiHtml += '</div>'
+  return emojiHtml;
+}
+//| RETURN SIDEBAR TAB'S CARD HTML                                          |//
+const getCardHtml = (card, title) => {
+  return `
+    <section class="card card--${card} card--js-${card}">
+      <div class="card__container">
+        <header class="card__header card__header---js-${card}">
+          <button class="card__button card__button--prev card__button--js-${card}Prev">
+            <svg class="card__svg" viewBox="0 0 512 512">
+              <use href="assets/svg/icons.svg#left-arrow"></use>
+            </svg>
+          </button>
+          <h4 class="card__heading card__heading--js-${card}">${title}</h4>
+          <button class="card__button card__button--next card__button--js-${card}Next">
+            <svg class="card__svg" viewBox="0 0 512 512">
+              <use href="assets/svg/icons.svg#right-arrow"></use>
+            </svg>
+          </button>
+        </header>
+        <ul class="card__list card__list--js-${card}"></ul>
+      </div>
+    </section>
+  `;
+}
+//| RETURN EDITION MODULE HTML                                              |//
+const getEditionHtml = (tab) => {
+  return `
+    <div class="edition edition--${tab} edition--js">
+      <button class="edition__button edition__button--visible edition__button--edit edition__button--js-edit">
+        <svg class="edition__svg edition__svg--edit">
+          <use href="assets/svg/icons.svg#edit-mode"></use>
+        </svg>
+      </button>
+      ${ tab === 'archive'
+      ? `
+      <button class="edition__button edition__button--decrease edition__button--js-decrease">
+        <svg class="edition__svg edition__svg--decrease">
+          <use href="assets/svg/icons.svg#down-arrow"></use>
+        </svg>
+      </button>
+      <button class="edition__button edition__button--increase edition__button--js-increase">
+        <svg class="edition__svg edition__svg--increase">
+          <use href="assets/svg/icons.svg#up-arrow"></use>
+        </svg>
+      </button>
+      `
+      : ''
+      }      
+      <button class="edition__button edition__button--cancel edition__button--js-cancel">
+        <svg class="edition__svg edition__svg--cancel">
+          <use href="assets/svg/icons.svg#back-arrow"></use>
+        </svg>
+      </button>
+      <button class="edition__button edition__button--save edition__button--js-save">
+        <svg class="edition__svg edition__svg--save">
+          <use href="assets/svg/icons.svg#save-icon"></use>
+        </svg>
+      </button>
+    </div>
+  `;
+}
+//| RETURN ARCHIVE ENTRY HTML CODE                                          |//
+const getEntryHtml = (index) => {
+
+  const { date, day, id, value } = hydrappJson.entries[index];
+  const dateId = date.split(' ').join('-');
+  return `
+    <li class="entry entry--js dateId-${dateId}">
+      <header class="entry__header entry__header--js">
+        <p class="entry__heading entry__heading--day">${day}</p>
+        <p class="entry__heading entry__heading--date entry__heading--js-date">${date}</p>
+      </header>
+      <span class="entry__value entry__value--js">${value}</span>
+      ${getEditionHtml('archive')}
+      ${getEmojiHtml(id)}
+    </li>
+  `;
+}
+//| RETURN USER STATS HTML CODE                                             |//
+const getUserHtml = (user) => {
+
+  const userKeys = Object.keys(hydrappJson).filter(key => key !== 'entries');
+  const userProps = [...userKeys].map(key =>
+    key === 'userName'   ? 'Name:'                :
+    key === 'userAge'    ? 'Age:'                 :
+    key === 'userWeight' ? 'Weight:'              :
+    key === 'userHeight' ? 'Height:'              :
+    key === 'waterMax'   ? 'Max glasses a day:'   :
+    key === 'waterMin'   ? 'Min glasses a day:'   :
+    key === 'waterAvg'   ? 'Average consumption:' : ''
+  );
+  let html = '';
+
+  [...userKeys].forEach((key, index) => 
+
+    html += `
+      <li class="user">
+        <span for="${key}-${user}" class="user__prop">
+          ${userProps[index]}
+        </span>
+        <div class="user__value">
+          <label for="userName-${user}" class="user__label">
+            ${hydrappJson[key]}
+          </label>
+          <input
+            class="user__input"
+            type="text"
+            maxlength="20"
+          >
+        </div>
+        ${ key !== 'waterMin' && key !== 'waterAvg'
+        ? getEditionHtml('stats') : ''}
+      </li>
+    `
+  );
+  return html;
+}
+
+
+
+
 //// USER DATA                                                             ////
 const createUser = () => {
   //| CREATE USER DOM NODES                                                 |//
@@ -326,23 +464,6 @@ const createUser = () => {
   appUser.addEventListener('keyup', handleUserDetails);
 }
 //// EMOJI                                                                 ////
-//| GET EMOJIS HTML STRING                                                  |//
-const getEmojiHtml = (id) => {
-  let emojiHtml = `<div class="emoji emoji--js-${id}">`;
-
-  for (let i = 0; i < emojiAmount; i++) {
-    emojiHtml += `
-      <svg
-        class="emoji__svg emoji__svg--emo-${i} emoji__svg--js-${id}"
-        viewBox="0 0 512 512"
-      >
-        <use href="assets/svg/emoji.svg#emo-${i}"></use>
-      </svg>
-    `
-  }
-  emojiHtml += '</div>'
-  return emojiHtml;
-}
 //| SET INDICATORS                                                          |//
 const handleEmoji = (id, number) => {
   number > 7 ? number = 7 : false;
@@ -705,84 +826,7 @@ const toggleSidebarTabs = (e) => {
     svgIcon.classList.toggle('tab__svg--active');
   }
 }
-//| RETURN SIDEBAR TAB'S CARD HTML                                          |//
-const getCardHtml = (card) => {
-  return `
-    <section class="card card--${card} card--js-${card}">
-      <div class="card__container">
-        <header class="card__header card__header---js-${card}">
-          <button class="card__button card__button--prev card__button--js-${card}Prev">
-            <svg class="card__svg" viewBox="0 0 512 512">
-              <use href="assets/svg/icons.svg#left-arrow"></use>
-            </svg>
-          </button>
-          <h4 class="card__heading card__heading--js-${card}"></h4>
-          <button class="card__button card__button--next card__button--js-${card}Next">
-            <svg class="card__svg" viewBox="0 0 512 512">
-              <use href="assets/svg/icons.svg#right-arrow"></use>
-            </svg>
-          </button>
-        </header>
-        <ul class="card__list card__list--js-${card}"></ul>
-      </div>
-    </section>
-  `;
-}
-//| RETURN EDITION MODULE HTML                                              |//
-const getEditionHtml = (tab) => {
-  return `
-    <div class="edition edition--${tab} edition--js">
-      <button class="edition__button edition__button--visible edition__button--edit edition__button--js-edit">
-        <svg class="edition__svg edition__svg--edit">
-          <use href="assets/svg/icons.svg#edit-mode"></use>
-        </svg>
-      </button>
-      ${ tab === 'archive'
-      ? `
-      <button class="edition__button edition__button--decrease edition__button--js-decrease">
-        <svg class="edition__svg edition__svg--decrease">
-          <use href="assets/svg/icons.svg#down-arrow"></use>
-        </svg>
-      </button>
-      <button class="edition__button edition__button--increase edition__button--js-increase">
-        <svg class="edition__svg edition__svg--increase">
-          <use href="assets/svg/icons.svg#up-arrow"></use>
-        </svg>
-      </button>
-      `
-      : ''
-      }      
-      <button class="edition__button edition__button--cancel edition__button--js-cancel">
-        <svg class="edition__svg edition__svg--cancel">
-          <use href="assets/svg/icons.svg#back-arrow"></use>
-        </svg>
-      </button>
-      <button class="edition__button edition__button--save edition__button--js-save">
-        <svg class="edition__svg edition__svg--save">
-          <use href="assets/svg/icons.svg#save-icon"></use>
-        </svg>
-      </button>
-    </div>
-  `;
-}
 //// ARCHIVE TAB                                                           ////
-//| RETURN ARCHIVE ENTRY HTML CODE                                          |//
-const getEntryHtml = (index) => {
-
-  const { date, day, id, value } = hydrappJson.entries[index];
-  const dateId = date.split(' ').join('-');
-  return `
-    <li class="entry entry--js dateId-${dateId}">
-      <header class="entry__header entry__header--js">
-        <p class="entry__heading entry__heading--day">${day}</p>
-        <p class="entry__heading entry__heading--date entry__heading--js-date">${date}</p>
-      </header>
-      <span class="entry__value entry__value--js">${value}</span>
-      ${getEditionHtml('archive')}
-      ${getEmojiHtml(id)}
-    </li>
-  `;
-}
 //| SET ARCHIVE                                                             |//
 const setArchiveDOM = () => {
 
@@ -923,19 +967,32 @@ const slideWeek = (e) => {
 //// STATS TAB                                                             ////
 //| SET STATS DOM STRUCTURE BASED ON USER'S JSON OBJECT                     |//
 const setStatsDOM = () => {
+  const user = 'Jakub';
+  addUserStats(user);
 
-  addStatsUser();
+
 
 
 }
 //| ADD USER STATS                                                          |//
-const addUserStats = () => {
-  /* const {value, id, day} = hydrappJson.entries[index];
-  const weekHtml = getCardHtml('week');
-  const entryHtml = getEntryHtml(index); */
+const addUserStats = (user) => {
+
+  const statsCardHtml = getCardHtml('stats', user);
+  const userHtml = getUserHtml(user);
+  statsContainer.insertAdjacentHTML('beforeend', statsCardHtml);
+  const cardList = statsContainer.querySelector('.card__list--js-stats');
+  cardList.insertAdjacentHTML('beforeend', userHtml);
+
+  // temporary
+  statsContainer.firstElementChild.classList.add('card--visible');
+
+
+
+
+
+
   //: function adding new week DOM node                                     ://
   /* const addWeek = () => {
-    archiveContainer.insertAdjacentHTML('beforeend', weekHtml);
     const lastWeek = archiveContainer.lastElementChild;
     const lastWeekHeader = lastWeek.querySelector('.card__header---js-week');
     lastWeekHeader.addEventListener('click', slideWeek);
@@ -1294,15 +1351,16 @@ const burgerBtn = document.querySelector('.button--js-burger');
 const archiveTabButton = document.querySelector('.tab__button--js-archive');
 const statsTabButton = document.querySelector('.tab__button--js-stats');
 const settingTabButton = document.querySelector('.tab__button--js-settings');
-//: ARCHIVE                                                                 ://
 const archiveContainer = document.querySelector('.tab__container--js-archive');
+const statsContainer = document.querySelector('.tab__container--js-stats');
+const settingsContainer = document.querySelector('.tab__container--js-settings');
+//: ARCHIVE                                                                 ://
 let weeks = null;
 let weekLists = null;
 const addEntryButton = createAddEntryButton();
 const removeEntryButton = createRemoveEntryButton();
 let currentWeekIndex = 0;
-//: STATS                                                                   ://
-const statsContent = document.querySelector('.stats--js');
+
 
 
 
@@ -1315,10 +1373,6 @@ const newEntryDecrease = document.querySelector('.newEntry__button--js-decrease'
 const newEntryIncrease = document.querySelector('.newEntry__button--js-increase');
 const newEntryCancel = document.querySelector('.newEntry__button--js-cancel');
 const newEntrySave = document.querySelector('.newEntry__button--js-save');
-//: STATS                                                                   ://
-const statsContainer = document.querySelector('.tab__container--js-stats');
-//: SETTINGS                                                                ://
-const settingsContainer = document.querySelector('.tab__container--js-settings');
 
 ////                                                                       ////
 const weekDay = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
@@ -1327,17 +1381,10 @@ let hydrappJson = {};
 class Entry {
   constructor(date) {
     this.value = 0;
-    //this.dateObj = date;
     this._date = date;
     this._id = this.date;
     this._day = date;
   }
-  /* get _dateObj() {
-    return this.dateObj;
-  }
-  set _dateObj(date) {
-    this.dateObj = getOffsetedDate(date);
-  } */
   get _date() {
     return this.date;
   }
