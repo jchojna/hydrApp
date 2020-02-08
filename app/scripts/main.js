@@ -68,6 +68,60 @@ const handleContainerHeight = (container, elements) => {
   const childrenHeight = childrenArray.reduce((a,b) => a + b.clientHeight, 0);
   container.style.height = `${childrenHeight}px`;
 }
+//| FILTER USER INPUTS                                                    |//
+const filterUserInput = (e) => {
+  if (e.keyCode  === 13 || e.keyCode  === 27) return false;
+  const self = e.target;
+  const { value } = self;
+  const filteredValue = value.match(/\d/g);
+  const outputValue = filteredValue ? filteredValue.join('') : '';
+  self.value = outputValue;
+}
+//| VALIDATE USER INPUTS                                                  |//
+const isInputValid = (index) => {
+
+  const handleInputAlert = (index, min, max) => {
+    index = index - 1; // there's no alerts for first user detail
+    const alert = userAlerts[index];
+    const alertText = alert.firstElementChild;
+    const valNames = ['Age', 'Weight', 'Height'];
+    const valName = valNames[index];
+    const alertTextContent = `${valName} should be between ${min} and ${max}`;
+
+    if (!min && !max) {
+      alert.style.height = '';
+      alertText.textContent = '';
+    } else {
+      alertText.textContent = alertTextContent;
+      alert.style.height = `${alertText.clientHeight}px`;
+    }
+  }
+
+  const input = userInputs[index];
+  const inputValue = index === 0 ? input.value : parseInt(input.value);
+  const limits = [
+    { min: null, max: null},
+    { min: 10, max: 120},
+    { min: 8, max: 200},
+    { min: 70, max: 250}
+  ]
+  const limitMin = limits[index].min;
+  const limitMax = limits[index].max;
+
+  if (!inputValue) {
+    input.focus();
+    return false;
+  }
+
+  if (index === 0) return true;
+  if (inputValue < limitMin || inputValue > limitMax) {
+    handleInputAlert(index, limitMin, limitMax);
+    return false;
+  } else {
+    handleInputAlert(index);
+    return true;
+  }
+}
 //| EXPORT JSON OBJECT TO LOCAL STORAGE                                     |//
 const exportJsonToLS = (user) => {
   localStorage.setItem(`hydrapp-${user}`, JSON.stringify(hydrappJson));
@@ -148,10 +202,10 @@ const getCardHtml = (card, title) => {
   `;
 }
 //| RETURN EDITION MODULE HTML                                              |//
-const getEditionHtml = (tab) => {
+const getEditionHtml = (tab, id) => {
   return `
     <div class="edition edition--${tab} edition--js">
-      <button class="edition__button edition__button--visible edition__button--edit edition__button--js-edit">
+      <button class="edition__button edition__button--visible edition__button--edit edition__button--js-edit" ${id ? `id="${id}"` : ''}>
         <svg class="edition__svg edition__svg--edit">
           <use href="assets/svg/icons.svg#edit-mode"></use>
         </svg>
@@ -219,32 +273,35 @@ const getUserHtml = (user) => {
   [...userKeys].forEach((key, index) => 
 
     html += `
-      <li class="user">
-        <label for="${key}-${user}" class="user__prop">
+      <li class="userProp">
+        <label for="${key}-${user}" class="userProp__name userProp__name--js">
           ${userProps[index]}
         </label>
-        <div class="user__value">
-          <span class="user__output user__output--${key} user__output--js">
+        <div class="userProp__value">
+          <span class="userProp__output userProp__output--${key} userProp__output--js">
             ${hydrappJson[key]}
           </span>
           <input
             id="${key}-${user}"
-            class="user__input user__input--js"
+            class="userProp__input userProp__input--js"
             type="text"
-            maxlength="20"
+            maxlength="${key === 'userName' ? 20 : 3}"
           >
         </div>
         ${ key !== 'waterMin' && key !== 'waterAvg'
-        ? getEditionHtml('stats') : ''}
+        ? getEditionHtml('stats', key) : ''}
+
+        ${ key === 'userAge' || key === 'userWeight' || key === 'userHeight'
+        ? `
+          <div class="userProp__alert userProp__alert--js">
+            <p class="userProp__alertText"></p>
+          </div>
+        ` : ''}
       </li>
     `
   );
   return html;
 }
-
-
-
-
 //// USER DATA                                                             ////
 const createUser = () => {
   //| CREATE USER DOM NODES                                                 |//
@@ -379,60 +436,6 @@ const createUser = () => {
           }
         }
       }
-    }
-  }
-  //| FILTER USER INPUTS                                                    |//
-  const filterUserInput = (e) => {
-    if (e.keyCode  === 13 || e.keyCode  === 27) return false;
-    const self = e.target;
-    const { value } = self;
-    const filteredValue = value.match(/\d/g);
-    const outputValue = filteredValue ? filteredValue.join('') : '';
-    self.value = outputValue;
-  }
-  //| VALIDATE USER INPUTS                                                  |//
-  const isInputValid = (index) => {
-  
-    const handleInputAlert = (index, min, max) => {
-      index = index - 1; // there's no alerts for first user detail
-      const alert = userAlerts[index];
-      const alertText = alert.firstElementChild;
-      const valNames = ['Age', 'Weight', 'Height'];
-      const valName = valNames[index];
-      const alertTextContent = `${valName} should be between ${min} and ${max}`;
-  
-      if (!min && !max) {
-        alert.style.height = '';
-        alertText.textContent = '';
-      } else {
-        alertText.textContent = alertTextContent;
-        alert.style.height = `${alertText.clientHeight}px`;
-      }
-    }
-  
-    const input = userInputs[index];
-    const inputValue = index === 0 ? input.value : parseInt(input.value);
-    const limits = [
-      { min: null, max: null},
-      { min: 10, max: 120},
-      { min: 8, max: 200},
-      { min: 70, max: 250}
-    ]
-    const limitMin = limits[index].min;
-    const limitMax = limits[index].max;
-  
-    if (!inputValue) {
-      input.focus();
-      return false;
-    }
-  
-    if (index === 0) return true;
-    if (inputValue < limitMin || inputValue > limitMax) {
-      handleInputAlert(index, limitMin, limitMax);
-      return false;
-    } else {
-      handleInputAlert(index);
-      return true;
     }
   }
   //: create user DOM structure                                             ://
@@ -872,8 +875,8 @@ const addArchiveEntry = (index, option) => {
     lastWeekList.appendChild(addEntryButton);
   }
   updateWeekHeading();
-  //: add event listeners to all edit buttons                               ://
-  const editButtons = document.querySelectorAll('.edition__button--js-edit');
+  //: add event listeners to edit button                                    ://
+  const editButtons = archiveContainer.querySelectorAll('.edition__button--js-edit');
   const editButton = editButtons[index];
   editButton.index = index;
   editButton.addEventListener('click', handleEntryEdit);
@@ -977,47 +980,126 @@ const setStatsDOM = () => {
 }
 //| ADD USER STATS                                                          |//
 const addUserStats = (user) => {
-
+  //: get html codes of user card and user props                            ://
   const statsCardHtml = getCardHtml('stats', user);
   const userHtml = getUserHtml(user);
+  //: create DOM node of user card                                          ://
   statsContainer.insertAdjacentHTML('beforeend', statsCardHtml);
+  const cardHeader = statsContainer.querySelector('.card__header---js-stats');
+
+  //cardHeader.addEventListener('click', slideWeek); // ! slide between cards
+
+  //: create DOM nodes of user props                                        ://
   const cardList = statsContainer.querySelector('.card__list--js-stats');
   cardList.insertAdjacentHTML('beforeend', userHtml);
+  //: add event listeners to all edit buttons                               ://
+  const editButtons = cardList.querySelectorAll('.edition__button--js-edit');
+  [...editButtons].forEach(button => {
+    button.addEventListener('click', handleUserEdit);
+  });
+  
 
   // temporary
   statsContainer.firstElementChild.classList.add('card--visible');
-
-
-
-
-
-
-  //: function adding new week DOM node                                     ://
-  /* const addWeek = () => {
-    const lastWeek = archiveContainer.lastElementChild;
-    const lastWeekHeader = lastWeek.querySelector('.card__header---js-week');
-    lastWeekHeader.addEventListener('click', slideWeek);
-    weekLists = document.querySelectorAll('.card__list--js-week');
-  } */
-  //: add new week                                                          ://
-  //if (((day === 'sunday' || index === 0)) && option !== 'add') addWeek();
-  //: add next day entry                                                    ://
-  /* const lastWeekList = weekLists[weekLists.length - 1];
-  lastWeekList.insertAdjacentHTML('beforeend', entryHtml);
-  handleEmoji(id, value); */
-  //: add 'add entry button at the end                                      ://
-  /* if (index === hydrappJson.entries.length - 1) {
-    if (day === 'monday') addWeek();
-    const lastWeekList = weekLists[weekLists.length - 1];
-    lastWeekList.appendChild(addEntryButton);
-  }
-  updateWeekHeading(); */
-  //: add event listeners to all edit buttons                               ://
-  /* const editButtons = document.querySelectorAll('.edition__button--js-edit');
-  const editButton = editButtons[index];
-  editButton.index = index;
-  editButton.addEventListener('click', handleEntryEdit); */
 }
+//| HANDLE USER EDIT                                                        |//
+const handleUserEdit = (e) => {
+  const self = e.target;
+  const { id } = self;
+  const userProp = findFirstParentOfClass(self, 'userProp');
+  const propName = userProp.querySelector('.userProp__name--js');
+  const outputValue = userProp.querySelector('.userProp__output--js');
+  const inputValue = userProp.querySelector('.userProp__input--js');
+  const cancelButton = userProp.querySelector('.edition__button--js-cancel');
+  const saveButton = userProp.querySelector('.edition__button--js-save');
+  const editSection = userProp.querySelector('.edition--js');
+
+
+  //: TOGGLE PROP DISPLAY                                                   ://
+  const togglePropDisplay = () => {
+    for (const editButton of editSection.children) {
+      editButton.classList.toggle('edition__button--visible');
+    }
+    editSection.classList.toggle('edition--visible');
+    userProp.classList.toggle('userProp--editMode');
+    propName.classList.toggle('userProp__name--editMode');
+    outputValue.classList.toggle('userProp__output--hidden');
+    inputValue.classList.toggle('userProp__input--visible');
+
+    const outputValueText = outputValue.textContent.replace(/\s/g, '');
+    inputValue.value = outputValueText;
+  }
+  //: EXIT EDIT MODE                                                        ://
+  const exitEditMode = () => {
+    
+    togglePropDisplay();
+
+    editSection.removeEventListener('click', handleEdition);
+    window.removeEventListener('keydown', handleEdition);
+    if (id !== 'userName') inputValue.removeEventListener('keyup', filterUserInput);
+
+    //window.addEventListener('keydown', slideWeek); // ! slide between cards
+  }
+  //: HANDLE EDITION                                                        ://
+  const handleEdition = (e) => {
+    const self = e.keyCode || e.target;
+
+    switch (self) {
+
+      case 27:
+      case cancelButton:
+        exitEditMode();
+      break;
+
+      case 13:
+      case saveButton:
+
+        console.log(inputValue.value);
+
+
+
+
+
+
+
+
+
+
+
+
+        exportJsonToLS('Jakub');
+        exitEditMode();
+      break;
+    }
+  }
+  //: FUNCTION CALLS                                                        ://
+  togglePropDisplay();
+  editSection.addEventListener('click', handleEdition);
+  window.addEventListener('keydown', handleEdition);
+  if (id !== 'userName') inputValue.addEventListener('keyup', filterUserInput);
+
+  //window.removeEventListener('keydown', slideWeek); // ! slide between cards
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //// ENTRY HANDLERS                                                        ////
 //| CREATE 'REMOVE ITEM' BUTTON                                             |//
 const createRemoveEntryButton = () => {

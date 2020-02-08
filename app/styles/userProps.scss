@@ -1,21 +1,31 @@
-.user {
+@import 'variables.scss';
+@import 'mixins.scss';
+
+.userProp {
   align-items: center;
   display: grid;
   grid-gap: 10px;
-  grid-template-columns: 2fr 1fr $cardIcon-size-xs;
+  grid-template-columns: 50% 1fr auto;
   min-height: 50px;
   padding: $cardItem-padding;
+
+  &--editMode {
+    background-color: $cold-darkest-blue;
+  }
 
   &:not(:last-child) {
     border-bottom: 2px solid $cold-darkest-blue;
   }
 
-  &__prop {
+  &__name {
     
-
+    &--editMode {
+      color:$cold-dark-blue;
+    }
   }
 
   &__value {
+    font-weight: 700;
     position: relative;
     width: 100%;
   }
@@ -23,6 +33,13 @@
   &__output {
     &--userWeight::after { content: 'kg'; }
     &--userHeight::after { content: 'cm'; }
+
+    &--hidden {
+      visibility: hidden;
+      //display: none;
+
+      //border: 1px solid #000;
+    }
   }
 
   &__input {
@@ -59,6 +76,22 @@
     width: 100%;
     height: 100%;
     pointer-events: none;
+  }
+
+  &__alert {
+    grid-column: 1 / 4;
+    height: 0;
+    overflow: hidden;
+    transition: height $user-detail-toggle;
+  }
+
+  &__alertText {
+    background-color: $cold-blue;
+    border-radius: $br-items;
+    line-height: 1.4;
+    margin: 0;
+    padding: 10px;
+    text-align: center;
   }
 
   @media only screen and (min-width: $media-sm) {
