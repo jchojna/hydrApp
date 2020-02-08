@@ -72,6 +72,21 @@ const handleContainerHeight = (container, elements) => {
 const exportJsonToLS = (user) => {
   localStorage.setItem(`hydrapp-${user}`, JSON.stringify(hydrappJson));
 }
+//| UPDATE JSON OBJECT WHEN DATE HAS BEEN CHANGED                           |//
+const updateJsonOnDateChange = () => {
+  const currentDate = new Date();
+  let currentDateId = getDateId(currentDate);
+  let newEntries = [];
+  const lastEntryDateId = hydrappJson.entries[0].id;
+
+  while (currentDateId !== lastEntryDateId) {
+    const newEntry = new Entry(currentDate);
+    newEntries = [...newEntries, newEntry];
+    currentDateId = getDateId(currentDate.setDate(currentDate.getDate() - 1));
+  }
+  hydrappJson.entries = [...newEntries, ...hydrappJson.entries];
+  exportJsonToLS('Jakub');
+}
 //| TRIGGER FUNCTIONS LOADING APP                                           |//
 const loadApp = () => {
   updateJsonOnDateChange();
@@ -689,30 +704,30 @@ const toggleSidebarTabs = (e) => {
     svgIcon.classList.toggle('tab__svg--active');
   }
 }
-//// ARCHIVE TAB                                                           ////
 //| RETURN ARCHIVE WEEK HTML CODE                                           |//
-const getWeekHtml = () => {
+const getCardHtml = (card) => {
   return `
-    <section class="week week--js">
-    <div class="week__container">
-      <header class="week__header week__header--js">
-        <button class="week__button week__button--prev week__button--js-prev">
-          <svg class="week__svg" viewBox="0 0 512 512">
-            <use href="assets/svg/icons.svg#left-arrow"></use>
-          </svg>
-        </button>
-        <h3 class="week__heading week__heading--js">New week</h3>
-        <button class="week__button week__button--next week__button--js-next">
-          <svg class="week__svg" viewBox="0 0 512 512">
-            <use href="assets/svg/icons.svg#right-arrow"></use>
-          </svg>
-        </button>
-      </header>
-      <ul class="week__list week__list--js"></ul>
-    </div>
+    <section class="card card--${card} card--js-${card}">
+      <div class="card__container">
+        <header class="card__header card__header---js-${card}">
+          <button class="card__button card__button--prev card__button--js-${card}Prev">
+            <svg class="card__svg" viewBox="0 0 512 512">
+              <use href="assets/svg/icons.svg#left-arrow"></use>
+            </svg>
+          </button>
+          <h3 class="card__heading card__heading--js-${card}"></h3>
+          <button class="card__button card__button--next card__button--js-${card}Next">
+            <svg class="card__svg" viewBox="0 0 512 512">
+              <use href="assets/svg/icons.svg#right-arrow"></use>
+            </svg>
+          </button>
+        </header>
+        <ul class="card__list card__list--js-${card}"></ul>
+      </div>
     </section>
   `;
 }
+//// ARCHIVE TAB                                                           ////
 //| RETURN ARCHIVE ENTRY HTML CODE                                          |//
 const getEntryHtml = (index) => {
 
@@ -758,21 +773,6 @@ const getEntryHtml = (index) => {
     </li>
   `;
 }
-//| UPDATE JSON OBJECT WHEN DATE HAS BEEN CHANGED                           |//
-const updateJsonOnDateChange = () => {
-  const currentDate = new Date();
-  let currentDateId = getDateId(currentDate);
-  let newEntries = [];
-  const lastEntryDateId = hydrappJson.entries[0].id;
-
-  while (currentDateId !== lastEntryDateId) {
-    const newEntry = new Entry(currentDate);
-    newEntries = [...newEntries, newEntry];
-    currentDateId = getDateId(currentDate.setDate(currentDate.getDate() - 1));
-  }
-  hydrappJson.entries = [...newEntries, ...hydrappJson.entries];
-  exportJsonToLS('Jakub');
-}
 //| SET ARCHIVE                                                             |//
 const setArchiveDOM = () => {
 
@@ -781,9 +781,9 @@ const setArchiveDOM = () => {
     addArchiveEntry(i);
   }
   //: set the newest week as visible                                        ://
-  weeks = document.querySelectorAll('.week--js');
-  weekLists = document.querySelectorAll('.week__list--js');
-  weeks[currentWeekIndex].classList.add('week--visible');
+  weeks = document.querySelectorAll('.card--js-week');
+  weekLists = document.querySelectorAll('.card__list--js-week');
+  weeks[currentWeekIndex].classList.add('card--visible');
   //: add 'remove entry' button on the last entry                           ://
   handleArchiveLastEntry();
   //: generate indicators for new entry mode                                ://
@@ -794,15 +794,15 @@ const setArchiveDOM = () => {
 //| ADD ARCHIVE NODE                                                        |//
 const addArchiveEntry = (index, option) => {
   const {value, id, day} = hydrappJson.entries[index];
-  const weekHtml = getWeekHtml();
+  const weekHtml = getCardHtml('week');
   const entryHtml = getEntryHtml(index);
   //: function adding new week DOM node                                     ://
   const addWeek = () => {
     archiveContainer.insertAdjacentHTML('beforeend', weekHtml);
     const lastWeek = archiveContainer.lastElementChild;
-    const lastWeekHeader = lastWeek.querySelector('.week__header--js');
+    const lastWeekHeader = lastWeek.querySelector('.card__header---js-week');
     lastWeekHeader.addEventListener('click', slideWeek);
-    weekLists = document.querySelectorAll('.week__list--js');
+    weekLists = document.querySelectorAll('.card__list--js-week');
   }
   //: add new week                                                          ://
   if (((day === 'sunday' || index === 0)) && option !== 'add') addWeek();
@@ -825,8 +825,8 @@ const addArchiveEntry = (index, option) => {
 }
 //| SET WEEK HEADING                                                        |//
 const updateWeekHeading = () => {
-  weekLists = document.querySelectorAll('.week__list--js');
-  const weekHeadings = document.querySelectorAll('.week__heading--js');
+  weekLists = document.querySelectorAll('.card__list--js-week');
+  const weekHeadings = document.querySelectorAll('.card__heading--js-week');
   //: GET DATE                                                              ://
   const getDate = (element) => {
     const dateId = element.className.split(' ').filter(a => /dateId-/.test(a));
@@ -834,24 +834,24 @@ const updateWeekHeading = () => {
   }
   //: SET BUTTONS VISIBILITY                                                ://
   const setButtonsVisiblity = (index, option) => {
-    const prevWeekButton = document.querySelectorAll('.week__button--js-prev')[index];
-    const nextWeekButton = document.querySelectorAll('.week__button--js-next')[index];
+    const prevWeekButton = document.querySelectorAll('.card__button--js-weekPrev')[index];
+    const nextWeekButton = document.querySelectorAll('.card__button--js-weekNext')[index];
     switch (index) {
       case 0:
-        prevWeekButton.classList.remove('week__button--visible');
+        prevWeekButton.classList.remove('card__button--visible');
         option === 'oneWeek'
-        ? nextWeekButton.classList.remove('week__button--visible')
-        : nextWeekButton.classList.add('week__button--visible');
+        ? nextWeekButton.classList.remove('card__button--visible')
+        : nextWeekButton.classList.add('card__button--visible');
         break;
       
       case weekHeadings.length - 1:
-        prevWeekButton.classList.add('week__button--visible');
-        nextWeekButton.classList.remove('week__button--visible');
+        prevWeekButton.classList.add('card__button--visible');
+        nextWeekButton.classList.remove('card__button--visible');
         break;
 
       default:
-        prevWeekButton.classList.add('week__button--visible');
-        nextWeekButton.classList.add('week__button--visible');
+        prevWeekButton.classList.add('card__button--visible');
+        nextWeekButton.classList.add('card__button--visible');
         break;
     }
   }
@@ -877,21 +877,21 @@ const updateWeekHeading = () => {
 //| SLIDE WEEK                                                              |//
 const slideWeek = (e) => {
   const self = e.keyCode || e.target;
-  const prevWeekButton = document.querySelectorAll('.week__button--js-prev')[currentWeekIndex];
-  const nextWeekButton = document.querySelectorAll('.week__button--js-next')[currentWeekIndex];
+  const prevWeekButton = document.querySelectorAll('.card__button--js-weekPrev')[currentWeekIndex];
+  const nextWeekButton = document.querySelectorAll('.card__button--js-weekNext')[currentWeekIndex];
   const weeksAmount = archiveContainer.children.length;
 
   const handleSlide = (direction) => {
     //: handle previous section                                             ://
-    archiveContainer.children[currentWeekIndex].className = `week week--js week--slide-out-to-${direction === 'toLeft' ? 'right' : 'left'}`;
+    archiveContainer.children[currentWeekIndex].className = `card card--week card--js-week card--slide-out-to-${direction === 'toLeft' ? 'right' : 'left'}`;
     const previousWeekIndex = currentWeekIndex;
     //: change index                                                        ://
     currentWeekIndex = limit(archiveContainer.children.length - 1, currentWeekIndex, direction === 'toLeft' ? 'decrease' : 'increase');
     //: handle next section                                                 ://
     if (currentWeekIndex !== previousWeekIndex) {
-      archiveContainer.children[currentWeekIndex].classList = `week week--js week--visible week--slide-in-from-${direction === 'toLeft' ? 'left' : 'right'}`;
+      archiveContainer.children[currentWeekIndex].classList = `card card--week card--js-week card--visible card--slide-in-from-${direction === 'toLeft' ? 'left' : 'right'}`;
     } else {
-      archiveContainer.children[currentWeekIndex].classList = 'week week--js week--visible';
+      archiveContainer.children[currentWeekIndex].classList = 'card card--week card--js-week card--visible';
     }
   }
 
@@ -1054,8 +1054,8 @@ const addNewEntry = (entry) => {
   const lastWeek = weeks[lastWeekIndex];
   if (currentWeekIndex !== lastWeekIndex) {
     currentWeekIndex = lastWeekIndex;
-    currentWeek.className = 'week week--js week--slide-out-to-left';
-    lastWeek.className = 'week week--js week--visible week--slide-in-from-right';
+    currentWeek.className = 'week card--js-week week--slide-out-to-left';
+    lastWeek.className = 'week card--js-week week--visible week--slide-in-from-right';
   }
   handleContainerHeight(archiveContainer, lastWeek);
   handleArchiveLastEntry();
@@ -1097,9 +1097,9 @@ const removeLastEntry = (e) => {
         archiveContainer.removeChild(archiveContainer.lastElementChild);
         lastWeek = archiveContainer.lastElementChild;
         if (ifVisible) {
-          lastWeek.className = 'week week--js week--visible week--slide-in-from-left';currentWeekIndex--;
+          lastWeek.className = 'week card--js-week week--visible week--slide-in-from-left';currentWeekIndex--;
         }
-        const weekLists = document.querySelectorAll('.week__list--js');
+        const weekLists = document.querySelectorAll('.card__list--js-week');
         const lastWeekList = weekLists[weekLists.length - 1];
         lastWeekList.appendChild(addEntryButton);
       }
