@@ -3,23 +3,26 @@
 
 //| WEEK                                                                    |//
 .week {
-  position: absolute;
   bottom: 0;
-  right: 0;
-  left: 0;
-  top: 0;
   height: 100%;
-  visibility: hidden;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
   transition: visibility 0s $time-week-slide;
+  visibility: hidden;
 
   &__container {
-    padding: 20px;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    padding: $tab-offset-xs;
   }
 
   &--visible {
-    visibility: visible;
     animation-fill-mode: forwards;
     transition: visibility 0s;
+    visibility: visible;
   }
 
   &--slide-in-from-left {
@@ -32,24 +35,27 @@
   }
   &--slide-out-to-right {
     animation: slide-out-to-right $time-week-slide;
-    pointer-events: none;
     animation-fill-mode: forwards;
+    pointer-events: none;
   }
   &--slide-in-from-right {
     animation: slide-in-from-right $time-week-slide;
   }
 
   &__header {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
     align-items: center;
-    justify-items: center;
-    grid-gap: 5px;
     background-color: $cold-blue;
     border-radius: $br-items;
-    margin-bottom: 10px;
-    padding: 5px;
+    display: grid;
+    grid-gap: 5px;
+    grid-template-columns: auto 1fr auto;
     height: 50px;
+    justify-items: center;
+    margin-bottom: 10px;
+    max-width: $tab-maxWidth;
+    min-width: $tab-minWidth;
+    padding: 5px;
+    width: 100%;
   }
 
   &__heading {
@@ -78,17 +84,20 @@
 
   &__svg  {
     fill: inherit;
-    width: 100%;
     height: 100%;
     pointer-events: none;
+    width: 100%;
   }
 
   &__list {
     display: flex;
     flex-direction: column;
     list-style-type: none;
-    padding: 0;
     margin: 0;
+    max-width: $tab-maxWidth;
+    min-width: $tab-minWidth;
+    padding: 0;
+    width: 100%;
   }
 
   @media only screen and (min-width: $media-md) {
@@ -96,7 +105,7 @@
     & {
 
       &__container {
-        padding: 30px 50px;
+        padding: $tab-offset-md;
       }
     }
   }
@@ -106,7 +115,7 @@
     & {
       
       &__container {
-        padding: 30px 100px;
+        padding: $tab-offset-lg;
       }
     }
   }

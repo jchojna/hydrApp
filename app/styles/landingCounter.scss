@@ -4,7 +4,7 @@
 .counter {
   $header-height: $header-padding-xs * 2 + $burgerBtn-size-xs;
   align-items: center;
-  column-gap: 10px;
+  column-gap: 3vw;
   display: grid;
   grid-template-areas:
   "day     day    "
@@ -51,7 +51,7 @@
   @media only screen and (min-width: $media-md) {
 
     & {
-      column-gap: 20px;
+      column-gap: 10px;
       max-width: 350px;
 
       &__day {
@@ -72,7 +72,7 @@
   @media only screen and (min-width: $media-lg) {
 
     & {
-      column-gap: 30px;
+      column-gap: 15px;
       max-width: 400px;
 
       &__day {

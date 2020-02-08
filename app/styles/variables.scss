@@ -44,6 +44,15 @@ $button-time-active: 0.3s;
 $header-height-xs: $header-padding-xs * 2 + $burgerBtn-size-xs;
 $header-height-md: $header-padding-md * 2 + $burgerBtn-size-md;
 $header-height-lg: $header-padding-lg * 2 + $burgerBtn-size-lg;
+
+//| TAB                                                                     |//
+$tab-offset-xs: 20px;
+$tab-offset-md: 30px;
+$tab-offset-lg: 40px;
+
+$tab-maxWidth: 360px;
+$tab-minWidth: 280px;
+
 $sidebar-toggle: 0.4s;
 
 $tab-expand: 0.6s;
