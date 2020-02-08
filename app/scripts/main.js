@@ -121,32 +121,32 @@ const createUser = () => {
       const { id, question } = userDetails[i];
       
       const userDetailHtml = `
-        <div class="user ${i === 0 ? 'user--visible' : ''} user--js">
+        <div class="userDetail ${i === 0 ? 'userDetail--visible' : ''} userDetail--js">
           <label
             for="user${id}"
-            class="user__label user__label--js-${id.toLowerCase()}"
+            class="userDetail__label userDetail__label--js-${id.toLowerCase()}"
           >
             ${question}
           </label>
           <input
             id="user${id}"
-            class="user__input user__input--js"
+            class="userDetail__input userDetail__input--js"
             type="text"
             maxlength="${i === 0 ? 20 : 3}"
             autofocus=${i === 0 ? true : false}
           >
           ${i !== 0 ? `
-            <div class="user__alert user__alert--js">
-              <p class="user__alertText"></p>
+            <div class="userDetail__alert userDetail__alert--js">
+              <p class="userDetail__alertText"></p>
             </div>
-            <button class="user__button user__button--prev user__button--js-prev">
-              <svg class="user__svg" viewBox="0 0 512 512">
+            <button class="userDetail__button userDetail__button--prev userDetail__button--js-prev">
+              <svg class="userDetail__svg" viewBox="0 0 512 512">
                 <use href="assets/svg/icons.svg#left-arrow"></use>
               </svg>
             </button>
           ` : ''}
-          <button class="user__button user__button--next user__button--js-next">
-            <svg class="user__svg" viewBox="0 0 512 512">
+          <button class="userDetail__button userDetail__button--next userDetail__button--js-next">
+            <svg class="userDetail__svg" viewBox="0 0 512 512">
               <use href="assets/svg/icons.svg#right-arrow"></use>
             </svg>
           </button>
@@ -165,7 +165,7 @@ const createUser = () => {
     const toggleDetail = (current, next, action, timeout) => {
       const hiddenSide = action === 'prev' ? 'Right' : 'Left';
       const visibleSide = action === 'prev' ? 'Left' : 'Right';
-      const nextInput = next ? next.querySelector('.user__input--js') : false;
+      const nextInput = next ? next.querySelector('.userDetail__input--js') : false;
   
       current.classList.add(`user--hidden${hiddenSide}`);
       current.classList.remove('user--visible');
@@ -230,7 +230,7 @@ const createUser = () => {
           if (isInputValid(currentDetailIndex)) {
             if (currentDetailIndex === 0) {
               const userName = userInputs[currentDetailIndex].value;
-              const userAgeLabel = document.querySelector('.user__label--js-age');
+              const userAgeLabel = document.querySelector('.userDetail__label--js-age');
               const newLabelContent = `Hello ${userName}, how old are you?`;
               userAgeLabel.textContent = newLabelContent;
               hydrappJson.userName = userName;
@@ -301,11 +301,11 @@ const createUser = () => {
   //: variables                                                             ://
   let currentDetailIndex = 0;
   let detailToggleTimeoutId = null;
-  const userDetails = document.querySelectorAll('.user--js');
-  const userPrevButtons = document.querySelectorAll('.user__button--js-prev');
-  const userNextButtons = document.querySelectorAll('.user__button--js-next');
-  const userInputs = document.querySelectorAll('.user__input--js');
-  const userAlerts = document.querySelectorAll('.user__alert--js');
+  const userDetails = document.querySelectorAll('.userDetail--js');
+  const userPrevButtons = document.querySelectorAll('.userDetail__button--js-prev');
+  const userNextButtons = document.querySelectorAll('.userDetail__button--js-next');
+  const userInputs = document.querySelectorAll('.userDetail__input--js');
+  const userAlerts = document.querySelectorAll('.userDetail__alert--js');
   //: event listeners                                                       ://
   [...userPrevButtons].forEach((button, index) => {
     button.index = index;
@@ -704,7 +704,7 @@ const toggleSidebarTabs = (e) => {
     svgIcon.classList.toggle('tab__svg--active');
   }
 }
-//| RETURN ARCHIVE WEEK HTML CODE                                           |//
+//| RETURN SIDEBAR TAB'S CARD HTML                                          |//
 const getCardHtml = (card) => {
   return `
     <section class="card card--${card} card--js-${card}">
@@ -715,7 +715,7 @@ const getCardHtml = (card) => {
               <use href="assets/svg/icons.svg#left-arrow"></use>
             </svg>
           </button>
-          <h3 class="card__heading card__heading--js-${card}"></h3>
+          <h4 class="card__heading card__heading--js-${card}"></h4>
           <button class="card__button card__button--next card__button--js-${card}Next">
             <svg class="card__svg" viewBox="0 0 512 512">
               <use href="assets/svg/icons.svg#right-arrow"></use>
@@ -907,26 +907,48 @@ const slideWeek = (e) => {
         break;
     }
     handleContainerHeight(archiveContainer, weeks[currentWeekIndex]);
-    entriesFade('in');
+    //entriesFade('in');
   }
 }
 //// STATS TAB                                                             ////
 //| SET STATS DOM STRUCTURE BASED ON USER'S JSON OBJECT                     |//
 const setStatsDOM = () => {
-  const stats = `
+
+  addStatsUser();
 
 
-
-
-
-
-
-
-
-
-
-  `
-  statsContent.innerHTML = stats;
+}
+//| ADD USER STATS                                                          |//
+const addUserStats = () => {
+  /* const {value, id, day} = hydrappJson.entries[index];
+  const weekHtml = getCardHtml('week');
+  const entryHtml = getEntryHtml(index); */
+  //: function adding new week DOM node                                     ://
+  /* const addWeek = () => {
+    archiveContainer.insertAdjacentHTML('beforeend', weekHtml);
+    const lastWeek = archiveContainer.lastElementChild;
+    const lastWeekHeader = lastWeek.querySelector('.card__header---js-week');
+    lastWeekHeader.addEventListener('click', slideWeek);
+    weekLists = document.querySelectorAll('.card__list--js-week');
+  } */
+  //: add new week                                                          ://
+  //if (((day === 'sunday' || index === 0)) && option !== 'add') addWeek();
+  //: add next day entry                                                    ://
+  /* const lastWeekList = weekLists[weekLists.length - 1];
+  lastWeekList.insertAdjacentHTML('beforeend', entryHtml);
+  handleEmoji(id, value); */
+  //: add 'add entry button at the end                                      ://
+  /* if (index === hydrappJson.entries.length - 1) {
+    if (day === 'monday') addWeek();
+    const lastWeekList = weekLists[weekLists.length - 1];
+    lastWeekList.appendChild(addEntryButton);
+  }
+  updateWeekHeading(); */
+  //: add event listeners to all edit buttons                               ://
+  /* const editButtons = document.querySelectorAll('.edition__button--js-edit');
+  const editButton = editButtons[index];
+  editButton.index = index;
+  editButton.addEventListener('click', handleEntryEdit); */
 }
 //// ENTRY HANDLERS                                                        ////
 //| CREATE 'REMOVE ITEM' BUTTON                                             |//

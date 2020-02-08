@@ -74,9 +74,13 @@
     display: flex;
     background-color: $cold-dark-blue;
     position: relative;
-    //height: 0;  // ! delete after
+    height: 0;
     overflow: hidden;
     transition: height $tab-expand;
     width: 100%;
+
+    &--js-stats { // ! delete after
+      height: 300px;
+    }
   }
 }
