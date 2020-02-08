@@ -512,63 +512,79 @@ const handleCounter = (currentValue, newValue) => {
     if (digits === 'tenths') {
       counterNextTenths.classList.remove('digit__svg--animateIn');
       counterNextTenths.classList.remove('digit__svg--animateOut');
+      counterPrevTenths.classList.remove('digit__svg--animateOut');
     } else if (digits === 'ones') {
       counterNextOnes.classList.remove('digit__svg--animateIn');
       counterNextOnes.classList.remove('digit__svg--animateOut');
+      counterPrevOnes.classList.remove('digit__svg--animateOut');
     }
-  } 
-
+  }
+  //. handle tenths on add button click                                     .//
   if (newValue > currentValue && newTenthsValue !== currentTenthsValue) {
 
     counterNextTenths.firstElementChild.setAttribute('href', newTenthsHref);
     counterPrevTenths.firstElementChild.setAttribute('href', currentTenthsHref);
-    counterNextTenths.classList.add('digit__svg--rotated');
+    counterNextTenths.classList.add('digit__svg--rotatedNext');
+    counterPrevTenths.classList.remove('digit__svg--rotatedPrev');
     removeAnimations('tenths');
 
     const timeoutId = setTimeout(() => {
-      counterNextTenths.classList.remove('digit__svg--rotated');
+      counterNextTenths.classList.remove('digit__svg--rotatedNext');
       counterNextTenths.classList.add('digit__svg--animateIn');
+      counterPrevTenths.classList.add('digit__svg--rotatedPrev');
+      counterPrevTenths.classList.add('digit__svg--animateOut');
       clearTimeout(timeoutId);
     }, tenthsTimeout);
 
+  //. handle tenths on remove button click                                  .//
   } else if (newValue < currentValue && newTenthsValue !== currentTenthsValue) {
 
     counterNextTenths.firstElementChild.setAttribute('href', currentTenthsHref);
     counterPrevTenths.firstElementChild.setAttribute('href', newTenthsHref);
-    counterNextTenths.classList.remove('digit__svg--rotated');
+    counterNextTenths.classList.remove('digit__svg--rotatedNext');
+    counterPrevTenths.classList.add('digit__svg--rotatedPrev');
     removeAnimations('tenths');
 
     const timeoutId = setTimeout(() => {
-      counterNextTenths.classList.add('digit__svg--rotated');
+      counterNextTenths.classList.add('digit__svg--rotatedNext');
       counterNextTenths.classList.add('digit__svg--animateOut');
+      counterPrevTenths.classList.remove('digit__svg--rotatedPrev');
+      counterPrevTenths.classList.add('digit__svg--animateOut');
       clearTimeout(timeoutId);
     }, tenthsTimeout);
   }
 
+  //. handle ones on add button click                                       .//
   if (newValue > currentValue && newOnesValue !== currentOnesValue) {
 
     counterNextOnes.firstElementChild.setAttribute('href', newOnesHref);
     counterPrevOnes.firstElementChild.setAttribute('href', currentOnesHref);
-    counterNextOnes.classList.add('digit__svg--rotated');
+    counterNextOnes.classList.add('digit__svg--rotatedNext');
+    counterPrevOnes.classList.remove('digit__svg--rotatedPrev');
     removeAnimations('ones');
 
     const timeoutId = setTimeout(() => {
-      counterNextOnes.classList.remove('digit__svg--rotated');
+      counterNextOnes.classList.remove('digit__svg--rotatedNext');
       counterNextOnes.classList.add('digit__svg--animateIn');
+      counterPrevOnes.classList.add('digit__svg--rotatedPrev');
+      counterPrevOnes.classList.add('digit__svg--animateOut');
       clearTimeout(timeoutId);
     }, onesTimeout);
     
-
+  //. handle ones on remove button click                                    .//
   } else if (newValue < currentValue && newOnesValue !== currentOnesValue) {
         
     counterNextOnes.firstElementChild.setAttribute('href', currentOnesHref);
     counterPrevOnes.firstElementChild.setAttribute('href', newOnesHref);
-    counterNextOnes.classList.remove('digit__svg--rotated');
+    counterNextOnes.classList.remove('digit__svg--rotatedNext');
+    counterPrevOnes.classList.add('digit__svg--rotatedPrev');
     removeAnimations('ones');
     
     const timeoutId = setTimeout(() => {
-      counterNextOnes.classList.add('digit__svg--rotated');
+      counterNextOnes.classList.add('digit__svg--rotatedNext');
       counterNextOnes.classList.add('digit__svg--animateOut');
+      counterPrevOnes.classList.remove('digit__svg--rotatedPrev');
+      counterPrevOnes.classList.add('digit__svg--animateOut');
       clearTimeout(timeoutId);
     }, onesTimeout);
   }
