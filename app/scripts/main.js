@@ -220,15 +220,16 @@ const getUserHtml = (user) => {
 
     html += `
       <li class="user">
-        <span for="${key}-${user}" class="user__prop">
+        <label for="${key}-${user}" class="user__prop">
           ${userProps[index]}
-        </span>
+        </label>
         <div class="user__value">
-          <label for="userName-${user}" class="user__label">
+          <span class="user__output user__output--${key} user__output--js">
             ${hydrappJson[key]}
-          </label>
+          </span>
           <input
-            class="user__input"
+            id="${key}-${user}"
+            class="user__input user__input--js"
             type="text"
             maxlength="20"
           >
