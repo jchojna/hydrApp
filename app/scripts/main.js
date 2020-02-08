@@ -328,7 +328,7 @@ const createUser = () => {
 //// EMOJI                                                                 ////
 //| GET EMOJIS HTML STRING                                                  |//
 const getEmojiHtml = (id) => {
-  let emojiHtml = '';
+  let emojiHtml = `<div class="emoji emoji--js-${id}">`;
 
   for (let i = 0; i < emojiAmount; i++) {
     emojiHtml += `
@@ -340,6 +340,7 @@ const getEmojiHtml = (id) => {
       </svg>
     `
   }
+  emojiHtml += '</div>'
   return emojiHtml;
 }
 //| SET INDICATORS                                                          |//
@@ -727,6 +728,43 @@ const getCardHtml = (card) => {
     </section>
   `;
 }
+//| RETURN EDITION MODULE HTML                                              |//
+const getEditionHtml = (tab) => {
+  return `
+    <div class="edition edition--${tab} edition--js">
+      <button class="edition__button edition__button--visible edition__button--edit edition__button--js-edit">
+        <svg class="edition__svg edition__svg--edit">
+          <use href="assets/svg/icons.svg#edit-mode"></use>
+        </svg>
+      </button>
+      ${ tab === 'archive'
+      ? `
+      <button class="edition__button edition__button--decrease edition__button--js-decrease">
+        <svg class="edition__svg edition__svg--decrease">
+          <use href="assets/svg/icons.svg#down-arrow"></use>
+        </svg>
+      </button>
+      <button class="edition__button edition__button--increase edition__button--js-increase">
+        <svg class="edition__svg edition__svg--increase">
+          <use href="assets/svg/icons.svg#up-arrow"></use>
+        </svg>
+      </button>
+      `
+      : ''
+      }      
+      <button class="edition__button edition__button--cancel edition__button--js-cancel">
+        <svg class="edition__svg edition__svg--cancel">
+          <use href="assets/svg/icons.svg#back-arrow"></use>
+        </svg>
+      </button>
+      <button class="edition__button edition__button--save edition__button--js-save">
+        <svg class="edition__svg edition__svg--save">
+          <use href="assets/svg/icons.svg#save-icon"></use>
+        </svg>
+      </button>
+    </div>
+  `;
+}
 //// ARCHIVE TAB                                                           ////
 //| RETURN ARCHIVE ENTRY HTML CODE                                          |//
 const getEntryHtml = (index) => {
@@ -740,36 +778,8 @@ const getEntryHtml = (index) => {
         <p class="entry__heading entry__heading--date entry__heading--js-date">${date}</p>
       </header>
       <span class="entry__value entry__value--js">${value}</span>
-      <div class="edition edition--js">
-        <button class="edition__button edition__button--visible edition__button--edit edition__button--js-edit">
-          <svg class="edition__svg edition__svg--edit">
-            <use href="assets/svg/icons.svg#edit-mode"></use>
-          </svg>
-        </button>
-        <button class="edition__button edition__button--decrease edition__button--js-decrease">
-          <svg class="edition__svg edition__svg--decrease">
-            <use href="assets/svg/icons.svg#down-arrow"></use>
-          </svg>
-        </button>
-        <button class="edition__button edition__button--increase edition__button--js-increase">
-          <svg class="edition__svg edition__svg--increase">
-            <use href="assets/svg/icons.svg#up-arrow"></use>
-          </svg>
-        </button>
-        <button class="edition__button edition__button--cancel edition__button--js-cancel">
-          <svg class="edition__svg edition__svg--cancel">
-            <use href="assets/svg/icons.svg#back-arrow"></use>
-          </svg>
-        </button>
-        <button class="edition__button edition__button--save edition__button--js-save">
-          <svg class="edition__svg edition__svg--save">
-            <use href="assets/svg/icons.svg#save-icon"></use>
-          </svg>
-        </button>
-      </div>
-      <div class="emoji emoji--js-${id}">
-        ${getEmojiHtml(id)}
-      </div>
+      ${getEditionHtml('archive')}
+      ${getEmojiHtml(id)}
     </li>
   `;
 }
