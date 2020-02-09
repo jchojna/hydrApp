@@ -81,7 +81,7 @@
     grid-column: 1 / 4;
     height: 0;
     overflow: hidden;
-    transition: height $user-detail-toggle;
+    transition: height $newUser-toggle;
   }
 
   &__alertText {

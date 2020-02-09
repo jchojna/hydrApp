@@ -123,7 +123,7 @@
     opacity: 0;
     position: fixed;
     top: 0;
-    transition: opacity $user-detail-toggle, visibility 0s $user-detail-toggle;
+    transition: opacity $newUser-toggle, visibility 0s $newUser-toggle;
     visibility: hidden;
     width: 100%;
     z-index: 2;
@@ -131,7 +131,7 @@
     &--visible {
       opacity: 1;
       visibility: visible;
-      transition: opacity $user-detail-toggle, visibility 0s;
+      transition: opacity 0s, visibility 0s;
     }
   }
   //: APP LOG IN                                                            ://
@@ -144,7 +144,7 @@
     opacity: 0;
     position: fixed;
     top: 0;
-    transition: opacity $user-detail-toggle, visibility 0s $user-detail-toggle;
+    transition: opacity $newUser-toggle, visibility 0s $newUser-toggle;
     visibility: hidden;
     width: 100%;
     z-index: 2;
@@ -152,7 +152,7 @@
     &--visible {
       opacity: 1;
       visibility: visible;
-      transition: opacity 0s, visibility 0s;
+      transition: opacity $newUser-toggle, visibility 0s;
     }
   }
   //: APP CREATE NEW USER BUTTON                                            ://
@@ -170,7 +170,7 @@
 
       & {
         width: 100%;
-        max-width: $user-box-maxWidth;
+        max-width: $newUser-box-maxWidth;
       }
     }
 
