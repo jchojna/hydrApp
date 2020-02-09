@@ -123,8 +123,9 @@ const exportJsonToLS = (user) => {
   localStorage.setItem(`hydrapp-${user}`, JSON.stringify(hydrappJson));
 }
 //| UPDATE JSON OBJECT WHEN DATE HAS BEEN CHANGED                           |//
-const updateJsonOnDateChange = (user) => {
+const updateJsonOnDateChange = () => {
   const currentDate = new Date();
+  const { userName } = hydrappJson;
   let currentDateId = getDateId(currentDate);
   let newEntries = [];
   const lastEntryDateId = hydrappJson.entries[0].id;
@@ -135,11 +136,11 @@ const updateJsonOnDateChange = (user) => {
     currentDateId = getDateId(currentDate.setDate(currentDate.getDate() - 1));
   }
   hydrappJson.entries = [...newEntries, ...hydrappJson.entries];
-  exportJsonToLS(user);
+  exportJsonToLS(userName);
 }
 //| TRIGGER FUNCTIONS LOADING APP                                           |//
-const loadApp = (user) => {
-  updateJsonOnDateChange(user);
+const loadApp = () => {
+  updateJsonOnDateChange();
   const startValue = hydrappJson.entries[0].value;
   setArchiveDOM();
   setStatsDOM();
@@ -175,11 +176,11 @@ const getEmojiHtml = (id) => {
   return emojiHtml;
 }
 //| RETURN SIDEBAR TAB'S CARD HTML                                          |//
-const getCardHtml = (card, title) => {
+const getCardHtml = (card, user) => {
   return `
     <section
       class="card card--${card} card--js-${card}"
-      ${title ? `id="${title}"` : ''}
+      ${user ? `id="${user}"` : ''}
     >
       <div class="card__container">
         <header class="card__header card__header---js-${card}">
@@ -188,7 +189,7 @@ const getCardHtml = (card, title) => {
               <use href="assets/svg/icons.svg#left-arrow"></use>
             </svg>
           </button>
-          <h4 class="card__heading card__heading--js-${card}">${title}</h4>
+          <h4 class="card__heading card__heading--js-${card}">${user}</h4>
           <button class="card__button card__button--next card__button--js-${card}Next">
             <svg class="card__svg" viewBox="0 0 512 512">
               <use href="assets/svg/icons.svg#right-arrow"></use>
@@ -305,7 +306,30 @@ const getUserHtml = (user) => {
   });
   return html;
 }
-//// USER DATA                                                             ////
+//// APP START                                                             ////
+//| LOG IN AS SELECTED USER                                                 |//
+const userLogIn = () => {
+
+  appLogIn.classList.add('app__logIn--visible');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  //hydrappJson = hydrappUsers[0];
+  //loadApp();
+}
+//| CREATE NEW USER                                                         |//
 const createUser = () => {
   //| CREATE USER DOM NODES                                                 |//
   const setUserDOM = () => {
@@ -613,10 +637,12 @@ const handleWaterShake = () => {
 }
 //| HANDLE CONSUMED WATER AVERAGE VALUE                                     |//
 const handleWaterAverage = () => {
-  const { waterMax, entries } = hydrappJson;
+  const { userName, waterMax, entries } = hydrappJson;
   const id = 'waterAvg';
   const interval = appLanding.clientHeight / waterMax;
-  const statsOutput = document.querySelector(`.card#Jakub .userProp__output--js-${id}`);
+  const statsOutput = document.querySelector(`
+    .card#${userName} .userProp__output--js-${id}
+  `);
   const waterAvg = [...entries]
     .map(elem => elem.value)
     .reduce((a,b) => a + b) / entries.length;
@@ -978,8 +1004,17 @@ const slideWeek = (e) => {
 //// STATS TAB                                                             ////
 //| SET STATS DOM STRUCTURE BASED ON USER'S JSON OBJECT                     |//
 const setStatsDOM = () => {
-  const user = 'Jakub';
-  addUserStats(user);
+  const { userName } = hydrappJson;
+  addUserStats(userName);
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1392,9 +1427,13 @@ const mediaMd = 768;
 const mediaLg = 1200;
 //: APP                                                                     ://
 const appHeader = document.querySelector('.app__header--js');
+const appLogIn = document.querySelector('.app__logIn--js');
 const appUser = document.querySelector('.app__user--js');
 const appLanding = document.querySelector('.app__landing--js');
 const appSidebar = document.querySelector('.app__sidebar--js');
+//: LOG IN                                                                  ://
+const usersList = document.querySelector('.app__usersList--js');
+
 //: COUNTER                                                                 ://
 const counter = document.querySelector('.counter--js');
 const counterPrevTenths = document.querySelector('.digit__svg--js-prevTenths');
@@ -1436,8 +1475,6 @@ let weekLists = null;
 const addEntryButton = createAddEntryButton();
 const removeEntryButton = createRemoveEntryButton();
 let currentWeekIndex = 0;
-
-
 //: NEW ENTRY                                                               ://
 const newEntryMode = document.querySelector('.newEntry--js');
 const newEntryValue = document.querySelector('.newEntry__value--js');
@@ -1500,15 +1537,7 @@ const hydrappUsers = Object
 .map(key => JSON.parse(localStorage.getItem(key)));
 
 if (hydrappUsers) {
-
-  if (hydrappUsers.length === 1) {
-    hydrappJson = hydrappUsers[0];
-    const user = hydrappJson.userName;
-    loadApp(user);
-  } else {
-    console.log('show list of users');
-  }
-
+  userLogIn();
 } else {
   createUser();
 }
