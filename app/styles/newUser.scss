@@ -9,11 +9,9 @@
   "alert alert"
   "prev  next ";
   grid-template-columns: repeat(2, 1fr);
-  left: 0;
   margin: 0 20px;
   opacity: 0;
   position: absolute;
-  right: 0;
   row-gap: 20px;
   transform: translateX(0);
   transition:
@@ -21,6 +19,14 @@
     transform $newUser-toggle,
     visibility 0s $newUser-toggle;
   visibility: hidden;
+
+  @media only screen and (min-width: $media-md) {
+
+    & {
+      width: 100%;
+      max-width: $newUser-box-maxWidth;
+    }
+  }
 
   &--visible {
     opacity: 1;
@@ -42,11 +48,24 @@
   &__label {
     color: $cold-blue;
     font-weight: 700;
-    font-size: 1.8em;
+    font-size: 1.4em;
     grid-area: label;
     margin-bottom: 20px;
     text-align: center;
 
+    @media only screen and (min-width: $media-md) {
+  
+      & {
+        font-size: 1.6em;
+      }
+    }
+
+    @media only screen and (min-width: $media-lg) {
+  
+      & {
+        font-size: 1.8em;
+      }
+    }
   }
 
   &__input {
@@ -63,6 +82,13 @@
 
     &:focus {
       border-color: $cold-light-blue;
+    }
+
+    @media only screen and (min-width: $media-md) {
+  
+      & {
+        min-height: 60px;
+      }
     }
   }
 
@@ -102,6 +128,18 @@
 
     &:hover {
       fill: $cold-light-blue;
+    }
+
+    @media only screen and (min-width: $media-md) {
+      & {
+        width: $burgerBtn-size-md;
+      }
+    }
+
+    @media only screen and (min-width: $media-lg) {
+      & {
+        width: $burgerBtn-size-lg;
+      }
     }
   }
 
