@@ -110,6 +110,13 @@ const isInputValid = (input, id, alertBox) => {
     }
   } else return true;
 }
+//| RETURN 'GLASS' OR 'GLASSES' OR EMPTY                                    |//
+const getGlasses = (key, value) => {
+  const glasses = key === 'waterMax' || key === 'waterMin' || key === 'waterAvg'
+  ? `${value} ${value > 1 ? 'glasses' : 'glass'}`
+  : value;
+  return glasses;
+}
 //| EXPORT JSON OBJECT TO LOCAL STORAGE                                     |//
 const exportJsonToLS = (user) => {
   localStorage.setItem(`hydrapp-${user}`, JSON.stringify(hydrappJson));
@@ -134,6 +141,7 @@ const loadApp = () => {
   updateJsonOnDateChange();
   const startValue = hydrappJson.entries[0].value;
   setArchiveDOM();
+  handleWaterAverage();
   setStatsDOM();
   setWaterMeasureDOM();
   setWaterWaves(wavesAmount);
@@ -146,7 +154,6 @@ const loadApp = () => {
   emoji.innerHTML = getEmojiHtml('controls');
   handleEmoji('controls', startValue);
   updateWeekHeading();
-  handleWaterAverage();
 }
 //// HTML CODE                                                             ////
 //| RETURN EMOJIS HTML STRING                                               |//
@@ -252,13 +259,14 @@ const getUserHtml = (user) => {
     key === 'userAge'    ? 'Age:'                 :
     key === 'userWeight' ? 'Weight:'              :
     key === 'userHeight' ? 'Height:'              :
-    key === 'waterMax'   ? 'Max glasses a day:'   :
-    key === 'waterMin'   ? 'Min glasses a day:'   :
+    key === 'waterMax'   ? 'Maximum a day:'   :
+    key === 'waterMin'   ? 'Minimum a day:'   :
     key === 'waterAvg'   ? 'Average consumption:' : ''
   );
   let html = '';
 
-  [...userKeys].forEach((key, index) => 
+  [...userKeys].forEach((key, index) => {
+    const value = hydrappJson[key];
 
     html += `
       <li class="userProp">
@@ -267,7 +275,7 @@ const getUserHtml = (user) => {
         </label>
         <div class="userProp__value">
           <span class="userProp__output userProp__output--${key} userProp__output--js">
-            ${hydrappJson[key]}
+            ${getGlasses(key, value)}
           </span>
           <input
             id="${key}-${user}"
@@ -290,7 +298,7 @@ const getUserHtml = (user) => {
         ` : ''}
       </li>
     `
-  );
+  });
   return html;
 }
 //// USER DATA                                                             ////
@@ -603,11 +611,12 @@ const handleWaterShake = () => {
 const handleWaterAverage = () => {
   const { waterMax, entries } = hydrappJson;
   const interval = appLanding.clientHeight / waterMax;
-  const waterAverage = [...entries]
+  const waterAvg = [...entries]
     .map(elem => elem.value)
     .reduce((a,b) => a + b) / entries.length;
-  levelAvg.style.bottom = `${waterAverage * interval}px`;
-  hydrappJson.waterAvg = waterAverage;
+  const roundedWaterAvg = Math.round(waterAvg * 100) / 100;
+  levelAvg.style.bottom = `${roundedWaterAvg * interval}px`;
+  hydrappJson.waterAvg = roundedWaterAvg;
   exportJsonToLS('Jakub');
 }
 //// COUNTER                                                               ////
@@ -1018,6 +1027,7 @@ const handleUserEdit = (e) => {
     propName.classList.toggle('userProp__name--editMode');
     outputValue.classList.toggle('userProp__output--hidden');
     inputValue.classList.toggle('userProp__input--visible');
+    inputValue.focus();
     inputValue.value = value;
   }
   //: EXIT EDIT MODE                                                        ://
@@ -1050,7 +1060,7 @@ const handleUserEdit = (e) => {
           const newValue = typeof value === 'number'
           ? parseInt(inputValue.value)
           : inputValue.value;
-          outputValue.textContent = newValue;
+          outputValue.textContent = getGlasses(id, newValue);
           hydrappJson[id] = newValue;
 
           exportJsonToLS('Jakub');
