@@ -156,6 +156,11 @@ const loadApp = () => {
   handleEmoji('controls', startValue);
   updateWeekHeading();
   handleWaterAverage();
+
+  controls.addEventListener('click', handleWaterChange);
+  window.addEventListener('resize', handleWindowResize);
+  burgerBtn.addEventListener('click', toggleSidebar);
+  appSidebar.addEventListener('click', toggleSidebarTabs);
 }
 //// HTML CODE                                                             ////
 //| RETURN EMOJIS HTML STRING                                               |//
@@ -308,7 +313,6 @@ const getUserHtml = (user) => {
 }
 //| RETURN USER LOG IN HTML CODE                                            |//
 const getUserLogInHtml = (user) => {
-
   return `
     <li class="usersList__item" id="${user}">
       <button class="usersList__button userList__button--js">
@@ -318,30 +322,27 @@ const getUserLogInHtml = (user) => {
   `;  
 }
 //// APP START                                                             ////
-//| LOG IN AS SELECTED USER                                                 |//
-const userLogIn = () => {
-
+//| CREATE LOG IN BOX DOM STRUCTURE WITH ALL THE USERS                      |//
+const setLogInDOM = () => {
+  //: set DOM structure of list of users in log in box                      ://
   [...hydrappUsers].forEach(({ userName }) => {
-    usersList.innerHTML += getUserLogInHtml(userName);
+    usersList.insertAdjacentHTML('beforeend', getUserLogInHtml(userName));
+    const userButton = usersList.querySelector(`#${userName} .userList__button--js`);
+    userButton.addEventListener('click', handleUserLogin);
   });
+  //: show log in box                                                       ://
   appLogIn.classList.add('app__logIn--visible');
+}
+//| LOG IN AS SELECTED USER                                                 |//
+const handleUserLogin = (e) => {
+  const self = e.target;
+  const { id } = self.parentNode;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  //hydrappJson = hydrappUsers[0];
-  //loadApp();
+  hydrappJson = [...hydrappUsers].filter(({userName}) => userName === id)[0];
+  loadApp();
+  appLogIn.classList.remove('app__logIn--visible');
+  const userLogInButtons = usersList.querySelectorAll('.userList__button--js');
+  [...userLogInButtons].forEach(button => button.removeEventListener('click', handleUserLogin));
 }
 //| CREATE NEW USER                                                         |//
 const createUser = () => {
@@ -1550,22 +1551,11 @@ const hydrappUsers = Object
 .filter(key => key.match(/hydrapp/))
 .map(key => JSON.parse(localStorage.getItem(key)));
 
-if (hydrappUsers) {
-  userLogIn();
-} else {
-  createUser();
-}
+hydrappUsers ? setLogInDOM() : createUser();
+
 
 
 toggleSidebar(burgerBtn);                                 // ! FOR TESTS ONLY
-//enterNewEntryValue(107);                                  // ! FOR TESTS ONLY
-
 //| VARIABLES                                                               |//
 let editButtons = document.querySelectorAll('.edition__button--js-edit');
 let entries = document.querySelectorAll('.entry--js');
-//| EVENT LISTENERS                                                         |//
-////                                                                       ////
-controls.addEventListener('click', handleWaterChange);
-window.addEventListener('resize', handleWindowResize);
-burgerBtn.addEventListener('click', toggleSidebar);
-appSidebar.addEventListener('click', toggleSidebarTabs);
