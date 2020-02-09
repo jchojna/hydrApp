@@ -141,7 +141,6 @@ const loadApp = () => {
   updateJsonOnDateChange();
   const startValue = hydrappJson.entries[0].value;
   setArchiveDOM();
-  handleWaterAverage();
   setStatsDOM();
   setWaterMeasureDOM();
   setWaterWaves(wavesAmount);
@@ -154,6 +153,7 @@ const loadApp = () => {
   emoji.innerHTML = getEmojiHtml('controls');
   handleEmoji('controls', startValue);
   updateWeekHeading();
+  handleWaterAverage();
 }
 //// HTML CODE                                                             ////
 //| RETURN EMOJIS HTML STRING                                               |//
@@ -176,7 +176,10 @@ const getEmojiHtml = (id) => {
 //| RETURN SIDEBAR TAB'S CARD HTML                                          |//
 const getCardHtml = (card, title) => {
   return `
-    <section class="card card--${card} card--js-${card}">
+    <section
+      class="card card--${card} card--js-${card}"
+      ${title ? `id="${title}"` : ''}
+    >
       <div class="card__container">
         <header class="card__header card__header---js-${card}">
           <button class="card__button card__button--prev card__button--js-${card}Prev">
@@ -274,7 +277,7 @@ const getUserHtml = (user) => {
           ${userProps[index]}
         </label>
         <div class="userProp__value">
-          <span class="userProp__output userProp__output--${key} userProp__output--js">
+          <span class="userProp__output userProp__output--${key} userProp__output--js userProp__output--js-${key}">
             ${getGlasses(key, value)}
           </span>
           <input
@@ -610,13 +613,17 @@ const handleWaterShake = () => {
 //| HANDLE CONSUMED WATER AVERAGE VALUE                                     |//
 const handleWaterAverage = () => {
   const { waterMax, entries } = hydrappJson;
+  const id = 'waterAvg';
   const interval = appLanding.clientHeight / waterMax;
+  const statsOutput = document.querySelector(`.card#Jakub .userProp__output--js-${id}`);
   const waterAvg = [...entries]
     .map(elem => elem.value)
     .reduce((a,b) => a + b) / entries.length;
   const roundedWaterAvg = Math.round(waterAvg * 100) / 100;
+
   levelAvg.style.bottom = `${roundedWaterAvg * interval}px`;
   hydrappJson.waterAvg = roundedWaterAvg;
+  statsOutput.textContent = getGlasses(id, roundedWaterAvg);
   exportJsonToLS('Jakub');
 }
 //// COUNTER                                                               ////
