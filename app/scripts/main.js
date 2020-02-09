@@ -68,7 +68,7 @@ const handleContainerHeight = (container, elements) => {
   const childrenHeight = childrenArray.reduce((a,b) => a + b.clientHeight, 0);
   container.style.height = `${childrenHeight}px`;
 }
-//| FILTER USER INPUTS                                                    |//
+//| FILTER USER INPUTS                                                      |//
 const filterUserInput = (e) => {
   if (e.keyCode  === 13 || e.keyCode  === 27) return false;
   const self = e.target;
@@ -77,50 +77,38 @@ const filterUserInput = (e) => {
   const outputValue = filteredValue ? filteredValue.join('') : '';
   self.value = outputValue;
 }
-//| VALIDATE USER INPUTS                                                  |//
-const isInputValid = (index) => {
+//| HANDLE INPUT ALERTS                                                     |//
+const handleInputAlert = (alertBox, name, min, max) => {
+  const alertText = alertBox.firstElementChild;
+  const alertTextContent = `${name} should be between ${min} and ${max}`;
 
-  const handleInputAlert = (index, min, max) => {
-    index = index - 1; // there's no alerts for first user detail
-    const alert = userAlerts[index];
-    const alertText = alert.firstElementChild;
-    const valNames = ['Age', 'Weight', 'Height'];
-    const valName = valNames[index];
-    const alertTextContent = `${valName} should be between ${min} and ${max}`;
-
-    if (!min && !max) {
-      alert.style.height = '';
-      alertText.textContent = '';
-    } else {
-      alertText.textContent = alertTextContent;
-      alert.style.height = `${alertText.clientHeight}px`;
-    }
-  }
-
-  const input = userInputs[index];
-  const inputValue = index === 0 ? input.value : parseInt(input.value);
-  const limits = [
-    { min: null, max: null},
-    { min: 10, max: 120},
-    { min: 8, max: 200},
-    { min: 70, max: 250}
-  ]
-  const limitMin = limits[index].min;
-  const limitMax = limits[index].max;
-
-  if (!inputValue) {
-    input.focus();
-    return false;
-  }
-
-  if (index === 0) return true;
-  if (inputValue < limitMin || inputValue > limitMax) {
-    handleInputAlert(index, limitMin, limitMax);
-    return false;
+  if (!name && !min && !max) {
+    alertBox.style.height = '';
+    alertText.textContent = '';
   } else {
-    handleInputAlert(index);
-    return true;
+    alertText.textContent = alertTextContent;
+    alertBox.style.height = `${alertText.clientHeight}px`;
   }
+}
+//| VALIDATE USER INPUTS                                                    |//
+const isInputValid = (input, id, alertBox) => {
+  const inputToValidate = [...inputsToValidate].filter(input => 
+  input.id === id)[0];
+  
+  if (inputToValidate) {
+    const limitMin = inputToValidate.min;
+    const limitMax = inputToValidate.max;
+    const inputName = inputToValidate.name;
+    const inputValue = input.value;
+  
+    if (inputValue < limitMin || inputValue > limitMax) {
+      handleInputAlert(alertBox, inputName, limitMin, limitMax);
+      return false;
+    } else {
+      handleInputAlert(alertBox);
+      return true;
+    }
+  } else return true;
 }
 //| EXPORT JSON OBJECT TO LOCAL STORAGE                                     |//
 const exportJsonToLS = (user) => {
@@ -291,7 +279,10 @@ const getUserHtml = (user) => {
         ${ key !== 'waterMin' && key !== 'waterAvg'
         ? getEditionHtml('stats', key) : ''}
 
-        ${ key === 'userAge' || key === 'userWeight' || key === 'userHeight'
+        ${ key === 'userAge'
+        || key === 'userWeight'
+        || key === 'userHeight'
+        || key === 'waterMax'
         ? `
           <div class="userProp__alert userProp__alert--js">
             <p class="userProp__alertText"></p>
@@ -1004,8 +995,9 @@ const addUserStats = (user) => {
 }
 //| HANDLE USER EDIT                                                        |//
 const handleUserEdit = (e) => {
-  const self = e.target;
+  const self = e.target;  
   const { id } = self;
+  const value = hydrappJson[id];
   const userProp = findFirstParentOfClass(self, 'userProp');
   const propName = userProp.querySelector('.userProp__name--js');
   const outputValue = userProp.querySelector('.userProp__output--js');
@@ -1013,6 +1005,7 @@ const handleUserEdit = (e) => {
   const cancelButton = userProp.querySelector('.edition__button--js-cancel');
   const saveButton = userProp.querySelector('.edition__button--js-save');
   const editSection = userProp.querySelector('.edition--js');
+  const inputAlert = userProp.querySelector('.userProp__alert--js');
 
 
   //: TOGGLE PROP DISPLAY                                                   ://
@@ -1025,14 +1018,13 @@ const handleUserEdit = (e) => {
     propName.classList.toggle('userProp__name--editMode');
     outputValue.classList.toggle('userProp__output--hidden');
     inputValue.classList.toggle('userProp__input--visible');
-
-    const outputValueText = outputValue.textContent.replace(/\s/g, '');
-    inputValue.value = outputValueText;
+    inputValue.value = value;
   }
   //: EXIT EDIT MODE                                                        ://
   const exitEditMode = () => {
     
     togglePropDisplay();
+    id !== 'userName' ? handleInputAlert(inputAlert) : false;
 
     editSection.removeEventListener('click', handleEdition);
     window.removeEventListener('keydown', handleEdition);
@@ -1054,21 +1046,21 @@ const handleUserEdit = (e) => {
       case 13:
       case saveButton:
 
-        console.log(inputValue.value);
+        if (isInputValid(inputValue, id, inputAlert)) {
+          const newValue = typeof value === 'number'
+          ? parseInt(inputValue.value)
+          : inputValue.value;
+          outputValue.textContent = newValue;
+          hydrappJson[id] = newValue;
 
+          exportJsonToLS('Jakub');
+          exitEditMode();
 
+        } else {
 
+          
+        }
 
-
-
-
-
-
-
-
-
-        exportJsonToLS('Jakub');
-        exitEditMode();
       break;
     }
   }
@@ -1459,6 +1451,14 @@ const newEntrySave = document.querySelector('.newEntry__button--js-save');
 
 ////                                                                       ////
 const weekDay = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+
+const inputsToValidate = [
+  { id: 'userAge', name: 'Age', min: 10, max: 120 },
+  { id: 'userWeight', name: 'Weight',  min: 8, max: 200 },
+  { id: 'userHeight', name: 'Height',  min: 70, max: 250 },
+  { id: 'waterMax', name: 'Max amount of water glasses',  min: 5, max: 40 }
+];
+
 let hydrappJson = {};
 //| CLASS FOR ENTRY                                                         |//
 class Entry {

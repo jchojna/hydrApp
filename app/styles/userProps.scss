@@ -4,9 +4,8 @@
 .userProp {
   align-items: center;
   display: grid;
-  grid-gap: 10px;
+  column-gap: 10px;
   grid-template-columns: 50% 1fr auto;
-  min-height: 50px;
   padding: $cardItem-padding;
 
   &--editMode {
@@ -18,6 +17,9 @@
   }
 
   &__name {
+    display: flex;
+    align-items: center;
+    min-height: 40px;
     
     &--editMode {
       color:$cold-dark-blue;
@@ -31,14 +33,11 @@
   }
 
   &__output {
-    &--userWeight::after { content: 'kg'; }
-    &--userHeight::after { content: 'cm'; }
+    &--userWeight::after { content: ' kg'; }
+    &--userHeight::after { content: ' cm'; }
 
     &--hidden {
       visibility: hidden;
-      //display: none;
-
-      //border: 1px solid #000;
     }
   }
 
