@@ -103,6 +103,7 @@ const isInputValid = (input, id, alertBox) => {
   
     if (inputValue < limitMin || inputValue > limitMax) {
       handleInputAlert(alertBox, inputName, limitMin, limitMax);
+      input.focus();
       return false;
     } else {
       handleInputAlert(alertBox);
@@ -122,7 +123,7 @@ const exportJsonToLS = (user) => {
   localStorage.setItem(`hydrapp-${user}`, JSON.stringify(hydrappJson));
 }
 //| UPDATE JSON OBJECT WHEN DATE HAS BEEN CHANGED                           |//
-const updateJsonOnDateChange = () => {
+const updateJsonOnDateChange = (user) => {
   const currentDate = new Date();
   let currentDateId = getDateId(currentDate);
   let newEntries = [];
@@ -134,11 +135,11 @@ const updateJsonOnDateChange = () => {
     currentDateId = getDateId(currentDate.setDate(currentDate.getDate() - 1));
   }
   hydrappJson.entries = [...newEntries, ...hydrappJson.entries];
-  exportJsonToLS('Jakub');
+  exportJsonToLS(user);
 }
 //| TRIGGER FUNCTIONS LOADING APP                                           |//
-const loadApp = () => {
-  updateJsonOnDateChange();
+const loadApp = (user) => {
+  updateJsonOnDateChange(user);
   const startValue = hydrappJson.entries[0].value;
   setArchiveDOM();
   setStatsDOM();
@@ -516,7 +517,7 @@ const setWaterMeasureDOM = () => {
 //| HANDLE WATER CHANGE                                                     |//
 const handleWaterChange = (e) => {
   const self = e.target;
-  const { waterMax } = hydrappJson;
+  const { userName, waterMax } = hydrappJson;
   let { value, id } = hydrappJson.entries[0];
   const firstEntryValue = document.querySelector('.entry__value--js');
 
@@ -532,7 +533,7 @@ const handleWaterChange = (e) => {
   }
   //. value has been changed                                                .//
   hydrappJson.entries[0].value = value;
-  exportJsonToLS('Jakub');
+  exportJsonToLS(userName);
   handleWaterLevel(value);
   handleWaterShake();
   handleCounterMessage(value);
@@ -624,7 +625,6 @@ const handleWaterAverage = () => {
   levelAvg.style.bottom = `${roundedWaterAvg * interval}px`;
   hydrappJson.waterAvg = roundedWaterAvg;
   statsOutput.textContent = getGlasses(id, roundedWaterAvg);
-  exportJsonToLS('Jakub');
 }
 //// COUNTER                                                               ////
 //| SET COUNTER VALUES                                                      |//
@@ -1002,7 +1002,7 @@ const addUserStats = (user) => {
   //: add event listeners to all edit buttons                               ://
   const editButtons = cardList.querySelectorAll('.edition__button--js-edit');
   [...editButtons].forEach(button => {
-    button.addEventListener('click', handleUserEdit);
+    button.addEventListener('click', (e) => handleUserEdit(e, user));
   });
   
 
@@ -1010,7 +1010,7 @@ const addUserStats = (user) => {
   statsContainer.firstElementChild.classList.add('card--visible');
 }
 //| HANDLE USER EDIT                                                        |//
-const handleUserEdit = (e) => {
+const handleUserEdit = (e, user) => {
   const self = e.target;  
   const { id } = self;
   const value = hydrappJson[id];
@@ -1064,20 +1064,23 @@ const handleUserEdit = (e) => {
       case saveButton:
 
         if (isInputValid(inputValue, id, inputAlert)) {
+          //. update new value                                              .//
           const newValue = typeof value === 'number'
           ? parseInt(inputValue.value)
           : inputValue.value;
           outputValue.textContent = getGlasses(id, newValue);
+          //. handle updated local storage key                              .//
+          if (id === 'userName') {
+            const oldUserName = user;
+            localStorage.removeItem(`hydrapp-${oldUserName}`);
+            user = newValue;
+          }
+          //. handle JSON object                                            .//
           hydrappJson[id] = newValue;
-
-          exportJsonToLS('Jakub');
+          exportJsonToLS(user);
           exitEditMode();
 
-        } else {
-
-          
         }
-
       break;
     }
   }
@@ -1085,30 +1088,10 @@ const handleUserEdit = (e) => {
   togglePropDisplay();
   editSection.addEventListener('click', handleEdition);
   window.addEventListener('keydown', handleEdition);
-  if (id !== 'userName') inputValue.addEventListener('keyup', filterUserInput);
+  if (typeof value === 'number') inputValue.addEventListener('keyup', filterUserInput);
 
   //window.removeEventListener('keydown', slideWeek); // ! slide between cards
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //// ENTRY HANDLERS                                                        ////
 //| CREATE 'REMOVE ITEM' BUTTON                                             |//
 const createRemoveEntryButton = () => {
@@ -1219,7 +1202,7 @@ const addNewEntry = (entry) => {
   lastEntry.classList.remove('entry--last');
   
   //: handle local storage and array of objects                           ://
-  const { entries } = hydrappJson;
+  const { userName, entries } = hydrappJson;
   hydrappJson.entries = [...entries, entry];
 
   //: create new entry node                                               ://
@@ -1242,6 +1225,7 @@ const addNewEntry = (entry) => {
   handleArchiveLastEntry();
   updateWeekHeading();
   handleWaterAverage();
+  exportJsonToLS(userName);
 }
 //| ADJUST LAST ITEM OF LIST AND REMOVE BUTTON                              |//
 const handleArchiveLastEntry = () => {
@@ -1257,7 +1241,7 @@ const handleArchiveLastEntry = () => {
 //| REMOVE LAST ITEM                                                        |//
 const removeLastEntry = (e) => {
   const self = e.keyCode || e. target;
-  const { entries } = hydrappJson;
+  const { userName, entries } = hydrappJson;
   const lastEntryIndex = entries.length - 1;
   const {day, key} = entries[lastEntryIndex];
   const lastEntryNode = document.querySelectorAll('.entry--js')[lastEntryIndex];
@@ -1268,7 +1252,7 @@ const removeLastEntry = (e) => {
     if (entries.length > 1) {
       hydrappJson.entries = [...entries]
       .filter((entry, index) => index !== lastEntryIndex);
-      exportJsonToLS('Jakub');
+      exportJsonToLS(userName);
       lastEntryNode.parentNode.removeChild(lastEntryNode);
 
       //: removing last week section after deleting last day of that week   ://
@@ -1334,7 +1318,7 @@ const handleEntryEdit = (e) => {
   const handleEdition = (e) => {
     const self = e.keyCode || e.target;
     let dayValue = parseInt(entryValue.textContent);
-    const { waterMax } = hydrappJson;
+    const { userName, waterMax } = hydrappJson;
     const { id, value } = hydrappJson.entries[itemIndex];
 
     switch (self) {
@@ -1368,7 +1352,7 @@ const handleEntryEdit = (e) => {
           handleEmoji('controls', dayValue);
         }
         hydrappJson.entries[itemIndex].value = dayValue;
-        exportJsonToLS('Jakub');
+        exportJsonToLS(userName);
         handleWaterAverage();
         exitEditMode();
       break;
@@ -1454,8 +1438,6 @@ const removeEntryButton = createRemoveEntryButton();
 let currentWeekIndex = 0;
 
 
-
-
 //: NEW ENTRY                                                               ://
 const newEntryMode = document.querySelector('.newEntry--js');
 const newEntryValue = document.querySelector('.newEntry__value--js');
@@ -1476,7 +1458,6 @@ const inputsToValidate = [
   { id: 'waterMax', name: 'Max amount of water glasses',  min: 5, max: 40 }
 ];
 
-let hydrappJson = {};
 //| CLASS FOR ENTRY                                                         |//
 class Entry {
   constructor(date) {
@@ -1510,16 +1491,24 @@ class Entry {
     this.day = weekDay[dayIndex];
   }
 }
-//| FUNCTION CALLS                                                          |//
-////                                                                       ////
-/* const date = new Date();
-const testEntry = new Entry(date);
-console.log('testEntry', testEntry); */
+//// FUNCTION CALLS                                                        ////
+//| FETCH ALL USERS FROM LOCAL STORAGE                                      |//
+let hydrappJson = {};
+const hydrappUsers = Object
+.keys(localStorage)
+.filter(key => key.match(/hydrapp/))
+.map(key => JSON.parse(localStorage.getItem(key)));
 
-const hydrappUser = localStorage.getItem('hydrapp-Jakub');
-if (hydrappUser) {
-  hydrappJson = JSON.parse(hydrappUser);
-  loadApp();
+if (hydrappUsers) {
+
+  if (hydrappUsers.length === 1) {
+    hydrappJson = hydrappUsers[0];
+    const user = hydrappJson.userName;
+    loadApp(user);
+  } else {
+    console.log('show list of users');
+  }
+
 } else {
   createUser();
 }
