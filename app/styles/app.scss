@@ -115,9 +115,9 @@
     }
   }
   //: APP USER                                                              ://
-  &__user {
+  &__newUser {
     @include flex-center;
-    background-color: $cold-dark-blue;
+    background-color: $cold-darkest-blue;
     height: 100%;
     left: 0;
     opacity: 0;
@@ -131,7 +131,7 @@
     &--visible {
       opacity: 1;
       visibility: visible;
-      transition: opacity 0s, visibility 0s;
+      transition: opacity $user-detail-toggle, visibility 0s;
     }
   }
   //: APP LOG IN                                                            ://
@@ -154,5 +154,27 @@
       visibility: visible;
       transition: opacity 0s, visibility 0s;
     }
+  }
+  //: APP CREATE NEW USER BUTTON                                            ://
+  &__createUserButton {
+    @include button;
+    background-color: $cold-blue;
+    border-radius: $br-items;
+    color: $cold-light-blue;
+    margin: 0.5em 0;
+    font-size: 1.4em;
+    font-weight: 700;
+    padding: 0.5em;
+
+    @media only screen and (min-width: $media-md) {
+
+      & {
+        width: 100%;
+        max-width: $user-box-maxWidth;
+      }
+    }
+
+    
+    
   }
 }

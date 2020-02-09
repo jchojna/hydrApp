@@ -330,6 +330,9 @@ const setLogInDOM = () => {
     const userButton = usersList.querySelector(`#${userName} .userList__button--js`);
     userButton.addEventListener('click', handleUserLogin);
   });
+  //: add button for creating a new user and add event                      ://
+  const createUserButton = appLogIn.querySelector('.app__createUserButton--js');
+  createUserButton.addEventListener('click', createNewUser);
   //: show log in box                                                       ://
   appLogIn.classList.add('app__logIn--visible');
 }
@@ -337,17 +340,28 @@ const setLogInDOM = () => {
 const handleUserLogin = (e) => {
   const self = e.target;
   const { id } = self.parentNode;
-
+  //: assign selected user to JSON object and load app                      ://
   hydrappJson = [...hydrappUsers].filter(({userName}) => userName === id)[0];
   loadApp();
+  //: hide log in box                                                       ://
   appLogIn.classList.remove('app__logIn--visible');
-  const userLogInButtons = usersList.querySelectorAll('.userList__button--js');
-  [...userLogInButtons].forEach(button => button.removeEventListener('click', handleUserLogin));
+
+
+  /* const userLogInButtons = usersList.querySelectorAll('.userList__button--js');
+  [...userLogInButtons].forEach(button => button.removeEventListener('click', handleUserLogin)); */
+
+
 }
+
+
+
+
+
+
 //| CREATE NEW USER                                                         |//
-const createUser = () => {
+const createNewUser = () => {
   //| CREATE USER DOM NODES                                                 |//
-  const setUserDOM = () => {
+  const setNewUserDOM = () => {
     const userDetails = [
       { id: 'Name', question: 'What\'s your name, dear guest?' },
       { id: 'Age', question: 'What\'s your age?' },
@@ -358,44 +372,45 @@ const createUser = () => {
     for (let i = 0; i < userDetails.length; i++) {
       const { id, question } = userDetails[i];
       
-      const userDetailHtml = `
-        <div class="userDetail ${i === 0 ? 'userDetail--visible' : ''} userDetail--js">
+      const newUserHtml = `
+        <div class="newUser ${i === 0 ? 'newUser--visible' : ''} newUser--js">
           <label
             for="user${id}"
-            class="userDetail__label userDetail__label--js-${id.toLowerCase()}"
+            class="newUser__label newUser__label--js-${id.toLowerCase()}"
           >
             ${question}
           </label>
           <input
             id="user${id}"
-            class="userDetail__input userDetail__input--js"
+            class="newUser__input newUser__input--js"
             type="text"
             maxlength="${i === 0 ? 20 : 3}"
             autofocus=${i === 0 ? true : false}
           >
           ${i !== 0 ? `
-            <div class="userDetail__alert userDetail__alert--js">
-              <p class="userDetail__alertText"></p>
+            <div class="newUser__alert newUser__alert--js">
+              <p class="newUser__alertText"></p>
             </div>
-            <button class="userDetail__button userDetail__button--prev userDetail__button--js-prev">
-              <svg class="userDetail__svg" viewBox="0 0 512 512">
+            <button class="newUser__button newUser__button--prev newUser__button--js-prev">
+              <svg class="newUser__svg" viewBox="0 0 512 512">
                 <use href="assets/svg/icons.svg#left-arrow"></use>
               </svg>
             </button>
           ` : ''}
-          <button class="userDetail__button userDetail__button--next userDetail__button--js-next">
-            <svg class="userDetail__svg" viewBox="0 0 512 512">
+          <button class="newUser__button newUser__button--next newUser__button--js-next">
+            <svg class="newUser__svg" viewBox="0 0 512 512">
               <use href="assets/svg/icons.svg#right-arrow"></use>
             </svg>
           </button>
         </div>
       `;
-      appUser.innerHTML += userDetailHtml;
-      appUser.classList.add('app__user--visible');
+      appNewUser.innerHTML += newUserHtml;
+      appNewUser.classList.add('app__newUser--visible');
+      isNewUserDOM = true;
     }
   }
   //| HANDLE USER DETAILS                                                   |//
-  const handleUserDetails = (e) => {
+  const handleNewUser = (e) => {
     e.preventDefault();
     const self = e.key || e.target;
   
@@ -403,16 +418,16 @@ const createUser = () => {
     const toggleDetail = (current, next, action, timeout) => {
       const hiddenSide = action === 'prev' ? 'Right' : 'Left';
       const visibleSide = action === 'prev' ? 'Left' : 'Right';
-      const nextInput = next ? next.querySelector('.userDetail__input--js') : false;
+      const nextInput = next ? next.querySelector('.newUser__input--js') : false;
   
-      current.classList.add(`user--hidden${hiddenSide}`);
-      current.classList.remove('user--visible');
-      next ? next.classList.add(`user--hidden${visibleSide}`) : false;
+      current.classList.add(`newUser--hidden${hiddenSide}`);
+      current.classList.remove('newUser--visible');
+      next ? next.classList.add(`newUser--hidden${visibleSide}`) : false;
   
       detailToggleTimeoutId = setTimeout(() => {
         if (next) {
-          next.classList.add('user--visible');
-          next.classList.remove(`user--hidden${visibleSide}`);
+          next.classList.add('newUser--visible');
+          next.classList.remove(`newUser--hidden${visibleSide}`);
           nextInput.focus();
         }
         clearTimeout(detailToggleTimeoutId);
@@ -460,7 +475,7 @@ const createUser = () => {
             localStorage.setItem(keyName, JSON.stringify(hydrappJson));
             //. change user section visibility                                .//
             toggleDetail(currentDetail, null, 'next', toggleTime);
-            appUser.classList.remove('app__user--visible');
+            appNewUser.classList.remove('app__user--visible');
           }
         //: GO TO NEXT USER DETAIL                                            ://
         } else {
@@ -468,7 +483,7 @@ const createUser = () => {
           if (isInputValid(currentDetailIndex)) {
             if (currentDetailIndex === 0) {
               const userName = userInputs[currentDetailIndex].value;
-              const userAgeLabel = document.querySelector('.userDetail__label--js-age');
+              const userAgeLabel = document.querySelector('.newUser__label--js-age');
               const newLabelContent = `Hello ${userName}, how old are you?`;
               userAgeLabel.textContent = newLabelContent;
               hydrappJson.userName = userName;
@@ -481,34 +496,43 @@ const createUser = () => {
     }
   }
   //: create user DOM structure                                             ://
-  setUserDOM();
+  isNewUserDOM ? false : setNewUserDOM();
   //: variables                                                             ://
   let currentDetailIndex = 0;
   let detailToggleTimeoutId = null;
   const userDetails = document.querySelectorAll('.userDetail--js');
-  const userPrevButtons = document.querySelectorAll('.userDetail__button--js-prev');
-  const userNextButtons = document.querySelectorAll('.userDetail__button--js-next');
-  const userInputs = document.querySelectorAll('.userDetail__input--js');
-  const userAlerts = document.querySelectorAll('.userDetail__alert--js');
+  const userPrevButtons = document.querySelectorAll('.newUser__button--js-prev');
+  const userNextButtons = document.querySelectorAll('.newUser__button--js-next');
+  const userInputs = document.querySelectorAll('.newUser__input--js');
+  const userAlerts = document.querySelectorAll('.newUser__alert--js');
   //: event listeners                                                       ://
   [...userPrevButtons].forEach((button, index) => {
     button.index = index;
     button.action = 'prev';
-    button.addEventListener('click', handleUserDetails);
+    button.addEventListener('click', handleNewUser);
   });
   [...userNextButtons].forEach((button, index) => {
     button.index = index;
     button.action = 'next';
-    button.addEventListener('click', handleUserDetails);
+    button.addEventListener('click', handleNewUser);
   });
   [...userInputs]
   .filter((input, index) => index !== 0)
   .forEach(input => input.addEventListener('keyup', filterUserInput));
-  appUser.addEventListener('keypress', (e) => {
+  appNewUser.addEventListener('keypress', (e) => {
     if (e.keyCode  === 13 || e.keyCode  === 27) e.preventDefault();
   });
-  appUser.addEventListener('keyup', handleUserDetails);
+  appNewUser.addEventListener('keyup', handleNewUser);
 }
+
+
+
+
+
+
+
+
+
 //// EMOJI                                                                 ////
 //| SET INDICATORS                                                          |//
 const handleEmoji = (id, number) => {
@@ -1440,10 +1464,13 @@ const entriesFade = (action) => {
 //: MEDIA                                                                   ://
 const mediaMd = 768;
 const mediaLg = 1200;
+//: DOM                                                                     ://
+let isNewUserDOM = false;
+
 //: APP                                                                     ://
 const appHeader = document.querySelector('.app__header--js');
 const appLogIn = document.querySelector('.app__logIn--js');
-const appUser = document.querySelector('.app__user--js');
+const appNewUser = document.querySelector('.app__newUser--js');
 const appLanding = document.querySelector('.app__landing--js');
 const appSidebar = document.querySelector('.app__sidebar--js');
 //: LOG IN                                                                  ://
@@ -1551,11 +1578,8 @@ const hydrappUsers = Object
 .filter(key => key.match(/hydrapp/))
 .map(key => JSON.parse(localStorage.getItem(key)));
 
-hydrappUsers ? setLogInDOM() : createUser();
+hydrappUsers ? setLogInDOM() : createNewUser();
 
 
 
 toggleSidebar(burgerBtn);                                 // ! FOR TESTS ONLY
-//| VARIABLES                                                               |//
-let editButtons = document.querySelectorAll('.edition__button--js-edit');
-let entries = document.querySelectorAll('.entry--js');
