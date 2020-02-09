@@ -46,7 +46,24 @@ $header-height-md: $header-padding-md * 2 + $burgerBtn-size-md;
 $header-height-lg: $header-padding-lg * 2 + $burgerBtn-size-lg;
 $sidebar-toggle: 0.4s;
 
+//| TAB                                                                     |//
+$tab-offset-xs: 20px;
+$tab-offset-md: 30px;
+$tab-offset-lg: 40px;
+
+$tab-maxWidth: 360px;
+$tab-minWidth: 280px;
+
+
 $tab-expand: 0.6s;
+
+//| CARD                                                                    |//
+$cardIcon-size-xs: 25px;
+$cardIcon-size-sm: 30px;
+$cardIcon-size-md: 35px;
+$cardIcon-size-lg: 40px;
+
+$cardItem-padding: 5px;
 
 //| TIME                                                                    |//
 $time-hover-effect: 0.2s;
@@ -63,8 +80,6 @@ $verticalTranslation: 1s cubic-bezier(0.5,-0.5,0.5,1.5);
 
 
 $size-main-buttons: 30px;
-$size-xs-archive-buttons: 25px;
-$size-sm-archive-buttons: 30px;
 
 $size-xs-archive-add-new: 100px;
 

@@ -1,0 +1,106 @@
+@import 'variables.scss';
+@import 'mixins.scss';
+
+.userProp {
+  align-items: center;
+  display: grid;
+  column-gap: 10px;
+  grid-template-columns: 50% 1fr auto;
+  padding: $cardItem-padding;
+
+  &--editMode {
+    background-color: $cold-darkest-blue;
+  }
+
+  &:not(:last-child) {
+    border-bottom: 2px solid $cold-darkest-blue;
+  }
+
+  &__name {
+    display: flex;
+    align-items: center;
+    min-height: 40px;
+    
+    &--editMode {
+      color:$cold-dark-blue;
+    }
+  }
+
+  &__value {
+    font-weight: 700;
+    position: relative;
+    width: 100%;
+  }
+
+  &__output {
+    &--userWeight::after { content: ' kg'; }
+    &--userHeight::after { content: ' cm'; }
+
+    &--hidden {
+      visibility: hidden;
+    }
+  }
+
+  &__input {
+    background-color: transparent;
+    border: none;
+    color: $cold-light-blue;
+    border-bottom: 2px solid $cold-light-blue;
+    height: 100%;
+    font-weight: 700;
+    left: 0;
+    min-width: 50px;
+    position: absolute;
+    top: 0;
+    visibility: hidden;
+    width: 100%;
+
+    &--visible {
+      visibility: visible;
+    }
+  }
+
+  &__edit {
+    @include button;
+    @include flex-center;
+    fill: $cold-light-blue;
+    width: $cardIcon-size-xs;
+    height: $cardIcon-size-xs;
+
+    
+
+  }
+
+  &__svg {
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  &__alert {
+    grid-column: 1 / 4;
+    height: 0;
+    overflow: hidden;
+    transition: height $user-detail-toggle;
+  }
+
+  &__alertText {
+    background-color: $cold-blue;
+    border-radius: $br-items;
+    line-height: 1.4;
+    margin: 0;
+    padding: 10px;
+    text-align: center;
+  }
+
+  @media only screen and (min-width: $media-sm) {
+
+    & {
+
+      &__edit {
+        width: $cardIcon-size-sm;
+        height: $cardIcon-size-sm;
+      }
+    }
+  }
+}

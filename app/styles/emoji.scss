@@ -3,10 +3,10 @@
 
 .emoji {
   @include flex-center;
-  height: $size-xs-archive-buttons;
+  height: $cardIcon-size-xs;
   overflow: hidden;
   position: relative;
-  width: $size-xs-archive-buttons;
+  width: $cardIcon-size-xs;
 
   &--controls {
     height: $burgerBtn-size-xs;
@@ -20,9 +20,10 @@
   }
 
   @media only screen and (min-width: $media-sm) {
-    //height: $size-sm-archive-buttons;
-    //width: $size-sm-archive-buttons;
+    height: $cardIcon-size-sm;
+    width: $cardIcon-size-sm;
   }
+
   @media only screen and (min-width: $media-md) {
 
     &--controls {
@@ -30,6 +31,7 @@
       width: $burgerBtn-size-md;
     }
   }
+  
   @media only screen and (min-width: $media-lg) {
 
     &--controls {

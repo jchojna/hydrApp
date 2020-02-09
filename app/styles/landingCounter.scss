@@ -4,7 +4,7 @@
 .counter {
   $header-height: $header-padding-xs * 2 + $burgerBtn-size-xs;
   align-items: center;
-  column-gap: 10px;
+  column-gap: 3vw;
   display: grid;
   grid-template-areas:
   "day     day    "
@@ -51,7 +51,7 @@
   @media only screen and (min-width: $media-md) {
 
     & {
-      column-gap: 20px;
+      column-gap: 10px;
       max-width: 350px;
 
       &__day {
@@ -72,7 +72,7 @@
   @media only screen and (min-width: $media-lg) {
 
     & {
-      column-gap: 30px;
+      column-gap: 15px;
       max-width: 400px;
 
       &__day {
@@ -115,18 +115,21 @@
   }
 
   &__svg {
-    background-color: $cold-blue;
     border-radius: 10px;
-    fill: $cold-dark-blue;
+    fill: $cold-blue;
     height: 100%;
     opacity: 1;
-    padding: 10px;
     transform: rotateX(0);
     transform-origin: center top;
     width: 100%;
 
-    &--rotated {
+    &--rotatedNext {
       transform: rotateX(270deg);
+      opacity: 0;
+    }
+
+    &--rotatedPrev {
+      transform: rotateX(-90deg);
       opacity: 0;
     }
 
@@ -136,36 +139,6 @@
 
     &--animateOut {
       transition: opacity 0.3s 0.3s, transform 0.6s ease-in-out;
-    }
-  }
-
-  @media only screen and (min-width: $media-sm) {
-
-    & {
-
-      &__svg {
-        padding: 15px;
-      }
-    }
-  }
-
-  @media only screen and (min-width: $media-md) {
-
-    & {
-
-      &__svg {
-        padding: 20px;
-      }
-    }
-  }
-  
-  @media only screen and (min-width: $media-lg) {
-
-    & {
-
-      &__svg {
-        padding: 25px;
-      }
     }
   }
 }

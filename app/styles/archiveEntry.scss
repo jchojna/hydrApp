@@ -1,16 +1,14 @@
 @import 'variables.scss';
 @import 'mixins.scss';
 
-//| ENTRY                                                                   |//
 .entry {
-  display: grid;
-  grid-template-columns: 1fr repeat(3, auto);
-  grid-gap: 5px;
   align-items: center;
-  padding: 5px;
+  display: grid;
+  grid-gap: 5px;
+  grid-template-columns: 1fr repeat(3, auto);
+  min-height: 60px;
+  padding: $cardItem-padding;
   position: relative;
-  border-radius: $br-items;
-  height: 50px;
   //: fade in out effect                                                    ://
   //transform: translateX(-100%);
   transition:
@@ -22,9 +20,9 @@
     //transform: translateX(0);
   }
 
-  &--fadeIn {
+  /* &--fadeIn {
     animation: fade 0.5s;
-  }
+  } */
 
   &--last {
     grid-template-columns: 1fr repeat(4, auto);
@@ -35,17 +33,7 @@
   }
 
   &:not(:last-child) {
-    margin-bottom: 11px;
-
-    &::after{
-      content: "";
-      position: absolute;
-      bottom: -6px;
-      left: 0;
-      width: 100%;
-      padding: 5px 0;
-      border-bottom: 1px solid $cold-blue;
-    }
+    border-bottom: 2px solid $cold-darkest-blue;
   }
   
   &__add {
@@ -54,8 +42,8 @@
 
   &__remove {
     @include flex-center;
-    width: $size-xs-archive-buttons;
-    height: $size-xs-archive-buttons;
+    width: $cardIcon-size-xs;
+    height: $cardIcon-size-xs;
     overflow: hidden;
     padding: 0;
     fill: $cold-light-blue;
@@ -108,6 +96,7 @@
     }
   
     &--date {
+      color: $cold-blue;
       font-size: 0.85rem;
       margin-top: 3px;
     }
@@ -117,14 +106,14 @@
     @include flex-center;
     margin: 0;
     font-weight: bold;
-    width: $size-xs-archive-buttons;
-    height: $size-xs-archive-buttons;
+    width: $cardIcon-size-xs;
+    height: $cardIcon-size-xs;
     border: 2px solid $cold-light-blue;
     border-radius: 50%;
   
     @media only screen and (min-width: $media-sm) {
-      width: $size-sm-archive-buttons;
-      height: $size-sm-archive-buttons;
+      width: $cardIcon-size-sm;
+      height: $cardIcon-size-sm;
     }
   }
 }

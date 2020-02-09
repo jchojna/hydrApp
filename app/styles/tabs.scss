@@ -55,7 +55,7 @@
 
   &__heading {
     font-weight: 700;
-    font-size: 2em;
+    font-size: 1.9em;
     pointer-events: none;
   }
 
@@ -78,17 +78,9 @@
     overflow: hidden;
     transition: height $tab-expand;
     width: 100%;
-  }
-}
 
-.stats,
-.settings {
-  @include flex-center;
-  width: 100%;
-
-  &__text {
-    margin: 0;
-    padding: 20px;
-    text-align: center;
+    &--js-stats { // ! delete after
+      height: 500px;
+    }
   }
 }

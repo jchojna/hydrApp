@@ -1,28 +1,40 @@
 @import 'variables.scss';
 @import 'mixins.scss';
 
-//| EDITION MODE                                                            |//
 .edition {
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat($edit-group-cols, 1fr);
-  column-gap: $edit-group-col-gap;
   overflow: hidden;
-  width: $size-xs-archive-buttons;
+  width: $cardIcon-size-xs;
+  column-gap: $edit-group-col-gap;
+  display: grid;
   transition: width $time-edit-buttons;
+  position: relative;
+
+  &--archive {
+    grid-template-columns: repeat(4, 1fr);
+
+  }
+
+  &--stats {
+    grid-template-columns: repeat(2, 1fr);
+
+  }
 
   &--visible {
-    $icons-width: $edit-group-cols * $size-xs-archive-buttons;
+    $icons-width: $edit-group-cols * $cardIcon-size-xs;
     $gaps-width: ($edit-group-cols - 1) * $edit-group-col-gap;
     width: $icons-width + $gaps-width;
+  }
+
+  &--stats.edition--visible {
+    width: 2 * $cardIcon-size-xs + $edit-group-col-gap;
   }
 
   &__button {
     @include button;
     @include flex-center;
     padding: 0;
-    width: $size-xs-archive-buttons;
-    height: $size-xs-archive-buttons;
+    width: $cardIcon-size-xs;
+    height: $cardIcon-size-xs;
     fill: $cold-light-blue;
     opacity: 0;
     visibility: hidden;
@@ -58,17 +70,22 @@
   @media only screen and (min-width: $media-sm) {
 
     & {
-      width: $size-sm-archive-buttons;
+      width: $cardIcon-size-sm;
+
 
       &--visible {
-        $icons-width: $edit-group-cols * $size-sm-archive-buttons;
+        $icons-width: $edit-group-cols * $cardIcon-size-sm;
         $gaps-width: ($edit-group-cols - 1) * $edit-group-col-gap;
         width: $icons-width + $gaps-width;
       }
 
+      &--stats.edition--visible {
+        width: 2 * $cardIcon-size-sm + $edit-group-col-gap;
+      }
+
       &__button {
-        width: $size-sm-archive-buttons;
-        height: $size-sm-archive-buttons;
+        width: $cardIcon-size-sm;
+        height: $cardIcon-size-sm;
       }
     }
   }

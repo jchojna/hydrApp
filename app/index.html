@@ -71,19 +71,19 @@
         <p class="counter__date counter__date--js"></p>
         <!--: TENTHS                                                       :-->
         <div class="digit digit--tenths">
-          <svg class="digit__svg digit__svg--js-prevTenths" viewBox="0 0 75 100">
+          <svg class="digit__svg digit__svg--js-prevTenths" viewBox="0 0 80 100">
             <use href=""></use>
           </svg>
-          <svg class="digit__svg digit--overlay digit__svg--js-nextTenths" viewBox="0 0 75 100">
+          <svg class="digit__svg digit--overlay digit__svg--js-nextTenths" viewBox="0 0 80 100">
             <use href=""></use>
           </svg>
         </div>
         <!--: ONES                                                         :-->
         <div class="digit digit--ones">
-          <svg class="digit__svg digit__svg--js-prevOnes" viewBox="0 0 75 100">
+          <svg class="digit__svg digit__svg--js-prevOnes" viewBox="0 0 80 100">
             <use href=""></use>
           </svg>
-          <svg class="digit__svg digit--overlay digit__svg--js-nextOnes" viewBox="0 0 75 100">
+          <svg class="digit__svg digit--overlay digit__svg--js-nextOnes" viewBox="0 0 80 100">
             <use href=""></use>
           </svg>
         </div>
@@ -150,6 +150,7 @@
       <!--: STATS SECTION                                                  :-->
       <section class="tab tab--stats tab--js-stats">
         <h3 class="tab__header">
+          <!--. HEADER BUTTON                                              :-->
           <button class="tab__button tab__button--js-stats">
             <span class="tab__heading">Stats</span>
             <svg class="tab__svg" viewBox="0 0 512 512">
@@ -157,10 +158,12 @@
             </svg>
           </button>
         </h3>
-        <div class="tab__container tab__container--js">
-          <div class="stats stats--js">
-            <p class="stats__text">Check out again soon...</p>
-          </div>
+        <!--. STATS CONTAINER                                              :-->
+        <div
+          class="tab__container
+          tab__container--js
+          tab__container--js-stats"
+        >
         </div>
       </section>
       <!--: end of STATS SECTION                                           :-->

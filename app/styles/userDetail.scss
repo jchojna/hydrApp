@@ -1,7 +1,7 @@
 @import 'variables.scss';
 @import 'mixins.scss';
 
-.user {
+.userDetail {
   display: grid;
   grid-template-areas:
   "label label"
@@ -80,7 +80,6 @@
     margin: 0;
     padding: 10px;
     text-align: center;
-
   }
 
   &__button {

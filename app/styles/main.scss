@@ -14,14 +14,16 @@
 @import 'tabs.scss';
 @import 'buttons.scss';
 @import 'emoji.scss';
-@import 'user.scss';
+@import 'cards.scss';
+@import 'edition.scss';
 
-@import 'archiveWeek.scss';
 @import 'archiveEntry.scss';
-@import 'archiveEdition.scss';
 @import 'archiveNewEntry.scss';
 
 @import 'landingControls.scss';
 @import 'landingCounter.scss';
 @import 'landingGraph.scss';
 @import 'landingWater.scss';
+
+@import 'userDetail.scss';
+@import 'userProps.scss';

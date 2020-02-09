@@ -68,15 +68,80 @@ const handleContainerHeight = (container, elements) => {
   const childrenHeight = childrenArray.reduce((a,b) => a + b.clientHeight, 0);
   container.style.height = `${childrenHeight}px`;
 }
+//| FILTER USER INPUTS                                                      |//
+const filterUserInput = (e) => {
+  if (e.keyCode  === 13 || e.keyCode  === 27) return false;
+  const self = e.target;
+  const { value } = self;
+  const filteredValue = value.match(/\d/g);
+  const outputValue = filteredValue ? filteredValue.join('') : '';
+  self.value = outputValue;
+}
+//| HANDLE INPUT ALERTS                                                     |//
+const handleInputAlert = (alertBox, name, min, max) => {
+  const alertText = alertBox.firstElementChild;
+  const alertTextContent = `${name} should be between ${min} and ${max}`;
+
+  if (!name && !min && !max) {
+    alertBox.style.height = '';
+    alertText.textContent = '';
+  } else {
+    alertText.textContent = alertTextContent;
+    alertBox.style.height = `${alertText.clientHeight}px`;
+  }
+}
+//| VALIDATE USER INPUTS                                                    |//
+const isInputValid = (input, id, alertBox) => {
+  const inputToValidate = [...inputsToValidate].filter(input => 
+  input.id === id)[0];
+  
+  if (inputToValidate) {
+    const limitMin = inputToValidate.min;
+    const limitMax = inputToValidate.max;
+    const inputName = inputToValidate.name;
+    const inputValue = input.value;
+  
+    if (inputValue < limitMin || inputValue > limitMax) {
+      handleInputAlert(alertBox, inputName, limitMin, limitMax);
+      return false;
+    } else {
+      handleInputAlert(alertBox);
+      return true;
+    }
+  } else return true;
+}
+//| RETURN 'GLASS' OR 'GLASSES' OR EMPTY                                    |//
+const getGlasses = (key, value) => {
+  const glasses = key === 'waterMax' || key === 'waterMin' || key === 'waterAvg'
+  ? `${value} ${value > 1 ? 'glasses' : 'glass'}`
+  : value;
+  return glasses;
+}
 //| EXPORT JSON OBJECT TO LOCAL STORAGE                                     |//
 const exportJsonToLS = (user) => {
   localStorage.setItem(`hydrapp-${user}`, JSON.stringify(hydrappJson));
+}
+//| UPDATE JSON OBJECT WHEN DATE HAS BEEN CHANGED                           |//
+const updateJsonOnDateChange = () => {
+  const currentDate = new Date();
+  let currentDateId = getDateId(currentDate);
+  let newEntries = [];
+  const lastEntryDateId = hydrappJson.entries[0].id;
+
+  while (currentDateId !== lastEntryDateId) {
+    const newEntry = new Entry(currentDate);
+    newEntries = [...newEntries, newEntry];
+    currentDateId = getDateId(currentDate.setDate(currentDate.getDate() - 1));
+  }
+  hydrappJson.entries = [...newEntries, ...hydrappJson.entries];
+  exportJsonToLS('Jakub');
 }
 //| TRIGGER FUNCTIONS LOADING APP                                           |//
 const loadApp = () => {
   updateJsonOnDateChange();
   const startValue = hydrappJson.entries[0].value;
   setArchiveDOM();
+  setStatsDOM();
   setWaterMeasureDOM();
   setWaterWaves(wavesAmount);
   handleCounter(startValue);
@@ -90,15 +155,155 @@ const loadApp = () => {
   updateWeekHeading();
   handleWaterAverage();
 }
-/*
-##     ##  ######  ######## ########
-##     ## ##    ## ##       ##     ##
-##     ## ##       ##       ##     ##
-##     ##  ######  ######   ########
-##     ##       ## ##       ##   ##
-##     ## ##    ## ##       ##    ##
- #######   ######  ######## ##     ##
-*/
+//// HTML CODE                                                             ////
+//| RETURN EMOJIS HTML STRING                                               |//
+const getEmojiHtml = (id) => {
+  let emojiHtml = `<div class="emoji emoji--js-${id}">`;
+
+  for (let i = 0; i < emojiAmount; i++) {
+    emojiHtml += `
+      <svg
+        class="emoji__svg emoji__svg--emo-${i} emoji__svg--js-${id}"
+        viewBox="0 0 512 512"
+      >
+        <use href="assets/svg/emoji.svg#emo-${i}"></use>
+      </svg>
+    `
+  }
+  emojiHtml += '</div>'
+  return emojiHtml;
+}
+//| RETURN SIDEBAR TAB'S CARD HTML                                          |//
+const getCardHtml = (card, title) => {
+  return `
+    <section
+      class="card card--${card} card--js-${card}"
+      ${title ? `id="${title}"` : ''}
+    >
+      <div class="card__container">
+        <header class="card__header card__header---js-${card}">
+          <button class="card__button card__button--prev card__button--js-${card}Prev">
+            <svg class="card__svg" viewBox="0 0 512 512">
+              <use href="assets/svg/icons.svg#left-arrow"></use>
+            </svg>
+          </button>
+          <h4 class="card__heading card__heading--js-${card}">${title}</h4>
+          <button class="card__button card__button--next card__button--js-${card}Next">
+            <svg class="card__svg" viewBox="0 0 512 512">
+              <use href="assets/svg/icons.svg#right-arrow"></use>
+            </svg>
+          </button>
+        </header>
+        <ul class="card__list card__list--js-${card}"></ul>
+      </div>
+    </section>
+  `;
+}
+//| RETURN EDITION MODULE HTML                                              |//
+const getEditionHtml = (tab, id) => {
+  return `
+    <div class="edition edition--${tab} edition--js">
+      <button class="edition__button edition__button--visible edition__button--edit edition__button--js-edit" ${id ? `id="${id}"` : ''}>
+        <svg class="edition__svg edition__svg--edit">
+          <use href="assets/svg/icons.svg#edit-mode"></use>
+        </svg>
+      </button>
+      ${ tab === 'archive'
+      ? `
+      <button class="edition__button edition__button--decrease edition__button--js-decrease">
+        <svg class="edition__svg edition__svg--decrease">
+          <use href="assets/svg/icons.svg#down-arrow"></use>
+        </svg>
+      </button>
+      <button class="edition__button edition__button--increase edition__button--js-increase">
+        <svg class="edition__svg edition__svg--increase">
+          <use href="assets/svg/icons.svg#up-arrow"></use>
+        </svg>
+      </button>
+      `
+      : ''
+      }      
+      <button class="edition__button edition__button--cancel edition__button--js-cancel">
+        <svg class="edition__svg edition__svg--cancel">
+          <use href="assets/svg/icons.svg#back-arrow"></use>
+        </svg>
+      </button>
+      <button class="edition__button edition__button--save edition__button--js-save">
+        <svg class="edition__svg edition__svg--save">
+          <use href="assets/svg/icons.svg#save-icon"></use>
+        </svg>
+      </button>
+    </div>
+  `;
+}
+//| RETURN ARCHIVE ENTRY HTML CODE                                          |//
+const getEntryHtml = (index) => {
+
+  const { date, day, id, value } = hydrappJson.entries[index];
+  const dateId = date.split(' ').join('-');
+  return `
+    <li class="entry entry--js dateId-${dateId}">
+      <header class="entry__header entry__header--js">
+        <p class="entry__heading entry__heading--day">${day}</p>
+        <p class="entry__heading entry__heading--date entry__heading--js-date">${date}</p>
+      </header>
+      <span class="entry__value entry__value--js">${value}</span>
+      ${getEditionHtml('archive')}
+      ${getEmojiHtml(id)}
+    </li>
+  `;
+}
+//| RETURN USER STATS HTML CODE                                             |//
+const getUserHtml = (user) => {
+
+  const userKeys = Object.keys(hydrappJson).filter(key => key !== 'entries');
+  const userProps = [...userKeys].map(key =>
+    key === 'userName'   ? 'Name:'                :
+    key === 'userAge'    ? 'Age:'                 :
+    key === 'userWeight' ? 'Weight:'              :
+    key === 'userHeight' ? 'Height:'              :
+    key === 'waterMax'   ? 'Maximum a day:'   :
+    key === 'waterMin'   ? 'Minimum a day:'   :
+    key === 'waterAvg'   ? 'Average consumption:' : ''
+  );
+  let html = '';
+
+  [...userKeys].forEach((key, index) => {
+    const value = hydrappJson[key];
+
+    html += `
+      <li class="userProp">
+        <label for="${key}-${user}" class="userProp__name userProp__name--js">
+          ${userProps[index]}
+        </label>
+        <div class="userProp__value">
+          <span class="userProp__output userProp__output--${key} userProp__output--js userProp__output--js-${key}">
+            ${getGlasses(key, value)}
+          </span>
+          <input
+            id="${key}-${user}"
+            class="userProp__input userProp__input--js"
+            type="text"
+            maxlength="${key === 'userName' ? 20 : 3}"
+          >
+        </div>
+        ${ key !== 'waterMin' && key !== 'waterAvg'
+        ? getEditionHtml('stats', key) : ''}
+
+        ${ key === 'userAge'
+        || key === 'userWeight'
+        || key === 'userHeight'
+        || key === 'waterMax'
+        ? `
+          <div class="userProp__alert userProp__alert--js">
+            <p class="userProp__alertText"></p>
+          </div>
+        ` : ''}
+      </li>
+    `
+  });
+  return html;
+}
 //// USER DATA                                                             ////
 const createUser = () => {
   //| CREATE USER DOM NODES                                                 |//
@@ -114,32 +319,32 @@ const createUser = () => {
       const { id, question } = userDetails[i];
       
       const userDetailHtml = `
-        <div class="user ${i === 0 ? 'user--visible' : ''} user--js">
+        <div class="userDetail ${i === 0 ? 'userDetail--visible' : ''} userDetail--js">
           <label
             for="user${id}"
-            class="user__label user__label--js-${id.toLowerCase()}"
+            class="userDetail__label userDetail__label--js-${id.toLowerCase()}"
           >
             ${question}
           </label>
           <input
             id="user${id}"
-            class="user__input user__input--js"
+            class="userDetail__input userDetail__input--js"
             type="text"
             maxlength="${i === 0 ? 20 : 3}"
             autofocus=${i === 0 ? true : false}
           >
           ${i !== 0 ? `
-            <div class="user__alert user__alert--js">
-              <p class="user__alertText"></p>
+            <div class="userDetail__alert userDetail__alert--js">
+              <p class="userDetail__alertText"></p>
             </div>
-            <button class="user__button user__button--prev user__button--js-prev">
-              <svg class="user__svg" viewBox="0 0 512 512">
+            <button class="userDetail__button userDetail__button--prev userDetail__button--js-prev">
+              <svg class="userDetail__svg" viewBox="0 0 512 512">
                 <use href="assets/svg/icons.svg#left-arrow"></use>
               </svg>
             </button>
           ` : ''}
-          <button class="user__button user__button--next user__button--js-next">
-            <svg class="user__svg" viewBox="0 0 512 512">
+          <button class="userDetail__button userDetail__button--next userDetail__button--js-next">
+            <svg class="userDetail__svg" viewBox="0 0 512 512">
               <use href="assets/svg/icons.svg#right-arrow"></use>
             </svg>
           </button>
@@ -158,7 +363,7 @@ const createUser = () => {
     const toggleDetail = (current, next, action, timeout) => {
       const hiddenSide = action === 'prev' ? 'Right' : 'Left';
       const visibleSide = action === 'prev' ? 'Left' : 'Right';
-      const nextInput = next ? next.querySelector('.user__input--js') : false;
+      const nextInput = next ? next.querySelector('.userDetail__input--js') : false;
   
       current.classList.add(`user--hidden${hiddenSide}`);
       current.classList.remove('user--visible');
@@ -223,7 +428,7 @@ const createUser = () => {
           if (isInputValid(currentDetailIndex)) {
             if (currentDetailIndex === 0) {
               const userName = userInputs[currentDetailIndex].value;
-              const userAgeLabel = document.querySelector('.user__label--js-age');
+              const userAgeLabel = document.querySelector('.userDetail__label--js-age');
               const newLabelContent = `Hello ${userName}, how old are you?`;
               userAgeLabel.textContent = newLabelContent;
               hydrappJson.userName = userName;
@@ -235,70 +440,16 @@ const createUser = () => {
       }
     }
   }
-  //| FILTER USER INPUTS                                                    |//
-  const filterUserInput = (e) => {
-    if (e.keyCode  === 13 || e.keyCode  === 27) return false;
-    const self = e.target;
-    const { value } = self;
-    const filteredValue = value.match(/\d/g);
-    const outputValue = filteredValue ? filteredValue.join('') : '';
-    self.value = outputValue;
-  }
-  //| VALIDATE USER INPUTS                                                  |//
-  const isInputValid = (index) => {
-  
-    const handleInputAlert = (index, min, max) => {
-      index = index - 1; // there's no alerts for first user detail
-      const alert = userAlerts[index];
-      const alertText = alert.firstElementChild;
-      const valNames = ['Age', 'Weight', 'Height'];
-      const valName = valNames[index];
-      const alertTextContent = `${valName} should be between ${min} and ${max}`;
-  
-      if (!min && !max) {
-        alert.style.height = '';
-        alertText.textContent = '';
-      } else {
-        alertText.textContent = alertTextContent;
-        alert.style.height = `${alertText.clientHeight}px`;
-      }
-    }
-  
-    const input = userInputs[index];
-    const inputValue = index === 0 ? input.value : parseInt(input.value);
-    const limits = [
-      { min: null, max: null},
-      { min: 10, max: 120},
-      { min: 8, max: 200},
-      { min: 70, max: 250}
-    ]
-    const limitMin = limits[index].min;
-    const limitMax = limits[index].max;
-  
-    if (!inputValue) {
-      input.focus();
-      return false;
-    }
-  
-    if (index === 0) return true;
-    if (inputValue < limitMin || inputValue > limitMax) {
-      handleInputAlert(index, limitMin, limitMax);
-      return false;
-    } else {
-      handleInputAlert(index);
-      return true;
-    }
-  }
   //: create user DOM structure                                             ://
   setUserDOM();
   //: variables                                                             ://
   let currentDetailIndex = 0;
   let detailToggleTimeoutId = null;
-  const userDetails = document.querySelectorAll('.user--js');
-  const userPrevButtons = document.querySelectorAll('.user__button--js-prev');
-  const userNextButtons = document.querySelectorAll('.user__button--js-next');
-  const userInputs = document.querySelectorAll('.user__input--js');
-  const userAlerts = document.querySelectorAll('.user__alert--js');
+  const userDetails = document.querySelectorAll('.userDetail--js');
+  const userPrevButtons = document.querySelectorAll('.userDetail__button--js-prev');
+  const userNextButtons = document.querySelectorAll('.userDetail__button--js-next');
+  const userInputs = document.querySelectorAll('.userDetail__input--js');
+  const userAlerts = document.querySelectorAll('.userDetail__alert--js');
   //: event listeners                                                       ://
   [...userPrevButtons].forEach((button, index) => {
     button.index = index;
@@ -319,22 +470,6 @@ const createUser = () => {
   appUser.addEventListener('keyup', handleUserDetails);
 }
 //// EMOJI                                                                 ////
-//| GET EMOJIS HTML STRING                                                  |//
-const getEmojiHtml = (id) => {
-  let emojiHtml = '';
-
-  for (let i = 0; i < emojiAmount; i++) {
-    emojiHtml += `
-      <svg
-        class="emoji__svg emoji__svg--emo-${i} emoji__svg--js-${id}"
-        viewBox="0 0 512 512"
-      >
-        <use href="assets/svg/emoji.svg#emo-${i}"></use>
-      </svg>
-    `
-  }
-  return emojiHtml;
-}
 //| SET INDICATORS                                                          |//
 const handleEmoji = (id, number) => {
   number > 7 ? number = 7 : false;
@@ -478,12 +613,17 @@ const handleWaterShake = () => {
 //| HANDLE CONSUMED WATER AVERAGE VALUE                                     |//
 const handleWaterAverage = () => {
   const { waterMax, entries } = hydrappJson;
+  const id = 'waterAvg';
   const interval = appLanding.clientHeight / waterMax;
-  const waterAverage = [...entries]
+  const statsOutput = document.querySelector(`.card#Jakub .userProp__output--js-${id}`);
+  const waterAvg = [...entries]
     .map(elem => elem.value)
     .reduce((a,b) => a + b) / entries.length;
-  levelAvg.style.bottom = `${waterAverage * interval}px`;
-  hydrappJson.waterAvg = waterAverage;
+  const roundedWaterAvg = Math.round(waterAvg * 100) / 100;
+
+  levelAvg.style.bottom = `${roundedWaterAvg * interval}px`;
+  hydrappJson.waterAvg = roundedWaterAvg;
+  statsOutput.textContent = getGlasses(id, roundedWaterAvg);
   exportJsonToLS('Jakub');
 }
 //// COUNTER                                                               ////
@@ -520,63 +660,79 @@ const handleCounter = (currentValue, newValue) => {
     if (digits === 'tenths') {
       counterNextTenths.classList.remove('digit__svg--animateIn');
       counterNextTenths.classList.remove('digit__svg--animateOut');
+      counterPrevTenths.classList.remove('digit__svg--animateOut');
     } else if (digits === 'ones') {
       counterNextOnes.classList.remove('digit__svg--animateIn');
       counterNextOnes.classList.remove('digit__svg--animateOut');
+      counterPrevOnes.classList.remove('digit__svg--animateOut');
     }
-  } 
-
+  }
+  //. handle tenths on add button click                                     .//
   if (newValue > currentValue && newTenthsValue !== currentTenthsValue) {
 
     counterNextTenths.firstElementChild.setAttribute('href', newTenthsHref);
     counterPrevTenths.firstElementChild.setAttribute('href', currentTenthsHref);
-    counterNextTenths.classList.add('digit__svg--rotated');
+    counterNextTenths.classList.add('digit__svg--rotatedNext');
+    counterPrevTenths.classList.remove('digit__svg--rotatedPrev');
     removeAnimations('tenths');
 
     const timeoutId = setTimeout(() => {
-      counterNextTenths.classList.remove('digit__svg--rotated');
+      counterNextTenths.classList.remove('digit__svg--rotatedNext');
       counterNextTenths.classList.add('digit__svg--animateIn');
+      counterPrevTenths.classList.add('digit__svg--rotatedPrev');
+      counterPrevTenths.classList.add('digit__svg--animateOut');
       clearTimeout(timeoutId);
     }, tenthsTimeout);
 
+  //. handle tenths on remove button click                                  .//
   } else if (newValue < currentValue && newTenthsValue !== currentTenthsValue) {
 
     counterNextTenths.firstElementChild.setAttribute('href', currentTenthsHref);
     counterPrevTenths.firstElementChild.setAttribute('href', newTenthsHref);
-    counterNextTenths.classList.remove('digit__svg--rotated');
+    counterNextTenths.classList.remove('digit__svg--rotatedNext');
+    counterPrevTenths.classList.add('digit__svg--rotatedPrev');
     removeAnimations('tenths');
 
     const timeoutId = setTimeout(() => {
-      counterNextTenths.classList.add('digit__svg--rotated');
+      counterNextTenths.classList.add('digit__svg--rotatedNext');
       counterNextTenths.classList.add('digit__svg--animateOut');
+      counterPrevTenths.classList.remove('digit__svg--rotatedPrev');
+      counterPrevTenths.classList.add('digit__svg--animateOut');
       clearTimeout(timeoutId);
     }, tenthsTimeout);
   }
 
+  //. handle ones on add button click                                       .//
   if (newValue > currentValue && newOnesValue !== currentOnesValue) {
 
     counterNextOnes.firstElementChild.setAttribute('href', newOnesHref);
     counterPrevOnes.firstElementChild.setAttribute('href', currentOnesHref);
-    counterNextOnes.classList.add('digit__svg--rotated');
+    counterNextOnes.classList.add('digit__svg--rotatedNext');
+    counterPrevOnes.classList.remove('digit__svg--rotatedPrev');
     removeAnimations('ones');
 
     const timeoutId = setTimeout(() => {
-      counterNextOnes.classList.remove('digit__svg--rotated');
+      counterNextOnes.classList.remove('digit__svg--rotatedNext');
       counterNextOnes.classList.add('digit__svg--animateIn');
+      counterPrevOnes.classList.add('digit__svg--rotatedPrev');
+      counterPrevOnes.classList.add('digit__svg--animateOut');
       clearTimeout(timeoutId);
     }, onesTimeout);
     
-
+  //. handle ones on remove button click                                    .//
   } else if (newValue < currentValue && newOnesValue !== currentOnesValue) {
         
     counterNextOnes.firstElementChild.setAttribute('href', currentOnesHref);
     counterPrevOnes.firstElementChild.setAttribute('href', newOnesHref);
-    counterNextOnes.classList.remove('digit__svg--rotated');
+    counterNextOnes.classList.remove('digit__svg--rotatedNext');
+    counterPrevOnes.classList.add('digit__svg--rotatedPrev');
     removeAnimations('ones');
     
     const timeoutId = setTimeout(() => {
-      counterNextOnes.classList.add('digit__svg--rotated');
+      counterNextOnes.classList.add('digit__svg--rotatedNext');
       counterNextOnes.classList.add('digit__svg--animateOut');
+      counterPrevOnes.classList.remove('digit__svg--rotatedPrev');
+      counterPrevOnes.classList.add('digit__svg--animateOut');
       clearTimeout(timeoutId);
     }, onesTimeout);
   }
@@ -682,89 +838,6 @@ const toggleSidebarTabs = (e) => {
   }
 }
 //// ARCHIVE TAB                                                           ////
-//| RETURN ARCHIVE WEEK HTML CODE                                           |//
-const getWeekHtml = () => {
-  return `
-    <section class="week week--js">
-    <div class="week__container">
-      <header class="week__header week__header--js">
-        <button class="week__button week__button--prev week__button--js-prev">
-          <svg class="week__svg" viewBox="0 0 512 512">
-            <use href="assets/svg/icons.svg#left-arrow"></use>
-          </svg>
-        </button>
-        <h3 class="week__heading week__heading--js">New week</h3>
-        <button class="week__button week__button--next week__button--js-next">
-          <svg class="week__svg" viewBox="0 0 512 512">
-            <use href="assets/svg/icons.svg#right-arrow"></use>
-          </svg>
-        </button>
-      </header>
-      <ul class="week__list week__list--js"></ul>
-    </div>
-    </section>
-  `;
-}
-//| RETURN ARCHIVE ENTRY HTML CODE                                          |//
-const getEntryHtml = (index) => {
-
-  const { date, day, id, value } = hydrappJson.entries[index];
-  const dateId = date.split(' ').join('-');
-  return `
-    <li class="entry entry--js dateId-${dateId}">
-      <header class="entry__header entry__header--js">
-        <p class="entry__heading entry__heading--day">${day}</p>
-        <p class="entry__heading entry__heading--date entry__heading--js-date">${date}</p>
-      </header>
-      <span class="entry__value entry__value--js">${value}</span>
-      <div class="edition edition--js">
-        <button class="edition__button edition__button--visible edition__button--edit edition__button--js-edit">
-          <svg class="edition__svg edition__svg--edit">
-            <use href="assets/svg/icons.svg#edit-mode"></use>
-          </svg>
-        </button>
-        <button class="edition__button edition__button--decrease edition__button--js-decrease">
-          <svg class="edition__svg edition__svg--decrease">
-            <use href="assets/svg/icons.svg#down-arrow"></use>
-          </svg>
-        </button>
-        <button class="edition__button edition__button--increase edition__button--js-increase">
-          <svg class="edition__svg edition__svg--increase">
-            <use href="assets/svg/icons.svg#up-arrow"></use>
-          </svg>
-        </button>
-        <button class="edition__button edition__button--cancel edition__button--js-cancel">
-          <svg class="edition__svg edition__svg--cancel">
-            <use href="assets/svg/icons.svg#back-arrow"></use>
-          </svg>
-        </button>
-        <button class="edition__button edition__button--save edition__button--js-save">
-          <svg class="edition__svg edition__svg--save">
-            <use href="assets/svg/icons.svg#save-icon"></use>
-          </svg>
-        </button>
-      </div>
-      <div class="emoji emoji--js-${id}">
-        ${getEmojiHtml(id)}
-      </div>
-    </li>
-  `;
-}
-//| UPDATE JSON OBJECT WHEN DATE HAS BEEN CHANGED                           |//
-const updateJsonOnDateChange = () => {
-  const currentDate = new Date();
-  let currentDateId = getDateId(currentDate);
-  let newEntries = [];
-  const lastEntryDateId = hydrappJson.entries[0].id;
-
-  while (currentDateId !== lastEntryDateId) {
-    const newEntry = new Entry(currentDate);
-    newEntries = [...newEntries, newEntry];
-    currentDateId = getDateId(currentDate.setDate(currentDate.getDate() - 1));
-  }
-  hydrappJson.entries = [...newEntries, ...hydrappJson.entries];
-  exportJsonToLS('Jakub');
-}
 //| SET ARCHIVE                                                             |//
 const setArchiveDOM = () => {
 
@@ -773,9 +846,9 @@ const setArchiveDOM = () => {
     addArchiveEntry(i);
   }
   //: set the newest week as visible                                        ://
-  weeks = document.querySelectorAll('.week--js');
-  weekLists = document.querySelectorAll('.week__list--js');
-  weeks[currentWeekIndex].classList.add('week--visible');
+  weeks = document.querySelectorAll('.card--js-week');
+  weekLists = document.querySelectorAll('.card__list--js-week');
+  weeks[currentWeekIndex].classList.add('card--visible');
   //: add 'remove entry' button on the last entry                           ://
   handleArchiveLastEntry();
   //: generate indicators for new entry mode                                ://
@@ -786,15 +859,15 @@ const setArchiveDOM = () => {
 //| ADD ARCHIVE NODE                                                        |//
 const addArchiveEntry = (index, option) => {
   const {value, id, day} = hydrappJson.entries[index];
-  const weekHtml = getWeekHtml();
+  const weekHtml = getCardHtml('week');
   const entryHtml = getEntryHtml(index);
   //: function adding new week DOM node                                     ://
   const addWeek = () => {
     archiveContainer.insertAdjacentHTML('beforeend', weekHtml);
     const lastWeek = archiveContainer.lastElementChild;
-    const lastWeekHeader = lastWeek.querySelector('.week__header--js');
+    const lastWeekHeader = lastWeek.querySelector('.card__header---js-week');
     lastWeekHeader.addEventListener('click', slideWeek);
-    weekLists = document.querySelectorAll('.week__list--js');
+    weekLists = document.querySelectorAll('.card__list--js-week');
   }
   //: add new week                                                          ://
   if (((day === 'sunday' || index === 0)) && option !== 'add') addWeek();
@@ -809,16 +882,16 @@ const addArchiveEntry = (index, option) => {
     lastWeekList.appendChild(addEntryButton);
   }
   updateWeekHeading();
-  //: add event listeners to all edit buttons                               ://
-  const editButtons = document.querySelectorAll('.edition__button--js-edit');
+  //: add event listeners to edit button                                    ://
+  const editButtons = archiveContainer.querySelectorAll('.edition__button--js-edit');
   const editButton = editButtons[index];
   editButton.index = index;
   editButton.addEventListener('click', handleEntryEdit);
 }
 //| SET WEEK HEADING                                                        |//
 const updateWeekHeading = () => {
-  weekLists = document.querySelectorAll('.week__list--js');
-  const weekHeadings = document.querySelectorAll('.week__heading--js');
+  weekLists = document.querySelectorAll('.card__list--js-week');
+  const weekHeadings = document.querySelectorAll('.card__heading--js-week');
   //: GET DATE                                                              ://
   const getDate = (element) => {
     const dateId = element.className.split(' ').filter(a => /dateId-/.test(a));
@@ -826,24 +899,24 @@ const updateWeekHeading = () => {
   }
   //: SET BUTTONS VISIBILITY                                                ://
   const setButtonsVisiblity = (index, option) => {
-    const prevWeekButton = document.querySelectorAll('.week__button--js-prev')[index];
-    const nextWeekButton = document.querySelectorAll('.week__button--js-next')[index];
+    const prevWeekButton = document.querySelectorAll('.card__button--js-weekPrev')[index];
+    const nextWeekButton = document.querySelectorAll('.card__button--js-weekNext')[index];
     switch (index) {
       case 0:
-        prevWeekButton.classList.remove('week__button--visible');
+        prevWeekButton.classList.remove('card__button--visible');
         option === 'oneWeek'
-        ? nextWeekButton.classList.remove('week__button--visible')
-        : nextWeekButton.classList.add('week__button--visible');
+        ? nextWeekButton.classList.remove('card__button--visible')
+        : nextWeekButton.classList.add('card__button--visible');
         break;
       
       case weekHeadings.length - 1:
-        prevWeekButton.classList.add('week__button--visible');
-        nextWeekButton.classList.remove('week__button--visible');
+        prevWeekButton.classList.add('card__button--visible');
+        nextWeekButton.classList.remove('card__button--visible');
         break;
 
       default:
-        prevWeekButton.classList.add('week__button--visible');
-        nextWeekButton.classList.add('week__button--visible');
+        prevWeekButton.classList.add('card__button--visible');
+        nextWeekButton.classList.add('card__button--visible');
         break;
     }
   }
@@ -869,21 +942,21 @@ const updateWeekHeading = () => {
 //| SLIDE WEEK                                                              |//
 const slideWeek = (e) => {
   const self = e.keyCode || e.target;
-  const prevWeekButton = document.querySelectorAll('.week__button--js-prev')[currentWeekIndex];
-  const nextWeekButton = document.querySelectorAll('.week__button--js-next')[currentWeekIndex];
+  const prevWeekButton = document.querySelectorAll('.card__button--js-weekPrev')[currentWeekIndex];
+  const nextWeekButton = document.querySelectorAll('.card__button--js-weekNext')[currentWeekIndex];
   const weeksAmount = archiveContainer.children.length;
 
   const handleSlide = (direction) => {
     //: handle previous section                                             ://
-    archiveContainer.children[currentWeekIndex].className = `week week--js week--slide-out-to-${direction === 'toLeft' ? 'right' : 'left'}`;
+    archiveContainer.children[currentWeekIndex].className = `card card--week card--js-week card--slide-out-to-${direction === 'toLeft' ? 'right' : 'left'}`;
     const previousWeekIndex = currentWeekIndex;
     //: change index                                                        ://
     currentWeekIndex = limit(archiveContainer.children.length - 1, currentWeekIndex, direction === 'toLeft' ? 'decrease' : 'increase');
     //: handle next section                                                 ://
     if (currentWeekIndex !== previousWeekIndex) {
-      archiveContainer.children[currentWeekIndex].classList = `week week--js week--visible week--slide-in-from-${direction === 'toLeft' ? 'left' : 'right'}`;
+      archiveContainer.children[currentWeekIndex].classList = `card card--week card--js-week card--visible card--slide-in-from-${direction === 'toLeft' ? 'left' : 'right'}`;
     } else {
-      archiveContainer.children[currentWeekIndex].classList = 'week week--js week--visible';
+      archiveContainer.children[currentWeekIndex].classList = 'card card--week card--js-week card--visible';
     }
   }
 
@@ -899,9 +972,143 @@ const slideWeek = (e) => {
         break;
     }
     handleContainerHeight(archiveContainer, weeks[currentWeekIndex]);
-    entriesFade('in');
+    //entriesFade('in');
   }
 }
+//// STATS TAB                                                             ////
+//| SET STATS DOM STRUCTURE BASED ON USER'S JSON OBJECT                     |//
+const setStatsDOM = () => {
+  const user = 'Jakub';
+  addUserStats(user);
+
+
+
+
+}
+//| ADD USER STATS                                                          |//
+const addUserStats = (user) => {
+  //: get html codes of user card and user props                            ://
+  const statsCardHtml = getCardHtml('stats', user);
+  const userHtml = getUserHtml(user);
+  //: create DOM node of user card                                          ://
+  statsContainer.insertAdjacentHTML('beforeend', statsCardHtml);
+  const cardHeader = statsContainer.querySelector('.card__header---js-stats');
+
+  //cardHeader.addEventListener('click', slideWeek); // ! slide between cards
+
+  //: create DOM nodes of user props                                        ://
+  const cardList = statsContainer.querySelector('.card__list--js-stats');
+  cardList.insertAdjacentHTML('beforeend', userHtml);
+  //: add event listeners to all edit buttons                               ://
+  const editButtons = cardList.querySelectorAll('.edition__button--js-edit');
+  [...editButtons].forEach(button => {
+    button.addEventListener('click', handleUserEdit);
+  });
+  
+
+  // temporary
+  statsContainer.firstElementChild.classList.add('card--visible');
+}
+//| HANDLE USER EDIT                                                        |//
+const handleUserEdit = (e) => {
+  const self = e.target;  
+  const { id } = self;
+  const value = hydrappJson[id];
+  const userProp = findFirstParentOfClass(self, 'userProp');
+  const propName = userProp.querySelector('.userProp__name--js');
+  const outputValue = userProp.querySelector('.userProp__output--js');
+  const inputValue = userProp.querySelector('.userProp__input--js');
+  const cancelButton = userProp.querySelector('.edition__button--js-cancel');
+  const saveButton = userProp.querySelector('.edition__button--js-save');
+  const editSection = userProp.querySelector('.edition--js');
+  const inputAlert = userProp.querySelector('.userProp__alert--js');
+
+
+  //: TOGGLE PROP DISPLAY                                                   ://
+  const togglePropDisplay = () => {
+    for (const editButton of editSection.children) {
+      editButton.classList.toggle('edition__button--visible');
+    }
+    editSection.classList.toggle('edition--visible');
+    userProp.classList.toggle('userProp--editMode');
+    propName.classList.toggle('userProp__name--editMode');
+    outputValue.classList.toggle('userProp__output--hidden');
+    inputValue.classList.toggle('userProp__input--visible');
+    inputValue.focus();
+    inputValue.value = value;
+  }
+  //: EXIT EDIT MODE                                                        ://
+  const exitEditMode = () => {
+    
+    togglePropDisplay();
+    id !== 'userName' ? handleInputAlert(inputAlert) : false;
+
+    editSection.removeEventListener('click', handleEdition);
+    window.removeEventListener('keydown', handleEdition);
+    if (id !== 'userName') inputValue.removeEventListener('keyup', filterUserInput);
+
+    //window.addEventListener('keydown', slideWeek); // ! slide between cards
+  }
+  //: HANDLE EDITION                                                        ://
+  const handleEdition = (e) => {
+    const self = e.keyCode || e.target;
+
+    switch (self) {
+
+      case 27:
+      case cancelButton:
+        exitEditMode();
+      break;
+
+      case 13:
+      case saveButton:
+
+        if (isInputValid(inputValue, id, inputAlert)) {
+          const newValue = typeof value === 'number'
+          ? parseInt(inputValue.value)
+          : inputValue.value;
+          outputValue.textContent = getGlasses(id, newValue);
+          hydrappJson[id] = newValue;
+
+          exportJsonToLS('Jakub');
+          exitEditMode();
+
+        } else {
+
+          
+        }
+
+      break;
+    }
+  }
+  //: FUNCTION CALLS                                                        ://
+  togglePropDisplay();
+  editSection.addEventListener('click', handleEdition);
+  window.addEventListener('keydown', handleEdition);
+  if (id !== 'userName') inputValue.addEventListener('keyup', filterUserInput);
+
+  //window.removeEventListener('keydown', slideWeek); // ! slide between cards
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //// ENTRY HANDLERS                                                        ////
 //| CREATE 'REMOVE ITEM' BUTTON                                             |//
 const createRemoveEntryButton = () => {
@@ -1028,8 +1235,8 @@ const addNewEntry = (entry) => {
   const lastWeek = weeks[lastWeekIndex];
   if (currentWeekIndex !== lastWeekIndex) {
     currentWeekIndex = lastWeekIndex;
-    currentWeek.className = 'week week--js week--slide-out-to-left';
-    lastWeek.className = 'week week--js week--visible week--slide-in-from-right';
+    currentWeek.className = 'week card--js-week week--slide-out-to-left';
+    lastWeek.className = 'week card--js-week week--visible week--slide-in-from-right';
   }
   handleContainerHeight(archiveContainer, lastWeek);
   handleArchiveLastEntry();
@@ -1071,9 +1278,9 @@ const removeLastEntry = (e) => {
         archiveContainer.removeChild(archiveContainer.lastElementChild);
         lastWeek = archiveContainer.lastElementChild;
         if (ifVisible) {
-          lastWeek.className = 'week week--js week--visible week--slide-in-from-left';currentWeekIndex--;
+          lastWeek.className = 'week card--js-week week--visible week--slide-in-from-left';currentWeekIndex--;
         }
-        const weekLists = document.querySelectorAll('.week__list--js');
+        const weekLists = document.querySelectorAll('.card__list--js-week');
         const lastWeekList = weekLists[weekLists.length - 1];
         lastWeekList.appendChild(addEntryButton);
       }
@@ -1236,13 +1443,19 @@ const burgerBtn = document.querySelector('.button--js-burger');
 const archiveTabButton = document.querySelector('.tab__button--js-archive');
 const statsTabButton = document.querySelector('.tab__button--js-stats');
 const settingTabButton = document.querySelector('.tab__button--js-settings');
-//: ARCHIVE                                                                 ://
 const archiveContainer = document.querySelector('.tab__container--js-archive');
+const statsContainer = document.querySelector('.tab__container--js-stats');
+const settingsContainer = document.querySelector('.tab__container--js-settings');
+//: ARCHIVE                                                                 ://
 let weeks = null;
 let weekLists = null;
 const addEntryButton = createAddEntryButton();
 const removeEntryButton = createRemoveEntryButton();
 let currentWeekIndex = 0;
+
+
+
+
 //: NEW ENTRY                                                               ://
 const newEntryMode = document.querySelector('.newEntry--js');
 const newEntryValue = document.querySelector('.newEntry__value--js');
@@ -1252,29 +1465,26 @@ const newEntryDecrease = document.querySelector('.newEntry__button--js-decrease'
 const newEntryIncrease = document.querySelector('.newEntry__button--js-increase');
 const newEntryCancel = document.querySelector('.newEntry__button--js-cancel');
 const newEntrySave = document.querySelector('.newEntry__button--js-save');
-//: STATS                                                                   ://
-const statsContainer = document.querySelector('.tab__container--js-stats');
-//: SETTINGS                                                                ://
-const settingsContainer = document.querySelector('.tab__container--js-settings');
 
 ////                                                                       ////
 const weekDay = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+
+const inputsToValidate = [
+  { id: 'userAge', name: 'Age', min: 10, max: 120 },
+  { id: 'userWeight', name: 'Weight',  min: 8, max: 200 },
+  { id: 'userHeight', name: 'Height',  min: 70, max: 250 },
+  { id: 'waterMax', name: 'Max amount of water glasses',  min: 5, max: 40 }
+];
+
 let hydrappJson = {};
 //| CLASS FOR ENTRY                                                         |//
 class Entry {
   constructor(date) {
     this.value = 0;
-    //this.dateObj = date;
     this._date = date;
     this._id = this.date;
     this._day = date;
   }
-  /* get _dateObj() {
-    return this.dateObj;
-  }
-  set _dateObj(date) {
-    this.dateObj = getOffsetedDate(date);
-  } */
   get _date() {
     return this.date;
   }
