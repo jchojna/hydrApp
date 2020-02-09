@@ -306,10 +306,24 @@ const getUserHtml = (user) => {
   });
   return html;
 }
+//| RETURN USER LOG IN HTML CODE                                            |//
+const getUserLogInHtml = (user) => {
+
+  return `
+    <li class="usersList__item" id="${user}">
+      <button class="usersList__button userList__button--js">
+        ${user}
+      </button>
+    </li>
+  `;  
+}
 //// APP START                                                             ////
 //| LOG IN AS SELECTED USER                                                 |//
 const userLogIn = () => {
 
+  [...hydrappUsers].forEach(({ userName }) => {
+    usersList.innerHTML += getUserLogInHtml(userName);
+  });
   appLogIn.classList.add('app__logIn--visible');
 
 
@@ -1432,7 +1446,7 @@ const appUser = document.querySelector('.app__user--js');
 const appLanding = document.querySelector('.app__landing--js');
 const appSidebar = document.querySelector('.app__sidebar--js');
 //: LOG IN                                                                  ://
-const usersList = document.querySelector('.app__usersList--js');
+const usersList = document.querySelector('.usersList--js');
 
 //: COUNTER                                                                 ://
 const counter = document.querySelector('.counter--js');
