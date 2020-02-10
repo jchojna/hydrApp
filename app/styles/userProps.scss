@@ -33,8 +33,8 @@
   }
 
   &__output {
-    &--userWeight::after { content: ' kg'; }
-    &--userHeight::after { content: ' cm'; }
+    &--weight::after { content: ' kg'; }
+    &--height::after { content: ' cm'; }
 
     &--hidden {
       visibility: hidden;

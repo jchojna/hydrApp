@@ -37,6 +37,8 @@ const getHydrappUsers = () => {
   .keys(localStorage)
   .filter(key => regex.test(key))
 }
+//| GET STRING WITH SPACE REPLACED TO DASHES AND NO CAPITAL LETTERS         |//
+const getFormattedString = (string) => string.replace(/\s/g,'_').toLowerCase();
 //| LOOPED RANGE OF VALUES                                                  |//
 const range = (max, num, action) => {
   action === 'increase' ? num >= max ? num = 0 : num++ : false;
@@ -92,8 +94,7 @@ const handleInputAlert = (alertBox, id, option) => {
     } else if (id === 'name' && option === 'existing') {
       alertTextContent = 'This user name is already taken'
     } else {
-      const label = hydrappUser.newUserLabels[id];
-      const { min, max } = hydrappUser.limits[id];
+      const { min, max, label } = hydrappUser.editableProps[id];
       alertTextContent = `${label} should be between ${min} and ${max}`;
     }  
     alertText.textContent = alertTextContent;
@@ -103,13 +104,13 @@ const handleInputAlert = (alertBox, id, option) => {
 //| VALIDATE USER NAME INPUT                                                |//
 const isInputValid = (input, id, alertBox) => {
   const { value } = input;
-
+  //: check user name input                                                 ://
   if (id === 'name') {
     //. check if input is empty                                             .//
     const isEmpty = value.slice().replace(/\s/g,'').length <= 0;
     //. check if there is no the same user name existing                    .//
     const { nameId } = hydrappUser;
-    const newNameId = value.slice().replace(/\s/g,'_').toLowerCase();
+    const newNameId = getFormattedString(value);
     const otherUsersNames = [...hydrappUsers]
     .map(user => user.nameId)
     .filter(userNameId => userNameId !== nameId);
@@ -127,10 +128,9 @@ const isInputValid = (input, id, alertBox) => {
       hydrappUser.nameId = newNameId;
       return true;
     }
-
+  //: check user's numberical inputs                                        ://
   } else {
-    const { min, max } = hydrappUser.limits[id];
-
+    const { min, max } = hydrappUser.editableProps[id];
     if (value < min || value > max) {
       handleInputAlert(alertBox, id);
       input.focus();
@@ -153,8 +153,8 @@ const getGlasses = (key, value) => {
 }
 //| EXPORT JSON OBJECT TO LOCAL STORAGE                                     |//
 const exportJsonToLS = () => {
-  const { name } = hydrappUser;
-  localStorage.setItem(`hydrapp-${name}`, JSON.stringify(hydrappUser));
+  const { nameId } = hydrappUser;
+  localStorage.setItem(`hydrapp-${nameId}`, JSON.stringify(hydrappUser));
 }
 //| UPDATE JSON OBJECT WHEN DATE HAS BEEN CHANGED                           |//
 const updateJsonOnDateChange = () => {
@@ -294,15 +294,17 @@ const getEntryHtml = (index) => {
 }
 //| RETURN USER STATS HTML CODE                                             |//
 const getUserStatsHtml = (user) => {
-  const { key, statsLabels, editable } = user;
+  const { statsLabels, editableProps, key } = user;
   const userStatsProps = Object.keys(statsLabels);
+  const editable = Object.keys(editableProps);
+  
   let html = '';
   [...userStatsProps].forEach(prop => {
     const value = user[prop];
-    const label = statsLabels[prop];
-    const limit = user.limits[prop];
+
     const isEditable = [...editable].filter(elem => elem === prop).length;
-    if (limit) var { maxLength } = limit;
+    if (isEditable) var { maxLength } = user.editableProps[prop];
+    const label = statsLabels[prop];
 
     html += `
       <li class="userProp">
@@ -388,11 +390,13 @@ const createNewUser = () => {
   //: CREATE USER DOM NODES                                                 ://
   const setNewUserDOM = () => {
     
-    for (let i = 0; i < detailsIds.length; i++) {
-      const id = detailsIds[i];     
-      const { maxLength } = limits[id];
+    for (let i = 0; i < details.length; i++) {
+      const id = details[i];     
+      const { maxLength } = editableProps[id];
       const newUserHtml = `
-        <div class="newUser ${i === 0 ? 'newUser--visible' : ''} newUser--js">
+        <div
+          class="newUser ${id === 'name' ? 'newUser--visible' : ''} newUser--js"
+        >
           <label
             for="${id}"
             class="newUser__label newUser__label--js"
@@ -403,7 +407,7 @@ const createNewUser = () => {
             class="newUser__input newUser__input--js"
             type="text"
             maxlength="${maxLength}"
-            autofocus=${i === 0 ? true : false}
+            ${id === 'name' ? 'autofocus' : ''}
           >
           <div class="newUser__alert newUser__alert--js">
             <p class="newUser__alertText"></p>
@@ -485,7 +489,7 @@ const createNewUser = () => {
         const currentDetail = newUserDetails[currentDetailIndex];
         const currentInput = currentDetail.querySelector('.newUser__input--js');
         const currentAlert = currentDetail.querySelector('.newUser__alert--js');
-        const currentId = detailsIds[currentDetailIndex];
+        const currentId = details[currentDetailIndex];
 
         //: AQUIRE USER DATA AND GO TO LANDING SECTION                      ://
         if (currentDetailIndex >= maxIndex) {
@@ -521,8 +525,8 @@ const createNewUser = () => {
   hydrappUser = new User(date);
   const newEntry = new Entry(date);
   hydrappUser.entries = [newEntry];
-  const { newUserLabels, limits } = hydrappUser;
-  const detailsIds = Object.keys(newUserLabels);
+  const { editableProps } = hydrappUser;
+  const { details } = hydrappUser;
 
   //: create user DOM structure                                             ://
   isNewUserDOM ? false : setNewUserDOM();
@@ -1141,6 +1145,7 @@ const handleUserEdit = (e) => {
   const exitEditMode = () => {
     
     togglePropDisplay();
+    handleInputAlert(inputAlert);
     editSection.removeEventListener('click', handleEdition);
     window.removeEventListener('keydown', handleEdition);
     if (prop !== 'name') inputValue.removeEventListener('keyup', filterUserInput);
@@ -1160,23 +1165,24 @@ const handleUserEdit = (e) => {
 
       case 13:
       case saveButton:
+        if (isInputValid(inputValue, prop, inputAlert)) {
 
-        if (isNumberInputValid(inputValue, prop, inputAlert)) {
           //. update new value                                              .//
           const newValue = typeof value === 'number'
           ? parseInt(inputValue.value)
-          : inputValue.value;
+          : inputValue.value
           outputValue.textContent = getGlasses(prop, newValue);
           //. handle updated local storage key                              .//
-          if (prop === 'userName') {
-            //const oldUserName = user;
-            //localStorage.removeItem(`hydrapp-${oldUserName}`);
+          if (prop === 'name' && newValue !== value) {
+            const oldNameId = getFormattedString(value);
+            const newNameId = getFormattedString(newValue);
+            localStorage.removeItem(`hydrapp-${oldNameId}`);
+            hydrappUser.nameId = newNameId;
           }
           //. handle JSON object                                            .//
           hydrappUser[prop] = newValue;
           exportJsonToLS();
           exitEditMode();
-
         }
       break;
     }
@@ -1564,12 +1570,6 @@ class User {
     this.waterMax = 20;
     this.waterMin = 8;
     this.waterAvg = 0;
-    this.newUserLabels = {
-      'name': 'Name',
-      'age': 'Age',
-      'weight': 'Weight',
-      'height': 'Height'
-    };
     this.statsLabels = {
       'name': 'Name:',
       'age': 'Age:',
@@ -1580,14 +1580,37 @@ class User {
       'waterAvg': 'Average consumption:',
       'dateCreated': 'Created at:'
     };
-    this.limits = {
-      'name': { maxLength: 20 },
-      'age': { maxLength: 3, min: 10, max: 120 },
-      'weight': { maxLength: 3, min: 8, max: 200 },
-      'height': { maxLength: 3, min: 70, max: 250 },
-      'waterMax': { maxLength: 2, min: 10, max: 40 }
+    this.editableProps = {
+      'name': {
+        maxLength: 20,
+        label: 'Name'
+      },
+      'age': {
+        maxLength: 3,
+        min: 10,
+        max: 120,
+        label: 'Age'
+      },
+      'weight': {
+        maxLength: 3,
+        min: 8,
+        max: 200,
+        label: 'Weight'
+      },
+      'height': {
+        maxLength: 3,
+        min: 70,
+        max: 250,
+        label: 'Height'
+      },
+      'waterMax': {
+        maxLength: 2,
+        min: 10,
+        max: 40,
+        label: 'Maximum amount of glasses per day'
+      }
     };
-    this.editable = ['name', 'age', 'weight', 'height', 'waterMax'];
+    this.details = ['name', 'age', 'weight', 'height'];
     this._dateCreated = date;
     this._key = date;
     this.entries = [];
