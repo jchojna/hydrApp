@@ -78,36 +78,61 @@ const filterUserInput = (e) => {
   self.value = outputValue;
 }
 //| HANDLE INPUT ALERTS                                                     |//
-const handleInputAlert = (alertBox, name, min, max) => {
+const handleInputAlert = (alertBox, id, option) => {
   const alertText = alertBox.firstElementChild;
-  const alertTextContent = `${name} should be between ${min} and ${max}`;
+  let alertTextContent = '';
 
-  if (!name && !min && !max) {
+  if (!id) {
     alertBox.style.height = '';
     alertText.textContent = '';
   } else {
+
+    if (id === 'name' && option === 'empty') {
+      alertTextContent = 'Please enter your name'
+    } else if (id === 'name' && option === 'existing') {
+      alertTextContent = 'This user name is already taken'
+    } else {
+      const label = hydrappUser.newUserLabels[id];
+      const { min, max } = hydrappUser.limits[id];
+      alertTextContent = `${label} should be between ${min} and ${max}`;
+    }  
     alertText.textContent = alertTextContent;
     alertBox.style.height = `${alertText.clientHeight}px`;
   }
 }
-//| VALIDATE USER INPUTS                                                    |//
+//| VALIDATE USER NAME INPUT                                                |//
 const isInputValid = (input, id, alertBox) => {
+  const { value } = input;
 
   if (id === 'name') {
-    
-    // if there's no the same name
-    // if there's no spaces
+    //. check if input is empty                                             .//
+    const isEmpty = value.slice().replace(/\s/g,'').length <= 0;
+    //. check if there is no the same user name existing                    .//
+    const { nameId } = hydrappUser;
+    const newNameId = value.slice().replace(/\s/g,'_').toLowerCase();
+    const otherUsersNames = [...hydrappUsers]
+    .map(user => user.nameId)
+    .filter(userNameId => userNameId !== nameId);
+    const isExisting = [...otherUsersNames]
+    .filter(userNameId => userNameId === newNameId).length > 0;
 
-    return true;
-
+    if (isEmpty) {
+      handleInputAlert(alertBox, id, 'empty');
+      return false;
+    } else if (isExisting) {
+      handleInputAlert(alertBox, id, 'existing');
+      return false;
+    } else {
+      handleInputAlert(alertBox);
+      hydrappUser.nameId = newNameId;
+      return true;
+    }
 
   } else {
-    const label = hydrappUser.newUserLabels[id];
     const { min, max } = hydrappUser.limits[id];
 
-    const inputValue = input.value;
-    if (inputValue < min || inputValue > max) {
-      handleInputAlert(alertBox, label, min, max);
+    if (value < min || value > max) {
+      handleInputAlert(alertBox, id);
       input.focus();
       return false;
     } else {
@@ -115,6 +140,9 @@ const isInputValid = (input, id, alertBox) => {
       return true;
     }
   }
+}
+//| VALIDATE USER'S NUMERICAL INPUTS                                        |//
+const isNumberInputValid = (value, id, alertBox) => {
 }
 //| RETURN 'GLASS' OR 'GLASSES' OR EMPTY                                    |//
 const getGlasses = (key, value) => {
@@ -214,7 +242,7 @@ const getCardHtml = (card, userName, key) => {
 const getEditionHtml = (tab, id) => {
   return `
     <div class="edition edition--${tab} edition--js">
-      <button class="edition__button edition__button--visible edition__button--edit edition__button--js-edit" ${id ? `id="${id}"` : ''}>
+      <button class="edition__button edition__button--visible edition__button--edit edition__button--js-edit" ${id ? `id="${id}EditButton"` : ''}>
         <svg class="edition__svg edition__svg--edit">
           <use href="assets/svg/icons.svg#edit-mode"></use>
         </svg>
@@ -279,7 +307,7 @@ const getUserStatsHtml = (user) => {
     html += `
       <li class="userProp">
         ${ isEditable ? `
-          <label for="${prop}-${key}" class="userProp__label">
+          <label for="${prop}-${key}" class="userProp__label userProp__label--js">
             ${label}
           </label>
         ` : `
@@ -457,7 +485,7 @@ const createNewUser = () => {
         const currentDetail = newUserDetails[currentDetailIndex];
         const currentInput = currentDetail.querySelector('.newUser__input--js');
         const currentAlert = currentDetail.querySelector('.newUser__alert--js');
-        const currentId = detailsIds[currentDetailIndex];        
+        const currentId = detailsIds[currentDetailIndex];
 
         //: AQUIRE USER DATA AND GO TO LANDING SECTION                      ://
         if (currentDetailIndex >= maxIndex) {
@@ -474,15 +502,16 @@ const createNewUser = () => {
           }
         //: GO TO NEXT USER DETAIL                                          ://
         } else if (isInputValid(currentInput, currentId, currentAlert)) {
+          const inputValue = currentInput.value;
+          if (currentDetailIndex === 0) hydrappUser.name = inputValue;
 
-          if (currentDetailIndex === 0) {
-            hydrappUser.name = newUserInputs[currentDetailIndex].value;
-          }
+
           const userName = hydrappUser.name;
           handleNewUserQuestion(currentDetailIndex + 1, userName);
           const nextDetail = newUserDetails[currentDetailIndex + 1];
           toggleDetail(currentDetail, nextDetail, 'next', toggleTime);
           currentDetailIndex++;
+
         }
       }
     }
@@ -1072,7 +1101,7 @@ const addUserStats = (user) => {
   //: add event listeners to all edit buttons                               ://
   const editButtons = cardList.querySelectorAll('.edition__button--js-edit');
   [...editButtons].forEach(button => {
-    button.addEventListener('click', (e) => handleUserEdit(e, user));
+    button.addEventListener('click', handleUserEdit);
   });
   
 
@@ -1080,12 +1109,13 @@ const addUserStats = (user) => {
   statsContainer.firstElementChild.classList.add('card--visible');
 }
 //| HANDLE USER EDIT                                                        |//
-const handleUserEdit = (e, user) => {
+const handleUserEdit = (e) => {
   const self = e.target;  
   const { id } = self;
-  const value = hydrappUser[id];
+  const prop = id.replace('EditButton', '');
+  const value = hydrappUser[prop];
   const userProp = findFirstParentOfClass(self, 'userProp');
-  const propName = userProp.querySelector('.userProp__name--js');
+  const propName = userProp.querySelector('.userProp__label--js');
   const outputValue = userProp.querySelector('.userProp__output--js');
   const inputValue = userProp.querySelector('.userProp__input--js');
   const cancelButton = userProp.querySelector('.edition__button--js-cancel');
@@ -1101,7 +1131,7 @@ const handleUserEdit = (e, user) => {
     }
     editSection.classList.toggle('edition--visible');
     userProp.classList.toggle('userProp--editMode');
-    propName.classList.toggle('userProp__name--editMode');
+    propName.classList.toggle('userProp__label--editMode');
     outputValue.classList.toggle('userProp__output--hidden');
     inputValue.classList.toggle('userProp__input--visible');
     inputValue.focus();
@@ -1111,11 +1141,9 @@ const handleUserEdit = (e, user) => {
   const exitEditMode = () => {
     
     togglePropDisplay();
-    id !== 'userName' ? handleInputAlert(inputAlert) : false;
-
     editSection.removeEventListener('click', handleEdition);
     window.removeEventListener('keydown', handleEdition);
-    if (id !== 'userName') inputValue.removeEventListener('keyup', filterUserInput);
+    if (prop !== 'name') inputValue.removeEventListener('keyup', filterUserInput);
 
     //window.addEventListener('keydown', slideWeek); // ! slide between cards
   }
@@ -1133,19 +1161,19 @@ const handleUserEdit = (e, user) => {
       case 13:
       case saveButton:
 
-        if (isInputValid(inputValue, id, inputAlert)) {
+        if (isNumberInputValid(inputValue, prop, inputAlert)) {
           //. update new value                                              .//
           const newValue = typeof value === 'number'
           ? parseInt(inputValue.value)
           : inputValue.value;
-          outputValue.textContent = getGlasses(id, newValue);
+          outputValue.textContent = getGlasses(prop, newValue);
           //. handle updated local storage key                              .//
-          if (id === 'userName') {
-            const oldUserName = user;
-            localStorage.removeItem(`hydrapp-${oldUserName}`);
+          if (prop === 'userName') {
+            //const oldUserName = user;
+            //localStorage.removeItem(`hydrapp-${oldUserName}`);
           }
           //. handle JSON object                                            .//
-          hydrappUser[id] = newValue;
+          hydrappUser[prop] = newValue;
           exportJsonToLS();
           exitEditMode();
 
@@ -1529,6 +1557,7 @@ const weekDay = ['sunday','monday','tuesday','wednesday','thursday','friday','sa
 class User {
   constructor(date) {
     this.name = '';
+    this.nameId = '';
     this.age = 0;
     this.weight = 0;
     this.height = 0;
