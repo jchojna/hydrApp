@@ -1117,6 +1117,7 @@ const handleUserEdit = (e) => {
   const self = e.target;  
   const { id } = self;
   const prop = id.replace('EditButton', '');
+  const { key } = hydrappUser;
   const value = hydrappUser[prop];
   const userProp = findFirstParentOfClass(self, 'userProp');
   const propName = userProp.querySelector('.userProp__label--js');
@@ -1126,7 +1127,8 @@ const handleUserEdit = (e) => {
   const saveButton = userProp.querySelector('.edition__button--js-save');
   const editSection = userProp.querySelector('.edition--js');
   const inputAlert = userProp.querySelector('.userProp__alert--js');
-
+  const userCard = document.querySelector(`.card--js-${key}`);
+  const cardHeading = userCard.querySelector('.card__heading--js-stats');
 
   //: TOGGLE PROP DISPLAY                                                   ://
   const togglePropDisplay = () => {
@@ -1178,6 +1180,7 @@ const handleUserEdit = (e) => {
             const newNameId = getFormattedString(newValue);
             localStorage.removeItem(`hydrapp-${oldNameId}`);
             hydrappUser.nameId = newNameId;
+            cardHeading.textContent = newValue;
           }
           //. handle JSON object                                            .//
           hydrappUser[prop] = newValue;

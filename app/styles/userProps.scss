@@ -5,7 +5,7 @@
   align-items: center;
   display: grid;
   column-gap: 10px;
-  grid-template-columns: 50% 1fr auto;
+  grid-template-columns: 40% 1fr auto;
   padding: $cardItem-padding;
 
   &--editMode {
