@@ -176,7 +176,7 @@ const loadApp = () => {
   updateJsonOnDateChange();
   const startValue = hydrappUser.entries[0].value;
   setArchiveDOM();
-  setStatsDOM();
+  handleUsersStats();
   setWaterMeasureDOM();
   setWaterWaves(wavesAmount);
   handleCounter(startValue);
@@ -931,6 +931,27 @@ const toggleSidebarTabs = (e) => {
     svgIcon.classList.toggle('tab__svg--active');
   }
 }
+//| SLIDE CARD                                                              |//
+const slideCard = (e) => {
+  console.log('SLIDE');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
 //// ARCHIVE TAB                                                           ////
 //| SET ARCHIVE                                                             |//
 const setArchiveDOM = () => {
@@ -1071,46 +1092,53 @@ const slideWeek = (e) => {
 }
 //// STATS TAB                                                             ////
 //| SET STATS DOM STRUCTURE BASED ON USER'S JSON OBJECT                     |//
-const setStatsDOM = () => {
-  addUserStats(hydrappUser);
-
-
-
-
-
-
-
-
-
-
-
-
-
+const handleUsersStats = () => {
+  const usersTotal = hydrappUsers.length;
+  //: create DOM structure                                                  ://
+  [...hydrappUsers].forEach(user => addStatsDOM(user));
+  //: make logged in user's card visible                                    ://
+  const loggedUserCard = statsContainer.querySelector(`.card--js-${hydrappUser.key}`);
+  loggedUserCard.classList.add('card--visible');
+  //: set visibility and events for card navigation buttons                 ://
+  const cardPrevButtons = statsContainer.querySelectorAll('.card__button--js-statsPrev');
+  const cardNextButtons = statsContainer.querySelectorAll('.card__button--js-statsNext');
+  if (usersTotal > 1) {
+    [...cardPrevButtons].forEach((button, index) => {
+      button.index = index;
+      button.action = 'prev';
+      button.classList.add('card__button--visible');
+      button.addEventListener('click', slideCard);
+    });
+    [...cardNextButtons].forEach((button, index) => {
+      button.index = index;
+      button.action = 'next';
+      button.classList.add('card__button--visible');
+      button.addEventListener('click', slideCard);
+    });
+  }
 }
-//| ADD USER STATS                                                          |//
-const addUserStats = (user) => {
+//| ADD USER STATS DOM NODES                                                |//
+const addStatsDOM = (user) => {
   //: get html codes of user card and user props                            ://
   const { name, key } = user;
   const statsCardHtml = getCardHtml('stats', name, key);
   const userHtml = getUserStatsHtml(user);
   //: create DOM node of user card                                          ://
   statsContainer.insertAdjacentHTML('beforeend', statsCardHtml);
-  const cardHeader = statsContainer.querySelector('.card__header---js-stats');
+  const userCard = statsContainer.querySelector(`.card--js-${key}`);
+  const cardHeader = userCard.querySelector('.card__header---js-stats');
+  //: add sliding event for user cards                                      ://
 
-  //cardHeader.addEventListener('click', slideWeek); // ! slide between cards
+  cardHeader.addEventListener('click', slideWeek); // ! slide between cards
 
   //: create DOM nodes of user props                                        ://
-  const cardList = statsContainer.querySelector('.card__list--js-stats');
+  const cardList = userCard.querySelector('.card__list--js-stats');
   cardList.insertAdjacentHTML('beforeend', userHtml);
   //: add event listeners to all edit buttons                               ://
   const editButtons = cardList.querySelectorAll('.edition__button--js-edit');
   [...editButtons].forEach(button => {
     button.addEventListener('click', handleUserEdit);
   });
-  
-
-  // temporary
-  statsContainer.firstElementChild.classList.add('card--visible');
 }
 //| HANDLE USER EDIT                                                        |//
 const handleUserEdit = (e) => {
