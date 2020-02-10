@@ -189,8 +189,7 @@ const getEmojiHtml = (id) => {
 const getCardHtml = (card, userName, key) => {
   return `
     <section
-      class="card card--${card} card--js-${card}"
-      ${key ? `id="${key}"` : ''}
+      class="card card--${card} card--js-${card} ${key ? `card--js-${key}` : ''}"
     >
       <div class="card__container">
         <header class="card__header card__header---js-${card}">
@@ -267,7 +266,7 @@ const getEntryHtml = (index) => {
 }
 //| RETURN USER STATS HTML CODE                                             |//
 const getUserStatsHtml = (user) => {
-  const { name, statsLabels, editable } = user;
+  const { key, statsLabels, editable } = user;
   const userStatsProps = Object.keys(statsLabels);
   let html = '';
   [...userStatsProps].forEach(prop => {
@@ -279,16 +278,22 @@ const getUserStatsHtml = (user) => {
 
     html += `
       <li class="userProp">
-        <label for="${prop}-${name}" class="userProp__label">
-          ${label}
-        </label>
+        ${ isEditable ? `
+          <label for="${prop}-${key}" class="userProp__label">
+            ${label}
+          </label>
+        ` : `
+          <span class="userProp__label">
+            ${label}
+          </span>
+        `}
         <div class="userProp__value">
           <span class="userProp__output userProp__output--${prop} userProp__output--js userProp__output--js-${prop}">
             ${getGlasses(prop, value)}
           </span>
           ${ isEditable ? `
             <input
-              id="${prop}-${name}"
+              id="${prop}-${key}"
               class="userProp__input userProp__input--js"
               type="text"
               ${maxLength ? `maxlength="${maxLength}"` : ''}
@@ -668,12 +673,11 @@ const handleWaterShake = () => {
 }
 //| HANDLE CONSUMED WATER AVERAGE VALUE                                     |//
 const handleWaterAverage = () => {
-  const { name, waterMax, entries } = hydrappUser;
+  const { key, waterMax, entries } = hydrappUser;
   const id = 'waterAvg';
   const interval = appLanding.clientHeight / waterMax;
-  /* const statsOutput = document.querySelector(`
-    .card#${userName} .userProp__output--js-${id}
-  `); */
+  const userCard = document.querySelector(`.card--js-${key}`);
+  const statsOutput = userCard.querySelector(`.userProp__output--js-${id}`);
   const waterAvg = [...entries]
     .map(elem => elem.value)
     .reduce((a,b) => a + b) / entries.length;
@@ -681,7 +685,7 @@ const handleWaterAverage = () => {
 
   levelAvg.style.bottom = `${roundedWaterAvg * interval}px`;
   hydrappUser.waterAvg = roundedWaterAvg;
-  //statsOutput.textContent = getGlasses(id, roundedWaterAvg);
+  statsOutput.textContent = getGlasses(id, roundedWaterAvg);
 }
 //// COUNTER                                                               ////
 //| SET COUNTER VALUES                                                      |//
