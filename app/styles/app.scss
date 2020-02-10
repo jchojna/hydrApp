@@ -152,7 +152,7 @@
     &--visible {
       opacity: 1;
       visibility: visible;
-      transition: opacity $newUser-toggle, visibility 0s;
+      transition: opacity 0s, visibility 0s;
     }
   }
   //: APP CREATE NEW USER BUTTON                                            ://

@@ -92,22 +92,22 @@ const handleInputAlert = (alertBox, name, min, max) => {
 }
 //| VALIDATE USER INPUTS                                                    |//
 const isInputValid = (input, id, alertBox) => {
-  
-  if (id === 'userName') {
-    console.log('name');
+
+  if (id === 'name') {
+    
+    // if there's no the same name
+    // if there's no spaces
+
+    return true;
+
 
   } else {
-    
-    const inputToValidate = [...inputsToValidate].filter(input => 
-      input.id === id)[0];
-    
-    const limitMin = inputToValidate.min;
-    const limitMax = inputToValidate.max;
-    const inputName = inputToValidate.name;
+    const label = hydrappUser.newUserLabels[id];
+    const { min, max } = hydrappUser.limits[id];
+
     const inputValue = input.value;
-  
-    if (inputValue < limitMin || inputValue > limitMax) {
-      handleInputAlert(alertBox, inputName, limitMin, limitMax);
+    if (inputValue < min || inputValue > max) {
+      handleInputAlert(alertBox, label, min, max);
       input.focus();
       return false;
     } else {
@@ -119,18 +119,18 @@ const isInputValid = (input, id, alertBox) => {
 //| RETURN 'GLASS' OR 'GLASSES' OR EMPTY                                    |//
 const getGlasses = (key, value) => {
   const glasses = key === 'waterMax' || key === 'waterMin' || key === 'waterAvg'
-  ? `${value} ${value > 1 ? 'glasses' : 'glass'}`
+  ? `${value} ${value > 1 || value === 0 ? 'glasses' : 'glass'}`
   : value;
   return glasses;
 }
 //| EXPORT JSON OBJECT TO LOCAL STORAGE                                     |//
-const exportJsonToLS = (user) => {
-  localStorage.setItem(`hydrapp-${user}`, JSON.stringify(hydrappUser));
+const exportJsonToLS = () => {
+  const { name } = hydrappUser;
+  localStorage.setItem(`hydrapp-${name}`, JSON.stringify(hydrappUser));
 }
 //| UPDATE JSON OBJECT WHEN DATE HAS BEEN CHANGED                           |//
 const updateJsonOnDateChange = () => {
   const currentDate = new Date();
-  const { userName } = hydrappUser;
   let currentDateId = getDateId(currentDate);
   let newEntries = [];
   const lastEntryDateId = hydrappUser.entries[0].id;
@@ -141,7 +141,7 @@ const updateJsonOnDateChange = () => {
     currentDateId = getDateId(currentDate.setDate(currentDate.getDate() - 1));
   }
   hydrappUser.entries = [...newEntries, ...hydrappUser.entries];
-  exportJsonToLS(userName);
+  exportJsonToLS();
 }
 //| TRIGGER FUNCTIONS LOADING APP                                           |//
 const loadApp = () => {
@@ -186,11 +186,11 @@ const getEmojiHtml = (id) => {
   return emojiHtml;
 }
 //| RETURN SIDEBAR TAB'S CARD HTML                                          |//
-const getCardHtml = (card, user) => {
+const getCardHtml = (card, userName, key) => {
   return `
     <section
       class="card card--${card} card--js-${card}"
-      ${user ? `id="${user}"` : ''}
+      ${key ? `id="${key}"` : ''}
     >
       <div class="card__container">
         <header class="card__header card__header---js-${card}">
@@ -199,7 +199,7 @@ const getCardHtml = (card, user) => {
               <use href="assets/svg/icons.svg#left-arrow"></use>
             </svg>
           </button>
-          <h4 class="card__heading card__heading--js-${card}">${user}</h4>
+          <h4 class="card__heading card__heading--js-${card}">${userName}</h4>
           <button class="card__button card__button--next card__button--js-${card}Next">
             <svg class="card__svg" viewBox="0 0 512 512">
               <use href="assets/svg/icons.svg#right-arrow"></use>
@@ -266,47 +266,37 @@ const getEntryHtml = (index) => {
   `;
 }
 //| RETURN USER STATS HTML CODE                                             |//
-const getUserHtml = (user) => {
-
-  const userKeys = Object.keys(hydrappUser).filter(key => key !== 'entries');
-  const userProps = [...userKeys].map(key =>
-    key === 'userName'   ? 'Name:'                :
-    key === 'userAge'    ? 'Age:'                 :
-    key === 'userWeight' ? 'Weight:'              :
-    key === 'userHeight' ? 'Height:'              :
-    key === 'waterMax'   ? 'Maximum a day:'   :
-    key === 'waterMin'   ? 'Minimum a day:'   :
-    key === 'waterAvg'   ? 'Average consumption:' : ''
-  );
+const getUserStatsHtml = (user) => {
+  const { name, statsLabels, editable } = user;
+  const userStatsProps = Object.keys(statsLabels);
   let html = '';
-
-  [...userKeys].forEach((key, index) => {
-    const value = hydrappUser[key];
+  [...userStatsProps].forEach(prop => {
+    const value = user[prop];
+    const label = statsLabels[prop];
+    const limit = user.limits[prop];
+    const isEditable = [...editable].filter(elem => elem === prop).length;
+    if (limit) var { maxLength } = limit;
 
     html += `
       <li class="userProp">
-        <label for="${key}-${user}" class="userProp__name userProp__name--js">
-          ${userProps[index]}
+        <label for="${prop}-${name}" class="userProp__label">
+          ${label}
         </label>
         <div class="userProp__value">
-          <span class="userProp__output userProp__output--${key} userProp__output--js userProp__output--js-${key}">
-            ${getGlasses(key, value)}
+          <span class="userProp__output userProp__output--${prop} userProp__output--js userProp__output--js-${prop}">
+            ${getGlasses(prop, value)}
           </span>
-          <input
-            id="${key}-${user}"
-            class="userProp__input userProp__input--js"
-            type="text"
-            maxlength="${key === 'userName' ? 20 : 3}"
-          >
+          ${ isEditable ? `
+            <input
+              id="${prop}-${name}"
+              class="userProp__input userProp__input--js"
+              type="text"
+              ${maxLength ? `maxlength="${maxLength}"` : ''}
+            >
+          ` : ''}
         </div>
-        ${ key !== 'waterMin' && key !== 'waterAvg'
-        ? getEditionHtml('stats', key) : ''}
-
-        ${ key === 'userAge'
-        || key === 'userWeight'
-        || key === 'userHeight'
-        || key === 'waterMax'
-        ? `
+        ${ isEditable ? `
+          ${getEditionHtml('stats', prop)}
           <div class="userProp__alert userProp__alert--js">
             <p class="userProp__alertText"></p>
           </div>
@@ -319,7 +309,7 @@ const getUserHtml = (user) => {
 //| RETURN USER LOG IN HTML CODE                                            |//
 const getUserLogInHtml = (user) => {
   return `
-    <li class="usersList__item" id="${user}">
+    <li class="usersList__item">
       <button class="usersList__button userList__button--js">
         ${user}
       </button>
@@ -330,9 +320,12 @@ const getUserLogInHtml = (user) => {
 //| CREATE LOG IN BOX DOM STRUCTURE WITH ALL THE USERS                      |//
 const setLogInDOM = () => {
   //: set DOM structure of list of users in log in box                      ://
-  [...hydrappUsers].forEach(({ userName }) => {
-    usersList.insertAdjacentHTML('beforeend', getUserLogInHtml(userName));
-    const userButton = usersList.querySelector(`#${userName} .userList__button--js`);
+  [...hydrappUsers].forEach(user => {
+    const { name, key } = user;
+    usersList.insertAdjacentHTML('beforeend', getUserLogInHtml(name));
+    const userItem = usersList.lastElementChild;
+    const userButton = userItem.querySelector('.userList__button--js');
+    userButton.userKey = key;
     userButton.addEventListener('click', handleUserLogin);
   });
   //: add button for creating a new user and add event                      ://
@@ -344,9 +337,9 @@ const setLogInDOM = () => {
 //| LOG IN AS SELECTED USER                                                 |//
 const handleUserLogin = (e) => {
   const self = e.target;
-  const { id } = self.parentNode;
+  const { userKey } = self;
   //: assign selected user to JSON object and load app                      ://
-  hydrappUser = [...hydrappUsers].filter(({userName}) => userName === id)[0];
+  hydrappUser = [...hydrappUsers].filter(({ key }) => key === userKey)[0];
   loadApp();
   //: hide log in box                                                       ://
   appLogIn.classList.remove('app__logIn--visible');
@@ -357,40 +350,26 @@ const handleUserLogin = (e) => {
 
 
 }
-
-
-
-
-
-
 //| CREATE NEW USER                                                         |//
 const createNewUser = () => {
-  //| CREATE USER DOM NODES                                                 |//
+  //: CREATE USER DOM NODES                                                 ://
   const setNewUserDOM = () => {
-    const userDetails = [
-      { id: 'Name',   question: 'What\'s your name, dear guest?' },
-      { id: 'Age',    question: 'What\'s your age?' },
-      { id: 'Weight', question: 'And what\'s your weight?' },
-      { id: 'Height', question: 'At last, what\'s your height?' }
-    ];
     
-    for (let i = 0; i < userDetails.length; i++) {
-      const { id, question } = userDetails[i];
-      
+    for (let i = 0; i < detailsIds.length; i++) {
+      const id = detailsIds[i];     
+      const { maxLength } = limits[id];
       const newUserHtml = `
         <div class="newUser ${i === 0 ? 'newUser--visible' : ''} newUser--js">
           <label
-            for="newUser${id}"
-            class="newUser__label"
-            id="newUser__label--${id.toLowerCase()}"
+            for="${id}"
+            class="newUser__label newUser__label--js"
           >
-            ${question}
           </label>
           <input
-            id="newUser${id}"
+            id="${id}"
             class="newUser__input newUser__input--js"
             type="text"
-            maxlength="${i === 0 ? 20 : 3}"
+            maxlength="${maxLength}"
             autofocus=${i === 0 ? true : false}
           >
           <div class="newUser__alert newUser__alert--js">
@@ -413,6 +392,17 @@ const createNewUser = () => {
       appNewUser.innerHTML += newUserHtml;
     }
     isNewUserDOM = true;
+  }
+  //: GET NEW USER QUESTIONS                                                ://
+  const handleNewUserQuestion = (index, userName) => {
+    const questionLabels = appNewUser.querySelectorAll('.newUser__label--js');
+    const currentLabel = questionLabels[index];
+    currentLabel.textContent =
+    index === 0 ? 'What\'s your name, dear guest?' :
+    index === 1 ? `Hello ${userName}, what\'s your age?` :
+    index === 2 ? `What\'s your weight, ${userName}?` :
+    index === 3 ? `Last question ${userName}, what\'s your height?`
+    : false;
   }
   //| HANDLE USER DETAILS                                                   |//
   const handleNewUser = (e) => {
@@ -461,73 +451,61 @@ const createNewUser = () => {
       } else if (action === 'next' || self === 'Enter') {
         const currentDetail = newUserDetails[currentDetailIndex];
         const currentInput = currentDetail.querySelector('.newUser__input--js');
-
-
-
-
-
-
-
-
-
-
-
+        const currentAlert = currentDetail.querySelector('.newUser__alert--js');
+        const currentId = detailsIds[currentDetailIndex];        
 
         //: AQUIRE USER DATA AND GO TO LANDING SECTION                      ://
         if (currentDetailIndex >= maxIndex) {
-          if (isInputValid(currentDetailIndex)) {
-            //. update JSON object                                          .//
-            hydrappUser.userName = newUserInputs[0].value;
-            hydrappUser.userAge = getInputValue(1);
-            hydrappUser.userWeight = getInputValue(2);
-            hydrappUser.userHeight = getInputValue(3);
-            
-            const date = new Date();
-            const newEntry = new Entry(date);
-            hydrappUser.entries = [newEntry];
-            loadApp();
+          if (isInputValid(currentInput, currentId, currentAlert)) {
+            hydrappUser.age    = getInputValue(1);
+            hydrappUser.weight = getInputValue(2);
+            hydrappUser.height = getInputValue(3);
             //. set JSON object as local storage item                       .//
-            const keyName = `hydrapp-${hydrappUser.userName}`;
-            localStorage.setItem(keyName, JSON.stringify(hydrappUser));
+            exportJsonToLS();
+            loadApp();
             //. change user section visibility                              .//
             toggleDetail(currentDetail, null, 'next', toggleTime);
             appNewUser.classList.remove('app__newUser--visible');
           }
         //: GO TO NEXT USER DETAIL                                          ://
-        } else {
-          var nextDetail = newUserDetails[currentDetailIndex + 1];
-          /* if (isInputValid(currentDetailIndex)) { */
-            if (currentDetailIndex === 0) {
-              const userName = newUserInputs[currentDetailIndex].value;
-              const userAgeLabel = document.querySelector('#newUser__label--age');
-              /* const newLabelContent = `Hello ${userName}, how old are you?`;
-              userAgeLabel.textContent = newLabelContent; */
-              //. create hydrappUser object based on User class             .//
-              const date = new Date();
-              hydrappUser = new User(userName, date);
-              console.log('hydrappUser', hydrappUser);
+        } else if (isInputValid(currentInput, currentId, currentAlert)) {
 
-            }
-            toggleDetail(currentDetail, nextDetail, 'next', toggleTime);
-            currentDetailIndex++;
-          /* } */
+          if (currentDetailIndex === 0) {
+            hydrappUser.name = newUserInputs[currentDetailIndex].value;
+          }
+          const userName = hydrappUser.name;
+          handleNewUserQuestion(currentDetailIndex + 1, userName);
+          const nextDetail = newUserDetails[currentDetailIndex + 1];
+          toggleDetail(currentDetail, nextDetail, 'next', toggleTime);
+          currentDetailIndex++;
         }
       }
     }
   }
-  //: handle visibility of log in box and new user creator                  ://
-  appLogIn.classList.remove('app__logIn--visible');
-  appNewUser.classList.add('app__newUser--visible');
+  //| create hydrappUser object based on User class                         |//
+  const date = new Date();
+  hydrappUser = new User(date);
+  const newEntry = new Entry(date);
+  hydrappUser.entries = [newEntry];
+  const { newUserLabels, limits } = hydrappUser;
+  const detailsIds = Object.keys(newUserLabels);
+
   //: create user DOM structure                                             ://
   isNewUserDOM ? false : setNewUserDOM();
   //: variables                                                             ://
   let currentDetailIndex = 0;
   let detailToggleTimeoutId = null;
+
   const newUserDetails = document.querySelectorAll('.newUser--js');
   const newUserPrevButtons = document.querySelectorAll('.newUser__button--js-prev');
   const newUserNextButtons = document.querySelectorAll('.newUser__button--js-next');
   const newUserInputs = document.querySelectorAll('.newUser__input--js');
-  const newUserAlerts = document.querySelectorAll('.newUser__alert--js');
+
+  //| FUNCTION CALLS AND EVENTS                                             |//
+  //: handle visibility of log in box and new user creator                  ://
+  appLogIn.classList.remove('app__logIn--visible');
+  appNewUser.classList.add('app__newUser--visible');
+  handleNewUserQuestion(currentDetailIndex);
   //: event listeners                                                       ://
   [...newUserPrevButtons].forEach((button, index) => {
     button.index = index;
@@ -547,15 +525,6 @@ const createNewUser = () => {
   });
   appNewUser.addEventListener('keyup', handleNewUser);
 }
-
-
-
-
-
-
-
-
-
 //// EMOJI                                                                 ////
 //| SET INDICATORS                                                          |//
 const handleEmoji = (id, number) => {
@@ -603,7 +572,7 @@ const setWaterMeasureDOM = () => {
 //| HANDLE WATER CHANGE                                                     |//
 const handleWaterChange = (e) => {
   const self = e.target;
-  const { userName, waterMax } = hydrappUser;
+  const { waterMax } = hydrappUser;
   let { value, id } = hydrappUser.entries[0];
   const firstEntryValue = document.querySelector('.entry__value--js');
 
@@ -619,7 +588,7 @@ const handleWaterChange = (e) => {
   }
   //. value has been changed                                                .//
   hydrappUser.entries[0].value = value;
-  exportJsonToLS(userName);
+  exportJsonToLS();
   handleWaterLevel(value);
   handleWaterShake();
   handleCounterMessage(value);
@@ -699,12 +668,12 @@ const handleWaterShake = () => {
 }
 //| HANDLE CONSUMED WATER AVERAGE VALUE                                     |//
 const handleWaterAverage = () => {
-  const { userName, waterMax, entries } = hydrappUser;
+  const { name, waterMax, entries } = hydrappUser;
   const id = 'waterAvg';
   const interval = appLanding.clientHeight / waterMax;
-  const statsOutput = document.querySelector(`
+  /* const statsOutput = document.querySelector(`
     .card#${userName} .userProp__output--js-${id}
-  `);
+  `); */
   const waterAvg = [...entries]
     .map(elem => elem.value)
     .reduce((a,b) => a + b) / entries.length;
@@ -712,7 +681,7 @@ const handleWaterAverage = () => {
 
   levelAvg.style.bottom = `${roundedWaterAvg * interval}px`;
   hydrappUser.waterAvg = roundedWaterAvg;
-  statsOutput.textContent = getGlasses(id, roundedWaterAvg);
+  //statsOutput.textContent = getGlasses(id, roundedWaterAvg);
 }
 //// COUNTER                                                               ////
 //| SET COUNTER VALUES                                                      |//
@@ -1066,8 +1035,7 @@ const slideWeek = (e) => {
 //// STATS TAB                                                             ////
 //| SET STATS DOM STRUCTURE BASED ON USER'S JSON OBJECT                     |//
 const setStatsDOM = () => {
-  const { userName } = hydrappUser;
-  addUserStats(userName);
+  addUserStats(hydrappUser);
 
 
 
@@ -1085,8 +1053,9 @@ const setStatsDOM = () => {
 //| ADD USER STATS                                                          |//
 const addUserStats = (user) => {
   //: get html codes of user card and user props                            ://
-  const statsCardHtml = getCardHtml('stats', user);
-  const userHtml = getUserHtml(user);
+  const { name, key } = user;
+  const statsCardHtml = getCardHtml('stats', name, key);
+  const userHtml = getUserStatsHtml(user);
   //: create DOM node of user card                                          ://
   statsContainer.insertAdjacentHTML('beforeend', statsCardHtml);
   const cardHeader = statsContainer.querySelector('.card__header---js-stats');
@@ -1170,11 +1139,10 @@ const handleUserEdit = (e, user) => {
           if (id === 'userName') {
             const oldUserName = user;
             localStorage.removeItem(`hydrapp-${oldUserName}`);
-            user = newValue;
           }
           //. handle JSON object                                            .//
           hydrappUser[id] = newValue;
-          exportJsonToLS(user);
+          exportJsonToLS();
           exitEditMode();
 
         }
@@ -1299,7 +1267,7 @@ const addNewEntry = (entry) => {
   lastEntry.classList.remove('entry--last');
   
   //: handle local storage and array of objects                           ://
-  const { userName, entries } = hydrappUser;
+  const { entries } = hydrappUser;
   hydrappUser.entries = [...entries, entry];
 
   //: create new entry node                                               ://
@@ -1322,7 +1290,7 @@ const addNewEntry = (entry) => {
   handleArchiveLastEntry();
   updateWeekHeading();
   handleWaterAverage();
-  exportJsonToLS(userName);
+  exportJsonToLS();
 }
 //| ADJUST LAST ITEM OF LIST AND REMOVE BUTTON                              |//
 const handleArchiveLastEntry = () => {
@@ -1338,7 +1306,7 @@ const handleArchiveLastEntry = () => {
 //| REMOVE LAST ITEM                                                        |//
 const removeLastEntry = (e) => {
   const self = e.keyCode || e. target;
-  const { userName, entries } = hydrappUser;
+  const { entries } = hydrappUser;
   const lastEntryIndex = entries.length - 1;
   const {day, key} = entries[lastEntryIndex];
   const lastEntryNode = document.querySelectorAll('.entry--js')[lastEntryIndex];
@@ -1349,7 +1317,7 @@ const removeLastEntry = (e) => {
     if (entries.length > 1) {
       hydrappUser.entries = [...entries]
       .filter((entry, index) => index !== lastEntryIndex);
-      exportJsonToLS(userName);
+      exportJsonToLS();
       lastEntryNode.parentNode.removeChild(lastEntryNode);
 
       //: removing last week section after deleting last day of that week   ://
@@ -1415,7 +1383,7 @@ const handleEntryEdit = (e) => {
   const handleEdition = (e) => {
     const self = e.keyCode || e.target;
     let dayValue = parseInt(entryValue.textContent);
-    const { userName, waterMax } = hydrappUser;
+    const { waterMax } = hydrappUser;
     const { id, value } = hydrappUser.entries[itemIndex];
 
     switch (self) {
@@ -1449,7 +1417,7 @@ const handleEntryEdit = (e) => {
           handleEmoji('controls', dayValue);
         }
         hydrappUser.entries[itemIndex].value = dayValue;
-        exportJsonToLS(userName);
+        exportJsonToLS();
         handleWaterAverage();
         exitEditMode();
       break;
@@ -1555,47 +1523,39 @@ const weekDay = ['sunday','monday','tuesday','wednesday','thursday','friday','sa
 
 //| USER CLASS                                                              |//
 class User {
-  constructor(userName, date) {
-    this.userName = {
-      value: userName,
-      label: 'Name',
-      maxLength: 20,
-      question: 'What\'s your name, dear guest?'
-    };
-    this.userAge = {
-      value: 0,
-      label: 'Age',
-      maxLength: 3,
-      question: `Hello ${userName}, what\'s your age?`,
-      min: 10,
-      max: 120
-    };
-    this.userWeight = {
-      value: 0,
-      label: 'Age',
-      maxLength: 3,
-      question: `What\'s your weight, ${userName}?`,
-      min: 8,
-      max: 200
-    };
-    this.userHeight = {
-      value: 0,
-      label: 'Age',
-      maxLength: 3,
-      question: `Last question ${userName}, what\'s your height?`,
-      min: 70,
-      max: 250
-    };
-    this.waterMax = {
-      value: 20,
-      label: 'Max amount of water glasses',
-      min: 5,
-      max: 40
-    };
+  constructor(date) {
+    this.name = '';
+    this.age = 0;
+    this.weight = 0;
+    this.height = 0;
+    this.waterMax = 20;
     this.waterMin = 8;
     this.waterAvg = 0;
+    this.newUserLabels = {
+      'name': 'Name',
+      'age': 'Age',
+      'weight': 'Weight',
+      'height': 'Height'
+    };
+    this.statsLabels = {
+      'name': 'Name:',
+      'age': 'Age:',
+      'weight': 'Weight:',
+      'height': 'Height:',
+      'waterMax': 'Maximum a day:',
+      'waterMin': 'Minimum a day:',
+      'waterAvg': 'Average consumption:',
+      'dateCreated': 'Created at:'
+    };
+    this.limits = {
+      'name': { maxLength: 20 },
+      'age': { maxLength: 3, min: 10, max: 120 },
+      'weight': { maxLength: 3, min: 8, max: 200 },
+      'height': { maxLength: 3, min: 70, max: 250 },
+      'waterMax': { maxLength: 2, min: 10, max: 40 }
+    };
+    this.editable = ['name', 'age', 'weight', 'height', 'waterMax'];
     this._dateCreated = date;
-    this._hourCreated = date;
     this._key = date;
     this.entries = [];
   }
@@ -1604,20 +1564,14 @@ class User {
     return this.dateCreated;
   }
   set _dateCreated(date) {
-    this.dateCreated = getOffsetedDate(date)
+    const dateTime = getOffsetedDate(date)
     .toISOString()
     .slice(0,10)
     .split('-')
     .reverse()
-    .join('-');
-  }
-  get _hourCreated() {
-    return this.hourCreated;
-  }
-  set _hourCreated(date) {
-    this.hourCreated = getOffsetedDate(date)
-    .toISOString()
-    .slice(11,16);
+    .join('.');
+    const hourTime = getOffsetedDate(date).toISOString().slice(11,16);
+    this.dateCreated = `${dateTime}, ${hourTime}`;
   }
   get _key() {
     return this.key;
@@ -1667,6 +1621,7 @@ const hydrappUsers = Object
 .filter(key => key.match(/hydrapp/))
 .map(key => JSON.parse(localStorage.getItem(key)));
 
+// fix visibility
 hydrappUsers ? setLogInDOM() : createNewUser();
 
 
