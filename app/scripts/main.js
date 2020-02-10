@@ -1141,7 +1141,12 @@ const handleUserEdit = (e) => {
     outputValue.classList.toggle('userProp__output--hidden');
     inputValue.classList.toggle('userProp__input--visible');
     inputValue.focus();
-    inputValue.value = value;
+    //. change placeholder of edited input                                  ://
+    inputValue.value = '';
+    inputValue.placeholder = prop === 'weight'
+    ? `${value} kg` : prop === 'height'
+    ? `${value} cm` : prop === 'waterMax'
+    ? `${getGlasses('waterMax', value)}` : value;
   }
   //: EXIT EDIT MODE                                                        ://
   const exitEditMode = () => {
@@ -1157,18 +1162,14 @@ const handleUserEdit = (e) => {
   //: HANDLE EDITION                                                        ://
   const handleEdition = (e) => {
     const self = e.keyCode || e.target;
-
     switch (self) {
-
       case 27:
       case cancelButton:
         exitEditMode();
       break;
-
       case 13:
       case saveButton:
         if (isInputValid(inputValue, prop, inputAlert)) {
-
           //. update new value                                              .//
           const newValue = typeof value === 'number'
           ? parseInt(inputValue.value)

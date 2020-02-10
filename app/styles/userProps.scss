@@ -45,7 +45,6 @@
     background-color: transparent;
     border: none;
     color: $cold-light-blue;
-    border-bottom: 2px solid $cold-light-blue;
     height: 100%;
     font-weight: 700;
     left: 0;
@@ -57,6 +56,10 @@
 
     &--visible {
       visibility: visible;
+    }
+
+    &::placeholder {
+      color: $cold-dark-blue;
     }
   }
 
