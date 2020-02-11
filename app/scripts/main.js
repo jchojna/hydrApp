@@ -40,17 +40,17 @@ const getHydrappUsers = () => {
 //| GET STRING WITH SPACE REPLACED TO DASHES AND NO CAPITAL LETTERS         |//
 const getFormattedString = (string) => string.replace(/\s/g,'_').toLowerCase();
 //| LOOPED RANGE OF VALUES                                                  |//
-const range = (max, num, action) => {
+const loopNumber = (max, num, action) => {
   action === 'increase' ? num >= max ? num = 0 : num++ : false;
   action === 'decrease' ? num <= 0 ? num = max : num-- : false;
   return num;
 }
 //| LIMITED RANGE OF VALUES                                                 |//
-const limit = (max, num, action) => {
+/* const limit = (max, num, action) => {
   action === 'increase' ? num >= max ? false : num++ : false;
   action === 'decrease' ? num <= 0 ? false : num-- : false;
   return num;
-}
+} */
 //| FIND FIRST ENCOUNTERED PARENT OF GIVEN NODE WITH A GIVEN CLASS          |//
 const findFirstParentOfClass = (node, classname) => {
   while (!node.parentNode.classList.contains(classname)
@@ -221,13 +221,13 @@ const getCardHtml = (card, userName, key) => {
     >
       <div class="card__container">
         <header class="card__header card__header---js-${card}">
-          <button class="card__button card__button--prev card__button--js-${card}Prev">
+          <button class="card__button card__button--prev card__button--js-prev">
             <svg class="card__svg" viewBox="0 0 512 512">
               <use href="assets/svg/icons.svg#left-arrow"></use>
             </svg>
           </button>
           <h4 class="card__heading card__heading--js-${card}">${userName}</h4>
-          <button class="card__button card__button--next card__button--js-${card}Next">
+          <button class="card__button card__button--next card__button--js-next">
             <svg class="card__svg" viewBox="0 0 512 512">
               <use href="assets/svg/icons.svg#right-arrow"></use>
             </svg>
@@ -545,16 +545,11 @@ const createNewUser = () => {
   appNewUser.classList.add('app__newUser--visible');
   handleNewUserQuestion(currentDetailIndex);
   //: event listeners                                                       ://
-  [...newUserPrevButtons].forEach((button, index) => {
-    button.index = index;
-    button.action = 'prev';
-    button.addEventListener('click', handleNewUser);
-  });
-  [...newUserNextButtons].forEach((button, index) => {
-    button.index = index;
-    button.action = 'next';
-    button.addEventListener('click', handleNewUser);
-  });
+  [...newUserPrevButtons].forEach(button =>
+  button.addEventListener('click', handleNewUser));
+  [...newUserNextButtons].forEach(button =>
+  button.addEventListener('click', handleNewUser));
+
   [...newUserInputs]
   .filter((input, index) => index !== 0)
   .forEach(input => input.addEventListener('keyup', filterUserInput));
@@ -906,14 +901,14 @@ const toggleSidebarTabs = (e) => {
           handleContainerHeight(archiveContainer, currentWeek);
           window.addEventListener('keydown', enterNewEntryValue);
           window.addEventListener('keydown', removeLastEntry);
-          window.addEventListener('keydown', slideWeek);
+          window.addEventListener('keydown', slideCard);
   
         //: hide archive content                                              ://
         } else {
           archiveContainer.style.height = 0;
           window.removeEventListener('keydown', enterNewEntryValue);
           window.removeEventListener('keydown', removeLastEntry);
-          window.removeEventListener('keydown', slideWeek);
+          window.removeEventListener('keydown', slideCard);
         }
         break;
       case statsTabButton:
@@ -933,7 +928,20 @@ const toggleSidebarTabs = (e) => {
 }
 //| SLIDE CARD                                                              |//
 const slideCard = (e) => {
-  console.log('SLIDE');
+  const self = e.target;
+  const action = /prev/.test(self.className) ? 'prev' : 'next';
+  const currentCard = findFirstParentOfClass(self, 'card');
+  const allCards = currentCard.parentNode.children;
+  const currentIndex = [...allCards].indexOf(currentCard);
+  const maxIndex = allCards.length - 1;
+
+  const newIndex = action === 'prev'
+  ? loopNumber(maxIndex, currentIndex, 'decrease')
+  : loopNumber(maxIndex, currentIndex, 'increase');
+  
+  const newCard = allCards[newIndex];
+  currentCard.classList.remove('card--visible');
+  newCard.classList.add('card--visible');
 
 
 
@@ -941,9 +949,65 @@ const slideCard = (e) => {
 
 
 
+/* 
+
+    const toggleDetail = (current, next, action, timeout) => {
+      const hiddenSide = action === 'prev' ? 'Right' : 'Left';
+      const visibleSide = action === 'prev' ? 'Left' : 'Right';
+      const nextInput = next ? next.querySelector('.newUser__input--js') : false;
+  
+      current.classList.add(`newUser--hidden${hiddenSide}`);
+      current.classList.remove('newUser--visible');
+      next ? next.classList.add(`newUser--hidden${visibleSide}`) : false;
+  
+      detailToggleTimeoutId = setTimeout(() => {
+        if (next) {
+          next.classList.add('newUser--visible');
+          next.classList.remove(`newUser--hidden${visibleSide}`);
+          nextInput.focus();
+        }
+        clearTimeout(detailToggleTimeoutId);
+        detailToggleTimeoutId = null;
+      }, timeout);
+    }
 
 
+ */
 
+/* 
+const self = e.keyCode || e.target;
+const prevWeekButton = document.querySelectorAll('.card__button--js-weekPrev')[currentWeekIndex];
+const nextWeekButton = document.querySelectorAll('.card__button--js-weekNext')[currentWeekIndex];
+const weeksAmount = archiveContainer.children.length;
+
+const handleSlide = (direction) => {
+  //: handle previous section                                             ://
+  archiveContainer.children[currentWeekIndex].className = `card card--week card--js-week card--slide-out-to-${direction === 'toLeft' ? 'right' : 'left'}`;
+  const previousWeekIndex = currentWeekIndex;
+  //: change index                                                        ://
+  currentWeekIndex = limit(archiveContainer.children.length - 1, currentWeekIndex, direction === 'toLeft' ? 'decrease' : 'increase');
+  //: handle next section                                                 ://
+  if (currentWeekIndex !== previousWeekIndex) {
+    archiveContainer.children[currentWeekIndex].classList = `card card--week card--js-week card--visible card--slide-in-from-${direction === 'toLeft' ? 'left' : 'right'}`;
+  } else {
+    archiveContainer.children[currentWeekIndex].classList = 'card card--week card--js-week card--visible';
+  }
+}
+
+if (weeksAmount > 1) {
+  switch (self) {
+    case 37:
+    case prevWeekButton:
+      handleSlide('toLeft');
+      break;
+    case 39:
+    case nextWeekButton:
+      handleSlide('toRight');
+      break;
+  }
+  handleContainerHeight(archiveContainer, weeks[currentWeekIndex]);
+}
+ */
 
 
 
@@ -980,9 +1044,11 @@ const addArchiveEntry = (index, option) => {
   const addWeek = () => {
     archiveContainer.insertAdjacentHTML('beforeend', weekHtml);
     const lastWeek = archiveContainer.lastElementChild;
-    const lastWeekHeader = lastWeek.querySelector('.card__header---js-week');
-    lastWeekHeader.addEventListener('click', slideWeek);
-    weekLists = document.querySelectorAll('.card__list--js-week');
+    const weekPrevButton = lastWeek.querySelector('.card__button--js-prev');
+    const weekNextButton = lastWeek.querySelector('.card__button--js-next');
+    weekPrevButton.addEventListener('click', slideCard);
+    weekNextButton.addEventListener('click', slideCard);
+    weekLists = archiveContainer.querySelectorAll('.card__list--js-week');
   }
   //: add new week                                                          ://
   if (((day === 'sunday' || index === 0)) && option !== 'add') addWeek();
@@ -998,6 +1064,11 @@ const addArchiveEntry = (index, option) => {
   }
   updateWeekHeading();
   //: add event listeners to edit button                                    ://
+
+  // ! FIND ANOTHER WAY OF ASSIGNING EVENT LISTENERS TO THOSE BUTTONS
+
+  // ! CHECK REMOVING EVENTS WHEN WEEK IS GETTING REMOVED
+
   const editButtons = archiveContainer.querySelectorAll('.edition__button--js-edit');
   const editButton = editButtons[index];
   editButton.index = index;
@@ -1014,8 +1085,8 @@ const updateWeekHeading = () => {
   }
   //: SET BUTTONS VISIBILITY                                                ://
   const setButtonsVisiblity = (index, option) => {
-    const prevWeekButton = document.querySelectorAll('.card__button--js-weekPrev')[index];
-    const nextWeekButton = document.querySelectorAll('.card__button--js-weekNext')[index];
+    const prevWeekButton = document.querySelectorAll('.card__button--js-prev')[index];
+    const nextWeekButton = document.querySelectorAll('.card__button--js-next')[index];
     switch (index) {
       case 0:
         prevWeekButton.classList.remove('card__button--visible');
@@ -1054,42 +1125,6 @@ const updateWeekHeading = () => {
     weekLists.length > 1 ? setButtonsVisiblity(i) : setButtonsVisiblity(i, 'oneWeek');
   }
 }
-//| SLIDE WEEK                                                              |//
-const slideWeek = (e) => {
-  const self = e.keyCode || e.target;
-  const prevWeekButton = document.querySelectorAll('.card__button--js-weekPrev')[currentWeekIndex];
-  const nextWeekButton = document.querySelectorAll('.card__button--js-weekNext')[currentWeekIndex];
-  const weeksAmount = archiveContainer.children.length;
-
-  const handleSlide = (direction) => {
-    //: handle previous section                                             ://
-    archiveContainer.children[currentWeekIndex].className = `card card--week card--js-week card--slide-out-to-${direction === 'toLeft' ? 'right' : 'left'}`;
-    const previousWeekIndex = currentWeekIndex;
-    //: change index                                                        ://
-    currentWeekIndex = limit(archiveContainer.children.length - 1, currentWeekIndex, direction === 'toLeft' ? 'decrease' : 'increase');
-    //: handle next section                                                 ://
-    if (currentWeekIndex !== previousWeekIndex) {
-      archiveContainer.children[currentWeekIndex].classList = `card card--week card--js-week card--visible card--slide-in-from-${direction === 'toLeft' ? 'left' : 'right'}`;
-    } else {
-      archiveContainer.children[currentWeekIndex].classList = 'card card--week card--js-week card--visible';
-    }
-  }
-
-  if (weeksAmount > 1) {
-    switch (self) {
-      case 37:
-      case prevWeekButton:
-        handleSlide('toLeft');
-        break;
-      case 39:
-      case nextWeekButton:
-        handleSlide('toRight');
-        break;
-    }
-    handleContainerHeight(archiveContainer, weeks[currentWeekIndex]);
-    //entriesFade('in');
-  }
-}
 //// STATS TAB                                                             ////
 //| SET STATS DOM STRUCTURE BASED ON USER'S JSON OBJECT                     |//
 const handleUsersStats = () => {
@@ -1100,18 +1135,14 @@ const handleUsersStats = () => {
   const loggedUserCard = statsContainer.querySelector(`.card--js-${hydrappUser.key}`);
   loggedUserCard.classList.add('card--visible');
   //: set visibility and events for card navigation buttons                 ://
-  const cardPrevButtons = statsContainer.querySelectorAll('.card__button--js-statsPrev');
-  const cardNextButtons = statsContainer.querySelectorAll('.card__button--js-statsNext');
+  const cardPrevButtons = statsContainer.querySelectorAll('.card__button--js-prev');
+  const cardNextButtons = statsContainer.querySelectorAll('.card__button--js-next');
   if (usersTotal > 1) {
-    [...cardPrevButtons].forEach((button, index) => {
-      button.index = index;
-      button.action = 'prev';
+    [...cardPrevButtons].forEach(button => {
       button.classList.add('card__button--visible');
       button.addEventListener('click', slideCard);
     });
-    [...cardNextButtons].forEach((button, index) => {
-      button.index = index;
-      button.action = 'next';
+    [...cardNextButtons].forEach(button => {
       button.classList.add('card__button--visible');
       button.addEventListener('click', slideCard);
     });
@@ -1126,11 +1157,6 @@ const addStatsDOM = (user) => {
   //: create DOM node of user card                                          ://
   statsContainer.insertAdjacentHTML('beforeend', statsCardHtml);
   const userCard = statsContainer.querySelector(`.card--js-${key}`);
-  const cardHeader = userCard.querySelector('.card__header---js-stats');
-  //: add sliding event for user cards                                      ://
-
-  cardHeader.addEventListener('click', slideWeek); // ! slide between cards
-
   //: create DOM nodes of user props                                        ://
   const cardList = userCard.querySelector('.card__list--js-stats');
   cardList.insertAdjacentHTML('beforeend', userHtml);
@@ -1185,7 +1211,7 @@ const handleUserEdit = (e) => {
     window.removeEventListener('keydown', handleEdition);
     if (prop !== 'name') inputValue.removeEventListener('keyup', filterUserInput);
 
-    //window.addEventListener('keydown', slideWeek); // ! slide between cards
+    //window.addEventListener('keydown', slideCard); // ! slide between cards
   }
   //: HANDLE EDITION                                                        ://
   const handleEdition = (e) => {
@@ -1225,7 +1251,7 @@ const handleUserEdit = (e) => {
   window.addEventListener('keydown', handleEdition);
   if (typeof value === 'number') inputValue.addEventListener('keyup', filterUserInput);
 
-  //window.removeEventListener('keydown', slideWeek); // ! slide between cards
+  //window.removeEventListener('keydown', slideCard); // ! slide between cards
 }
 //// ENTRY HANDLERS                                                        ////
 //| CREATE 'REMOVE ITEM' BUTTON                                             |//
@@ -1283,7 +1309,7 @@ const enterNewEntryValue = (e) => {
       newEntryMode.removeEventListener('click', handleValue);
       window.removeEventListener('keydown', handleValue);
       window.addEventListener('keydown', enterNewEntryValue);
-      window.addEventListener('keydown', slideWeek);
+      window.addEventListener('keydown', slideCard);
     }
   
     const handleValue = (e) => {
@@ -1326,7 +1352,7 @@ const enterNewEntryValue = (e) => {
     newEntryMode.addEventListener('click', handleValue);
     window.addEventListener('keydown', handleValue);
     window.removeEventListener('keydown', enterNewEntryValue);
-    window.removeEventListener('keydown', slideWeek);
+    window.removeEventListener('keydown', slideCard);
   }
 }
 //| ADD NEW ENTRY                                                           |//
@@ -1447,7 +1473,7 @@ const handleEntryEdit = (e) => {
 
     window.removeEventListener('click', handleEdition);
     window.removeEventListener('keydown', handleEdition);
-    window.addEventListener('keydown', slideWeek);
+    window.addEventListener('keydown', slideCard);
   }
   //: HANDLE EDITION                                                        ://
   const handleEdition = (e) => {
@@ -1497,7 +1523,7 @@ const handleEntryEdit = (e) => {
   toggleItemDisplay();
   window.addEventListener('click', handleEdition);
   window.addEventListener('keydown', handleEdition);
-  window.removeEventListener('keydown', slideWeek);
+  window.removeEventListener('keydown', slideCard);
 }
 //| ANIMATE WEEK ENTRIES                                                    |//
 const entriesFade = (action) => {
