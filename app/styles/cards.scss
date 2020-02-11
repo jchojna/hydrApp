@@ -1,7 +1,6 @@
 @import 'variables.scss';
 @import 'mixins.scss';
 
-//| WEEK                                                                    |//
 .card {
   bottom: 0;
   height: 100%;
@@ -22,23 +21,6 @@
   &--visible {
     animation-fill-mode: forwards;
     visibility: visible;
-  }
-
-  &--slide-in-from-left {
-    animation: slide-in-from-left $time-week-slide;
-  }
-  &--slide-out-to-left {
-    animation: slide-out-to-left $time-week-slide;
-    animation-fill-mode: forwards;
-    pointer-events: none;
-  }
-  &--slide-out-to-right {
-    animation: slide-out-to-right $time-week-slide;
-    animation-fill-mode: forwards;
-    pointer-events: none;
-  }
-  &--slide-in-from-right {
-    animation: slide-in-from-right $time-week-slide;
   }
 
   &__header {

@@ -314,7 +314,7 @@ const getHtmlOfUserStats = (user) => {
     const { value, label } = user[prop];
 
     html += `
-      <li class="userProp">
+      <li class="userProp userProp--stats">
         <span class="userProp__label">
           ${label}
         </span>
@@ -570,37 +570,36 @@ const createNewUser = () => {
 //#endregion
 
 //#region [ Horizon ] APP INITIAL
+
 const setLogInDOM = () => {
-  //: set DOM structure of list of users in log in box                         
+  // set DOM structure of list of users in log in box
   [...hydrappUsers].forEach(user => {
-    const { name, key } = user;
+    const { key } = user;
+    const { name } = user.login;
     usersList.insertAdjacentHTML('beforeend', getHtmlOfUserLogIn(name));
     const userItem = usersList.lastElementChild;
     const userButton = userItem.querySelector('.userList__button--js');
     userButton.userKey = key;
     userButton.addEventListener('click', handleUserLogin);
   });
-  //: add button for creating a new user and add event                         
+  // add button for creating a new user and add event
   const createUserButton = appLogIn.querySelector('.app__createUserButton--js');
   createUserButton.addEventListener('click', createNewUser);
-  //: show log in box                                                          
+  // show log in box
   appLogIn.classList.add('app__logIn--visible');
 }
 
 const handleUserLogin = (e) => {
   const self = e.target;
   const { userKey } = self;
-  //: assign selected user to JSON object and load app                         
+  // assign selected user to JSON object and load app
   hydrappUser = [...hydrappUsers].filter(({ key }) => key === userKey)[0];
   loadApp();
-  //: hide log in box                                                          
+  // hide log in box
   appLogIn.classList.remove('app__logIn--visible');
-
 
   /* const userLogInButtons = usersList.querySelectorAll('.userList__button--js');
   [...userLogInButtons].forEach(button => button.removeEventListener('click', handleUserLogin)); */
-
-
 }
 
 const loadApp = () => {
@@ -1740,12 +1739,12 @@ class User {
     };
     this.waterMin = {
       value: 8,
-      label: 'Minimum amount of glasses per day',
+      label: 'Minimum per day',
       tags: ['stats']
     };
     this.waterAvg = {
       value: 0,
-      label: 'Average consumption per day',
+      label: 'Average per day',
       tags: ['stats']
     };
     this.userRank = {
