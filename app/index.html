@@ -56,20 +56,22 @@
     </header>
     <!--| end of APP HEADER                                                |-->
     <!--//                                                               //|-->
-    <!--| APP USER DATA                                                    |-->
-    <form class="app__newUser app__newUser--js">
-      <h2 class="app__heading visuallyhidden">User data</h2>
-    </form>
-    <!--| end of APP USER DATA                                             |-->
-    <!--| APP USER LOG IN                                                  |-->
-    <section class="app__logIn app__logIn--js">
-      <h2 class="app__heading">Log In</h2>
-      <ul class="usersList usersList--js"></ul>
-      <button class="app__createUserButton app__createUserButton--js">
-        Create New User
-      </button>
-    </section>
-    <!--| end of APP USER LOG IN                                           |-->
+    <div class="app__userProfile app__userProfile--visible app__userProfile--js">
+      <!--| APP USER LOG IN                                                |-->
+      <section class="app__logIn app__logIn--js">
+        <h2 class="app__heading">Log In</h2>
+        <ul class="usersList usersList--js"></ul>
+        <button class="app__createUserButton app__createUserButton--js">
+          Create New User
+        </button>
+      </section>
+      <!--| end of APP USER LOG IN                                         |-->
+      <!--| APP USER DATA                                                  |-->
+      <form class="app__newUser app__newUser--js">
+        <h2 class="app__heading visuallyhidden">User data</h2>
+      </form>
+      <!--| end of APP USER DATA                                           |-->
+    </div>
     <!--//                                                               //|-->
     <!--| APP CONTAINER                                                    |-->
     <section class="app__landing app__landing--js">

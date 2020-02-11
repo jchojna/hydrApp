@@ -34,7 +34,7 @@
       opacity $newUser-toggle,
       transform $newUser-toggle,
       visibility 0s;
-    visibility: visible;
+    visibility: inherit;
   }
 
   &--hiddenLeft {
