@@ -40,17 +40,17 @@ const getHydrappUsers = () => {
 //| GET STRING WITH SPACE REPLACED TO DASHES AND NO CAPITAL LETTERS         |//
 const getFormattedString = (string) => string.replace(/\s/g,'_').toLowerCase();
 //| LOOPED RANGE OF VALUES                                                  |//
-const loopNumber = (max, num, action) => {
+const loopedRange = (max, num, action) => {
   action === 'increase' ? num >= max ? num = 0 : num++ : false;
   action === 'decrease' ? num <= 0 ? num = max : num-- : false;
   return num;
 }
 //| LIMITED RANGE OF VALUES                                                 |//
-/* const limit = (max, num, action) => {
+const limitedRange = (max, num, action) => {
   action === 'increase' ? num >= max ? false : num++ : false;
   action === 'decrease' ? num <= 0 ? false : num-- : false;
   return num;
-} */
+}
 //| FIND FIRST ENCOUNTERED PARENT OF GIVEN NODE WITH A GIVEN CLASS          |//
 const findFirstParentOfClass = (node, classname) => {
   while (!node.parentNode.classList.contains(classname)
@@ -558,7 +558,7 @@ const createNewUser = () => {
   });
   appNewUser.addEventListener('keyup', handleNewUser);
 }
-//// EMOJI                                                                 ////
+//// EMOJI                                                                     
 //| SET INDICATORS                                                          |//
 const handleEmoji = (id, number) => {
   number > 7 ? number = 7 : false;
@@ -574,7 +574,7 @@ const handleEmoji = (id, number) => {
     }
   });  
 }
-//// WATER                                                                 ////
+//// WATER                                                                     
 //| SET WAVES AMOUNT                                                        |//
 const setWaterWaves = () => {
   const waveSvg = `
@@ -630,7 +630,7 @@ const handleWaterChange = (e) => {
   handleEmoji('controls', value);
   handleEmoji(id, value);
 }
-//| HANDLE WATER MEASURE APPEARANCE                                         |//
+//| HANDLE WATER MEASURE APPEARANCE                                            
 const handleWaterMeasure = () => {
   const headerHeight = appHeader.clientHeight;
   const { waterMax } = hydrappUser;
@@ -927,94 +927,91 @@ const toggleSidebarTabs = (e) => {
   }
 }
 //| SLIDE CARD                                                              |//
-const slideCard = (e) => {
+const slideCard = (e, isLooped) => {
   const self = e.target;
   const action = /prev/.test(self.className) ? 'prev' : 'next';
   const currentCard = findFirstParentOfClass(self, 'card');
-  const allCards = currentCard.parentNode.children;
-  const currentIndex = [...allCards].indexOf(currentCard);
-  const maxIndex = allCards.length - 1;
+  const container = currentCard.parentNode;
+  const containerWidth = container.clientWidth;
+  const cards = container.children;
+  const cardLists = container.querySelectorAll('[class*=card__list--js]');
+  const cardHeaders = container.querySelectorAll('[class*=card__header---js]');
+  const cardHeadings = container.querySelectorAll('[class*=card__heading--js]');
+  const currentIndex = [...cards].indexOf(currentCard);
+  const currentCardList = cardLists[currentIndex];
+  const currentCardHeader = cardHeaders[currentIndex];
+  const currentCardHeading = cardHeadings[currentIndex];
+  const maxIndex = cards.length - 1;
+  const delay = 50;
+  const transitionTime = 500;
 
-  const newIndex = action === 'prev'
-  ? loopNumber(maxIndex, currentIndex, 'decrease')
-  : loopNumber(maxIndex, currentIndex, 'increase');
-  
-  const newCard = allCards[newIndex];
-  currentCard.classList.remove('card--visible');
-  newCard.classList.add('card--visible');
-
-
-
-
-
-
-
-/* 
-
-    const toggleDetail = (current, next, action, timeout) => {
-      const hiddenSide = action === 'prev' ? 'Right' : 'Left';
-      const visibleSide = action === 'prev' ? 'Left' : 'Right';
-      const nextInput = next ? next.querySelector('.newUser__input--js') : false;
-  
-      current.classList.add(`newUser--hidden${hiddenSide}`);
-      current.classList.remove('newUser--visible');
-      next ? next.classList.add(`newUser--hidden${visibleSide}`) : false;
-  
-      detailToggleTimeoutId = setTimeout(() => {
-        if (next) {
-          next.classList.add('newUser--visible');
-          next.classList.remove(`newUser--hidden${visibleSide}`);
-          nextInput.focus();
-        }
-        clearTimeout(detailToggleTimeoutId);
-        detailToggleTimeoutId = null;
-      }, timeout);
-    }
-
-
- */
-
-/* 
-const self = e.keyCode || e.target;
-const prevWeekButton = document.querySelectorAll('.card__button--js-weekPrev')[currentWeekIndex];
-const nextWeekButton = document.querySelectorAll('.card__button--js-weekNext')[currentWeekIndex];
-const weeksAmount = archiveContainer.children.length;
-
-const handleSlide = (direction) => {
-  //: handle previous section                                             ://
-  archiveContainer.children[currentWeekIndex].className = `card card--week card--js-week card--slide-out-to-${direction === 'toLeft' ? 'right' : 'left'}`;
-  const previousWeekIndex = currentWeekIndex;
-  //: change index                                                        ://
-  currentWeekIndex = limit(archiveContainer.children.length - 1, currentWeekIndex, direction === 'toLeft' ? 'decrease' : 'increase');
-  //: handle next section                                                 ://
-  if (currentWeekIndex !== previousWeekIndex) {
-    archiveContainer.children[currentWeekIndex].classList = `card card--week card--js-week card--visible card--slide-in-from-${direction === 'toLeft' ? 'left' : 'right'}`;
-  } else {
-    archiveContainer.children[currentWeekIndex].classList = 'card card--week card--js-week card--visible';
+  //. slide cards with transition effect                                    .//
+  const slideCards = (newCard, newCardList, newCardHeading, offset) => {
+    slideTimeoutId = setTimeout(() => {
+      newCardList.style = `
+        transform: translateX(0);
+        transition: transform ${transitionTime}ms;
+      `;
+      currentCardList.style = `
+        transform: translateX(${offset}px);
+        transition: transform ${transitionTime}ms;
+      `;
+      currentCardHeader.style = `
+        visibility: hidden;
+        transition: visibility 0ms ${transitionTime / 2}ms;
+      `;
+      newCardHeading.style = `
+        opacity: 1;
+        transition: opacity ${transitionTime / 2}ms ${transitionTime / 2}ms;
+      `;
+      currentCardHeading.style = `
+        opacity: 0;
+        transition: opacity ${transitionTime / 2}ms;
+      `;
+      newCard.classList.add('card--visible');
+    }, delay);
   }
-}
-
-if (weeksAmount > 1) {
-  switch (self) {
-    case 37:
-    case prevWeekButton:
-      handleSlide('toLeft');
-      break;
-    case 39:
-    case nextWeekButton:
-      handleSlide('toRight');
-      break;
+  //. hide previous card and clear timeouts                                 .//
+  const clearAfter = () => {
+    const slideSecondTimeout = setTimeout(() => {
+      currentCard.classList.remove('card--visible');
+      clearTimeout(slideTimeoutId);
+      clearTimeout(slideSecondTimeout);
+      slideTimeoutId = null;
+    }, transitionTime);
   }
-  handleContainerHeight(archiveContainer, weeks[currentWeekIndex]);
-}
- */
 
+  //: perform sliding effect if previous one is already finished               
+  if (slideTimeoutId === null) {
+    //. find next index                                                        
+    const newIndex = action === 'prev'
+    ? loopedRange(maxIndex, currentIndex, 'decrease')
+    : loopedRange(maxIndex, currentIndex, 'increase');
+    //. set new elements                                                       
+    var newCard = cards[newIndex];
+    const newCardList = cardLists[newIndex];
+    var newCardHeader = cardHeaders[newIndex];
+    var newCardHeading = cardHeadings[newIndex];
+    //. set initial position of a new card element                             
+    const initialOffset = action === 'prev' ? -1 * containerWidth : containerWidth;
+    const finalOffset = action === 'next' ? -1 * containerWidth : containerWidth;
+    newCardList.style = `transform: translateX(${initialOffset}px);`;
+    newCardHeader.style = `
+      visibility: visible;
+      transition: visibility 0ms ${transitionTime / 2}ms;
+    `;
+    //. create and set promise function                                        
+    const slidePromise = new Promise((resolve, reject) => {
+      resolve();
+    });
+    slidePromise
+      .then(() => slideCards(newCard, newCardList, newCardHeading, finalOffset))
+      .then(clearAfter);
+      //catch(() => console.log('Something bad happened!'));
 
-
-
-
-
-
+    //. adjust container height to its current content                         
+    handleContainerHeight(container, newCard);
+  }
 }
 //// ARCHIVE TAB                                                           ////
 //| SET ARCHIVE                                                             |//
@@ -1560,6 +1557,7 @@ const appLogIn = document.querySelector('.app__logIn--js');
 const appNewUser = document.querySelector('.app__newUser--js');
 const appLanding = document.querySelector('.app__landing--js');
 const appSidebar = document.querySelector('.app__sidebar--js');
+let slideTimeoutId = null
 //: LOG IN                                                                  ://
 const usersList = document.querySelector('.usersList--js');
 

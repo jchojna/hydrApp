@@ -9,7 +9,7 @@
   position: absolute;
   right: 0;
   top: 0;
-  transition: visibility 0s $time-week-slide;
+  transition: visibility 0s;
   visibility: hidden;
 
   &__container {
@@ -21,7 +21,6 @@
 
   &--visible {
     animation-fill-mode: forwards;
-    transition: visibility 0s;
     visibility: visible;
   }
 
