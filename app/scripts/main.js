@@ -1,5 +1,5 @@
 'use strict';
-//| SERVICE WORKER                                                             
+//#region SERVICE WORKER
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
     navigator.serviceWorker.register('serviceworker.js').then(function(registration) {
@@ -11,32 +11,8 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
-//| FUNCTIONS                                                                  
-//// OVERALL                                                               ////
-//| GET OFFSETED DATE                                                          
-const getOffsetedDate = (obj) => {
-  const timeZoneOffset = (new Date()).getTimezoneOffset() * 60000;
-  return (new Date(obj - timeZoneOffset));
-}
-//| CREATE HYDRAPP DATE KEY                                                    
-const getDateId = (obj) => {
-  const timeZoneOffset = (new Date()).getTimezoneOffset() * 60000;
-  let dateObj = obj || new Date();
-  dateObj = (new Date(dateObj - timeZoneOffset));
-  return dateObj
-  .toISOString()
-  .slice(0,10)
-  .split('-')
-  .reverse()
-  .join('');
-}
-//| CREATE ARRAY OF HYDRAPP LOCAL STORAGE USER KEYS                            
-const getHydrappUsers = () => {
-  const regex = /hydrapp-/;
-  return Object
-  .keys(localStorage)
-  .filter(key => regex.test(key))
-}
+//#endregion
+//#region HELPERS FUNCTIONS
 //| GET STRING WITH SPACE REPLACED TO DASHES AND NO CAPITAL LETTERS            
 const getFormattedString = (string) => string.replace(/\s/g,'_').toLowerCase();
 //| LOOPED RANGE OF VALUES                                                     
@@ -70,6 +46,34 @@ const handleContainerHeight = (container, elements) => {
   const childrenHeight = childrenArray.reduce((a,b) => a + b.clientHeight, 0);
   container.style.height = `${childrenHeight}px`;
 }
+//| RETURN 'GLASS' OR 'GLASSES' OR EMPTY                                       
+const getGlasses = (key, value) => {
+  const glasses = key === 'waterMax' || key === 'waterMin' || key === 'waterAvg'
+  ? `${value} ${value > 1 || value === 0 ? 'glasses' : 'glass'}`
+  : value;
+  return glasses;
+}
+//#endregion
+//#region DATES
+//| GET OFFSETED DATE                                                          
+const getOffsetedDate = (obj) => {
+  const timeZoneOffset = (new Date()).getTimezoneOffset() * 60000;
+  return (new Date(obj - timeZoneOffset));
+}
+//| CREATE HYDRAPP DATE KEY                                                    
+const getDateId = (obj) => {
+  const timeZoneOffset = (new Date()).getTimezoneOffset() * 60000;
+  let dateObj = obj || new Date();
+  dateObj = (new Date(dateObj - timeZoneOffset));
+  return dateObj
+  .toISOString()
+  .slice(0,10)
+  .split('-')
+  .reverse()
+  .join('');
+}
+//#endregion
+//#region INPUTS VALIDATION
 //| FILTER USER INPUTS                                                         
 const filterUserInput = (e) => {
   if (e.keyCode  === 13 || e.keyCode  === 27) return false;
@@ -141,15 +145,14 @@ const isInputValid = (input, id, alertBox) => {
     }
   }
 }
-//| VALIDATE USER'S NUMERICAL INPUTS                                           
-const isNumberInputValid = (value, id, alertBox) => {
-}
-//| RETURN 'GLASS' OR 'GLASSES' OR EMPTY                                       
-const getGlasses = (key, value) => {
-  const glasses = key === 'waterMax' || key === 'waterMin' || key === 'waterAvg'
-  ? `${value} ${value > 1 || value === 0 ? 'glasses' : 'glass'}`
-  : value;
-  return glasses;
+//#endregion
+//#region LOCAL STORAGE & JSON
+//| CREATE ARRAY OF HYDRAPP LOCAL STORAGE USER KEYS                            
+const getHydrappUsers = () => {
+  const regex = /hydrapp-/;
+  return Object
+  .keys(localStorage)
+  .filter(key => regex.test(key))
 }
 //| FETCH USERS FROM LOCAL STORAGE                                             
 const fetchUsersFromLS = () => {
@@ -178,9 +181,10 @@ const updateJsonOnDateChange = () => {
   hydrappUser.entries = [...newEntries, ...hydrappUser.entries];
   exportJsonToLS();
 }
-//// HTML CODE                                                             ////
+//#endregion
+//#region HTML CODE
 //| RETURN EMOJIS HTML STRING                                                  
-const getEmojiHtml = (id) => {
+const getHtmlOfEmoji = (id) => {
   let emojiHtml = `<div class="emoji emoji--js-${id}">`;
 
   for (let i = 0; i < emojiAmount; i++) {
@@ -197,7 +201,7 @@ const getEmojiHtml = (id) => {
   return emojiHtml;
 }
 //| RETURN SIDEBAR TAB'S CARD HTML                                             
-const getCardHtml = (card, userName, key) => {
+const getHtmlOfCard = (card, userName, key) => {
   return `
     <section
       class="card card--${card} card--js-${card} ${key ? `card--js-${key}` : ''}"
@@ -222,7 +226,7 @@ const getCardHtml = (card, userName, key) => {
   `;
 }
 //| RETURN EDITION MODULE HTML                                                 
-const getEditionHtml = (tab, id) => {
+const getHtmlOfEdition = (tab, id) => {
   return `
     <div class="edition edition--${tab} edition--js">
       <button class="edition__button edition__button--visible edition__button--edit edition__button--js-edit" ${id ? `id="${id}EditButton"` : ''}>
@@ -259,7 +263,7 @@ const getEditionHtml = (tab, id) => {
   `;
 }
 //| RETURN ARCHIVE ENTRY HTML CODE                                             
-const getEntryHtml = (index) => {
+const getHtmlOfArchiveEntry = (index) => {
 
   const { date, day, id, value } = hydrappUser.entries[index];
   const dateId = date.split(' ').join('-');
@@ -270,13 +274,13 @@ const getEntryHtml = (index) => {
         <p class="entry__heading entry__heading--date entry__heading--js-date">${date}</p>
       </header>
       <span class="entry__value entry__value--js">${value}</span>
-      ${getEditionHtml('archive')}
-      ${getEmojiHtml(id)}
+      ${getHtmlOfEdition('archive')}
+      ${getHtmlOfEmoji(id)}
     </li>
   `;
 }
 //| RETURN USER STATS HTML CODE                                                
-const getUserStatsHtml = (user) => {
+const getHtmlOfUserStats = (user) => {
   const { statsLabels, editableProps, key } = user;
   const userStatsProps = Object.keys(statsLabels);
   const editable = Object.keys(editableProps);
@@ -314,7 +318,7 @@ const getUserStatsHtml = (user) => {
           ` : ''}
         </div>
         ${ isEditable ? `
-          ${getEditionHtml('stats', prop)}
+          ${getHtmlOfEdition('stats', prop)}
           <div class="userProp__alert userProp__alert--js">
             <p class="userProp__alertText"></p>
           </div>
@@ -325,7 +329,7 @@ const getUserStatsHtml = (user) => {
   return html;
 }
 //| RETURN USER LOG IN HTML CODE                                               
-const getUserLogInHtml = (user) => {
+const getHtmlOfUserLogIn = (user) => {
   return `
     <li class="usersList__item">
       <button class="usersList__button userList__button--js">
@@ -334,13 +338,14 @@ const getUserLogInHtml = (user) => {
     </li>
   `;  
 }
-//// APP START                                                             ////
+//#endregion HTML CODE
+//#region APP INITIAL
 //| CREATE LOG IN BOX DOM STRUCTURE WITH ALL THE USERS                         
 const setLogInDOM = () => {
   //: set DOM structure of list of users in log in box                         
   [...hydrappUsers].forEach(user => {
     const { name, key } = user;
-    usersList.insertAdjacentHTML('beforeend', getUserLogInHtml(name));
+    usersList.insertAdjacentHTML('beforeend', getHtmlOfUserLogIn(name));
     const userItem = usersList.lastElementChild;
     const userButton = userItem.querySelector('.userList__button--js');
     userButton.userKey = key;
@@ -560,7 +565,7 @@ const loadApp = () => {
   handleWaterMeasure();
   handleCounterMessage(startValue);
   handleCounterDate();
-  emoji.innerHTML = getEmojiHtml('controls');
+  emoji.innerHTML = getHtmlOfEmoji('controls');
   handleEmoji('controls', startValue);
   updateWeekHeading();
   handleWaterAverage();
@@ -572,8 +577,8 @@ const loadApp = () => {
   burgerBtn.addEventListener('click', toggleSidebar);
   appSidebar.addEventListener('click', toggleSidebarTabs);
 }
-//// EMOJI                                                                     
-//| SET INDICATORS                                                             
+//#endregion
+//#region EMOJI
 const handleEmoji = (id, number) => {
   number > 7 ? number = 7 : false;
   const emojis = document.querySelectorAll(`.emoji__svg--js-${id}`);
@@ -588,7 +593,8 @@ const handleEmoji = (id, number) => {
     }
   });  
 }
-//// WATER                                                                     
+//#endregion
+//#region LANDING - WATER
 //| SET WAVES AMOUNT                                                           
 const setWaterWaves = () => {
   const waveSvg = `
@@ -729,7 +735,8 @@ const handleWaterAverage = () => {
   hydrappUser.waterAvg = roundedWaterAvg;
   statsOutput.textContent = getGlasses(id, roundedWaterAvg);
 }
-//// COUNTER                                                               ////
+//#endregion
+//#region LANDING - COUNTER
 //| SET COUNTER VALUES                                                         
 const handleCounter = (currentValue, newValue) => {
 
@@ -872,7 +879,8 @@ const handleCounterDate = () => {
   counterDay.innerHTML = day;
   counterDate.innerHTML = date.slice().split(' ').join('.');
 }
-//// APP SIDEBAR                                                           ////
+//#endregion
+//#region SIDEBAR
 //| TOGGLE SIDEBAR VISIBILITY                                                  
 const toggleSidebar = (e) => {
   const self = e.target || e;
@@ -1027,7 +1035,8 @@ const slideCard = (e, isLooped) => {
     handleContainerHeight(container, newCard);
   }
 }
-//// ARCHIVE TAB                                                           ////
+//#endregion
+//#region ARCHIVE
 //| SET ARCHIVE                                                                
 const setArchiveDOM = () => {
 
@@ -1043,14 +1052,14 @@ const setArchiveDOM = () => {
   handleArchiveLastEntry();
   //: generate indicators for new entry mode                                   
   const emojiContainer = document.querySelector('.emoji--js-new');
-  emojiContainer.innerHTML = getEmojiHtml('new');
+  emojiContainer.innerHTML = getHtmlOfEmoji('new');
   handleEmoji('new', 0);
 }
 //| ADD ARCHIVE NODE                                                           
 const addArchiveEntry = (index, option) => {
   const {value, id, day} = hydrappUser.entries[index];
-  const weekHtml = getCardHtml('week');
-  const entryHtml = getEntryHtml(index);
+  const weekHtml = getHtmlOfCard('week');
+  const entryHtml = getHtmlOfArchiveEntry(index);
   //: function adding new week DOM node                                        
   const addWeek = () => {
     archiveContainer.insertAdjacentHTML('beforeend', weekHtml);
@@ -1136,135 +1145,8 @@ const updateWeekHeading = () => {
     weekLists.length > 1 ? setButtonsVisiblity(i) : setButtonsVisiblity(i, 'oneWeek');
   }
 }
-//// STATS TAB                                                             ////
-//| SET STATS DOM STRUCTURE BASED ON USER'S JSON OBJECT                        
-const handleUsersStats = () => {
-  const usersTotal = hydrappUsers.length;
-  //: create DOM structure                                                     
-  [...hydrappUsers].forEach(user => addStatsDOM(user));
-  //: make logged in user's card visible                                       
-  const loggedUserCard = statsContainer.querySelector(`.card--js-${hydrappUser.key}`);
-  loggedUserCard.classList.add('card--visible');
-  //: set visibility and events for card navigation buttons                    
-  const cardPrevButtons = statsContainer.querySelectorAll('.card__button--js-prev');
-  const cardNextButtons = statsContainer.querySelectorAll('.card__button--js-next');
-  if (usersTotal > 1) {
-    [...cardPrevButtons].forEach(button => {
-      button.classList.add('card__button--visible');
-      button.addEventListener('click', slideCard);
-    });
-    [...cardNextButtons].forEach(button => {
-      button.classList.add('card__button--visible');
-      button.addEventListener('click', slideCard);
-    });
-  }
-}
-//| ADD USER STATS DOM NODES                                                   
-const addStatsDOM = (user) => {
-  //: get html codes of user card and user props                               
-  const { name, key } = user;
-  const statsCardHtml = getCardHtml('stats', name, key);
-  const userHtml = getUserStatsHtml(user);
-  //: create DOM node of user card                                             
-  statsContainer.insertAdjacentHTML('beforeend', statsCardHtml);
-  const userCard = statsContainer.querySelector(`.card--js-${key}`);
-  //: create DOM nodes of user props                                           
-  const cardList = userCard.querySelector('.card__list--js-stats');
-  cardList.insertAdjacentHTML('beforeend', userHtml);
-  //: add event listeners to all edit buttons                                  
-  const editButtons = cardList.querySelectorAll('.edition__button--js-edit');
-  [...editButtons].forEach(button => {
-    button.addEventListener('click', handleUserEdit);
-  });
-}
-//| HANDLE USER EDIT                                                           
-const handleUserEdit = (e) => {
-  const self = e.target;  
-  const { id } = self;
-  const prop = id.replace('EditButton', '');
-  const { key } = hydrappUser;
-  const value = hydrappUser[prop];
-  const userProp = findFirstParentOfClass(self, 'userProp');
-  const propName = userProp.querySelector('.userProp__label--js');
-  const outputValue = userProp.querySelector('.userProp__output--js');
-  const inputValue = userProp.querySelector('.userProp__input--js');
-  const cancelButton = userProp.querySelector('.edition__button--js-cancel');
-  const saveButton = userProp.querySelector('.edition__button--js-save');
-  const editSection = userProp.querySelector('.edition--js');
-  const inputAlert = userProp.querySelector('.userProp__alert--js');
-  const userCard = document.querySelector(`.card--js-${key}`);
-  const cardHeading = userCard.querySelector('.card__heading--js-stats');
-
-  //: TOGGLE PROP DISPLAY                                                      
-  const togglePropDisplay = () => {
-    for (const editButton of editSection.children) {
-      editButton.classList.toggle('edition__button--visible');
-    }
-    editSection.classList.toggle('edition--visible');
-    userProp.classList.toggle('userProp--editMode');
-    propName.classList.toggle('userProp__label--editMode');
-    outputValue.classList.toggle('userProp__output--hidden');
-    inputValue.classList.toggle('userProp__input--visible');
-    inputValue.focus();
-    //. change placeholder of edited input                                     
-    inputValue.value = '';
-    inputValue.placeholder = prop === 'weight'
-    ? `${value} kg` : prop === 'height'
-    ? `${value} cm` : prop === 'waterMax'
-    ? `${getGlasses('waterMax', value)}` : value;
-  }
-  //: EXIT EDIT MODE                                                           
-  const exitEditMode = () => {
-    
-    togglePropDisplay();
-    handleInputAlert(inputAlert);
-    editSection.removeEventListener('click', handleEdition);
-    window.removeEventListener('keydown', handleEdition);
-    if (prop !== 'name') inputValue.removeEventListener('keyup', filterUserInput);
-
-    //window.addEventListener('keydown', slideCard); // ! slide between cards
-  }
-  //: HANDLE EDITION                                                           
-  const handleEdition = (e) => {
-    const self = e.keyCode || e.target;
-    switch (self) {
-      case 27:
-      case cancelButton:
-        exitEditMode();
-      break;
-      case 13:
-      case saveButton:
-        if (isInputValid(inputValue, prop, inputAlert)) {
-          //. update new value                                              .//
-          const newValue = typeof value === 'number'
-          ? parseInt(inputValue.value)
-          : inputValue.value
-          outputValue.textContent = getGlasses(prop, newValue);
-          //. handle updated local storage key                              .//
-          if (prop === 'name' && newValue !== value) {
-            const oldNameId = getFormattedString(value);
-            const newNameId = getFormattedString(newValue);
-            localStorage.removeItem(`hydrapp-${oldNameId}`);
-            hydrappUser.nameId = newNameId;
-            cardHeading.textContent = newValue;
-          }
-          //. handle JSON object                                            .//
-          hydrappUser[prop] = newValue;
-          exportJsonToLS();
-          exitEditMode();
-        }
-      break;
-    }
-  }
-  //: FUNCTION CALLS                                                           
-  togglePropDisplay();
-  editSection.addEventListener('click', handleEdition);
-  window.addEventListener('keydown', handleEdition);
-  if (typeof value === 'number') inputValue.addEventListener('keyup', filterUserInput);
-
-  //window.removeEventListener('keydown', slideCard); // ! slide between cards
-}
-//// ENTRY HANDLERS                                                        ////
+//#endregion
+//#region ARCHIVE ENTRIES
 //| CREATE 'REMOVE ITEM' BUTTON                                                
 const createRemoveEntryButton = () => {
   const removeEntryButton = document.createElement('button');
@@ -1556,10 +1438,138 @@ const entriesFade = (action) => {
   }
 }
 //| END OF HANDLE ITEM EDIT                                                    
+//#endregion
+//#region STATS
+//| SET STATS DOM STRUCTURE BASED ON USER'S JSON OBJECT                        
+const handleUsersStats = () => {
+  const usersTotal = hydrappUsers.length;
+  //: create DOM structure                                                     
+  [...hydrappUsers].forEach(user => addStatsDOM(user));
+  //: make logged in user's card visible                                       
+  const loggedUserCard = statsContainer.querySelector(`.card--js-${hydrappUser.key}`);
+  loggedUserCard.classList.add('card--visible');
+  //: set visibility and events for card navigation buttons                    
+  const cardPrevButtons = statsContainer.querySelectorAll('.card__button--js-prev');
+  const cardNextButtons = statsContainer.querySelectorAll('.card__button--js-next');
+  if (usersTotal > 1) {
+    [...cardPrevButtons].forEach(button => {
+      button.classList.add('card__button--visible');
+      button.addEventListener('click', slideCard);
+    });
+    [...cardNextButtons].forEach(button => {
+      button.classList.add('card__button--visible');
+      button.addEventListener('click', slideCard);
+    });
+  }
+}
+//| ADD USER STATS DOM NODES                                                   
+const addStatsDOM = (user) => {
+  //: get html codes of user card and user props                               
+  const { name, key } = user;
+  const statsCardHtml = getHtmlOfCard('stats', name, key);
+  const userHtml = getHtmlOfUserStats(user);
+  //: create DOM node of user card                                             
+  statsContainer.insertAdjacentHTML('beforeend', statsCardHtml);
+  const userCard = statsContainer.querySelector(`.card--js-${key}`);
+  //: create DOM nodes of user props                                           
+  const cardList = userCard.querySelector('.card__list--js-stats');
+  cardList.insertAdjacentHTML('beforeend', userHtml);
+  //: add event listeners to all edit buttons                                  
+  const editButtons = cardList.querySelectorAll('.edition__button--js-edit');
+  [...editButtons].forEach(button => {
+    button.addEventListener('click', handleUserEdit);
+  });
+}
+//| HANDLE USER EDIT                                                           
+const handleUserEdit = (e) => {
+  const self = e.target;  
+  const { id } = self;
+  const prop = id.replace('EditButton', '');
+  const { key } = hydrappUser;
+  const value = hydrappUser[prop];
+  const userProp = findFirstParentOfClass(self, 'userProp');
+  const propName = userProp.querySelector('.userProp__label--js');
+  const outputValue = userProp.querySelector('.userProp__output--js');
+  const inputValue = userProp.querySelector('.userProp__input--js');
+  const cancelButton = userProp.querySelector('.edition__button--js-cancel');
+  const saveButton = userProp.querySelector('.edition__button--js-save');
+  const editSection = userProp.querySelector('.edition--js');
+  const inputAlert = userProp.querySelector('.userProp__alert--js');
+  const userCard = document.querySelector(`.card--js-${key}`);
+  const cardHeading = userCard.querySelector('.card__heading--js-stats');
 
-//| VARIABLES                                                                  
-////                                                                       ////
-//: MEDIA                                                                      
+  //: TOGGLE PROP DISPLAY                                                      
+  const togglePropDisplay = () => {
+    for (const editButton of editSection.children) {
+      editButton.classList.toggle('edition__button--visible');
+    }
+    editSection.classList.toggle('edition--visible');
+    userProp.classList.toggle('userProp--editMode');
+    propName.classList.toggle('userProp__label--editMode');
+    outputValue.classList.toggle('userProp__output--hidden');
+    inputValue.classList.toggle('userProp__input--visible');
+    inputValue.focus();
+    //. change placeholder of edited input                                     
+    inputValue.value = '';
+    inputValue.placeholder = prop === 'weight'
+    ? `${value} kg` : prop === 'height'
+    ? `${value} cm` : prop === 'waterMax'
+    ? `${getGlasses('waterMax', value)}` : value;
+  }
+  //: EXIT EDIT MODE                                                           
+  const exitEditMode = () => {
+    
+    togglePropDisplay();
+    handleInputAlert(inputAlert);
+    editSection.removeEventListener('click', handleEdition);
+    window.removeEventListener('keydown', handleEdition);
+    if (prop !== 'name') inputValue.removeEventListener('keyup', filterUserInput);
+
+    //window.addEventListener('keydown', slideCard); // ! slide between cards
+  }
+  //: HANDLE EDITION                                                           
+  const handleEdition = (e) => {
+    const self = e.keyCode || e.target;
+    switch (self) {
+      case 27:
+      case cancelButton:
+        exitEditMode();
+      break;
+      case 13:
+      case saveButton:
+        if (isInputValid(inputValue, prop, inputAlert)) {
+          //. update new value                                              .//
+          const newValue = typeof value === 'number'
+          ? parseInt(inputValue.value)
+          : inputValue.value
+          outputValue.textContent = getGlasses(prop, newValue);
+          //. handle updated local storage key                              .//
+          if (prop === 'name' && newValue !== value) {
+            const oldNameId = getFormattedString(value);
+            const newNameId = getFormattedString(newValue);
+            localStorage.removeItem(`hydrapp-${oldNameId}`);
+            hydrappUser.nameId = newNameId;
+            cardHeading.textContent = newValue;
+          }
+          //. handle JSON object                                            .//
+          hydrappUser[prop] = newValue;
+          exportJsonToLS();
+          exitEditMode();
+        }
+      break;
+    }
+  }
+  //: FUNCTION CALLS                                                           
+  togglePropDisplay();
+  editSection.addEventListener('click', handleEdition);
+  window.addEventListener('keydown', handleEdition);
+  if (typeof value === 'number') inputValue.addEventListener('keyup', filterUserInput);
+
+  //window.removeEventListener('keydown', slideCard); // ! slide between cards
+}
+//#endregion
+
+//#region VARIABLES
 const mediaMd = 768;
 const mediaLg = 1200;
 //: DOM                                                                        
@@ -1630,6 +1640,8 @@ const newEntrySave = document.querySelector('.newEntry__button--js-save');
 ////                                                                       ////
 const weekDay = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
 
+//#endregion
+//#region CLASSES
 //| USER CLASS                                                                 
 class User {
   constructor(date) {
@@ -1740,7 +1752,7 @@ class Entry {
     this.day = weekDay[dayIndex];
   }
 }
-//// FUNCTION CALLS                                                        ////
+//#endregion
 //| FETCH ALL USERS FROM LOCAL STORAGE                                         
 let hydrappUser = {};
 let hydrappUsers = fetchUsersFromLS();
