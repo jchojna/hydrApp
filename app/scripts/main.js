@@ -410,6 +410,23 @@ const createNewUser = () => {
       appNewUser.innerHTML += newUserHtml;
     }
     isNewUserDOM = true;
+    newUserDetails = document.querySelectorAll('.newUser--js');
+    newUserPrevButtons = document.querySelectorAll('.newUser__button--js-prev');
+    newUserNextButtons = document.querySelectorAll('.newUser__button--js-next');
+    newUserInputs = appNewUser.querySelectorAll('.newUser__input--js');
+    //: add buttons events                                                     
+    [...newUserPrevButtons].forEach(button =>
+    button.addEventListener('click', handleNewUser));
+    [...newUserNextButtons].forEach(button =>
+    button.addEventListener('click', handleNewUser));
+    //: add keyboard events                                                    
+    [...newUserInputs]
+    .filter((input, index) => index !== 0)
+    .forEach(input => input.addEventListener('keyup', filterUserInput));
+    appNewUser.addEventListener('keypress', (e) => {
+      if (e.keyCode  === 13 || e.keyCode  === 27) e.preventDefault();
+    });
+    appNewUser.addEventListener('keyup', handleNewUser);
   }
   //: GET NEW USER QUESTIONS                                                   
   const handleNewUserQuestion = (index, userName) => {
@@ -495,13 +512,11 @@ const createNewUser = () => {
           const inputValue = currentInput.value;
           if (currentDetailIndex === 0) hydrappUser.name = inputValue;
 
-
           const userName = hydrappUser.name;
           handleNewUserQuestion(currentDetailIndex + 1, userName);
           const nextDetail = newUserDetails[currentDetailIndex + 1];
           toggleDetail(currentDetail, nextDetail, 'next', toggleTime);
           currentDetailIndex++;
-
         }
       }
     }
@@ -514,35 +529,22 @@ const createNewUser = () => {
   const { editableProps } = hydrappUser;
   const { details } = hydrappUser;
 
-  //: create user DOM structure                                                
-  isNewUserDOM ? false : setNewUserDOM();
   //: variables                                                                
   let currentDetailIndex = 0;
   let detailToggleTimeoutId = null;
+  let newUserDetails, newUserPrevButtons, newUserNextButtons;
+  let newUserInputs = appNewUser.querySelectorAll('.newUser__input--js');
 
-  const newUserDetails = document.querySelectorAll('.newUser--js');
-  const newUserPrevButtons = document.querySelectorAll('.newUser__button--js-prev');
-  const newUserNextButtons = document.querySelectorAll('.newUser__button--js-next');
-  const newUserInputs = document.querySelectorAll('.newUser__input--js');
+  //: create user DOM structure                                                
+  isNewUserDOM ? false : setNewUserDOM();
 
   //| FUNCTION CALLS AND EVENTS                                                
   //: handle visibility of log in box and new user creator                     
   appLogIn.classList.remove('app__logIn--visible');
   appNewUser.classList.add('app__newUser--visible');
   handleNewUserQuestion(currentDetailIndex);
-  //: event listeners                                                          
-  [...newUserPrevButtons].forEach(button =>
-  button.addEventListener('click', handleNewUser));
-  [...newUserNextButtons].forEach(button =>
-  button.addEventListener('click', handleNewUser));
-
-  [...newUserInputs]
-  .filter((input, index) => index !== 0)
-  .forEach(input => input.addEventListener('keyup', filterUserInput));
-  appNewUser.addEventListener('keypress', (e) => {
-    if (e.keyCode  === 13 || e.keyCode  === 27) e.preventDefault();
-  });
-  appNewUser.addEventListener('keyup', handleNewUser);
+  //: clear all inputs                                                         
+  [...newUserInputs].forEach(input => input.value = '');
 }
 //| TRIGGER FUNCTIONS LOADING APP                                              
 const loadApp = () => {
