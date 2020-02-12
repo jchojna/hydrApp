@@ -48,6 +48,18 @@ const handleContainerHeight = (container, elements) => {
   container.style.height = `${childrenHeight}px`;
 }
 
+const handleContainerHeightThroughTime = (container, elements, time) => {
+  const intervalId = setInterval(() => {
+    handleContainerHeight(container, elements);
+    console.log('interval');
+  }, 10);
+
+  const timeoutId = setTimeout(() => {
+    clearInterval(intervalId);
+    clearTimeout(timeoutId);
+  }, time);
+}
+
 const getGlasses = (key, value) => {
   const glasses = key === 'waterMax' || key === 'waterMin' || key === 'waterAvg'
   ? `${value} ${value > 1 || value === 0 ? 'glasses' : 'glass'}`
@@ -1553,6 +1565,7 @@ const handleSettingsEdition = (e) => {
   const inputAlert = userProp.querySelector('.userProp__alert--js');
   const settingsCard = settingsContainer.querySelector('.card--js-settings');
   const settingsHeading = settingsCard.querySelector('.card__heading--js-settings');
+  const transitionTime = 1000;
 
   const togglePropDisplay = () => {
     for (const editButton of editSection.children) {
@@ -1575,6 +1588,7 @@ const handleSettingsEdition = (e) => {
   const exitEditMode = () => {
     togglePropDisplay();
     handleInputAlert(inputAlert);
+    handleContainerHeightThroughTime(settingsContainer, settingsContainer.firstElementChild, transitionTime);
     editSection.removeEventListener('click', handleEdition);
     window.removeEventListener('keydown', handleEdition);
     if (prop !== 'name') inputValue.removeEventListener('keyup', filterUserInput);
@@ -1611,6 +1625,8 @@ const handleSettingsEdition = (e) => {
           // handle JSON object
           exportJsonToLS();
           exitEditMode();
+        } else {
+          handleContainerHeightThroughTime(settingsContainer, settingsContainer.firstElementChild, transitionTime);
         }
       break;
     }
