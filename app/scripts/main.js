@@ -662,7 +662,7 @@ const setWaterWaves = () => {
 }
 
 const setWaterMeasureDOM = () => {
-  const { waterMax } = hydrappUser;
+  const waterMax = hydrappUser.waterMax.value;
   for (let i = 0; i <= waterMax; i++) {
     const digit = waterMax - i;
     measure.innerHTML += `
@@ -704,7 +704,7 @@ const handleWaterChange = (e) => {
 
 const handleWaterMeasure = () => {
   const headerHeight = appHeader.clientHeight;
-  const { waterMax } = hydrappUser;
+  const waterMax = hydrappUser.waterMax.value;
   const interval = appLanding.clientHeight / waterMax;
   const measureLevels = document.querySelectorAll('.measurePart--js');
 
@@ -741,7 +741,9 @@ const handleWaterWaves = () => {
 }
 
 const handleWaterLevel = (value) => {
-  const { waterMax, waterMin, waterAvg } = hydrappUser;
+  const waterMax = hydrappUser.waterMax.value;
+  const waterMin = hydrappUser.waterMin.value;
+  const waterAvg = hydrappUser.waterAvg.value;
   const landingHeight = appLanding.clientHeight;
   const waterOffset = landingHeight / waterMax * (waterMax - value);
   const avgOffset = landingHeight / waterMax * (waterAvg);
