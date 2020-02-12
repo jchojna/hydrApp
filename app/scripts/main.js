@@ -351,7 +351,6 @@ const getHtmlOfUserStats = (user) => {
 
 const getHtmlOfUserSettings = () => {
 
-  const { key } = hydrappUser;
   const settings = findUserPropsWithTag('settings');
   
   let html = '';
@@ -383,6 +382,27 @@ const getHtmlOfUserSettings = () => {
       </li>
     `
   });
+  return html;
+}
+
+const getHtmlOfProfileButtons = () => {
+  
+  let html = '';
+
+    html += `
+      <div class="profile">
+        <button
+          class="profile__button profile__button--logOut profile__button--js-logOut"
+        >
+          Log Out
+        </button>
+        <button
+          class="profile__button profile__button--remove profile__button--js-remove"
+        >
+          Remove User
+        </button>
+      </div>
+    `
   return html;
 }
 //#endregion HTML CODE
@@ -1535,13 +1555,17 @@ const setSettingsDOM = () => {
   const { name } = hydrappUser.login;
   const settingsCardHtml = getHtmlOfCard('settings', name);
   const settingsHtml = getHtmlOfUserSettings();
+  const profileButtonsHtml = getHtmlOfProfileButtons();
   // create DOM node of settings card
   settingsContainer.innerHTML = settingsCardHtml;
   const settingsCard = settingsContainer.querySelector('.card--js-settings');
+  const cardContainer = settingsCard.firstElementChild;
   settingsCard.classList.add('card--visible');
   // create DOM nodes of user props
   const cardList = settingsContainer.querySelector('.card__list--js-settings');
   cardList.innerHTML = settingsHtml;
+  // create DOM nodes of user profile buttons
+  cardContainer.insertAdjacentHTML('beforeend', profileButtonsHtml);
   // add event listeners to all edit buttons
   const editButtons = settingsContainer.querySelectorAll('.edition__button--js-edit');
   [...editButtons].forEach(button => {
