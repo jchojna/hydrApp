@@ -225,7 +225,7 @@ const getHtmlOfUserLogIn = (user) => {
 }
 
 const getHtmlOfEmoji = (id) => {
-  let emojiHtml = `<div class="emoji emoji--js-${id}">`;
+  let emojiHtml = `<div class="emoji emoji--${id} emoji--js-${id}">`;
 
   for (let i = 0; i < emojiAmount; i++) {
     emojiHtml += `
@@ -574,7 +574,7 @@ const createNewUser = () => {
   let newUserInputs = appNewUser.querySelectorAll('.newUser__input--js');
 
   // create user DOM structure
-  isNewUserDOM ? false : setNewUserDOM();
+  isFirstAppLoad ? setNewUserDOM() : false;
 
   // handle visibility of log in box and new user creator
   appLogIn.classList.remove('app__logIn--visible');
@@ -589,6 +589,7 @@ const createNewUser = () => {
 
 const setLogInDOM = () => {
   // set DOM structure of list of users in log in box
+  usersList.innerHTML = '';
   [...hydrappUsers].forEach(user => {
     const { key } = user;
     const { name } = user.login;
@@ -598,9 +599,11 @@ const setLogInDOM = () => {
     userButton.userKey = key;
     userButton.addEventListener('click', handleUserLogin);
   });
-  // add button for creating a new user and add event
-  const createUserButton = appLogIn.querySelector('.app__createUserButton--js');
-  createUserButton.addEventListener('click', createNewUser);
+  // add 'create new user' button event only at first page load
+  if (isFirstAppLoad) {
+    const createUserButton = appLogIn.querySelector('.app__createUserButton--js');
+    createUserButton.addEventListener('click', createNewUser);
+  }
   // show log in box
   appLogIn.classList.add('app__logIn--visible');
 }
@@ -1224,7 +1227,7 @@ const handleWeekHeading = () => {
 
 const createRemoveEntryButton = () => {
   const removeEntryButton = document.createElement('button');
-  removeEntryButton.className = 'button entry__remove';
+  removeEntryButton.className = 'entry__remove';
   removeEntryButton.innerHTML = `
     <svg class="entry__svg" viewBox="0 0 512 512">
       <use href="assets/svg/icons.svg#remove-icon"></use>
@@ -1672,16 +1675,18 @@ const handleSettingsEdition = (e) => {
 }
 
 const handleUserLogOut = () => {
-  appUserProfile.classList.add('app__userProfile--visible');
-  appLogIn.classList.add('app__logIn--visible');
   levelAvg.style.bottom = 0;
   levelMin.style.bottom = 0;
   handleWaterLevel(0);
+  setLogInDOM();
+  appUserProfile.classList.add('app__userProfile--visible');
 }
 
 const handleUserRemove = () => {
-
-  
+  const { nameId } = hydrappUser.login;
+  localStorage.removeItem(`hydrapp-${nameId}`);
+  hydrappUsers = fetchUsersFromLS();
+  handleUserLogOut();
 }
 //#endregion
 

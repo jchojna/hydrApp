@@ -20,8 +20,16 @@
   }
 
   @media only screen and (min-width: $media-sm) {
-    height: $cardIcon-size-sm;
-    width: $cardIcon-size-sm;
+
+    & {
+      height: $cardIcon-size-sm;
+      width: $cardIcon-size-sm;
+
+      &--controls {
+        height: $burgerBtn-size-xs;
+        width: $burgerBtn-size-xs;
+      }
+    }
   }
 
   @media only screen and (min-width: $media-md) {
