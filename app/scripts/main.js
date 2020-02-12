@@ -639,10 +639,13 @@ const loadApp = () => {
   appLanding.classList.add('app__landing--visible');
   appUserProfile.classList.remove('app__userProfile--visible');
 
-  controls.addEventListener('click', handleWaterChange);
-  window.addEventListener('resize', handleWindowResize);
-  burgerBtn.addEventListener('click', toggleSidebar);
-  appSidebar.addEventListener('click', toggleSidebarTabs);
+  if (isFirstAppLoad) {
+    controls.addEventListener('click', handleWaterChange);
+    window.addEventListener('resize', handleWindowResize);
+    burgerBtn.addEventListener('click', toggleSidebar);
+    appSidebar.addEventListener('click', toggleSidebarTabs);
+  }
+  isFirstAppLoad = false;
 }
 //#endregion
 
@@ -680,6 +683,7 @@ const setWaterWaves = () => {
 
 const setWaterMeasureDOM = () => {
   const waterMax = hydrappUser.waterMax.value;
+  measure.innerHTML = '';
   for (let i = 0; i <= waterMax; i++) {
     const digit = waterMax - i;
     measure.innerHTML += `
@@ -689,34 +693,6 @@ const setWaterMeasureDOM = () => {
       </li>
     `
   }
-}
-
-const handleWaterChange = (e) => {
-  const self = e.target;
-  const { waterMax } = hydrappUser;
-  let { value, id } = hydrappUser.entries[0];
-  const firstEntryValue = document.querySelector('.entry__value--js');
-
-  // if add button clicked
-  if (self === addBtn) {
-    if (value >= waterMax) return;
-    handleCounter(value, ++value);
-
-  // if remove button clicked
-  } else if (self === removeBtn) {
-    if (value <= 0) return;
-    handleCounter(value, --value);
-  }
-  // value has been changed
-  hydrappUser.entries[0].value = value;
-  exportJsonToLS();
-  handleWaterLevel(value);
-  handleWaterShake();
-  handleCounterMessage(value);
-  handleWaterAverage();
-  firstEntryValue.textContent = value;
-  handleEmoji('controls', value);
-  handleEmoji(id, value);
 }
 
 const handleWaterMeasure = () => {
@@ -749,6 +725,34 @@ const handleWaterMeasure = () => {
     interval <= 40 ? detailLevel(3) :
     detailLevel(2);
   });
+}
+
+const handleWaterChange = (e) => {
+  const self = e.target;
+  const { waterMax } = hydrappUser;
+  let { value, id } = hydrappUser.entries[0];
+  const firstEntryValue = document.querySelector('.entry__value--js');
+
+  // if add button clicked
+  if (self === addBtn) {
+    if (value >= waterMax) return;
+    handleCounter(value, ++value);
+
+  // if remove button clicked
+  } else if (self === removeBtn) {
+    if (value <= 0) return;
+    handleCounter(value, --value);
+  }
+  // value has been changed
+  hydrappUser.entries[0].value = value;
+  exportJsonToLS();
+  handleWaterLevel(value);
+  handleWaterShake();
+  handleCounterMessage(value);
+  handleWaterAverage();
+  firstEntryValue.textContent = value;
+  handleEmoji('controls', value);
+  handleEmoji(id, value);
 }
 
 const handleWaterWaves = () => {
@@ -1551,7 +1555,6 @@ const handleStats = () => {
   
 const setSettingsDOM = () => {
   // get html codes of user card and user settings
-  const { key } = hydrappUser;
   const { name } = hydrappUser.login;
   const settingsCardHtml = getHtmlOfCard('settings', name);
   const settingsHtml = getHtmlOfUserSettings();
@@ -1566,11 +1569,15 @@ const setSettingsDOM = () => {
   cardList.innerHTML = settingsHtml;
   // create DOM nodes of user profile buttons
   cardContainer.insertAdjacentHTML('beforeend', profileButtonsHtml);
-  // add event listeners to all edit buttons
+  const logOutButton = document.querySelector('.profile__button--js-logOut');
+  const removeButton = document.querySelector('.profile__button--js-remove');
+  // add event listeners
   const editButtons = settingsContainer.querySelectorAll('.edition__button--js-edit');
   [...editButtons].forEach(button => {
     button.addEventListener('click', handleSettingsEdition);
   });
+  logOutButton.addEventListener('click', handleUserLogOut);
+  removeButton.addEventListener('click', handleUserRemove);
 }
 
 const handleSettingsEdition = (e) => {
@@ -1663,13 +1670,27 @@ const handleSettingsEdition = (e) => {
 
   //window.removeEventListener('keydown', slideCard); // ! slide between cards
 }
+
+const handleUserLogOut = () => {
+  appUserProfile.classList.add('app__userProfile--visible');
+  appLogIn.classList.add('app__logIn--visible');
+  levelAvg.style.bottom = 0;
+  levelMin.style.bottom = 0;
+  handleWaterLevel(0);
+}
+
+const handleUserRemove = () => {
+
+  
+}
 //#endregion
 
 //#region [ HorizonDark ] VARIABLES
+
 const mediaMd = 768;
 const mediaLg = 1200;
 let isNewUserDOM = false;
-
+let isFirstAppLoad = true;
 // APP
 const appHeader = document.querySelector('.app__header--js');
 const appUserProfile = document.querySelector('.app__userProfile--js');
@@ -1680,7 +1701,6 @@ const appSidebar = document.querySelector('.app__sidebar--js');
 let slideTimeoutId = null
 // LOG IN
 const usersList = document.querySelector('.usersList--js');
-
 // COUNTER
 const counter = document.querySelector('.counter--js');
 const counterPrevTenths = document.querySelector('.digit__svg--js-prevTenths');
