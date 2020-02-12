@@ -110,7 +110,9 @@ const handleInputAlert = (alertBox, prop, option) => {
       alertTextContent = 'This user name is already taken'
 
     } else {
-      const { min, max, label } = hydrappUser[prop];
+      const userProp = hydrappUser[prop];
+      const { min, max } = userProp;
+      const label = prop === 'waterMax' ? userProp.alertLabel : userProp.label;
       alertTextContent = `${label} should be between ${min} and ${max}`;
     }  
     alertText.textContent = alertTextContent;
@@ -233,18 +235,26 @@ const getHtmlOfCard = (card, userName, key) => {
       class="card card--${card} card--js-${card} ${key ? `card--js-${key}` : ''}"
     >
       <div class="card__container">
-        <header class="card__header card__header---js-${card}">
+        <header class="card__header card__header--${card} card__header---js-${card}">
+          ${card !== 'settings'
+          ? `
           <button class="card__button card__button--prev card__button--js-prev">
             <svg class="card__svg" viewBox="0 0 512 512">
               <use href="assets/svg/icons.svg#left-arrow"></use>
             </svg>
           </button>
-          <h4 class="card__heading card__heading--js-${card}">${userName}</h4>
+          ` : ''}
+          <h4 class="card__heading card__heading--js-${card}">
+            ${card === 'settings' ? 'Profile:' : ''} ${userName}
+          </h4>
+          ${card !== 'settings'
+          ? `
           <button class="card__button card__button--next card__button--js-next">
             <svg class="card__svg" viewBox="0 0 512 512">
               <use href="assets/svg/icons.svg#right-arrow"></use>
             </svg>
           </button>
+          ` : ''}
         </header>
         <ul class="card__list card__list--js-${card}"></ul>
       </div>
@@ -326,69 +336,43 @@ const getHtmlOfUserStats = (user) => {
   });
   return html;
 }
-/* 
+
 const getHtmlOfUserSettings = () => {
 
-  const { stats, settings, key } = user;
-  const userStatsProps = Object.keys(stats);
-  const editable = Object.keys(settings);
+  const { key } = hydrappUser;
+  const settings = findUserPropsWithTag('settings');
   
   let html = '';
-  [...userStatsProps].forEach(prop => {
-    const value = user[prop];
-
-    const isEditable = [...editable].filter(elem => elem === prop).length;
-    if (isEditable) var { maxLength } = user.settings[prop];
-    const label = stats[prop];
+  [...settings].forEach(prop => {
+    const userProp = hydrappUser[prop];
+    const value = prop === 'login' ? userProp.name : userProp.value;
+    const { label, maxLength } = hydrappUser[prop];
 
     html += `
-      <li class="userProp">
-        ${ isEditable ? `
-          <label for="${prop}-${key}" class="userProp__label userProp__label--js">
-            ${label}
-          </label>
-        ` : `
-          <span class="userProp__label">
-            ${label}
-          </span>
-        `}
+      <li class="userProp userProps--settings">
+        <label for="${prop}Settings" class="userProp__label userProp__label--js">
+          ${label}
+        </label>
         <div class="userProp__value">
           <span class="userProp__output userProp__output--${prop} userProp__output--js userProp__output--js-${prop}">
             ${getGlasses(prop, value)}
           </span>
-          ${ isEditable ? `
-            <input
-              id="${prop}-${key}"
-              class="userProp__input userProp__input--js"
-              type="text"
-              ${maxLength ? `maxlength="${maxLength}"` : ''}
-            >
-          ` : ''}
+          <input
+            id="${prop}Settings"
+            class="userProp__input userProp__input--js"
+            type="text"
+            maxlength="${ maxLength }"
+          >
         </div>
-        ${ isEditable ? `
-          ${getHtmlOfEdition('stats', prop)}
-          <div class="userProp__alert userProp__alert--js">
-            <p class="userProp__alertText"></p>
-          </div>
-        ` : ''}
+        ${getHtmlOfEdition('stats', prop)}
+        <div class="userProp__alert userProp__alert--js">
+          <p class="userProp__alertText"></p>
+        </div>
       </li>
     `
   });
   return html;
-
-
-
-
-
-
-
-
-
-
-
-
-
-} */
+}
 //#endregion HTML CODE
 
 //#region [ Horizon ] CREATE NEW USER
@@ -606,7 +590,8 @@ const loadApp = () => {
   updateJsonOnDateChange();
   const startValue = hydrappUser.entries[0].value;
   setArchiveDOM();
-  handleUsersStats();
+  handleStats();
+  setSettingsDOM();
   setWaterMeasureDOM();
   setWaterWaves(wavesAmount);
   handleCounter(startValue);
@@ -617,7 +602,7 @@ const loadApp = () => {
   handleCounterDate();
   emoji.innerHTML = getHtmlOfEmoji('controls');
   handleEmoji('controls', startValue);
-  updateWeekHeading();
+  handleWeekHeading();
   handleWaterAverage();
   appLanding.classList.add('app__landing--visible');
   appUserProfile.classList.remove('app__userProfile--visible');
@@ -1134,7 +1119,7 @@ const addArchiveEntry = (index, option) => {
     const lastWeekList = weekLists[weekLists.length - 1];
     lastWeekList.appendChild(addEntryButton);
   }
-  updateWeekHeading();
+  handleWeekHeading();
   // add event listeners to edit button
 
   // ! FIND ANOTHER WAY OF ASSIGNING EVENT LISTENERS TO THOSE BUTTONS
@@ -1147,7 +1132,7 @@ const addArchiveEntry = (index, option) => {
   editButton.addEventListener('click', handleEntryEdit);
 }
 
-const updateWeekHeading = () => {
+const handleWeekHeading = () => {
   weekLists = document.querySelectorAll('.card__list--js-week');
   const weekHeadings = document.querySelectorAll('.card__heading--js-week');
 
@@ -1330,7 +1315,7 @@ const addNewEntry = (entry) => {
   }
   handleContainerHeight(archiveContainer, lastWeek);
   handleArchiveLastEntry();
-  updateWeekHeading();
+  handleWeekHeading();
   handleWaterAverage();
   exportJsonToLS();
 }
@@ -1378,7 +1363,7 @@ const removeLastEntry = (e) => {
       lastWeek = archiveContainer.lastElementChild;
       // add remove button on current last item
       handleArchiveLastEntry();
-      updateWeekHeading();
+      handleWeekHeading();
       handleContainerHeight(archiveContainer, lastWeek);
       handleWaterAverage();
     }
@@ -1493,10 +1478,24 @@ const entriesFade = (action) => {
 
 //#region [ Horizon ] STATS
 
-const handleUsersStats = () => {
+const handleStatsDOM = (user) => {
+  // get html codes of user card and user props
+  const { key } = user;
+  const { name } = user.login;
+  const statsCardHtml = getHtmlOfCard('stats', name, key);
+  const userHtml = getHtmlOfUserStats(user);
+  // create DOM node of user card
+  statsContainer.insertAdjacentHTML('beforeend', statsCardHtml);
+  const userCard = statsContainer.querySelector(`.card--js-${key}`);
+  // create DOM nodes of user props
+  const cardList = userCard.querySelector('.card__list--js-stats');
+  cardList.insertAdjacentHTML('beforeend', userHtml);
+}
+
+const handleStats = () => {
   const usersTotal = hydrappUsers.length;
   // create DOM structure
-  [...hydrappUsers].forEach(user => addStatsDOM(user));
+  [...hydrappUsers].forEach(user => handleStatsDOM(user));
   // make logged in user's card visible
   const loggedUserCard = statsContainer.querySelector(`.card--js-${hydrappUser.key}`);
   loggedUserCard.classList.add('card--visible');
@@ -1514,27 +1513,31 @@ const handleUsersStats = () => {
     });
   }
 }
+//#endregion
 
-const addStatsDOM = (user) => {
-  // get html codes of user card and user props
-  const { key } = user;
-  const { name } = user.login;
-  const statsCardHtml = getHtmlOfCard('stats', name, key);
-  const userHtml = getHtmlOfUserStats(user);
-  // create DOM node of user card
-  statsContainer.insertAdjacentHTML('beforeend', statsCardHtml);
-  const userCard = statsContainer.querySelector(`.card--js-${key}`);
+//#region [ Horizon ] SETTINGS
+  
+const setSettingsDOM = () => {
+  // get html codes of user card and user settings
+  const { key } = hydrappUser;
+  const { name } = hydrappUser.login;
+  const settingsCardHtml = getHtmlOfCard('settings', name);
+  const settingsHtml = getHtmlOfUserSettings();
+  // create DOM node of settings card
+  settingsContainer.innerHTML = settingsCardHtml;
+  const settingsCard = settingsContainer.querySelector('.card--js-settings');
+  settingsCard.classList.add('card--visible');
   // create DOM nodes of user props
-  const cardList = userCard.querySelector('.card__list--js-stats');
-  cardList.insertAdjacentHTML('beforeend', userHtml);
+  const cardList = settingsContainer.querySelector('.card__list--js-settings');
+  cardList.innerHTML = settingsHtml;
   // add event listeners to all edit buttons
-  const editButtons = cardList.querySelectorAll('.edition__button--js-edit');
+  const editButtons = statsContainer.querySelectorAll('.edition__button--js-edit');
   [...editButtons].forEach(button => {
-    button.addEventListener('click', handleUserEdit);
+    button.addEventListener('click', handleSettings);
   });
 }
 
-const handleUserEdit = (e) => {
+const handleSettingsEdition = (e) => {
   const self = e.target;  
   const { id } = self;
   const prop = id.replace('EditButton', '');
@@ -1727,7 +1730,8 @@ class User {
     };
     this.waterMax = {
       value: 20,
-      label: 'Maximum amount of glasses per day',
+      label: 'Maximum per day',
+      alertLabel: 'Maximum amount of glasses per day',
       maxLength: 2,
       min: 10,
       max: 40,
@@ -1820,5 +1824,5 @@ hydrappUsers ? setLogInDOM() : createNewUser();
 //#endregion
 
 
-toggleSidebar(burgerBtn);                                 // ! FOR TESTS ONLY
+toggleSidebar(burgerBtn);
 //window.addEventListener('click', (e) => console.log(e.target));

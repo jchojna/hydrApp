@@ -11,9 +11,11 @@
     flex-grow: 1;
     justify-content: flex-end;
   }
+
   &--stats {
 
   }
+  
   &--settings {
     flex-grow: 1
   }
@@ -78,9 +80,5 @@
     overflow: hidden;
     transition: height $tab-expand;
     width: 100%;
-
-    &--js-stats { // ! delete after
-      height: 550px;
-    }
   }
 }

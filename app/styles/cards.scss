@@ -37,6 +37,10 @@
     min-width: $tab-minWidth;
     padding: 5px;
     width: 100%;
+
+    &--settings {
+      grid-template-columns: 1fr;
+    }
   }
 
   &__heading {
