@@ -1,6 +1,6 @@
 @import 'variables.scss';
 @import 'mixins.scss';
-//| LOGO                                                                    |//
+
 .logo {
   @include flex-center;
   max-width: ($burgerBtn-size-xs - 10px) * $logo-aspect-ratio;

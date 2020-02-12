@@ -22,8 +22,7 @@
     width: 100%;
     position: relative;
   }
-
-  //: WATER LEVELS                                                          ://
+  
   &__level {
     border-bottom: $water-measure-size-xs dashed $cold-light-blue;
     font-weight: 700;
@@ -57,7 +56,7 @@
     }
   }
 }
-//: MEASURE SEGMENT                                                         ://
+
 .measurePart {
   align-items: center;
   display: flex;

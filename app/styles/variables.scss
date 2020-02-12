@@ -1,53 +1,64 @@
-//| COLORS                                                                  |//
-//: BLUE                                                                    ://
+//#region [ Horizon ] COLORS
+// BLUE
 $blue-black: #041927;
 $cold-darkest-blue: #112f44;
 $cold-dark-blue: #274c66;
 $cold-blue: #4a8eb2;
 $cold-light-blue: #d3f3ff;
-//: WARM                                                                    ://
+// WARM
 $warm-red: #aa494c;
 $warm-dark-orange: #ba6353;
 $warm-orange: #d68960;
 $warm-light-orange: #e2b673;
 $warm-yellow: #edcf84;
-//| MEDIA                                                                   |//
+//#endregion
+
+//#region [ Horizon ] MEDIA
 $media-sm: 360px;
 $media-md: 768px;
 $media-lg: 1024px;
-//: LOGO                                                                    ://
-$logo-aspect-ratio: 512 / 135;
-//: USER DETAILS                                                            ://
+//#endregion
+
+//#region [ Horizon ] USER LOG IN AND NEW USER
 $newUser-toggle: 0.5s;
 $newUser-box-maxWidth: 500px;
+//#endregion
 
-//: PAGE HEADER                                                             ://
+//#region [ Horizon ] PAGE HEADER
 $header-padding-xs: 10px;
 $header-padding-md: 20px;
 $header-padding-lg: 30px;
 $controls-gap-xs: 10px;
 $controls-gap-md: 15px;
 $controls-gap-lg: 20px;
-//: BURGER BUTTON                                                           ://
+
+$logo-aspect-ratio: 512 / 135;
+//#endregion
+
+//#region [ Horizon ] BURGER BUTTON
 $burgerBtn-size-xs: 45px;
 $burgerBtn-size-md: 60px;
 $burgerBtn-size-lg: 70px;
 $burgerBtn-padding-xs: 15px;
 $burgerBtn-padding-md: 17px;
 $burgerBtn-padding-lg: 20px;
+//#endregion
+
+//#region [ Horizon ] WATER
 //: WATER                                                                   ://
 $water-measure-size-xs: 3px;
 $water-measure-size-md: 4px;
 $water-measure-size-lg: 5px;
+//#endregion
 
-$button-time-active: 0.3s;
-//| SIDEBAR                                                                 |//
+//#region [ Horizon ] SIDEBAR
 $header-height-xs: $header-padding-xs * 2 + $burgerBtn-size-xs;
 $header-height-md: $header-padding-md * 2 + $burgerBtn-size-md;
 $header-height-lg: $header-padding-lg * 2 + $burgerBtn-size-lg;
 $sidebar-toggle: 0.4s;
+//#endregion
 
-//| TAB                                                                     |//
+//#region [ Horizon ] TABS
 $tab-offset-xs: 20px;
 $tab-offset-md: 30px;
 $tab-offset-lg: 40px;
@@ -55,40 +66,23 @@ $tab-offset-lg: 40px;
 $tab-maxWidth: 360px;
 $tab-minWidth: 280px;
 
-
 $tab-expand: 0.6s;
+//#endregion
 
-//| CARD                                                                    |//
+//#region [ Horizon ] CARDS
 $cardIcon-size-xs: 25px;
 $cardIcon-size-sm: 30px;
 $cardIcon-size-md: 35px;
 $cardIcon-size-lg: 40px;
 
 $cardItem-padding: 5px;
+//#endregion
 
-//| TIME                                                                    |//
+//#region [ Horizon ] TIME
+$button-time-active: 0.3s;
+
 $time-hover-effect: 0.2s;
 $archive-entries-fade-time: 1s;
-
-
-
-$verticalTranslation: 1s cubic-bezier(0.5,-0.5,0.5,1.5);
-
-
-
-
-
-
-
-$size-main-buttons: 30px;
-
-$size-xs-archive-add-new: 100px;
-
-$layout-xs-sm-padding: 1rem;
-
-//| DECORATION                                                              |//
-$br-items: 5px;
-
 
 $time-edit-mode: 0.2s;
 $time-edit-buttons: 0.5s;
@@ -96,6 +90,17 @@ $time-week-slide: 0.5s;
 $time-week-entries: 0.6s;
 
 $time-new-entry: 0.5s;
+//#endregion
+
+$verticalTranslation: 1s cubic-bezier(0.5,-0.5,0.5,1.5);
+
+$size-main-buttons: 30px;
+
+$size-xs-archive-add-new: 100px;
+
+$layout-xs-sm-padding: 1rem;
+
+$br-items: 5px;
 
 $edit-group-cols: 4;
 $edit-group-col-gap: 5px;

@@ -9,13 +9,13 @@
   min-height: 60px;
   padding: $cardItem-padding;
   position: relative;
-  //: fade in out effect                                                    ://
+  // fade in out effect
   //transform: translateX(-100%);
   transition:
     background-color $time-edit-buttons,
     transform $archive-entries-fade-time;
 
-  //: fade in out effect                                                    ://
+  // fade in out effect
   &--visible {
     //transform: translateX(0);
   }

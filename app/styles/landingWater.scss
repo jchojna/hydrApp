@@ -1,7 +1,6 @@
 @import 'variables.scss';
 @import 'mixins.scss';
 
-//| WATER                                                                   |//
 .water {
   background-color: $cold-darkest-blue;
   bottom: 0;
@@ -41,7 +40,7 @@
     width: 100%;
   }
 }
-//| WAVES                                                                   |//
+
 .waves {
   height: 5vw;
   left: 0;

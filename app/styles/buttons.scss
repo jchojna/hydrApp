@@ -1,7 +1,6 @@
 @import 'variables.scss';
 @import 'mixins.scss';
 
-//| BURGER BUTTON                                                           |//
 .button {
   @include button;
   @include flex-center;
