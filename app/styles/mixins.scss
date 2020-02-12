@@ -11,3 +11,16 @@
   outline: none;
   padding: 0;
 }
+
+@mixin primaryButton {
+  background-color: $cold-darkest-blue;
+  border-radius: $br-items;
+  box-shadow: 0 2px 4px rgba($color: $cold-darkest-blue, $alpha: 1);
+  color: $cold-light-blue;
+  font-weight: 700;
+  padding: 0.8em 0.5em;
+  
+  &:hover {
+    background-color: $cold-blue;    
+  }
+}
