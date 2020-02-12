@@ -1,5 +1,5 @@
 'use strict';
-//#region [ Horizon ] SERVICE WORKER
+//#region [ HorizonDark ] SERVICE WORKER
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
     navigator.serviceWorker.register('serviceworker.js').then(function(registration) {
@@ -13,7 +13,7 @@ if ('serviceWorker' in navigator) {
 }
 //#endregion
 
-//#region [ Horizon ] HELPERS FUNCTIONS
+//#region [ HorizonDark ] HELPERS FUNCTIONS
 
 const getFormattedString = (string) => string.replace(/\s/g,'_').toLowerCase();
 
@@ -63,7 +63,7 @@ const findUserPropsWithTag = (tag) => {
 }
 //#endregion
 
-//#region [ Horizon ] DATES
+//#region [ HorizonDark ] DATES
 
 const getOffsetedDate = (obj) => {
   const timeZoneOffset = (new Date()).getTimezoneOffset() * 60000;
@@ -83,7 +83,7 @@ const getDateId = (obj) => {
 }
 //#endregion
 
-//#region [ Horizon ] INPUTS VALIDATION
+//#region [ HorizonDark ] INPUTS VALIDATION
 
 const filterUserInput = (e) => {
   if (e.keyCode  === 13 || e.keyCode  === 27) return false;
@@ -163,7 +163,7 @@ const isInputValid = (input, prop, alertBox) => {
 }
 //#endregion
 
-//#region [ Horizon ] LOCAL STORAGE & JSON
+//#region [ HorizonDark ] LOCAL STORAGE & JSON
 
 const getHydrappUsers = () => {
   const regex = /hydrapp-/;
@@ -200,7 +200,7 @@ const updateJsonOnDateChange = () => {
 }
 //#endregion
 
-//#region [ Horizon ] HTML CODE
+//#region [ HorizonDark ] HTML CODE
 
 const getHtmlOfUserLogIn = (user) => {
   return `
@@ -375,7 +375,7 @@ const getHtmlOfUserSettings = () => {
 }
 //#endregion HTML CODE
 
-//#region [ Horizon ] CREATE NEW USER
+//#region [ HorizonDark ] CREATE NEW USER
 const createNewUser = () => {
   
   const setNewUserDOM = () => {
@@ -553,7 +553,7 @@ const createNewUser = () => {
 }
 //#endregion
 
-//#region [ Horizon ] APP INITIAL
+//#region [ HorizonDark ] APP INITIAL
 
 const setLogInDOM = () => {
   // set DOM structure of list of users in log in box
@@ -614,7 +614,7 @@ const loadApp = () => {
 }
 //#endregion
 
-//#region [ Horizon ] EMOJI 
+//#region [ HorizonDark ] EMOJI 
 const handleEmoji = (id, number) => {
   number > 7 ? number = 7 : false;
   const emojis = document.querySelectorAll(`.emoji__svg--js-${id}`);
@@ -631,7 +631,7 @@ const handleEmoji = (id, number) => {
 }
 //#endregion
 
-//#region [ Horizon ] LANDING - WATER
+//#region [ HorizonDark ] LANDING - WATER
 const setWaterWaves = () => {
   const waveSvg = `
     <svg class="wave__svg" viewBox="0 0 100 10">
@@ -776,7 +776,7 @@ const handleWaterAverage = () => {
 }
 //#endregion
 
-//#region [ Horizon ] LANDING - COUNTER
+//#region [ HorizonDark ] LANDING - COUNTER
 
 const handleCounter = (currentValue, newValue) => {
   const getTenthsValue = (value) => Math.floor(value / 10);
@@ -920,7 +920,7 @@ const handleCounterDate = () => {
 }
 //#endregion
 
-//#region [ Horizon ] SIDEBAR
+//#region [ HorizonDark ] SIDEBAR
 const toggleSidebar = (e) => {
   const self = e.target || e;
   if (self === burgerBtn) {
@@ -1074,7 +1074,7 @@ const slideCard = (e, isLooped) => {
 }
 //#endregion
 
-//#region [ Horizon ] ARCHIVE
+//#region [ HorizonDark ] ARCHIVE
 const setArchiveDOM = () => {
 
   const { entries } = hydrappUser;
@@ -1184,7 +1184,7 @@ const handleWeekHeading = () => {
 }
 //#endregion
 
-//#region [ Horizon ] ARCHIVE ENTRIES
+//#region [ HorizonDark ] ARCHIVE ENTRIES
 
 const createRemoveEntryButton = () => {
   const removeEntryButton = document.createElement('button');
@@ -1476,7 +1476,7 @@ const entriesFade = (action) => {
 }
 //#endregion
 
-//#region [ Horizon ] STATS
+//#region [ HorizonDark ] STATS
 
 const handleStatsDOM = (user) => {
   // get html codes of user card and user props
@@ -1515,7 +1515,7 @@ const handleStats = () => {
 }
 //#endregion
 
-//#region [ Horizon ] SETTINGS
+//#region [ HorizonDark ] SETTINGS
   
 const setSettingsDOM = () => {
   // get html codes of user card and user settings
@@ -1531,18 +1531,18 @@ const setSettingsDOM = () => {
   const cardList = settingsContainer.querySelector('.card__list--js-settings');
   cardList.innerHTML = settingsHtml;
   // add event listeners to all edit buttons
-  const editButtons = statsContainer.querySelectorAll('.edition__button--js-edit');
+  const editButtons = settingsContainer.querySelectorAll('.edition__button--js-edit');
   [...editButtons].forEach(button => {
-    button.addEventListener('click', handleSettings);
+    button.addEventListener('click', handleSettingsEdition);
   });
 }
 
 const handleSettingsEdition = (e) => {
-  const self = e.target;  
+  const self = e.target;
   const { id } = self;
   const prop = id.replace('EditButton', '');
-  const { key } = hydrappUser;
-  const value = hydrappUser[prop];
+  const propObj = hydrappUser[prop];
+  const value = prop === 'login' ? propObj.name : propObj.value;
   const userProp = findFirstParentOfClass(self, 'userProp');
   const propName = userProp.querySelector('.userProp__label--js');
   const outputValue = userProp.querySelector('.userProp__output--js');
@@ -1551,8 +1551,8 @@ const handleSettingsEdition = (e) => {
   const saveButton = userProp.querySelector('.edition__button--js-save');
   const editSection = userProp.querySelector('.edition--js');
   const inputAlert = userProp.querySelector('.userProp__alert--js');
-  const userCard = document.querySelector(`.card--js-${key}`);
-  const cardHeading = userCard.querySelector('.card__heading--js-stats');
+  const settingsCard = settingsContainer.querySelector('.card--js-settings');
+  const settingsHeading = settingsCard.querySelector('.card__heading--js-settings');
 
   const togglePropDisplay = () => {
     for (const editButton of editSection.children) {
@@ -1598,15 +1598,17 @@ const handleSettingsEdition = (e) => {
           : inputValue.value
           outputValue.textContent = getGlasses(prop, newValue);
           // handle updated local storage key
-          if (prop === 'name' && newValue !== value) {
+          if (prop === 'login' && newValue !== value) {
             const oldNameId = getFormattedString(value);
             const newNameId = getFormattedString(newValue);
             localStorage.removeItem(`hydrapp-${oldNameId}`);
-            hydrappUser.nameId = newNameId;
-            cardHeading.textContent = newValue;
+            hydrappUser[prop].name = newValue;
+            hydrappUser[prop].nameId = newNameId;
+            settingsHeading.textContent = newValue;
+          } else if (newValue !== value) {
+            hydrappUser[prop].value = newValue;
           }
           // handle JSON object
-          hydrappUser[prop] = newValue;
           exportJsonToLS();
           exitEditMode();
         }
@@ -1623,7 +1625,7 @@ const handleSettingsEdition = (e) => {
 }
 //#endregion
 
-//#region [ Horizon ] VARIABLES
+//#region [ HorizonDark ] VARIABLES
 const mediaMd = 768;
 const mediaLg = 1200;
 let isNewUserDOM = false;
@@ -1693,7 +1695,7 @@ const newEntrySave = document.querySelector('.newEntry__button--js-save');
 const weekDay = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
 //#endregion
 
-//#region [ Horizon ] CLASSES
+//#region [ HorizonDark ] CLASSES
 
 class User {
   constructor(date) {
@@ -1815,7 +1817,7 @@ class Entry {
 }
 //#endregion
 
-//#region [ Horizon ] FUNCTION CALLS
+//#region [ HorizonDark ] FUNCTION CALLS
 let hydrappUser = {};
 let hydrappUsers = fetchUsersFromLS();
 
