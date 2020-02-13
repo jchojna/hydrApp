@@ -14,7 +14,7 @@
   grid-template-columns: repeat(2, 1fr);
   grid-template-rows: 1fr 1fr auto 2fr;
   height: 100%;
-  margin: 0 $header-height;
+  margin: 0 $header-height + 5px;
   max-width: 300px;
   width: 100%;
   z-index: 1;
