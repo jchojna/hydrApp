@@ -729,7 +729,6 @@ const handleWaterWaves = () => {
   [...waterPositions].forEach(position => {
     const { waves, wavePeriodsTotal } = waterObj[position];
     const height = appWater.clientWidth / wavePeriodsTotal / 10;
-    console.log('height', height);
     waves.style.height = `${height}px`;
     waves.style.top = `${-1 * (height - 1)}px`;
   });
@@ -815,10 +814,12 @@ const handleWaterLevel = (value) => {
   const waterAvg = hydrappUser.waterAvg.value;
   const landingHeight = appLanding.clientHeight;
   const waterOffset = landingHeight / waterMax * (waterMax - value);
+  const waterOffsetPercent = waterOffset / landingHeight;
+  const maxOffsetBetween = 200;
   const waterOffsets = {
     front: waterOffset,
-    center: waterOffset - 40,
-    back: waterOffset - 80
+    center: waterOffset - (maxOffsetBetween / 1.5 * waterOffsetPercent),
+    back: waterOffset - (maxOffsetBetween * waterOffsetPercent)
   }
   // handle water levels
   const waterPositions = Object.keys(waterObj);
