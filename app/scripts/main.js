@@ -241,6 +241,46 @@ const getHtmlOfEmoji = (id) => {
   return emojiHtml;
 }
 
+const getHtmlOfWaterContainer = (isJsControlled) => {
+
+  const getHtmlOfWavePeriodsSVGs = (amount) => {
+    let html = ''
+    for (let i = 1; i <= amount; i++) {
+      html += `
+        <div class="wave__period">
+          <svg class="wave__svg wave__svg--solid" viewBox="0 0 100 10">
+            <use href="assets/svg/wave.svg#wave"></use>
+          </svg>
+          <svg class="wave__svg wave__svg--line" viewBox="0 0 100 10">
+            <use href="assets/svg/wave.svg#waveLine"></use>
+          </svg>
+        </div>
+      `;
+    }
+    return html;
+  }
+  const waterPositions = Object.keys(waterObj);
+  let html = '';
+  [...waterPositions].forEach(position => {
+    const { wavePeriodsTotal } = waterObj[position];
+    html += `
+    <div class="water water--${position} water--js-${position}">
+      <div class="waves waves--${position} waves--js-${position}">
+        <div class="wave wave--before wave--${position} wave--js">
+          ${getHtmlOfWavePeriodsSVGs(wavePeriodsTotal)}
+        </div>
+        <div class="wave wave--${position} wave--js">
+          ${getHtmlOfWavePeriodsSVGs(wavePeriodsTotal)}
+        </div>
+        <div class="wave wave--after wave--${position} wave--js">
+          ${getHtmlOfWavePeriodsSVGs(wavePeriodsTotal)}
+        </div>
+      </div>
+    </div>
+  `});
+  return html;
+}
+
 const getHtmlOfCard = (card, userName, key) => {
   return `
     <section
@@ -403,41 +443,6 @@ const getHtmlOfProfileButtons = () => {
         </button>
       </div>
     `
-  return html;
-}
-
-const getHtmlOfWaterContainer = (isJsControlled) => {
-
-  const getHtmlOfWavePeriodsSVGs = (amount) => {
-    let html = ''
-    for (let i = 1; i <= amount; i++) {
-      html += `
-        <svg class="wave__svg" viewBox="0 0 100 10">
-          <use href="assets/svg/wave.svg#wave"></use>
-        </svg>
-      `;
-    }
-    return html;
-  }
-  const waterPositions = Object.keys(waterObj);
-  let html = '';
-  [...waterPositions].forEach(position => {
-    const { wavePeriodsTotal } = waterObj[position];
-    html += `
-    <div class="water water--${position} water--js-${position}">
-      <div class="waves waves--${position} waves--js-${position}">
-        <div class="wave wave--before wave--js">
-          ${getHtmlOfWavePeriodsSVGs(wavePeriodsTotal)}
-        </div>
-        <div class="wave wave--js">
-          ${getHtmlOfWavePeriodsSVGs(wavePeriodsTotal)}
-        </div>
-        <div class="wave wave--after wave--js">
-          ${getHtmlOfWavePeriodsSVGs(wavePeriodsTotal)}
-        </div>
-      </div>
-    </div>
-  `});
   return html;
 }
 //#endregion HTML CODE
@@ -705,6 +710,7 @@ const handleEmoji = (id, number) => {
 //#endregion
 
 //#region [ HorizonDark ] LANDING - WATER
+
 const setWaterWaves = () => {
   if (isFirstAppLoad) {
     appWater.innerHTML = getHtmlOfWaterContainer(true);
@@ -723,6 +729,7 @@ const handleWaterWaves = () => {
   [...waterPositions].forEach(position => {
     const { waves, wavePeriodsTotal } = waterObj[position];
     const height = appWater.clientWidth / wavePeriodsTotal / 10;
+    console.log('height', height);
     waves.style.height = `${height}px`;
     waves.style.top = `${-1 * (height - 1)}px`;
   });

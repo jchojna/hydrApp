@@ -69,26 +69,14 @@
     z-index: -1;
   }
 
-  &--back {
-    fill: $blue-dark-2;
-  }
-  &--back.water--after {
-    fill: $blue-dark-2;
-  }
+  &--back { fill: $blue-dark-2; }
+  &--back.water--after { fill: $blue-dark-2; }
 
-  &--center {
-    fill: $blue-dark-3;
-  }
-  &--center.water--after {
-    fill: $blue-dark-3;
-  }
+  &--center { fill: $blue-dark-3; }
+  &--center.water--after { fill: $blue-dark-3; }
 
-  &--front {
-    fill: $blue-dark-4;
-  }
-  &--front.water--after {
-    fill: $blue-dark-4;
-  }
+  &--front { fill: $blue-dark-4; }
+  &--front.water--after { fill: $blue-dark-4; }
 }
 
 .wave {
@@ -108,7 +96,38 @@
     left: 100%;
   }
 
+  &--back {
+    animation-duration: 35s;
+    stroke: rgba($color: $blue, $alpha: 0.5);
+  }
+
+  &--center {
+    animation-duration: 25s;
+    stroke: rgba($color: $blue-light-1, $alpha: 0.5);
+  }
+
+  &--front {
+    animation-duration: 15s;
+    stroke: rgba($color: $blue-light-2, $alpha: 0.5);
+  }
+
   &__svg {
+    width: 100%;
+    stroke: none;
+
+    &--line {
+      bottom: 0;
+      left: 0;
+      position: absolute;
+      right: 0;
+      stroke: inherit;
+      stroke-width: 0.5;
+      top: 0;
+    }
+  }
+
+  &__period {
+    position: relative;
     width: 100%;
   }
 }
