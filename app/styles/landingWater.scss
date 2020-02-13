@@ -16,6 +16,14 @@
   width: 100%;
   z-index: -1;
 
+  &--center {
+    opacity: 0.75;
+  }
+
+  &--back {
+    opacity: 0.5;
+  }
+
   &--hidden {
     opacity: 0;
     visibility: hidden;
@@ -48,6 +56,14 @@
   position: absolute;
   right: 0;
   width: 100%;
+
+  &--center {
+    opacity: 0.75;
+  }
+
+  &--back {
+    opacity: 0.5;
+  }
 
   &::after {
     background-color: $cold-dark-blue;
