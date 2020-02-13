@@ -24,7 +24,8 @@
   }
   
   &__level {
-    border-bottom: $water-measure-size-xs dashed $cold-light-blue;
+    border-bottom: $water-measure-size-xs dashed $cold-blue;
+    color: $cold-blue;
     font-weight: 700;
     font-size: 0.7em;
     left: 5px;
@@ -33,8 +34,6 @@
     transition: bottom $verticalTranslation;
   
     &--avg {
-      color: $cold-blue;
-      border-color: $cold-blue;
     }
   
     &--min {

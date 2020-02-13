@@ -405,6 +405,39 @@ const getHtmlOfProfileButtons = () => {
     `
   return html;
 }
+
+const getHtmlOfWaterContainer = (isJsControlled, wavesPeriodsTotals) => {
+
+  const getHtmlOfWavePeriodsSVGs = (amount) => {
+    let html = ''
+    for (let i = 1; i <= amount; i++) {
+      html += `
+        <svg class="wave__svg" viewBox="0 0 100 10">
+          <use href="assets/svg/wave.svg#wave"></use>
+        </svg>
+      `;
+    }
+    return html;
+  }
+  let html = '';
+  [...waterPositions].forEach((position, index) => 
+    html += `
+    <div class="water water--${position} water--js-${position}">
+      <div class="waves waves--${position} waves--js-${position}">
+        <div class="wave wave--before wave--js">
+          ${getHtmlOfWavePeriodsSVGs(wavesPeriodsTotals[index])}
+        </div>
+        <div class="wave wave--js">
+          ${getHtmlOfWavePeriodsSVGs(wavesPeriodsTotals[index])}
+        </div>
+        <div class="wave wave--after wave--js">
+          ${getHtmlOfWavePeriodsSVGs(wavesPeriodsTotals[index])}
+        </div>
+      </div>
+    </div>
+  `);
+  return html;
+}
 //#endregion HTML CODE
 
 //#region [ HorizonDark ] CREATE NEW USER
@@ -628,7 +661,7 @@ const loadApp = () => {
   handleStats();
   setSettingsDOM();
   setWaterMeasureDOM();
-  setWaterWaves(wavesAmount);
+  setWaterWaves();
   handleCounter(startValue);
   handleWaterLevel(startValue);
   handleWaterShake();
@@ -671,17 +704,25 @@ const handleEmoji = (id, number) => {
 
 //#region [ HorizonDark ] LANDING - WATER
 const setWaterWaves = () => {
-  const waveSvg = `
-    <svg class="wave__svg" viewBox="0 0 100 10">
-      <use href="assets/svg/wave.svg#wave"></use>
-    </svg>
-  `;
-  let wavesSvgs = '';
-  for (let i = 1; i <= wavesAmount; i++) {
-    wavesSvgs += waveSvg;
+  const wavesPeriodsTotals = [2,3,4];
+  if (isFirstAppLoad) {
+    console.log('waterLoad');
+    appWater.innerHTML = getHtmlOfWaterContainer(true, wavesPeriodsTotals);
+    waterObj.front.water = document.querySelector('.water--js-front');
+    waterObj.front.waves = document.querySelector('.waves--js-front');
+    waterObj.front.center = document.querySelector('.water--js-center');
+    waterObj.front.waves = document.querySelector('.waves--js-center');
+    waterObj.back.water = document.querySelector('.water--js-back');
+    waterObj.back.waves = document.querySelector('.waves--js-back');
   }
-  [...waves].forEach(wave => wave.innerHTML = wavesSvgs);
-  handleWaterWaves();
+  handleWaterWaves(wavesPeriodsTotals);
+}
+
+const handleWaterWaves = (wavesPeriodsTotals) => {
+  
+  const height = appWater.clientWidth / wavesPeriodsTotals / 10;
+  wavesContainer.style.height = `${height}px`;
+  wavesContainer.style.top = `${-1 * (height - 1)}px`;
 }
 
 const setWaterMeasureDOM = () => {
@@ -756,12 +797,6 @@ const handleWaterChange = (e) => {
   firstEntryValue.textContent = value;
   handleEmoji('controls', value);
   handleEmoji(id, value);
-}
-
-const handleWaterWaves = () => {
-  const size = water.clientWidth / wavesAmount / 10;
-  wavesContainer.style.height = `${size}px`;
-  wavesContainer.style.top = `${-1 * (size - 1)}px`;
 }
 
 const handleWaterLevel = (value) => {
@@ -1702,6 +1737,7 @@ const appUserProfile = document.querySelector('.app__userProfile--js');
 const appLogIn = document.querySelector('.app__logIn--js');
 const appNewUser = document.querySelector('.app__newUser--js');
 const appLanding = document.querySelector('.app__landing--js');
+const appWater = document.querySelector('.app__water--js');
 const appSidebar = document.querySelector('.app__sidebar--js');
 let slideTimeoutId = null
 // LOG IN
@@ -1722,10 +1758,17 @@ const removeBtn = document.querySelector('.button--js-remove');
 const emoji = document.querySelector('.emoji--js-controls');
 const emojiAmount = 8;
 // WATER
-const water = document.querySelector('.water--js');
-const wavesContainer = document.querySelector('.waves--js');
-const waves = document.querySelectorAll('.wave--js');
-let wavesAmount = 2;
+const waterObj = {
+  front: {
+    wavePeriodTotal: 2
+  },
+  center: {
+    wavePeriodTotal: 3
+  },
+  back: {
+    wavePeriodTotal: 4
+  }
+}
 let wavesShakeTimeoutId = null;
 let wavesIntervalId = null;
 let wavesTimeoutId = null;
@@ -1891,5 +1934,5 @@ hydrappUsers ? setLogInDOM() : createNewUser();
 //#endregion
 
 
-toggleSidebar(burgerBtn);
+//toggleSidebar(burgerBtn);
 //window.addEventListener('click', (e) => console.log(e.target));
