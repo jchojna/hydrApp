@@ -7,21 +7,12 @@
   bottom: 0;
   left: 0;
   opacity: 0;
-  padding: $header-padding-xs;
   position: absolute;
   right: 0;
   top: 0;
   transition: opacity $time-new-entry, visibility 0s $time-new-entry;
   visibility: hidden;
   z-index: 1;
-
-  @media only screen and (min-width: $media-md) {
-    padding: $header-padding-md;
-  }
-
-  @media only screen and (min-width: $media-lg) {
-    padding: $header-padding-lg;
-  }
 
   &--visible {
     visibility: visible;
@@ -46,10 +37,35 @@
   }
 
   &__day {
-
+    grid-area: day;
   }
 
   &__date {
-    
+    grid-area: date;
+
+  }
+
+  &__day,
+  &__date,
+  &__message {
+    font-weight: 700;
+    line-height: 1.4;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+  }
+
+  &__day {
+    align-self: end;
+    font-size: 1.8em;
+    grid-area: day;
+    text-transform: capitalize;
+  }
+
+  &__date {
+    align-self: start;
+    color: $blue;
+    font-size: 1.3em;
+    grid-area: date;
   }
 }

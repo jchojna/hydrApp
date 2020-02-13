@@ -904,9 +904,7 @@ const handleCounter = (counterObj, currentValue, newValue) => {
 
   const hrefPrefix = 'assets/svg/digits.svg#digit-';
   const currentTenthsValue = getTenthsValue(currentValue);
-  console.log('currentTenthsValue', currentTenthsValue);
   const currentOnesValue = getOnesValue(currentValue);
-  console.log('currentOnesValue', currentOnesValue);
   const currentTenthsHref = hrefPrefix + currentTenthsValue;
   const currentOnesHref = hrefPrefix + currentOnesValue;
   const {
@@ -1322,21 +1320,21 @@ const createRemoveEntryButton = () => {
 }
 
 const createAddEntryButton = () => {
-  const addEntryButton = document.createElement('li');
-  addEntryButton.className = 'entry entry__add';
-  addEntryButton.innerHTML = `
+  const addEntryItem = document.createElement('li');
+  addEntryItem.className = 'entry entry__add';
+  addEntryItem.innerHTML = `
     <button class="entry__button entry__button--add entry__button--js-add">
       Add previous day..
     </button>
   `;
+  const addEntryButton = addEntryItem.firstElementChild;
   addEntryButton.addEventListener('click', enterNewEntryValue);
   return addEntryButton;
 }
 
 const enterNewEntryValue = (e) => {
   const self = e.keyCode || e.target || e;                // ! e only for tests
-  const addEntryButton = document.querySelector('.entry__button--js-add');
-  // find date for display
+  // find date to display as new proposition
   const displayDate = new Date();
   let displayDateId = getDateId(displayDate);
   const { entries, waterMax } = hydrappUser;
@@ -1354,7 +1352,6 @@ const enterNewEntryValue = (e) => {
   if (self === 107 || self === addEntryButton) {
     let value = 0;
     newEntryMode.classList.add('newEntry--visible');
-    newEntryValue.textContent = value;
     newEntryDay.textContent = day;
     newEntryDate.textContent = date;
   
@@ -1890,7 +1887,7 @@ class Entry {
     .slice(0,10)
     .split('-')
     .reverse()
-    .join(' ');
+    .join('.');
   }
   get _id() {
     return this.id;
@@ -1926,10 +1923,10 @@ let slideTimeoutId = null
 // LOG IN
 const usersList = document.querySelector('.usersList--js');
 // COUNTER
-const landingCounterContainer = document.querySelector('.counter--js');
+const landingCounterContainer = document.querySelector('.counter--js-landing');
 const landingCounter = new Counter(landingCounterContainer);
-const landingDay = landingCounterContainer.querySelector('.counter__day--js');
-const landingDate = landingCounterContainer.querySelector('.counter__date--js');
+const landingDay = landingCounterContainer.querySelector('.counter__day--js-landing');
+const landingDate = landingCounterContainer.querySelector('.counter__date--js-landing');
 const counterMessage = document.querySelector('.counter__message--js');
 // CONTROLS
 const landingControls = document.querySelector('.controls--js-landing');
@@ -1977,10 +1974,10 @@ const removeEntryButton = createRemoveEntryButton();
 let currentWeekIndex = 0;
 // NEW ENTRY
 const newEntryMode = document.querySelector('.newEntry--js');
-const newEntryCounterContainer = document.querySelector('.newEntry--js');
+const newEntryCounterContainer = document.querySelector('.counter--js-newEntry');
 const newEntryCounter = new Counter(newEntryCounterContainer);
-const newEntryDay = newEntryCounterContainer.querySelector('.newEntry__day--js');
-const newEntryDate = newEntryCounterContainer.querySelector('.newEntry__date--js');
+const newEntryDay = newEntryCounterContainer.querySelector('.counter__day--js-newEntry');
+const newEntryDate = newEntryCounterContainer.querySelector('.counter__date--js-newEntry');
 const newEntryDecrease = newEntryMode.querySelector('.button--js-decrease');
 const newEntryIncrease = newEntryMode.querySelector('.button--js-increase');
 const newEntryCancel = newEntryMode.querySelector('.button--js-cancel');

@@ -14,6 +14,10 @@
     width: $burgerBtn-size-xs;
   }
 
+  &--newEntry {
+    grid-column-start: 2;
+  }
+
   &--new {
     grid-area: emoji;
     height: 100%;

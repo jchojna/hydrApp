@@ -8,6 +8,10 @@
   transition: fill $button-time-active, transform $button-time-active;
   width: $burgerBtn-size-xs;
 
+  &--newEntry {
+    fill: $blue;
+  }
+
   &--burger {
     pointer-events: all;
   }
