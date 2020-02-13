@@ -46,7 +46,7 @@
   }
 
   &__label {
-    color: $cold-blue;
+    color: $blue;
     font-weight: 700;
     font-size: 1.4em;
     grid-area: label;
@@ -70,9 +70,9 @@
 
   &__input {
     background-color: transparent;
-    border: 2px solid $cold-blue;
+    border: 2px solid $blue;
     border-radius: 50px;
-    color: $cold-light-blue;
+    color: $blue-light-2;
     font-size: 1.4em;
     grid-area: input;
     min-height: 50px;
@@ -81,7 +81,7 @@
     text-align: center;
 
     &:focus {
-      border-color: $cold-light-blue;
+      border-color: $blue-light-2;
     }
 
     @media only screen and (min-width: $media-md) {
@@ -100,7 +100,7 @@
   }
 
   &__alertText {
-    background-color: $cold-darkest-blue;
+    background-color: $blue-dark-3;
     border-radius: 10px;
     line-height: 1.4;
     margin: 0;
@@ -111,7 +111,7 @@
   &__button {
     @include button;
     @include flex-center;
-    fill: $cold-blue;
+    fill: $blue;
     width: $burgerBtn-size-xs;
 
     &--prev {
@@ -127,7 +127,7 @@
     }
 
     &:hover {
-      fill: $cold-light-blue;
+      fill: $blue-light-2;
     }
 
     @media only screen and (min-width: $media-md) {

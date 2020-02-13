@@ -29,8 +29,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    color: $cold-blue;
-    fill: $cold-blue;
+    color: $blue;
+    fill: $blue;
     width: 100%;
     padding: $header-padding-xs;
 
@@ -41,9 +41,9 @@
     }
 
     &:hover {
-      fill: $cold-light-blue;
-      color: $cold-light-blue;
-      background-color: lighten($cold-darkest-blue, 3%);
+      fill: $blue-light-2;
+      color: $blue-light-2;
+      background-color: $blue-dark-2;
     }
     
     @media only screen and (min-width: $media-md) {
@@ -74,7 +74,7 @@
 
   &__container {
     display: flex;
-    background-color: $cold-dark-blue;
+    background-color: $blue-dark-2;
     position: relative;
     height: 0;
     overflow: hidden;

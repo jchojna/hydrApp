@@ -13,7 +13,7 @@
   &__button {
     @include button;
     @include flex-center;
-    fill: $cold-blue;
+    fill: $blue;
     width: $burgerBtn-size-xs;
   }
 

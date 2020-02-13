@@ -4,13 +4,12 @@
 .button {
   @include button;
   @include flex-center;
-  fill: $cold-blue;
+  fill: $blue;
   transition: fill $button-time-active, transform $button-time-active;
   width: $burgerBtn-size-xs;
 
   &--burger {
     pointer-events: all;
-
   }
 
   &--active {
@@ -18,7 +17,7 @@
   }
 
   &:hover {
-    fill: $cold-light-blue;
+    fill: $blue-light-2;
   }
 
   &__svg {
@@ -28,11 +27,9 @@
 
   @media only screen and (min-width: $media-md) {
     width: $burgerBtn-size-md;
-
   }
   
   @media only screen and (min-width: $media-lg) {
     width: $burgerBtn-size-lg;
-
   }
 }

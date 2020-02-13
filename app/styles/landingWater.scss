@@ -2,7 +2,6 @@
 @import 'mixins.scss';
 
 .water {
-  background-color: $cold-dark-blue;
   bottom: 0;
   left: 0;
   opacity: 1;
@@ -16,12 +15,26 @@
   width: 100%;
   z-index: -1;
 
-  &--center {
-    opacity: 0.75;
+  &--back {
+    background-color: $blue-dark-2;
   }
 
-  &--back {
-    opacity: 0.5;
+  &--center {
+    background-color: $blue-dark-3;
+  }
+
+  &--front {
+    background-color: $blue-dark-4;
+  }
+  &--front.water::after {
+    background-color: $blue-dark-4;
+    bottom: -95px;
+    content: '';
+    height: 100px;
+    left: 0;
+    position: absolute;
+    right: 0;
+    width: 100%;
   }
 
   &--hidden {
@@ -36,17 +49,6 @@
   &--shake {
     animation: shake alternate;
   }
-
-  &::after {
-    content: '';
-    background-color: $cold-dark-blue;
-    position: absolute;
-    bottom: -95px;
-    left: 0;
-    right: 0;
-    height: 100px;
-    width: 100%;
-  }
 }
 
 .waves {
@@ -57,16 +59,7 @@
   right: 0;
   width: 100%;
 
-  &--center {
-    opacity: 0.75;
-  }
-
-  &--back {
-    opacity: 0.5;
-  }
-
   &::after {
-    background-color: $cold-dark-blue;
     content: '';
     height: 100px;
     left: 0;
@@ -75,13 +68,33 @@
     width: 100%;
     z-index: -1;
   }
+
+  &--back {
+    fill: $blue-dark-2;
+  }
+  &--back.water--after {
+    fill: $blue-dark-2;
+  }
+
+  &--center {
+    fill: $blue-dark-3;
+  }
+  &--center.water--after {
+    fill: $blue-dark-3;
+  }
+
+  &--front {
+    fill: $blue-dark-4;
+  }
+  &--front.water--after {
+    fill: $blue-dark-4;
+  }
 }
 
 .wave {
   @include flex-center;
-  fill: $cold-dark-blue;
-  width: 100%;
   animation: waves 15s linear infinite;
+  width: 100%;
 
   &--before,
   &--after {

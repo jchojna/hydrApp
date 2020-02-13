@@ -25,7 +25,7 @@
 
   &__header {
     align-items: center;
-    background-color: $cold-blue;
+    background-color: $blue;
     border-radius: $br-items;
     display: grid;
     grid-gap: 5px;
@@ -52,7 +52,7 @@
   &__button {
     @include button;
     display: flex;
-    fill: $cold-light-blue;
+    fill: $blue-light-2;
     max-width: 30px;
     padding: 0;
     transition: fill $time-hover-effect;
@@ -64,7 +64,7 @@
     }
 
     &:hover {
-      fill: $cold-dark-blue;
+      fill: $blue-dark-2;
     }
   }
 

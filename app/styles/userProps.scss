@@ -13,11 +13,11 @@
   }
 
   &--editMode {
-    background-color: $cold-darkest-blue;
+    background-color: $blue-dark-3;
   }
 
   &:not(:last-child) {
-    border-bottom: 2px solid $cold-darkest-blue;
+    border-bottom: 2px solid $blue-dark-3;
   }
 
   &__label {
@@ -27,7 +27,7 @@
     font-size: 0.9em;
 
     &--editMode {
-      color:$cold-dark-blue;
+      color: $blue-dark-2;
     }
   }
 
@@ -49,7 +49,7 @@
   &__input {
     background-color: transparent;
     border: none;
-    color: $cold-light-blue;
+    color: $blue-light-2;
     height: 100%;
     font-weight: 700;
     left: 0;
@@ -64,14 +64,14 @@
     }
 
     &::placeholder {
-      color: $cold-dark-blue;
+      color: $blue-dark-2;
     }
   }
 
   &__edit {
     @include button;
     @include flex-center;
-    fill: $cold-light-blue;
+    fill: $blue-light-2;
     width: $cardIcon-size-xs;
     height: $cardIcon-size-xs;
 
@@ -93,7 +93,7 @@
   }
 
   &__alertText {
-    background-color: $cold-blue;
+    background-color: $blue;
     border-radius: $br-items;
     line-height: 1.4;
     margin: 0;

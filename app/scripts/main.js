@@ -1778,14 +1778,14 @@ const emoji = document.querySelector('.emoji--js-controls');
 const emojiAmount = 8;
 // WATER
 const waterObj = {
-  front: {
-    wavePeriodsTotal: 2
+  back: {
+    wavePeriodsTotal: 4
   },
   center: {
     wavePeriodsTotal: 3
   },
-  back: {
-    wavePeriodsTotal: 4
+  front: {
+    wavePeriodsTotal: 2
   }
 }
 let wavesShakeTimeoutId = null;

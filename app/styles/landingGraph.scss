@@ -24,8 +24,8 @@
   }
   
   &__level {
-    border-bottom: $water-measure-size-xs dashed $cold-blue;
-    color: $cold-blue;
+    border-bottom: $water-measure-size-xs dashed $blue;
+    color: $blue;
     font-weight: 700;
     font-size: 0.7em;
     left: 5px;
@@ -66,7 +66,7 @@
   }
 
   &__mark {
-    background-color: $cold-blue;
+    background-color: $blue;
     border-radius: 0 $water-measure-size-xs/2 $water-measure-size-xs/2 0;
     height: $water-measure-size-xs;
     width: $water-measure-size-xs * 3;
@@ -79,7 +79,7 @@
   }
 
   &__digit {
-    color: $cold-blue;
+    color: $blue;
     font-size: 1em;
     font-weight: 700;
     line-height: 0;

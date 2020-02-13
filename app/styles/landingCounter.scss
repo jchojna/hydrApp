@@ -38,13 +38,13 @@
 
   &__date {
     align-self: start;
-    color: $cold-blue;
+    color: $blue;
     font-size: 1.3em;
     grid-area: date;
   }
 
   &__message {
-    color: $cold-blue;
+    color: $blue;
     grid-area: message;
   }
 
@@ -116,7 +116,7 @@
 
   &__svg {
     border-radius: 10px;
-    fill: $cold-blue;
+    fill: $blue;
     height: 100%;
     opacity: 1;
     transform: rotateX(0);

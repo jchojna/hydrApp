@@ -35,7 +35,7 @@
     padding: 0;
     width: $cardIcon-size-xs;
     height: $cardIcon-size-xs;
-    fill: $cold-light-blue;
+    fill: $blue-light-2;
     opacity: 0;
     visibility: hidden;
     transition:
@@ -57,7 +57,7 @@
     }
 
     &:hover {
-      fill: $cold-blue;
+      fill: $blue;
     }
   }
 

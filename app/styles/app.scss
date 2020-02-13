@@ -2,7 +2,7 @@
 @import 'mixins.scss';
 
 .app {
-  background-color: $cold-darkest-blue;
+  background-color: $blue-dark-1;
   height: 100%;
   min-height: 100vh;
   width: 100%;
@@ -37,8 +37,8 @@
   
   &__landing {
     align-items: flex-start;
-    display: flex;
     bottom: 0;
+    display: flex;
     justify-content: center;
     left: 0;
     padding-top: $burgerBtn-size-xs + ($header-padding-xs * 2);
@@ -79,9 +79,9 @@
   
   &__sidebar {
     align-items: center;
-    background-color: $cold-darkest-blue;
+    background-color: $blue-dark-3;
     bottom: 0;
-    box-shadow: 0 0 40px 10px $blue-black;
+    box-shadow: 0 0 40px 10px $blue-dark-4;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -128,7 +128,7 @@
   }
 
   &__userProfile {
-    background-color: $cold-darkest-blue;
+    background-color: $blue-dark-3;
     bottom: 0;
     left: 0;
     opacity: 0;
@@ -185,9 +185,9 @@
   
   &__createUserButton {
     @include button;
-    background-color: $cold-blue;
+    background-color: $blue;
     border-radius: $br-items;
-    color: $cold-light-blue;
+    color: $blue-light-2;
     margin: 0.5em 0;
     font-size: 1.4em;
     font-weight: 700;

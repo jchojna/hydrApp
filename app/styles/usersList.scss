@@ -2,7 +2,7 @@
 @import 'mixins.scss';
 
 .usersList {
-  background-color: $cold-dark-blue;
+  background-color: $blue-dark-3;
   list-style-type: none;
   margin: 0;
   overflow: auto;
@@ -11,13 +11,13 @@
 
   &__button {
     @include button;
-    color: $cold-light-blue;
+    color: $blue-light-2;
     font-size: 1.6em;
     padding: 10px;
     width: 100%;
 
     &:hover {
-      background-color: $cold-blue;
+      background-color: $blue;
     }
   }
 
