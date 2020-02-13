@@ -8,7 +8,8 @@
   position: relative;
   width: $cardIcon-size-xs;
 
-  &--controls {
+  &--controls,
+  &--newEntry {
     height: $burgerBtn-size-xs;
     width: $burgerBtn-size-xs;
   }
@@ -25,7 +26,8 @@
       height: $cardIcon-size-sm;
       width: $cardIcon-size-sm;
 
-      &--controls {
+      &--controls,
+      &--newEntry {
         height: $burgerBtn-size-xs;
         width: $burgerBtn-size-xs;
       }
@@ -34,7 +36,8 @@
 
   @media only screen and (min-width: $media-md) {
 
-    &--controls {
+    &--controls,
+    &--newEntry {
       height: $burgerBtn-size-md;
       width: $burgerBtn-size-md;
     }
@@ -42,7 +45,8 @@
   
   @media only screen and (min-width: $media-lg) {
 
-    &--controls {
+    &--controls,
+    &--newEntry {
       height: $burgerBtn-size-lg;
       width: $burgerBtn-size-lg;
     }

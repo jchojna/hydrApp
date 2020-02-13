@@ -111,7 +111,7 @@
       <!-- #endregion -->
       
       <!-- #region [ HorizonLight ] CONTROLS -->
-      <div class="controls controls--js">
+      <div class="controls controls--js-landing">
         <button class="button button--add button--js-add">
           <svg class="button__svg" viewBox="0 0 512 512">
             <use href="assets/svg/icons.svg#plus-circle"></use>
@@ -190,45 +190,54 @@
       
       <!-- #region [ HorizonDark ] ADD NEW ARCHIVE ENTRY -->
 
-      <section class="newEntry newEntry--js">
+      <section class="newEntry newEntry--visible newEntry--js">
         <h3 class="newEntry__heading visuallyhidden">Add new archive entry</h3>
+        <p class="newEntry__day newEntry__day--js"></p>
+        <p class="newEntry__date newEntry__date--js"></p>
         <div class="newEntry__container">
           <!-- TENTHS -->
-          <!-- <div class="digit digit--tenths">
+          <div class="digit digit--tenths">
             <svg class="digit__svg digit__svg--js-prevTenths" viewBox="0 0 80 100">
               <use href=""></use>
             </svg>
             <svg class="digit__svg digit--overlay digit__svg--js-nextTenths" viewBox="0 0 80 100">
               <use href=""></use>
             </svg>
-          </div> -->
+          </div>
           <!-- ONES -->
-         <!--  <div class="digit digit--ones">
+          <div class="digit digit--ones">
             <svg class="digit__svg digit__svg--js-prevOnes" viewBox="0 0 80 100">
               <use href=""></use>
             </svg>
             <svg class="digit__svg digit--overlay digit__svg--js-nextOnes" viewBox="0 0 80 100">
               <use href=""></use>
             </svg>
-          </div> -->
-          
-          <button class="newEntry__button newEntry__button--decrease newEntry__button--js-decrease">
-            <svg class="newEntry__svg newEntry__svg--decrease" viewBox="0 0 512 512">
-              <use href="assets/svg/icons.svg#minus-circle"></use>
-            </svg>
-          </button>
-          <button class="newEntry__button newEntry__button--increase newEntry__button--js-increase">
-            <svg class="newEntry__svg newEntry__svg--increase" viewBox="0 0 512 512">
+          </div>
+        </div>
+        <div class="controls controls--newEntry">
+          <!-- INCREASE BUTTON -->
+          <button class="button button--increase button--js-increase">
+            <svg class="button__svg button__svg--increase" viewBox="0 0 512 512">
               <use href="assets/svg/icons.svg#plus-circle"></use>
             </svg>
           </button>
-          <button class="newEntry__button newEntry__button--cancel newEntry__button--js-cancel">
-            <svg class="newEntry__svg newEntry__svg--cancel" viewBox="0 0 512 512">
+          <!-- DECREASE BUTTON -->
+          <button class="button button--decrease button--js-decrease">
+            <svg class="button__svg button__svg--decrease" viewBox="0 0 512 512">
+              <use href="assets/svg/icons.svg#minus-circle"></use>
+            </svg>
+          </button>
+          <!-- EMOJI -->
+          <div class="emoji emoji--newEntry emoji--js-newEntry"></div>
+          <!-- CANCEL BUTTON -->
+          <button class="button button--cancel button--js-cancel">
+            <svg class="button__svg button__svg--cancel" viewBox="0 0 512 512">
               <use href="assets/svg/icons.svg#back-arrow"></use>
             </svg>
           </button>
-          <button class="newEntry__button newEntry__button--save newEntry__button--js-save">
-            <svg class="newEntry__svg newEntry__svg--save" viewBox="0 0 512 512">
+          <!-- SAVE BUTTON -->
+          <button class="button button--save button--js-save">
+            <svg class="button__svg button__svg--save" viewBox="0 0 512 512">
               <use href="assets/svg/icons.svg#save-icon"></use>
             </svg>
           </button>

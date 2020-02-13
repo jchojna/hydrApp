@@ -94,9 +94,9 @@
 .digit {
   @include flex-center;
   position: relative;
-  width: 100%;
   perspective: 800;
   transform-style: preserve-3d;
+  width: 100%;
 
   &--tenths {
     grid-area: tenths;

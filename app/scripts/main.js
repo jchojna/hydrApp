@@ -675,21 +675,24 @@ const loadApp = () => {
   setSettingsDOM();
   setWaterMeasureDOM();
   setWaterWaves();
-  handleCounter(startValue);
+  handleCounter(landingCounter, startValue);
+  handleCounter(newEntryCounter, 0);
   handleWaterLevel(startValue);
   handleWaterShake();
   handleWaterMeasure();
   handleCounterMessage(startValue);
-  handleCounterDate();
+  handleLandingCounterDate();
   emoji.innerHTML = getHtmlOfEmoji('controls');
+  emojiNewEntry.innerHTML = getHtmlOfEmoji('newEntry');
   handleEmoji('controls', startValue);
+  handleEmoji('newEntry', 0);
   handleWeekHeading();
   handleWaterAverage();
   appLanding.classList.add('app__landing--visible');
   appUserProfile.classList.remove('app__userProfile--visible');
 
   if (isFirstAppLoad) {
-    controls.addEventListener('click', handleWaterChange);
+    landingControls.addEventListener('click', handleWaterChange);
     window.addEventListener('resize', handleWindowResize);
     burgerBtn.addEventListener('click', toggleSidebar);
     appSidebar.addEventListener('click', toggleSidebarTabs);
@@ -795,12 +798,12 @@ const handleWaterChange = (e) => {
   // if add button clicked
   if (self === addBtn) {
     if (value >= waterMax) return;
-    handleCounter(value, ++value);
+    handleCounter(landingCounter, value, ++value);
 
   // if remove button clicked
   } else if (self === removeBtn) {
     if (value <= 0) return;
-    handleCounter(value, --value);
+    handleCounter(landingCounter, value, --value);
   }
   // value has been changed
   hydrappUser.entries[0].value = value;
@@ -895,21 +898,28 @@ const handleWaterAverage = () => {
 
 //#region [ HorizonDark ] LANDING - COUNTER
 
-const handleCounter = (currentValue, newValue) => {
+const handleCounter = (counterObj, currentValue, newValue) => {
   const getTenthsValue = (value) => Math.floor(value / 10);
   const getOnesValue = (value) => value % 10;
 
   const hrefPrefix = 'assets/svg/digits.svg#digit-';
   const currentTenthsValue = getTenthsValue(currentValue);
+  console.log('currentTenthsValue', currentTenthsValue);
   const currentOnesValue = getOnesValue(currentValue);
+  console.log('currentOnesValue', currentOnesValue);
   const currentTenthsHref = hrefPrefix + currentTenthsValue;
   const currentOnesHref = hrefPrefix + currentOnesValue;
+  const {
+    prevTenths,
+    prevOnes,
+    nextTenths,
+    nextOnes } = counterObj;
   // set counter on page load
   if (newValue === undefined) {
-    counterPrevTenths.firstElementChild.setAttribute('href', currentTenthsHref);
-    counterPrevOnes.firstElementChild.setAttribute('href', currentOnesHref);
-    counterNextTenths.firstElementChild.setAttribute('href', currentTenthsHref);
-    counterNextOnes.firstElementChild.setAttribute('href', currentOnesHref);
+    prevTenths.firstElementChild.setAttribute('href', currentTenthsHref);
+    prevOnes.firstElementChild.setAttribute('href', currentOnesHref);
+    nextTenths.firstElementChild.setAttribute('href', currentTenthsHref);
+    nextOnes.firstElementChild.setAttribute('href', currentOnesHref);
     return;
   }
   // return false if value did not change
@@ -924,46 +934,46 @@ const handleCounter = (currentValue, newValue) => {
 
   const removeAnimations = (digits) => {
     if (digits === 'tenths') {
-      counterNextTenths.classList.remove('digit__svg--animateIn');
-      counterNextTenths.classList.remove('digit__svg--animateOut');
-      counterPrevTenths.classList.remove('digit__svg--animateOut');
+      nextTenths.classList.remove('digit__svg--animateIn');
+      nextTenths.classList.remove('digit__svg--animateOut');
+      prevTenths.classList.remove('digit__svg--animateOut');
     } else if (digits === 'ones') {
-      counterNextOnes.classList.remove('digit__svg--animateIn');
-      counterNextOnes.classList.remove('digit__svg--animateOut');
-      counterPrevOnes.classList.remove('digit__svg--animateOut');
+      nextOnes.classList.remove('digit__svg--animateIn');
+      nextOnes.classList.remove('digit__svg--animateOut');
+      prevOnes.classList.remove('digit__svg--animateOut');
     }
   }
   // handle tenths on add button click
   if (newValue > currentValue && newTenthsValue !== currentTenthsValue) {
 
-    counterNextTenths.firstElementChild.setAttribute('href', newTenthsHref);
-    counterPrevTenths.firstElementChild.setAttribute('href', currentTenthsHref);
-    counterNextTenths.classList.add('digit__svg--rotatedNext');
-    counterPrevTenths.classList.remove('digit__svg--rotatedPrev');
+    nextTenths.firstElementChild.setAttribute('href', newTenthsHref);
+    prevTenths.firstElementChild.setAttribute('href', currentTenthsHref);
+    nextTenths.classList.add('digit__svg--rotatedNext');
+    prevTenths.classList.remove('digit__svg--rotatedPrev');
     removeAnimations('tenths');
 
     const timeoutId = setTimeout(() => {
-      counterNextTenths.classList.remove('digit__svg--rotatedNext');
-      counterNextTenths.classList.add('digit__svg--animateIn');
-      counterPrevTenths.classList.add('digit__svg--rotatedPrev');
-      counterPrevTenths.classList.add('digit__svg--animateOut');
+      nextTenths.classList.remove('digit__svg--rotatedNext');
+      nextTenths.classList.add('digit__svg--animateIn');
+      prevTenths.classList.add('digit__svg--rotatedPrev');
+      prevTenths.classList.add('digit__svg--animateOut');
       clearTimeout(timeoutId);
     }, tenthsTimeout);
 
   // handle tenths on remove button click
   } else if (newValue < currentValue && newTenthsValue !== currentTenthsValue) {
 
-    counterNextTenths.firstElementChild.setAttribute('href', currentTenthsHref);
-    counterPrevTenths.firstElementChild.setAttribute('href', newTenthsHref);
-    counterNextTenths.classList.remove('digit__svg--rotatedNext');
-    counterPrevTenths.classList.add('digit__svg--rotatedPrev');
+    nextTenths.firstElementChild.setAttribute('href', currentTenthsHref);
+    prevTenths.firstElementChild.setAttribute('href', newTenthsHref);
+    nextTenths.classList.remove('digit__svg--rotatedNext');
+    prevTenths.classList.add('digit__svg--rotatedPrev');
     removeAnimations('tenths');
 
     const timeoutId = setTimeout(() => {
-      counterNextTenths.classList.add('digit__svg--rotatedNext');
-      counterNextTenths.classList.add('digit__svg--animateOut');
-      counterPrevTenths.classList.remove('digit__svg--rotatedPrev');
-      counterPrevTenths.classList.add('digit__svg--animateOut');
+      nextTenths.classList.add('digit__svg--rotatedNext');
+      nextTenths.classList.add('digit__svg--animateOut');
+      prevTenths.classList.remove('digit__svg--rotatedPrev');
+      prevTenths.classList.add('digit__svg--animateOut');
       clearTimeout(timeoutId);
     }, tenthsTimeout);
   }
@@ -971,34 +981,34 @@ const handleCounter = (currentValue, newValue) => {
   // handle ones on add button click
   if (newValue > currentValue && newOnesValue !== currentOnesValue) {
 
-    counterNextOnes.firstElementChild.setAttribute('href', newOnesHref);
-    counterPrevOnes.firstElementChild.setAttribute('href', currentOnesHref);
-    counterNextOnes.classList.add('digit__svg--rotatedNext');
-    counterPrevOnes.classList.remove('digit__svg--rotatedPrev');
+    nextOnes.firstElementChild.setAttribute('href', newOnesHref);
+    prevOnes.firstElementChild.setAttribute('href', currentOnesHref);
+    nextOnes.classList.add('digit__svg--rotatedNext');
+    prevOnes.classList.remove('digit__svg--rotatedPrev');
     removeAnimations('ones');
 
     const timeoutId = setTimeout(() => {
-      counterNextOnes.classList.remove('digit__svg--rotatedNext');
-      counterNextOnes.classList.add('digit__svg--animateIn');
-      counterPrevOnes.classList.add('digit__svg--rotatedPrev');
-      counterPrevOnes.classList.add('digit__svg--animateOut');
+      nextOnes.classList.remove('digit__svg--rotatedNext');
+      nextOnes.classList.add('digit__svg--animateIn');
+      prevOnes.classList.add('digit__svg--rotatedPrev');
+      prevOnes.classList.add('digit__svg--animateOut');
       clearTimeout(timeoutId);
     }, onesTimeout);
     
   // handle ones on remove button click
   } else if (newValue < currentValue && newOnesValue !== currentOnesValue) {
         
-    counterNextOnes.firstElementChild.setAttribute('href', currentOnesHref);
-    counterPrevOnes.firstElementChild.setAttribute('href', newOnesHref);
-    counterNextOnes.classList.remove('digit__svg--rotatedNext');
-    counterPrevOnes.classList.add('digit__svg--rotatedPrev');
+    nextOnes.firstElementChild.setAttribute('href', currentOnesHref);
+    prevOnes.firstElementChild.setAttribute('href', newOnesHref);
+    nextOnes.classList.remove('digit__svg--rotatedNext');
+    prevOnes.classList.add('digit__svg--rotatedPrev');
     removeAnimations('ones');
     
     const timeoutId = setTimeout(() => {
-      counterNextOnes.classList.add('digit__svg--rotatedNext');
-      counterNextOnes.classList.add('digit__svg--animateOut');
-      counterPrevOnes.classList.remove('digit__svg--rotatedPrev');
-      counterPrevOnes.classList.add('digit__svg--animateOut');
+      nextOnes.classList.add('digit__svg--rotatedNext');
+      nextOnes.classList.add('digit__svg--animateOut');
+      prevOnes.classList.remove('digit__svg--rotatedPrev');
+      prevOnes.classList.add('digit__svg--animateOut');
       clearTimeout(timeoutId);
     }, onesTimeout);
   }
@@ -1030,10 +1040,10 @@ const handleCounterMessage = (value) => {
   : 'Drink or you will dehydrate!';
 }
 
-const handleCounterDate = () => {
+const handleLandingCounterDate = () => {
   const { day, date } = hydrappUser.entries[0];
-  counterDay.innerHTML = day;
-  counterDate.innerHTML = date.slice().split(' ').join('.');
+  landingDay.innerHTML = day;
+  landingDate.innerHTML = date.slice().split(' ').join('.');
 }
 //#endregion
 
@@ -1549,7 +1559,7 @@ const handleEntryEdit = (e) => {
       case 13:
       case saveButton:
         if (itemIndex === 0) {
-          handleCounter(value, dayValue);
+          handleCounter(landingCounter, value, dayValue);
           handleWaterLevel(dayValue);
           handleWaterShake();
           handleCounterMessage(dayValue);
@@ -1766,90 +1776,17 @@ const handleUserRemove = () => {
 }
 //#endregion
 
-//#region [ HorizonDark ] VARIABLES
-
-const mediaMd = 768;
-const mediaLg = 1200;
-let isNewUserDOM = false;
-let isFirstAppLoad = true;
-// APP
-const appHeader = document.querySelector('.app__header--js');
-const appUserProfile = document.querySelector('.app__userProfile--js');
-const appLogIn = document.querySelector('.app__logIn--js');
-const appNewUser = document.querySelector('.app__newUser--js');
-const appLanding = document.querySelector('.app__landing--js');
-const appWater = document.querySelector('.app__water--js');
-const appSidebar = document.querySelector('.app__sidebar--js');
-let slideTimeoutId = null
-// LOG IN
-const usersList = document.querySelector('.usersList--js');
-// COUNTER
-const counter = document.querySelector('.counter--js');
-const counterPrevTenths = document.querySelector('.digit__svg--js-prevTenths');
-const counterNextTenths = document.querySelector('.digit__svg--js-nextTenths');
-const counterPrevOnes = document.querySelector('.digit__svg--js-prevOnes');
-const counterNextOnes = document.querySelector('.digit__svg--js-nextOnes');
-const counterDay = document.querySelector('.counter__day--js');
-const counterDate = document.querySelector('.counter__date--js');
-const counterMessage = document.querySelector('.counter__message--js');
-// CONTROLS
-const controls = document.querySelector('.controls--js');
-const addBtn = document.querySelector('.button--js-add');
-const removeBtn = document.querySelector('.button--js-remove');
-const emoji = document.querySelector('.emoji--js-controls');
-const emojiAmount = 8;
-// WATER
-const waterObj = {
-  front: {
-    wavePeriodsTotal: 2,
-    shakeTimeoutDelay: 0,
-    isShakeTimeoutActive: false
-  },
-  center: {
-    wavePeriodsTotal: 3,
-    shakeTimeoutDelay: 100,
-    isShakeTimeoutActive: false
-  },
-  back: {
-    wavePeriodsTotal: 4,
-    shakeTimeoutDelay: 200,
-    isShakeTimeoutActive: false
-  }
-};
-let wavesIntervalId = null;
-let wavesTimeoutId = null;
-const measure = document.querySelector('.graph__measure--js');
-const levelAvg = document.querySelector('.graph__level--js-avg');
-const levelMin = document.querySelector('.graph__level--js-min');
-// MENU
-const burgerBtn = document.querySelector('.button--js-burger');
-// SIDEBAR
-const archiveTabButton = document.querySelector('.tab__button--js-archive');
-const statsTabButton = document.querySelector('.tab__button--js-stats');
-const settingTabButton = document.querySelector('.tab__button--js-settings');
-const archiveContainer = document.querySelector('.tab__container--js-archive');
-const statsContainer = document.querySelector('.tab__container--js-stats');
-const settingsContainer = document.querySelector('.tab__container--js-settings');
-// ARCHIVE
-let weeks = null;
-let weekLists = null;
-const addEntryButton = createAddEntryButton();
-const removeEntryButton = createRemoveEntryButton();
-let currentWeekIndex = 0;
-// NEW ENTRY
-const newEntryMode = document.querySelector('.newEntry--js');
-const newEntryValue = document.querySelector('.newEntry__value--js');
-const newEntryDay = document.querySelector('.newEntry__day--js');
-const newEntryDate = document.querySelector('.newEntry__date--js');
-const newEntryDecrease = document.querySelector('.newEntry__button--js-decrease');
-const newEntryIncrease = document.querySelector('.newEntry__button--js-increase');
-const newEntryCancel = document.querySelector('.newEntry__button--js-cancel');
-const newEntrySave = document.querySelector('.newEntry__button--js-save');
-
-const weekDay = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
-//#endregion
-
 //#region [ HorizonDark ] CLASSES
+
+class Counter {
+  constructor(container) {
+    this.container = container,
+    this.prevTenths = container.querySelector('.digit__svg--js-prevTenths'),
+    this.nextTenths = container.querySelector('.digit__svg--js-nextTenths'),
+    this.prevOnes = container.querySelector('.digit__svg--js-prevOnes'),
+    this.nextOnes = container.querySelector('.digit__svg--js-nextOnes')
+  }
+}
 
 class User {
   constructor(date) {
@@ -1971,6 +1908,88 @@ class Entry {
 }
 //#endregion
 
+//#region [ HorizonDark ] VARIABLES
+
+const mediaMd = 768;
+const mediaLg = 1200;
+let isNewUserDOM = false;
+let isFirstAppLoad = true;
+// APP
+const appHeader = document.querySelector('.app__header--js');
+const appUserProfile = document.querySelector('.app__userProfile--js');
+const appLogIn = document.querySelector('.app__logIn--js');
+const appNewUser = document.querySelector('.app__newUser--js');
+const appLanding = document.querySelector('.app__landing--js');
+const appWater = document.querySelector('.app__water--js');
+const appSidebar = document.querySelector('.app__sidebar--js');
+let slideTimeoutId = null
+// LOG IN
+const usersList = document.querySelector('.usersList--js');
+// COUNTER
+const landingCounterContainer = document.querySelector('.counter--js');
+const landingCounter = new Counter(landingCounterContainer);
+const landingDay = landingCounterContainer.querySelector('.counter__day--js');
+const landingDate = landingCounterContainer.querySelector('.counter__date--js');
+const counterMessage = document.querySelector('.counter__message--js');
+// CONTROLS
+const landingControls = document.querySelector('.controls--js-landing');
+const addBtn = document.querySelector('.button--js-add');
+const removeBtn = document.querySelector('.button--js-remove');
+const emoji = document.querySelector('.emoji--js-controls');
+const emojiAmount = 8;
+// WATER
+const waterObj = {
+  front: {
+    wavePeriodsTotal: 2,
+    shakeTimeoutDelay: 0,
+    isShakeTimeoutActive: false
+  },
+  center: {
+    wavePeriodsTotal: 3,
+    shakeTimeoutDelay: 100,
+    isShakeTimeoutActive: false
+  },
+  back: {
+    wavePeriodsTotal: 4,
+    shakeTimeoutDelay: 200,
+    isShakeTimeoutActive: false
+  }
+};
+let wavesIntervalId = null;
+let wavesTimeoutId = null;
+const measure = document.querySelector('.graph__measure--js');
+const levelAvg = document.querySelector('.graph__level--js-avg');
+const levelMin = document.querySelector('.graph__level--js-min');
+// MENU
+const burgerBtn = document.querySelector('.button--js-burger');
+// SIDEBAR
+const archiveTabButton = document.querySelector('.tab__button--js-archive');
+const statsTabButton = document.querySelector('.tab__button--js-stats');
+const settingTabButton = document.querySelector('.tab__button--js-settings');
+const archiveContainer = document.querySelector('.tab__container--js-archive');
+const statsContainer = document.querySelector('.tab__container--js-stats');
+const settingsContainer = document.querySelector('.tab__container--js-settings');
+// ARCHIVE
+let weeks = null;
+let weekLists = null;
+const addEntryButton = createAddEntryButton();
+const removeEntryButton = createRemoveEntryButton();
+let currentWeekIndex = 0;
+// NEW ENTRY
+const newEntryMode = document.querySelector('.newEntry--js');
+const newEntryCounterContainer = document.querySelector('.newEntry--js');
+const newEntryCounter = new Counter(newEntryCounterContainer);
+const newEntryDay = newEntryCounterContainer.querySelector('.newEntry__day--js');
+const newEntryDate = newEntryCounterContainer.querySelector('.newEntry__date--js');
+const newEntryDecrease = newEntryMode.querySelector('.button--js-decrease');
+const newEntryIncrease = newEntryMode.querySelector('.button--js-increase');
+const newEntryCancel = newEntryMode.querySelector('.button--js-cancel');
+const newEntrySave = newEntryMode.querySelector('.button--js-save');
+const emojiNewEntry = document.querySelector('.emoji--js-newEntry');
+
+const weekDay = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+//#endregion
+
 //#region [ HorizonDark ] FUNCTION CALLS
 let hydrappUser = {};
 let hydrappUsers = fetchUsersFromLS();
@@ -1990,5 +2009,5 @@ if (hydrappUsers) {
 //#endregion
 
 
-//toggleSidebar(burgerBtn);
+toggleSidebar(burgerBtn);
 //window.addEventListener('click', (e) => console.log(e.target));
