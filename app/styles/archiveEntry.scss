@@ -9,31 +9,20 @@
   min-height: 60px;
   padding: $cardItem-padding;
   position: relative;
-  //: fade in out effect                                                    ://
-  //transform: translateX(-100%);
   transition:
     background-color $time-edit-buttons,
     transform $archive-entries-fade-time;
-
-  //: fade in out effect                                                    ://
-  &--visible {
-    //transform: translateX(0);
-  }
-
-  /* &--fadeIn {
-    animation: fade 0.5s;
-  } */
 
   &--last {
     grid-template-columns: 1fr repeat(4, auto);
   }
 
   &--edit-mode {
-    background-color: $cold-darkest-blue;
+    background-color: $blue-dark-3;
   }
 
   &:not(:last-child) {
-    border-bottom: 2px solid $cold-darkest-blue;
+    border-bottom: 2px solid $blue-dark-3;
   }
   
   &__add {
@@ -41,13 +30,19 @@
   }
 
   &__remove {
+    @include button;
     @include flex-center;
-    width: $cardIcon-size-xs;
+    fill: $blue-light-2;
     height: $cardIcon-size-xs;
     overflow: hidden;
     padding: 0;
-    fill: $cold-light-blue;
     transition: width $time-edit-buttons, fill $time-hover-effect;
+    width: $cardIcon-size-xs;
+
+    @media only screen and (min-width: $media-sm) {
+      height: $cardIcon-size-sm;
+      width: $cardIcon-size-sm;
+    }
 
     &--hidden {
       width: 0;
@@ -63,12 +58,12 @@
     margin: 0;
     padding: 0.6rem 0.8rem;
     font-weight: bold;
-    color: $cold-light-blue;
+    color: $blue-light-2;
     border-radius: 5px;
     transition: background-color $time-hover-effect;
     
     &:hover {
-      background-color: $cold-blue;
+      background-color: $blue;
     }
   }
 
@@ -82,7 +77,7 @@
     transition: color $time-edit-buttons;
   
     &--edit-mode {
-      color: $cold-dark-blue;
+      color: $blue-dark-2;
     }
   }
   
@@ -96,7 +91,7 @@
     }
   
     &--date {
-      color: $cold-blue;
+      color: $blue;
       font-size: 0.85rem;
       margin-top: 3px;
     }
@@ -108,7 +103,7 @@
     font-weight: bold;
     width: $cardIcon-size-xs;
     height: $cardIcon-size-xs;
-    border: 2px solid $cold-light-blue;
+    border: 2px solid $blue-light-2;
     border-radius: 50%;
   
     @media only screen and (min-width: $media-sm) {

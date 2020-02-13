@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="en">
+<!-- #region HEAD -->
 <head>
+  <!-- #region [ Horizon ] HEAD -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="X-UA-Compatible" content="ie=edge" />
@@ -18,27 +20,29 @@
     type="image/png"
     href="assets/icons/icon-192x192.png"
   />
-  <!--: OPEN GRAPH                                                       :-->
+  <!-- #endregion -->
+  <!-- #region [ Horizon ] OPEN GRAPH -->
   <meta property="og:title" content="hydrApp" />
   <meta property="og:description" content="With this simple app you can track how many glasses of water you drink per day" />
   <meta property="og:url" content="https://jchojna.github.io/hydrApp/" />
   <meta property="og:image" content="https://jchojna.github.io/hydrApp/assets/img/cover.png" />
   <meta property="og:image:width" content="600" />
   <meta property="og:image:height" content="600" />
-  <!--: END OF OPEN GRAPH                                                :-->
+  <!-- #endregion -->
   <!-- build:css styles/main.css -->
   <link rel="stylesheet" href="styles/main.css">
   <!-- endbuild -->
 </head>
+<!-- #endregion -->
 <body>
   <!--[if IE]>
     <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
   <![endif]-->
   <main class="app">
-    <!--| APP HEADER                                                       |-->
+    <!-- #region [ HorizonLight ] HEADER -->
     <header class="app__header app__header--js">
       <h1 class="app__heading visuallyhidden">hydrApp</h1>
-      <!--: APP LOGO                                                       :-->
+      <!-- APP LOGO -->
       <a class="logo" href="index.html">
         <svg class="logo__svg" viewBox="0 0 512 135">
           <use href="assets/svg/icons.svg#logo-white"></use>
@@ -47,29 +51,40 @@
           <use href="assets/svg/icons.svg#logo-color"></use>
         </svg>
       </a>
-      <!--: BURGER BUTTON                                                  :-->
+      <!-- BURGER BUTTON -->
       <button class="button button--burger button--js-burger">
         <svg class="button__svg" viewBox="0 0 512 512">
           <use href="assets/svg/icons.svg#burger-circle"></use>
         </svg>
       </button>
     </header>
-    <!--| end of APP HEADER                                                |-->
-    <!--//                                                               //|-->
-    <!--| APP USER DATA                                                    |-->
-    <form class="app__user app__user--js">
-      <h2 class="app__heading visuallyhidden">User data</h2>
-    </form>
-    <!--| end of APP USER DATA                                             |-->
-    <!--//                                                               //|-->
-    <!--| APP CONTAINER                                                    |-->
+    <!-- #endregion -->
+    
+    <!-- #region [ HorizonLight ] USER PROFILE -->
+    <div class="app__userProfile app__userProfile--visible app__userProfile--js">
+      <!-- USER LOG IN -->
+      <section class="app__logIn app__logIn--js">
+        <h2 class="app__heading">Log In</h2>
+        <ul class="usersList usersList--js"></ul>
+        <button class="app__createUserButton app__createUserButton--js">
+          Create New User
+        </button>
+      </section>
+      <!-- NEW USER CREATOR -->
+      <form class="app__newUser app__newUser--js">
+        <h2 class="app__heading visuallyhidden">User data</h2>
+      </form>
+    </div>
+    <!-- #endregion -->
+    
+    <!-- #region APP LANDING SCREEN -->
     <section class="app__landing app__landing--js">
-      <h2 class="app__heading visuallyhidden">Main section</h2>
-      <!--: COUNTER                                                        :-->
+      <h2 class="app__heading visuallyhidden">Landing section</h2>
+      <!-- #region [ HorizonLight ] COUNTER -->
       <div class="counter counter--js">
         <p class="counter__day counter__day--js"></p>
         <p class="counter__date counter__date--js"></p>
-        <!--: TENTHS                                                       :-->
+        <!-- TENTHS -->
         <div class="digit digit--tenths">
           <svg class="digit__svg digit__svg--js-prevTenths" viewBox="0 0 80 100">
             <use href=""></use>
@@ -78,7 +93,7 @@
             <use href=""></use>
           </svg>
         </div>
-        <!--: ONES                                                         :-->
+        <!-- ONES -->
         <div class="digit digit--ones">
           <svg class="digit__svg digit__svg--js-prevOnes" viewBox="0 0 80 100">
             <use href=""></use>
@@ -89,17 +104,13 @@
         </div>
         <p class="counter__message counter__message--js"></p>
       </div>
-      <!----                                                              ---->
-      <!--: WATER                                                          :-->
-      <div class="water water--js">
-        <div class="waves waves--js">
-          <div class="wave wave--before wave--js"></div>
-          <div class="wave wave--js"></div>
-          <div class="wave wave--after wave--js"></div>
-        </div>
-      </div>
-      <!----                                                              ---->
-      <!--: CONTROLS                                                       :-->
+      <!-- #endregion -->
+      
+      <!-- #region [ HorizonLight ] WATER -->
+      <div class="app__water app__water--js"></div>
+      <!-- #endregion -->
+      
+      <!-- #region [ HorizonLight ] CONTROLS -->
       <div class="controls controls--js">
         <button class="button button--add button--js-add">
           <svg class="button__svg" viewBox="0 0 512 512">
@@ -113,27 +124,26 @@
         </button>
         <div class="emoji emoji--controls emoji--js-controls"></div>
       </div>
-      <!----                                                              ---->
-      <!--: MEASURE AND LEVELES                                            :-->
+      <!-- #endregion -->
+      
+      <!-- #region [ HorizonLight ] MEASURE AND LEVELS -->
       <div class="graph">
         <ul class="graph__measure graph__measure--js"></ul>
-        <div class="graph__levels">
-          <div class="graph__level graph__level--avg graph__level--js-avg">
-            AVG
-          </div>
-          <div class="graph__level graph__level--min graph__level--js-min">
-            MIN
-          </div>
+        <div class="graph__level graph__level--min graph__level--js-min">
+          MIN
+        </div>
+        <div class="graph__level graph__level--avg graph__level--js-avg">
+          AVG
         </div>
       </div>
+      <!-- #endregion -->
     </section>
-    <!--| end of APP CONTAINER                                             |-->
-    <!--//                                                               //|-->
-    <!--| APP TABS                                                         |-->
+    <!-- #endregion -->
+
+    <!-- #region SIDEBAR -->
     <section class="app__sidebar app__sidebar--js">
       <h2 class="app__heading visuallyhidden">App sidebar</h2>
-      <!----                                                              ---->
-      <!--: ARCHIVE TAB                                                    :-->
+      <!-- #region [ HorizonLight ] ARCHIVE TAB -->
       <section class="tab tab--archive tab--js-archive">
         <h3 class="tab__header">
           <button class="tab__button tab__button--js-archive">
@@ -145,12 +155,12 @@
         </h3>
         <div class="tab__container tab__container--js tab__container--js-archive"></div>
       </section>
-      <!--: end of ARCHIVE SECTION                                         :-->
-      <!----                                                              ---->
-      <!--: STATS SECTION                                                  :-->
+      <!-- #endregion -->
+      
+      <!-- #region [ HorizonLight ] STATS TAB -->
       <section class="tab tab--stats tab--js-stats">
         <h3 class="tab__header">
-          <!--. HEADER BUTTON                                              :-->
+          <!-- HEADER BUTTON -->
           <button class="tab__button tab__button--js-stats">
             <span class="tab__heading">Stats</span>
             <svg class="tab__svg" viewBox="0 0 512 512">
@@ -158,17 +168,12 @@
             </svg>
           </button>
         </h3>
-        <!--. STATS CONTAINER                                              :-->
-        <div
-          class="tab__container
-          tab__container--js
-          tab__container--js-stats"
-        >
-        </div>
+        <!-- STATS CONTAINER -->
+        <div class="tab__container tab__container--js tab__container--js-stats"></div>
       </section>
-      <!--: end of STATS SECTION                                           :-->
-      <!----                                                              ---->
-      <!--: SETTINGS SECTION                                               :-->
+      <!-- #endregion -->
+      
+      <!-- #region [ HorizonLight ] SETTINGS TAB -->
       <section class="tab tab--settings tab--js-settings">
         <h3 class="tab__header">
           <button class="tab__button tab__button--js-settings">
@@ -178,15 +183,12 @@
             </svg>
           </button>
         </h3>
-        <div class="tab__container tab__container--js">
-          <div class="settings settings-js">
-            <p class="settings__text">Check out again soon...</p>
-          </div>
-        </div>
+        <!-- SETTINGS CONTAINER -->
+        <div class="tab__container tab__container--js tab__container--js-settings"></div>
       </section>
-      <!--:  end of SETTINGS SECTION                                       :-->
-      <!----                                                              ---->
-      <!--: ARCHIVE ADD NEW ENTRY                                          :-->
+      <!-- #endregion -->
+      
+      <!-- #region [ HorizonLight ] ADD NEW ARCHIVE ENTRY -->
       <section class="newEntry newEntry--js">
         <h3 class="newEntry__heading visuallyhidden">Add new archive entry</h3>
         <div class="newEntry__container">
@@ -218,9 +220,9 @@
           </button>
         </div>
       </section>
-      <!--: end of ARCHIVE ADD NEW ENTRY                                   :-->
+      <!-- #endregion -->
     </section>
-    <!--| end of APP TABS                                                  |-->
+    <!-- #endregion -->
   </main>
   <!-- build:js scripts/vendor.js -->
   <!-- endbuild -->

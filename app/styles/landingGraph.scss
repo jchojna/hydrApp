@@ -17,47 +17,42 @@
     margin: 0;
     padding: 0;
   }
-
-  &__levels {
-    width: 100%;
-    position: relative;
-  }
-
-  //: WATER LEVELS                                                          ://
+  
   &__level {
-    border-bottom: $water-measure-size-xs dashed $cold-light-blue;
+    border-radius: 0 50px 50px 0;
+    color: $blue;
     font-weight: 700;
-    font-size: 0.7em;
-    left: 5px;
+    font-size: 0.8em;
+    left: 0;
+    padding: 0.5em 0.8em 0.5em 2.5em;
     position: absolute;
-    right: 0;
     transition: bottom $verticalTranslation;
+    z-index: -1;
   
     &--avg {
-      color: $cold-blue;
-      border-color: $cold-blue;
+      background-color: $blue-light-2;
     }
   
     &--min {
-      
+      background-color: $warm-orange;
+    }
+
+    @media only screen and (min-width: $media-sm) {
+      font-size: 0.9em;
     }
 
     @media only screen and (min-width: $media-md) {
-  
       border-width: $water-measure-size-md;
-      font-size: 0.9em;
-      left: 10px;
+      font-size: 1em;
     }
 
     @media only screen and (min-width: $media-lg) {
-  
       border-width: $water-measure-size-lg;
-      font-size: 1.1em;
-      left: 15px;
+      font-size: 1.2em;
     }
   }
 }
-//: MEASURE SEGMENT                                                         ://
+
 .measurePart {
   align-items: center;
   display: flex;
@@ -68,7 +63,7 @@
   }
 
   &__mark {
-    background-color: $cold-blue;
+    background-color: $blue;
     border-radius: 0 $water-measure-size-xs/2 $water-measure-size-xs/2 0;
     height: $water-measure-size-xs;
     width: $water-measure-size-xs * 3;
@@ -81,7 +76,7 @@
   }
 
   &__digit {
-    color: $cold-blue;
+    color: $blue;
     font-size: 1em;
     font-weight: 700;
     line-height: 0;

@@ -1,7 +1,6 @@
 @import 'variables.scss';
 @import 'mixins.scss';
 
-//| WEEK                                                                    |//
 .card {
   bottom: 0;
   height: 100%;
@@ -9,7 +8,7 @@
   position: absolute;
   right: 0;
   top: 0;
-  transition: visibility 0s $time-week-slide;
+  transition: visibility 0s;
   visibility: hidden;
 
   &__container {
@@ -21,30 +20,12 @@
 
   &--visible {
     animation-fill-mode: forwards;
-    transition: visibility 0s;
     visibility: visible;
-  }
-
-  &--slide-in-from-left {
-    animation: slide-in-from-left $time-week-slide;
-  }
-  &--slide-out-to-left {
-    animation: slide-out-to-left $time-week-slide;
-    animation-fill-mode: forwards;
-    pointer-events: none;
-  }
-  &--slide-out-to-right {
-    animation: slide-out-to-right $time-week-slide;
-    animation-fill-mode: forwards;
-    pointer-events: none;
-  }
-  &--slide-in-from-right {
-    animation: slide-in-from-right $time-week-slide;
   }
 
   &__header {
     align-items: center;
-    background-color: $cold-blue;
+    background-color: $blue;
     border-radius: $br-items;
     display: grid;
     grid-gap: 5px;
@@ -56,6 +37,10 @@
     min-width: $tab-minWidth;
     padding: 5px;
     width: 100%;
+
+    &--settings {
+      grid-template-columns: 1fr;
+    }
   }
 
   &__heading {
@@ -67,7 +52,7 @@
   &__button {
     @include button;
     display: flex;
-    fill: $cold-light-blue;
+    fill: $blue-light-2;
     max-width: 30px;
     padding: 0;
     transition: fill $time-hover-effect;
@@ -79,7 +64,7 @@
     }
 
     &:hover {
-      fill: $cold-dark-blue;
+      fill: $blue-dark-2;
     }
   }
 
@@ -118,6 +103,29 @@
       &__container {
         padding: $tab-offset-lg;
       }
+    }
+  }
+}
+
+.profile {
+  column-gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  margin-top: 10px;
+  max-width: $tab-maxWidth;
+  min-width: $tab-minWidth;
+  width: 100%;
+
+  &__button {
+    @include button;
+    @include primaryButton;
+    
+    &--logOut {
+
+    }
+
+    &--remove {
+      background-color: $warm-red;
     }
   }
 }

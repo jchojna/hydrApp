@@ -1,0 +1,32 @@
+@import 'variables.scss';
+@import 'mixins.scss';
+
+.usersList {
+  background-color: $blue-dark-3;
+  list-style-type: none;
+  margin: 0;
+  overflow: auto;
+  padding: 0;
+  width: 100%;
+
+  &__button {
+    @include button;
+    color: $blue-light-2;
+    font-size: 1.6em;
+    padding: 10px;
+    width: 100%;
+
+    &:hover {
+      background-color: $blue;
+    }
+  }
+
+  @media only screen and (min-width: $media-md) {
+
+    & {
+      border-radius: $br-items;
+      max-height: 400px;
+      max-width: $newUser-box-maxWidth;
+    }
+  }
+}

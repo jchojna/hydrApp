@@ -1,6 +1,6 @@
 @import 'variables.scss';
 @import 'mixins.scss';
-//| COUNTER                                                                 |//
+
 .counter {
   $header-height: $header-padding-xs * 2 + $burgerBtn-size-xs;
   align-items: center;
@@ -14,7 +14,7 @@
   grid-template-columns: repeat(2, 1fr);
   grid-template-rows: 1fr 1fr auto 2fr;
   height: 100%;
-  margin: 0 $header-height;
+  margin: 0 $header-height + 5px;
   max-width: 300px;
   width: 100%;
   z-index: 1;
@@ -38,13 +38,13 @@
 
   &__date {
     align-self: start;
-    color: $cold-blue;
+    color: $blue;
     font-size: 1.3em;
     grid-area: date;
   }
 
   &__message {
-    color: $cold-blue;
+    color: $blue;
     grid-area: message;
   }
 
@@ -116,7 +116,7 @@
 
   &__svg {
     border-radius: 10px;
-    fill: $cold-blue;
+    fill: $blue;
     height: 100%;
     opacity: 1;
     transform: rotateX(0);

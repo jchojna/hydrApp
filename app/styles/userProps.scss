@@ -5,24 +5,29 @@
   align-items: center;
   display: grid;
   column-gap: 10px;
-  grid-template-columns: 50% 1fr auto;
+  grid-template-columns: 40% 1fr auto;
   padding: $cardItem-padding;
+    
+  &--stats {
+    grid-template-columns: 60% 1fr;
+  }
 
   &--editMode {
-    background-color: $cold-darkest-blue;
+    background-color: $blue-dark-3;
   }
 
   &:not(:last-child) {
-    border-bottom: 2px solid $cold-darkest-blue;
+    border-bottom: 2px solid $blue-dark-3;
   }
 
-  &__name {
+  &__label {
     display: flex;
     align-items: center;
     min-height: 40px;
-    
+    font-size: 0.9em;
+
     &--editMode {
-      color:$cold-dark-blue;
+      color: $blue-dark-2;
     }
   }
 
@@ -33,8 +38,8 @@
   }
 
   &__output {
-    &--userWeight::after { content: ' kg'; }
-    &--userHeight::after { content: ' cm'; }
+    &--weight::after { content: ' kg'; }
+    &--height::after { content: ' cm'; }
 
     &--hidden {
       visibility: hidden;
@@ -44,8 +49,7 @@
   &__input {
     background-color: transparent;
     border: none;
-    color: $cold-light-blue;
-    border-bottom: 2px solid $cold-light-blue;
+    color: $blue-light-2;
     height: 100%;
     font-weight: 700;
     left: 0;
@@ -58,12 +62,16 @@
     &--visible {
       visibility: visible;
     }
+
+    &::placeholder {
+      color: $blue-dark-2;
+    }
   }
 
   &__edit {
     @include button;
     @include flex-center;
-    fill: $cold-light-blue;
+    fill: $blue-light-2;
     width: $cardIcon-size-xs;
     height: $cardIcon-size-xs;
 
@@ -81,11 +89,11 @@
     grid-column: 1 / 4;
     height: 0;
     overflow: hidden;
-    transition: height $user-detail-toggle;
+    transition: height $newUser-toggle;
   }
 
   &__alertText {
-    background-color: $cold-blue;
+    background-color: $blue;
     border-radius: $br-items;
     line-height: 1.4;
     margin: 0;
