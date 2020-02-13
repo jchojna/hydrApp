@@ -191,6 +191,10 @@ const fetchUsersFromLS = () => {
   .map(key => JSON.parse(localStorage.getItem(key)));
 }
 
+const getLoggedUserKey = () => {
+  return [...hydrappUsers].filter(user => user.isLoggedIn)[0].key;
+}
+
 const exportJsonToLS = () => {
   const { nameId } = hydrappUser.login;
   localStorage.setItem(`hydrapp-${nameId}`, JSON.stringify(hydrappUser));
@@ -578,6 +582,7 @@ const createNewUser = () => {
             hydrappUser.age.value    = getInputValue(1);
             hydrappUser.weight.value = getInputValue(2);
             hydrappUser.height.value = getInputValue(3);
+            hydrappUser.isLoggedIn = true;
             // set JSON object as local storage item
             exportJsonToLS();
             hydrappUsers = fetchUsersFromLS();
@@ -653,6 +658,7 @@ const handleUserLogin = (e) => {
   const { userKey } = self;
   // assign selected user to JSON object and load app
   hydrappUser = [...hydrappUsers].filter(({ key }) => key === userKey)[0];
+  hydrappUser.isLoggedIn = true;
   loadApp();
   // hide log in box
   appLogIn.classList.remove('app__logIn--visible');
@@ -1198,10 +1204,6 @@ const setArchiveDOM = () => {
   weeks[currentWeekIndex].classList.add('card--visible');
   // add 'remove entry' button on the last entry
   handleArchiveLastEntry();
-  // generate indicators for new entry mode
-  const emojiContainer = document.querySelector('.emoji--js-new');
-  emojiContainer.innerHTML = getHtmlOfEmoji('new');
-  handleEmoji('new', 0);
 }
 
 const addArchiveEntry = (index, option) => {
@@ -1749,6 +1751,8 @@ const handleSettingsEdition = (e) => {
 const handleUserLogOut = () => {
   levelAvg.style.bottom = 0;
   levelMin.style.bottom = 0;
+  hydrappUser.isLoggedIn = false;
+  exportJsonToLS();
   handleWaterLevel(0);
   setLogInDOM();
   appUserProfile.classList.add('app__userProfile--visible');
@@ -1970,9 +1974,19 @@ class Entry {
 //#region [ HorizonDark ] FUNCTION CALLS
 let hydrappUser = {};
 let hydrappUsers = fetchUsersFromLS();
+const loggedUser = [...hydrappUsers].filter(user => user.isLoggedIn);
 
 // fix visibility
-hydrappUsers ? setLogInDOM() : createNewUser();
+if (hydrappUsers) {
+  if (loggedUser.length > 0) {
+    hydrappUser = loggedUser[0];
+    loadApp() 
+  } else {
+    setLogInDOM();
+  }
+} else {
+  createNewUser();
+};
 //#endregion
 
 
