@@ -4,7 +4,7 @@
 .button {
   @include button;
   @include flex-center;
-  fill: $blue;
+  fill: $blue-light-1;
   transition: fill $button-time-active, transform $button-time-active;
   width: $burgerBtn-size-xs;
 
@@ -17,7 +17,7 @@
   }
 
   &:hover {
-    fill: $blue-light-2;
+    fill: $blue-light-3;
   }
 
   &__svg {

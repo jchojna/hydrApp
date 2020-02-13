@@ -808,6 +808,14 @@ const handleWaterChange = (e) => {
   handleEmoji(id, value);
 }
 
+const handleWatersArray = (callback) => {
+  const waterPositions = Object.keys(waterObj);
+  [...waterPositions].forEach(position => {
+    const { water } = waterObj[position];
+    callback(water, position);
+  });
+}
+
 const handleWaterLevel = (value) => {
   const waterMax = hydrappUser.waterMax.value;
   const waterMin = hydrappUser.waterMin.value;
@@ -821,12 +829,10 @@ const handleWaterLevel = (value) => {
     center: waterOffset - (maxOffsetBetween / 1.5 * waterOffsetPercent),
     back: waterOffset - (maxOffsetBetween * waterOffsetPercent)
   }
-  // handle water levels
-  const waterPositions = Object.keys(waterObj);
-  [...waterPositions].forEach(position => {
-    const { water } = waterObj[position];
-    water.style.top = `${waterOffsets[position]}px`;
-  });
+  // use callback function to set waters levels
+  const setTopOffset = (water, position) =>
+  water.style.top = `${waterOffsets[position]}px`;
+  handleWatersArray(setTopOffset);
   // handle average and minimum levels of water measure
   const avgOffset = landingHeight / waterMax * (waterAvg);
   const minOffset = landingHeight / waterMax * (waterMin);
@@ -836,27 +842,31 @@ const handleWaterLevel = (value) => {
 
 const handleWaterShake = () => {
   const shakeDuration = 1500;
+
+  const addShakeAnimation = (water, position) => {
+
+    const { isShakeTimeoutActive, shakeTimeoutDelay } = waterObj[position];
+
+    if (!isShakeTimeoutActive) {
+
+      const delayTimeoutId = setTimeout(() => {
+        waterObj[position].isShakeTimeoutActive = true;
+        water.classList.add('water--shake');
+        water.style.animationDuration = `${shakeDuration}ms`
+        clearTimeout(delayTimeoutId);  
   
-  const waterPositions = Object.keys(waterObj);
-  [...waterPositions].forEach(position => {
-    const { water } = waterObj[position];
-    water.classList.add('water--shake');
-    water.style.animationDuration = `${shakeDuration}ms`
-  });
+        const timeoutId = setTimeout(() => {
+          water.classList.remove('water--shake');
+          clearTimeout(timeoutId);
+          waterObj[position].isShakeTimeoutActive = false;
+        }, shakeDuration);
+        
+      }, shakeTimeoutDelay);
+    }
+  }
 
-
-  wavesShakeTimeoutId !== null ? clearTimeout(wavesShakeTimeoutId) : false;  
-  wavesShakeTimeoutId = setTimeout(() => {
-
-    const waterPositions = Object.keys(waterObj);
-    [...waterPositions].forEach(position => {
-      const { water } = waterObj[position];
-      water.classList.remove('water--shake');
-      clearTimeout(wavesShakeTimeoutId);
-      wavesShakeTimeoutId = null;
-    });
-
-  }, shakeDuration);
+  // use callback function to add water shake
+  handleWatersArray(addShakeAnimation);
 }
 
 const handleWaterAverage = () => {
@@ -1786,17 +1796,22 @@ const emoji = document.querySelector('.emoji--js-controls');
 const emojiAmount = 8;
 // WATER
 const waterObj = {
-  back: {
-    wavePeriodsTotal: 4
+  front: {
+    wavePeriodsTotal: 2,
+    shakeTimeoutDelay: 0,
+    isShakeTimeoutActive: false
   },
   center: {
-    wavePeriodsTotal: 3
+    wavePeriodsTotal: 3,
+    shakeTimeoutDelay: 100,
+    isShakeTimeoutActive: false
   },
-  front: {
-    wavePeriodsTotal: 2
+  back: {
+    wavePeriodsTotal: 4,
+    shakeTimeoutDelay: 200,
+    isShakeTimeoutActive: false
   }
-}
-let wavesShakeTimeoutId = null;
+};
 let wavesIntervalId = null;
 let wavesTimeoutId = null;
 const measure = document.querySelector('.graph__measure--js');

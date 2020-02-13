@@ -14,14 +14,22 @@
     visibility 0s;
   width: 100%;
   z-index: -1;
+  
+  &--shake {
+    animation: shake alternate;
+  }
 
   &--back {
     background-color: $blue-dark-2;
+    z-index: -3;
   }
+  //&--back.water--shake { animation-delay: 200ms; }
 
   &--center {
     background-color: $blue-dark-3;
+    z-index: -2;
   }
+  //&--center.water--shake { animation-delay: 100ms; }
 
   &--front {
     background-color: $blue-dark-4;
@@ -44,10 +52,6 @@
       opacity 0.5s,
       top $verticalTranslation,
       visibility 0s 0.5s;
-  }
-  
-  &--shake {
-    animation: shake alternate;
   }
 }
 
