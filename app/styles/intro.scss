@@ -1,0 +1,35 @@
+@import 'variables.scss';
+@import 'mixins.scss';
+
+.intro {
+  @include flex-center;
+  background-color: $blue;
+  bottom: 0;
+  left: 0;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 2;
+
+  &__logo {
+    @include flex-center;
+    position: relative;
+    width: 60%;
+    z-index: -3;
+  }
+  
+  &__svg {
+    fill: $blue-dark-2;
+    pointer-events: all;
+    width: 100%;
+
+    &--color {
+      fill: $blue-light-3;
+      height: 100%;
+      left: 0;
+      position: absolute;
+      width: 100%;
+      top: 0;
+    }
+  }
+}

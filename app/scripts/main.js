@@ -38,7 +38,8 @@ const findFirstParentOfClass = (node, classname) => {
 const handleWindowResize = () => {
   const waterValue = hydrappUser.entries[0].value;
   handleWaterLevel(waterValue);
-  handleWaterWaves();
+  handleWaterWaves(waterObj);
+  handleWaterWaves(introObj);
   handleWaterMeasure();
 }
 
@@ -245,7 +246,18 @@ const getHtmlOfEmoji = (id) => {
   return emojiHtml;
 }
 
-const getHtmlOfWaterContainer = (isJsControlled) => {
+const getHtmlOfWaterContainer = (obj, isIntro) => {
+
+  const introLogo = `
+    <div class="intro__logo">
+      <svg class="intro__svg" viewBox="0 0 512 135">
+        <use href="assets/svg/icons.svg#logo-white"></use>
+      </svg>
+      <svg class="intro__svg intro__svg--color" viewBox="0 0 512 135">
+        <use href="assets/svg/icons.svg#logo-color"></use>
+      </svg>
+    </div>
+  `;
 
   const getHtmlOfWavePeriodsSVGs = (amount) => {
     let html = ''
@@ -263,25 +275,28 @@ const getHtmlOfWaterContainer = (isJsControlled) => {
     }
     return html;
   }
-  const waterPositions = Object.keys(waterObj);
+  const waterPositions = Object.keys(obj);
   let html = '';
   [...waterPositions].forEach(position => {
-    const { wavePeriodsTotal } = waterObj[position];
+    const intro = isIntro ? 'intro' : '';
+    const { wavePeriodsTotal } = obj[position];
     html += `
-    <div class="water water--${position} water--js-${position}">
-      <div class="waves waves--${position} waves--js-${position}">
-        <div class="wave wave--before wave--${position} wave--js">
-          ${getHtmlOfWavePeriodsSVGs(wavePeriodsTotal)}
-        </div>
-        <div class="wave wave--${position} wave--js">
-          ${getHtmlOfWavePeriodsSVGs(wavePeriodsTotal)}
-        </div>
-        <div class="wave wave--after wave--${position} wave--js">
-          ${getHtmlOfWavePeriodsSVGs(wavePeriodsTotal)}
+      <div class="water water--${intro} water--${position} water--js-${position}">
+        <div class="waves waves--${intro} waves--${position} waves--js-${position}">
+          <div class="wave wave--before wave--${intro} wave--${position} wave--js">
+            ${getHtmlOfWavePeriodsSVGs(wavePeriodsTotal)}
+          </div>
+          <div class="wave wave--${intro} wave--${position} wave--js">
+            ${getHtmlOfWavePeriodsSVGs(wavePeriodsTotal)}
+          </div>
+          <div class="wave wave--after wave--${intro} wave--${position} wave--js">
+            ${getHtmlOfWavePeriodsSVGs(wavePeriodsTotal)}
+          </div>
         </div>
       </div>
-    </div>
-  `});
+    `
+    position === 'center' ? html += introLogo : false;
+  });
   return html;
 }
 
@@ -721,22 +736,30 @@ const handleEmoji = (id, number) => {
 //#region [ HorizonDark ] LANDING - WATER
 
 const setWaterWaves = () => {
-  if (isFirstAppLoad) {
-    appWater.innerHTML = getHtmlOfWaterContainer(true);
-    waterObj.front.water = document.querySelector('.water--js-front');
-    waterObj.front.waves = document.querySelector('.waves--js-front');
-    waterObj.center.water = document.querySelector('.water--js-center');
-    waterObj.center.waves = document.querySelector('.waves--js-center');
-    waterObj.back.water = document.querySelector('.water--js-back');
-    waterObj.back.waves = document.querySelector('.waves--js-back');
+
+  const setNodes = (obj, root) => {
+    obj.front.water  = root.querySelector('.water--js-front');
+    obj.front.waves  = root.querySelector('.waves--js-front');
+    obj.center.water = root.querySelector('.water--js-center');
+    obj.center.waves = root.querySelector('.waves--js-center');
+    obj.back.water   = root.querySelector('.water--js-back');
+    obj.back.waves   = root.querySelector('.waves--js-back');
   }
-  handleWaterWaves();
+
+  if (isFirstAppLoad) {
+    appWater.innerHTML = getHtmlOfWaterContainer(waterObj, false);
+    intro.innerHTML = getHtmlOfWaterContainer(introObj, true);
+    setNodes(waterObj, appWater);
+    setNodes(introObj, intro);
+  }
+  handleWaterWaves(waterObj);
+  handleWaterWaves(introObj);
 }
 
-const handleWaterWaves = () => {
-  const waterPositions = Object.keys(waterObj);
+const handleWaterWaves = (obj) => {
+  const waterPositions = Object.keys(obj);
   [...waterPositions].forEach(position => {
-    const { waves, wavePeriodsTotal } = waterObj[position];
+    const { waves, wavePeriodsTotal } = obj[position];
     const height = appWater.clientWidth / wavePeriodsTotal / 10;
     waves.style.height = `${height}px`;
     waves.style.top = `${-1 * (height - 1)}px`;
@@ -1057,7 +1080,7 @@ const toggleSidebar = (e) => {
     clearTimeout(wavesTimeoutId);
     if (window.innerWidth >= mediaMd) {
       wavesIntervalId = setInterval(() => {
-        handleWaterWaves();
+        handleWaterWaves(waterObj);
       }, 10);
       wavesTimeoutId = setTimeout(() => {
         clearInterval(wavesIntervalId);
@@ -1887,6 +1910,20 @@ class Entry {
 }
 //#endregion
 
+//#region [ HorizonDark ] VARIABLES - INTRO
+const intro = document.querySelector('.intro--js');
+const introObj = {
+  front: {
+    wavePeriodsTotal: 2
+  },
+  center: {
+    wavePeriodsTotal: 3
+  },
+  back: {
+    wavePeriodsTotal: 5
+  }
+};
+//#endregion
 //#region [ HorizonDark ] VARIABLES - APP
 const mediaMd = 768;
 const mediaLg = 1200;

@@ -21,18 +21,28 @@
 
   &--back {
     background-color: $blue-dark-2;
-    z-index: -3;
+    top: 48%;
+    z-index: -4;
   }
-  //&--back.water--shake { animation-delay: 200ms; }
+  &--back.water--intro {
+    background-color: $blue-dark-1;
+  }
 
   &--center {
     background-color: $blue-dark-3;
+    top: 53%;
     z-index: -2;
   }
-  //&--center.water--shake { animation-delay: 100ms; }
+  &--center.water--intro {
+    background-color: $blue-dark-2;
+  }
 
   &--front {
     background-color: $blue-dark-4;
+    top: 63%;
+  }
+  &--front.water--intro {
+    background-color: $blue-dark-3;
   }
   &--front.water::after {
     background-color: $blue-dark-4;
@@ -74,13 +84,19 @@
   }
 
   &--back { fill: $blue-dark-2; }
-  &--back.water--after { fill: $blue-dark-2; }
+  &--back.waves--intro { fill: $blue-dark-1; }
+  &--back.waves--after { fill: $blue-dark-2; }
+  &--back.waves--intro.waves--after { fill: $blue-dark-1; }
 
   &--center { fill: $blue-dark-3; }
-  &--center.water--after { fill: $blue-dark-3; }
+  &--center.waves--intro { fill: $blue-dark-2; }
+  &--center.waves--after { fill: $blue-dark-3; }
+  &--center.waves--intro.waves--after { fill: $blue-dark-2; }
 
   &--front { fill: $blue-dark-4; }
-  &--front.water--after { fill: $blue-dark-4; }
+  &--front.waves--intro { fill: $blue-dark-3; }
+  &--front.waves--after { fill: $blue-dark-4; }
+  &--front.waves--intro.waves--after { fill: $blue-dark-3; }
 }
 
 .wave {
