@@ -112,7 +112,6 @@
       
       <!-- #region [ HorizonLight ] CONTROLS -->
       <div class="controls controls--js-landing">
-        <div class="emoji emoji--controls emoji--js-controls"></div>
         <button class="button button--add button--js-add">
           <svg class="button__svg" viewBox="0 0 512 512">
             <use href="assets/svg/icons.svg#plus-circle"></use>
@@ -123,6 +122,7 @@
             <use href="assets/svg/icons.svg#minus-circle"></use>
           </svg>
         </button>
+        <div class="emoji emoji--controls emoji--js-controls"></div>
       </div>
       <!-- #endregion -->
       
@@ -143,7 +143,7 @@
     <!-- #region SIDEBAR -->
     <section class="app__sidebar app__sidebar--js">
       <h2 class="app__heading visuallyhidden">App sidebar</h2>
-      <!-- #region [ HorizonLight ] ARCHIVE TAB -->
+      <!-- #region [ HorizonDark ] ARCHIVE TAB -->
       <section class="tab tab--archive tab--js-archive">
         <h3 class="tab__header">
           <button class="tab__button tab__button--js-archive">
@@ -157,7 +157,7 @@
       </section>
       <!-- #endregion -->
       
-      <!-- #region [ HorizonLight ] STATS TAB -->
+      <!-- #region [ HorizonDark ] STATS TAB -->
       <section class="tab tab--stats tab--js-stats">
         <h3 class="tab__header">
           <!-- HEADER BUTTON -->
@@ -173,7 +173,7 @@
       </section>
       <!-- #endregion -->
       
-      <!-- #region [ HorizonLight ] SETTINGS TAB -->
+      <!-- #region [ HorizonDark ] SETTINGS TAB -->
       <section class="tab tab--settings tab--js-settings">
         <h3 class="tab__header">
           <button class="tab__button tab__button--js-settings">
@@ -191,8 +191,8 @@
       <!-- #region [ HorizonDark ] ADD NEW ARCHIVE ENTRY -->
 
       <section class="newEntry newEntry--js">
-        <h3 class="newEntry__heading visuallyhidden">Add new archive entry</h3>
         <div class="counter counter--newEntry counter--js-newEntry">
+          <h3 class="counter__heading">Add New Entry</h3>
           <!-- DAY AND DATE -->
           <p class="counter__day counter__day--newEntry counter__day--js-newEntry"></p>
           <p class="counter__date counter__date--newEntry counter__date--js-newEntry"></p>
@@ -215,19 +215,11 @@
             </svg>
           </div>
         </div>
-        <div class="controls controls--newEntry">
-          <!-- EMOJI -->
-          <div class="emoji emoji--newEntry emoji--js-newEntry"></div>
+        <div class="controls controls--newEntry controls--top">
           <!-- CANCEL BUTTON -->
           <button class="button button--newEntry button--cancel button--js-cancel">
             <svg class="button__svg button__svg--cancel" viewBox="0 0 512 512">
               <use href="assets/svg/icons.svg#back-arrow"></use>
-            </svg>
-          </button>
-          <!-- INCREASE BUTTON -->
-          <button class="button button--newEntry button--increase button--js-increase">
-            <svg class="button__svg button__svg--increase" viewBox="0 0 512 512">
-              <use href="assets/svg/icons.svg#plus-circle"></use>
             </svg>
           </button>
           <!-- SAVE BUTTON -->
@@ -236,12 +228,22 @@
               <use href="assets/svg/icons.svg#save-icon"></use>
             </svg>
           </button>
+        </div>
+        <div class="controls controls--newEntry">
+          <!-- INCREASE BUTTON -->
+          <button class="button button--newEntry button--increase button--js-increase">
+            <svg class="button__svg button__svg--increase" viewBox="0 0 512 512">
+              <use href="assets/svg/icons.svg#plus-circle"></use>
+            </svg>
+          </button>
           <!-- DECREASE BUTTON -->
           <button class="button button--newEntry button--decrease button--js-decrease">
             <svg class="button__svg button__svg--decrease" viewBox="0 0 512 512">
               <use href="assets/svg/icons.svg#minus-circle"></use>
             </svg>
           </button>
+          <!-- EMOJI -->
+          <div class="emoji emoji--newEntry emoji--js-newEntry"></div>
         </div>
       </section>
       <!-- #endregion -->

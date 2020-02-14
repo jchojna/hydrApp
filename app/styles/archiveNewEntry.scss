@@ -3,16 +3,26 @@
 
 .newEntry {
   @include flex-center;
+  flex-direction: column;
   background-color: $blue-dark-3;
   bottom: 0;
   left: 0;
   opacity: 0;
+  padding: $header-height-xs $header-height-xs $header-padding-xs $header-padding-xs;
   position: absolute;
   right: 0;
   top: 0;
   transition: opacity $time-new-entry, visibility 0s $time-new-entry;
   visibility: hidden;
   z-index: 1;
+
+  @media only screen and (min-width: $media-md) {
+    padding: $header-height-md $header-height-md $header-padding-md $header-padding-md;
+  }
+
+  @media only screen and (min-width: $media-lg) {
+    padding: $header-height-lg $header-height-lg $header-padding-lg $header-padding-lg;
+  }
 
   &--visible {
     visibility: visible;

@@ -4,14 +4,17 @@
 .controls {
   bottom: 0;
   display: grid;
+  gap: $controls-gap-xs;
+  grid-template-columns: 1fr;
   padding: $header-padding-xs;
   position: fixed;
   right: 0;
-  gap: $controls-gap-xs;
   z-index: 1;
 
-  &--newEntry {
-    grid-template-columns: repeat(2, auto);
+  &--top {
+    bottom: initial;
+    top: 0;
+
   }
 
   @media only screen and (min-width: $media-md) {

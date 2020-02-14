@@ -28,17 +28,6 @@ $newUser-toggle: 0.5s;
 $newUser-box-maxWidth: 500px;
 //#endregion
 
-//#region [ Horizon ] PAGE HEADER
-$header-padding-xs: 10px;
-$header-padding-md: 20px;
-$header-padding-lg: 30px;
-$controls-gap-xs: 10px;
-$controls-gap-md: 15px;
-$controls-gap-lg: 20px;
-
-$logo-aspect-ratio: 512 / 135;
-//#endregion
-
 //#region [ Horizon ] BURGER BUTTON
 $burgerBtn-size-xs: 45px;
 $burgerBtn-size-md: 60px;
@@ -46,6 +35,20 @@ $burgerBtn-size-lg: 70px;
 $burgerBtn-padding-xs: 15px;
 $burgerBtn-padding-md: 17px;
 $burgerBtn-padding-lg: 20px;
+//#endregion
+
+//#region [ Horizon ] PAGE HEADER
+$header-padding-xs: 10px;
+$header-padding-md: 20px;
+$header-padding-lg: 30px;
+$controls-gap-xs: 10px;
+$controls-gap-md: 15px;
+$controls-gap-lg: 20px;
+$header-height-xs: $header-padding-xs * 2 + $burgerBtn-size-xs;
+$header-height-md: $header-padding-md * 2 + $burgerBtn-size-md;
+$header-height-xs: $header-padding-lg * 2 + $burgerBtn-size-lg;
+
+$logo-aspect-ratio: 512 / 135;
 //#endregion
 
 //#region [ Horizon ] WATER

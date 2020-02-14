@@ -1352,11 +1352,13 @@ const enterNewEntryValue = (e) => {
   if (self === 107 || self === addEntryButton) {
     let value = 0;
     newEntryMode.classList.add('newEntry--visible');
+    burgerBtn.classList.add('button--hidden');
     newEntryDay.textContent = day;
     newEntryDate.textContent = date;
   
     const modeOff = () => {
       newEntryMode.classList.remove('newEntry--visible');
+      burgerBtn.classList.remove('button--hidden');
       newEntryMode.removeEventListener('click', handleValue);
       window.removeEventListener('keydown', handleValue);
       window.addEventListener('keydown', enterNewEntryValue);

@@ -8,8 +8,12 @@
   transition: fill $button-time-active, transform $button-time-active;
   width: $burgerBtn-size-xs;
 
+  &--hidden {
+    visibility: hidden;
+  }
+
   &--newEntry {
-    fill: $blue;
+    fill: $blue-dark-1;
   }
 
   &--burger {
@@ -21,7 +25,7 @@
   }
 
   &:hover {
-    fill: $blue-light-3;
+    fill: $blue-light-2;
   }
 
   &__svg {
