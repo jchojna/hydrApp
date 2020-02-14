@@ -9,9 +9,7 @@
   min-height: 60px;
   padding: $cardItem-padding;
   position: relative;
-  transition:
-    background-color $time-edit-buttons,
-    transform $archive-entries-fade-time;
+  transition: background-color $time-edit-buttons;
 
   &--last {
     grid-template-columns: 1fr repeat(4, auto);

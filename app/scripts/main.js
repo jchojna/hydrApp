@@ -896,7 +896,7 @@ const handleWaterAverage = () => {
 }
 //#endregion
 
-//#region [ HorizonDark ] LANDING - COUNTER
+//#region [ HorizonDark ] COUNTER
 
 const handleCounter = (counterObj, currentValue, newValue) => {
   const getTenthsValue = (value) => Math.floor(value / 10);
@@ -1112,7 +1112,7 @@ const toggleSidebarTabs = (e) => {
   }
 }
 const slideCard = (e, isLooped) => {
-  const self = e.target;
+  const self = e.target || e;
   const action = /prev/.test(self.className) ? 'prev' : 'next';
   const currentCard = findFirstParentOfClass(self, 'card');
   const container = currentCard.parentNode;
@@ -1169,8 +1169,8 @@ const slideCard = (e, isLooped) => {
   if (slideTimeoutId === null) {
     // find next index
     const newIndex = action === 'prev'
-    ? loopedRange(maxIndex, currentIndex, 'decrease')
-    : loopedRange(maxIndex, currentIndex, 'increase');
+    ? limitedRange(maxIndex, currentIndex, 'decrease')
+    : limitedRange(maxIndex, currentIndex, 'increase');
     // set new elements
     var newCard = cards[newIndex];
     const newCardList = cardLists[newIndex];
@@ -1215,9 +1215,11 @@ const setArchiveDOM = () => {
 }
 
 const addArchiveEntry = (index, option) => {
+
   const {value, id, day} = hydrappUser.entries[index];
   const weekHtml = getHtmlOfCard('week');
   const entryHtml = getHtmlOfArchiveEntry(index);
+
   // function adding new week DOM node
   const addWeek = () => {
     archiveContainer.insertAdjacentHTML('beforeend', weekHtml);
@@ -1228,12 +1230,15 @@ const addArchiveEntry = (index, option) => {
     weekNextButton.addEventListener('click', slideCard);
     weekLists = archiveContainer.querySelectorAll('.card__list--js-week');
   }
+
   // add new week
   if (((day === 'sunday' || index === 0)) && option !== 'add') addWeek();
+
   // add next day entry
   const lastWeekList = weekLists[weekLists.length - 1];
   lastWeekList.insertAdjacentHTML('beforeend', entryHtml);
   handleEmoji(id, value);
+  
   // add 'add entry button at the end
   if (index === hydrappUser.entries.length - 1) {
     if (day === 'monday') addWeek();
@@ -1337,7 +1342,8 @@ const enterNewEntryValue = (e) => {
   // find date to display as new proposition
   const displayDate = new Date();
   let displayDateId = getDateId(displayDate);
-  const { entries, waterMax } = hydrappUser;
+  const { entries } = hydrappUser;
+  const waterMax = hydrappUser.waterMax.value;
   const oldestEntryIndex = entries.length - 1;
   const oldestEntryDateId = entries[oldestEntryIndex].id;
   while (displayDateId !== oldestEntryDateId) {
@@ -1350,7 +1356,6 @@ const enterNewEntryValue = (e) => {
   const { day, date } = newEntry;
 
   if (self === 107 || self === addEntryButton) {
-    let value = 0;
     newEntryMode.classList.add('newEntry--visible');
     burgerBtn.classList.add('button--hidden');
     newEntryDay.textContent = day;
@@ -1367,25 +1372,24 @@ const enterNewEntryValue = (e) => {
   
     const handleValue = (e) => {
       const self = e.keyCode || e.target;
+      const { value } = newEntry;
       switch (self) {
   
         case 37:
         case newEntryDecrease:
           if (value > 0) {
-            value--;
             newEntry.value--;
-            newEntryValue.textContent = value;
-            handleEmoji('new', value);
+            handleCounter(newEntryCounter, value, newEntry.value);
+            handleEmoji('newEntry', newEntry.value);
           }
           break;
 
         case 39:
         case newEntryIncrease:
           if (value < waterMax) {
-            value++;
             newEntry.value++;
-            newEntryValue.textContent = value;
-            handleEmoji('new', value);
+            handleCounter(newEntryCounter, value, newEntry.value);
+            handleEmoji('newEntry', newEntry.value);
           }
           break;
   
@@ -1415,25 +1419,20 @@ const addNewEntry = (entry) => {
   let lastEntry = document.querySelectorAll('.entry--js')[lastEntryIndex];
   lastEntry.classList.remove('entry--last');
   
-  // handle local storage and array of objects
+  // create new entry node
   const { entries } = hydrappUser;
   hydrappUser.entries = [...entries, entry];
-
-  // create new entry node
   lastEntryIndex = hydrappUser.entries.length - 1;
   addArchiveEntry(lastEntryIndex, 'add');
-  lastEntry = document.querySelectorAll('.entry--js')[lastEntryIndex];
-  lastEntry.classList.add('entry--visible');
-  lastEntry.classList.add('entry--fadeIn');
+
   // jump to the last week
-  weeks = archiveContainer.children;
-  const currentWeek = weeks[currentWeekIndex];
+  const weeks = archiveContainer.children
   const lastWeekIndex = weeks.length - 1;
   const lastWeek = weeks[lastWeekIndex];
+  const cardNextButton = archiveContainer.querySelectorAll('.card__button--js-next')[currentWeekIndex];
   if (currentWeekIndex !== lastWeekIndex) {
     currentWeekIndex = lastWeekIndex;
-    currentWeek.className = 'week card--js-week week--slide-out-to-left';
-    lastWeek.className = 'week card--js-week week--visible week--slide-in-from-right';
+    slideCard(cardNextButton);
   }
   handleContainerHeight(archiveContainer, lastWeek);
   handleArchiveLastEntry();
@@ -1531,7 +1530,7 @@ const handleEntryEdit = (e) => {
   const handleEdition = (e) => {
     const self = e.keyCode || e.target;
     let dayValue = parseInt(entryValue.textContent);
-    const { waterMax } = hydrappUser;
+    const waterMax = hydrappUser.waterMax.value;
     const { id, value } = hydrappUser.entries[itemIndex];
 
     switch (self) {
@@ -1576,25 +1575,6 @@ const handleEntryEdit = (e) => {
   window.addEventListener('click', handleEdition);
   window.addEventListener('keydown', handleEdition);
   window.removeEventListener('keydown', slideCard);
-}
-
-const entriesFade = (action) => {
-  const currentWeekList = weekLists[currentWeekIndex];
-  let delay = 0;
-
-  if (action === 'in') {
-    [...currentWeekList.children].forEach(elem => {
-      elem.classList.add('entry--visible');
-      elem.style.transitionDelay = `${delay}s`;
-      delay += 0.1;
-    });
-
-  } else if (action === 'out') {
-    [...currentWeekList.children].reverse().forEach(elem => {
-      elem.classList.remove('entry--visible');
-      elem.style.transitionDelay = 0;
-    });
-  }
 }
 //#endregion
 
@@ -1895,7 +1875,7 @@ class Entry {
     return this.id;
   }
   set _id(date) {
-    this.id = date.replace(/\s/g,'');
+    this.id = date.replace(/[.]/g,'');
   }
   get _day() {
     return this.day;
@@ -1907,13 +1887,21 @@ class Entry {
 }
 //#endregion
 
-//#region [ HorizonDark ] VARIABLES
-
+//#region [ HorizonDark ] VARIABLES - APP
 const mediaMd = 768;
 const mediaLg = 1200;
 let isNewUserDOM = false;
 let isFirstAppLoad = true;
-// APP
+let slideTimeoutId = null;
+const weekDay = [
+  'sunday',
+  'monday',
+  'tuesday',
+  'wednesday',
+  'thursday',
+  'friday',
+  'saturday'
+];
 const appHeader = document.querySelector('.app__header--js');
 const appUserProfile = document.querySelector('.app__userProfile--js');
 const appLogIn = document.querySelector('.app__logIn--js');
@@ -1921,22 +1909,25 @@ const appNewUser = document.querySelector('.app__newUser--js');
 const appLanding = document.querySelector('.app__landing--js');
 const appWater = document.querySelector('.app__water--js');
 const appSidebar = document.querySelector('.app__sidebar--js');
-let slideTimeoutId = null
-// LOG IN
+
 const usersList = document.querySelector('.usersList--js');
-// COUNTER
+//#endregion
+//#region [ HorizonDark ] VARIABLES - COUNTER
 const landingCounterContainer = document.querySelector('.counter--js-landing');
 const landingCounter = new Counter(landingCounterContainer);
 const landingDay = landingCounterContainer.querySelector('.counter__day--js-landing');
 const landingDate = landingCounterContainer.querySelector('.counter__date--js-landing');
 const counterMessage = document.querySelector('.counter__message--js');
-// CONTROLS
+//#endregion
+//#region [ HorizonDark ] VARIABLES - CONTROLS
 const landingControls = document.querySelector('.controls--js-landing');
 const addBtn = document.querySelector('.button--js-add');
 const removeBtn = document.querySelector('.button--js-remove');
 const emoji = document.querySelector('.emoji--js-controls');
 const emojiAmount = 8;
-// WATER
+const burgerBtn = document.querySelector('.button--js-burger');
+//#endregion
+//#region [ HorizonDark ] VARIABLES - WATER
 const waterObj = {
   front: {
     wavePeriodsTotal: 2,
@@ -1959,22 +1950,23 @@ let wavesTimeoutId = null;
 const measure = document.querySelector('.graph__measure--js');
 const levelAvg = document.querySelector('.graph__level--js-avg');
 const levelMin = document.querySelector('.graph__level--js-min');
-// MENU
-const burgerBtn = document.querySelector('.button--js-burger');
-// SIDEBAR
+//#endregion
+//#region [ HorizonDark ] VARIABLES - SIDEBAR
 const archiveTabButton = document.querySelector('.tab__button--js-archive');
 const statsTabButton = document.querySelector('.tab__button--js-stats');
 const settingTabButton = document.querySelector('.tab__button--js-settings');
 const archiveContainer = document.querySelector('.tab__container--js-archive');
 const statsContainer = document.querySelector('.tab__container--js-stats');
 const settingsContainer = document.querySelector('.tab__container--js-settings');
-// ARCHIVE
+//#endregion
+//#region [ HorizonDark ] VARIABLES - ARCHIVE
 let weeks = null;
 let weekLists = null;
+let currentWeekIndex = 0;
 const addEntryButton = createAddEntryButton();
 const removeEntryButton = createRemoveEntryButton();
-let currentWeekIndex = 0;
-// NEW ENTRY
+//#endregion
+//#region [ HorizonDark ] VARIABLES - NEW ENTRY
 const newEntryMode = document.querySelector('.newEntry--js');
 const newEntryCounterContainer = document.querySelector('.counter--js-newEntry');
 const newEntryCounter = new Counter(newEntryCounterContainer);
@@ -1985,8 +1977,6 @@ const newEntryIncrease = newEntryMode.querySelector('.button--js-increase');
 const newEntryCancel = newEntryMode.querySelector('.button--js-cancel');
 const newEntrySave = newEntryMode.querySelector('.button--js-save');
 const emojiNewEntry = document.querySelector('.emoji--js-newEntry');
-
-const weekDay = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
 //#endregion
 
 //#region [ HorizonDark ] FUNCTION CALLS
@@ -2007,6 +1997,27 @@ if (hydrappUsers) {
 };
 //#endregion
 
+//#region [ HorizonDark ] UNUSED
+
+const entriesFade = (action) => {
+  const currentWeekList = weekLists[currentWeekIndex];
+  let delay = 0;
+
+  if (action === 'in') {
+    [...currentWeekList.children].forEach(elem => {
+      elem.classList.add('entry--visible');
+      elem.style.transitionDelay = `${delay}s`;
+      delay += 0.1;
+    });
+
+  } else if (action === 'out') {
+    [...currentWeekList.children].reverse().forEach(elem => {
+      elem.classList.remove('entry--visible');
+      elem.style.transitionDelay = 0;
+    });
+  }
+}
+//#endregion
 
 toggleSidebar(burgerBtn);
 //window.addEventListener('click', (e) => console.log(e.target));
