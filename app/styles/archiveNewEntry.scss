@@ -6,28 +6,30 @@
   flex-direction: column;
   background-color: $blue-dark-3;
   bottom: 0;
-  left: 0;
-  opacity: 0;
   padding: $header-height-xs $header-height-xs $header-padding-xs $header-padding-xs;
-  position: absolute;
+  position: fixed;
   right: 0;
   top: 0;
-  transition: opacity $time-new-entry, visibility 0s $time-new-entry;
+  transform: translateX(100%);
+  transition: transform $time-newEntry, visibility 0s $time-newEntry;
   visibility: hidden;
-  z-index: 1;
+  width: $sidebar-width-xs;
+  z-index: 2;
 
   @media only screen and (min-width: $media-md) {
     padding: $header-height-md $header-height-md $header-padding-md $header-padding-md;
+    width: $sidebar-width-md;
   }
 
   @media only screen and (min-width: $media-lg) {
     padding: $header-height-lg $header-height-lg $header-padding-lg $header-padding-lg;
+    width: $sidebar-width-lg;
   }
 
   &--visible {
+    transform: translateX(0);
+    transition: transform $time-newEntry, visibility 0s;
     visibility: visible;
-    opacity: 1;
-    transition: opacity $time-new-entry, visibility 0s;
   }
 
   &__container {

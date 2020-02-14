@@ -93,7 +93,7 @@
     transform: translateY(-100%);
     transition: transform $sidebar-toggle, visibility 0s $sidebar-toggle;
     visibility: hidden;
-    width: 100%;
+    width: $sidebar-width-xs;
     z-index: 1;
 
     &--visible {
@@ -108,7 +108,7 @@
         padding-top: $header-height-md;
         transform: translateX(100%);
         transition: transform $sidebar-toggle, visibility 0s $sidebar-toggle;
-        width: 50%;
+        width: $sidebar-width-md;
 
         &--visible {
           visibility: visible;
@@ -122,7 +122,7 @@
 
       & {
         padding-top: $header-height-lg;
-        width: 40%;
+        width: $sidebar-width-lg;
       }
     }
   }

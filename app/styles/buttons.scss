@@ -9,6 +9,7 @@
   width: $burgerBtn-size-xs;
 
   &--hidden {
+    transition: visibility 0s $time-newEntry;
     visibility: hidden;
   }
 
