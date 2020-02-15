@@ -185,13 +185,10 @@
   
   &__createUserButton {
     @include button;
-    background-color: $blue;
-    border-radius: $br-items;
-    color: $blue-light-2;
-    margin: 0.5em 0;
-    font-size: 1.4em;
-    font-weight: 700;
-    padding: 0.5em;
+    @include primaryButton;
+    background-color: $blue-dark-1;
+    font-size: 1.3em;
+    margin-top: 10px;
 
     @media only screen and (min-width: $media-md) {
 

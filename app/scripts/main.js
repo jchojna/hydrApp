@@ -523,7 +523,7 @@ const createNewUser = () => {
     appNewUser.addEventListener('keypress', (e) => {
       if (e.keyCode  === 13 || e.keyCode  === 27) e.preventDefault();
     });
-    appNewUser.addEventListener('keyup', handleNewUser);
+    //appNewUser.addEventListener('keyup', handleNewUser);
   }
   
   const handleNewUserQuestion = (index, userName) => {
@@ -537,6 +537,16 @@ const createNewUser = () => {
     : false;
   }
   
+
+
+
+
+
+
+
+
+
+
   const handleNewUser = (e) => {
     e.preventDefault();
     const self = e.key || e.target;
@@ -619,6 +629,24 @@ const createNewUser = () => {
       }
     }
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   // create new user object with empty entries
   const date = new Date();
   hydrappUser = new User(date);
@@ -633,7 +661,7 @@ const createNewUser = () => {
   let newUserInputs = appNewUser.querySelectorAll('.newUser__input--js');
 
   // create user DOM structure
-  isFirstAppLoad ? setNewUserDOM() : false;
+  isNewUserDOM ? false : setNewUserDOM();
 
   // handle visibility of log in box and new user creator
   appLogIn.classList.remove('app__logIn--visible');
@@ -659,10 +687,11 @@ const setLogInDOM = () => {
     userButton.addEventListener('click', handleUserLogin);
   });
   // add 'create new user' button event only at first page load
-  if (isFirstAppLoad) {
+  if (isFirstLoginLoad) {
     const createUserButton = appLogIn.querySelector('.app__createUserButton--js');
     createUserButton.addEventListener('click', createNewUser);
   }
+  isFirstLoginLoad = false;
   // show log in box
   appLogIn.classList.add('app__logIn--visible');
 }
@@ -1070,6 +1099,7 @@ const handleLandingCounterDate = () => {
 //#endregion
 
 //#region [ HorizonDark ] SIDEBAR
+
 const toggleSidebar = (e) => {
   const self = e.target || e;
   if (self === burgerBtn) {
@@ -1090,6 +1120,7 @@ const toggleSidebar = (e) => {
     }
   }
 }
+
 const toggleSidebarTabs = (e) => {
   const self = e.target;
 
@@ -1135,6 +1166,7 @@ const toggleSidebarTabs = (e) => {
     svgIcon.classList.toggle('tab__svg--active');
   }
 }
+
 const slideCard = (e, isLooped) => {
   const self = e.target || e;
   const action = /prev/.test(self.className) ? 'prev' : 'next';
@@ -1934,8 +1966,9 @@ const introObj = {
 //#region [ HorizonDark ] VARIABLES - APP
 const mediaMd = 768;
 const mediaLg = 1200;
-let isNewUserDOM = false;
 let isFirstAppLoad = true;
+let isFirstLoginLoad = true;
+let isNewUserDOM = false;
 let slideTimeoutId = null;
 const weekDay = [
   'sunday',
