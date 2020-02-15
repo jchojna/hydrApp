@@ -52,7 +52,6 @@ const handleContainerHeight = (container, elements) => {
 const handleContainerHeightThroughTime = (container, elements, time) => {
   const intervalId = setInterval(() => {
     handleContainerHeight(container, elements);
-    console.log('interval');
   }, 10);
 
   const timeoutId = setTimeout(() => {
@@ -761,8 +760,10 @@ const handleWaterWaves = (obj) => {
   [...waterPositions].forEach(position => {
     const { waves, wavePeriodsTotal } = obj[position];
     const height = appWater.clientWidth / wavePeriodsTotal / 10;
-    waves.style.height = `${height}px`;
-    waves.style.top = `${-1 * (height - 1)}px`;
+    if (waves) {
+      waves.style.height = `${height}px`;
+      waves.style.top = `${-1 * (height - 1)}px`;
+    }
   });
 }
 
@@ -1383,6 +1384,7 @@ const enterNewEntryValue = (e) => {
     burgerBtn.classList.add('button--hidden');
     newEntryDay.textContent = day;
     newEntryDate.textContent = date;
+    handleCounter(newEntryCounter, 0);
   
     const modeOff = () => {
       newEntryMode.classList.remove('newEntry--visible');
@@ -1760,21 +1762,25 @@ const handleSettingsEdition = (e) => {
   //window.removeEventListener('keydown', slideCard); // ! slide between cards
 }
 
-const handleUserLogOut = () => {
+const quitLanding = () => {
   levelAvg.style.bottom = 0;
   levelMin.style.bottom = 0;
-  hydrappUser.isLoggedIn = false;
-  exportJsonToLS();
   handleWaterLevel(0);
   setLogInDOM();
   appUserProfile.classList.add('app__userProfile--visible');
+} 
+
+const handleUserLogOut = () => {
+  hydrappUser.isLoggedIn = false;
+  exportJsonToLS();
+  quitLanding();
 }
 
 const handleUserRemove = () => {
   const { nameId } = hydrappUser.login;
   localStorage.removeItem(`hydrapp-${nameId}`);
   hydrappUsers = fetchUsersFromLS();
-  handleUserLogOut();
+  quitLanding();
 }
 //#endregion
 

@@ -21,7 +21,7 @@
 
   &--back {
     background-color: $blue-dark-2;
-    top: 48%;
+    top: 45%;
     z-index: -4;
   }
   &--back.water--intro {
@@ -30,7 +30,7 @@
 
   &--center {
     background-color: $blue-dark-3;
-    top: 53%;
+    top: 50%;
     z-index: -2;
   }
   &--center.water--intro {
@@ -39,7 +39,7 @@
 
   &--front {
     background-color: $blue-dark-4;
-    top: 63%;
+    top: 60%;
   }
   &--front.water--intro {
     background-color: $blue-dark-3;
