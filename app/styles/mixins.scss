@@ -19,6 +19,7 @@
   color: $blue-light-3;
   font-weight: 700;
   padding: 0.8em 0.5em;
+  transition: background-color $time-hover-effect;
   
   &:hover {
     background-color: $blue;    

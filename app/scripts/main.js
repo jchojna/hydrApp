@@ -1385,6 +1385,7 @@ const enterNewEntryValue = (e) => {
     newEntryDay.textContent = day;
     newEntryDate.textContent = date;
     handleCounter(newEntryCounter, 0);
+    handleEmoji('newEntry', 0);
   
     const modeOff = () => {
       newEntryMode.classList.remove('newEntry--visible');
