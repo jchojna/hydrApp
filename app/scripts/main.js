@@ -1145,14 +1145,14 @@ const toggleSidebar = (e) => {
 }
 
 const toggleSidebarTabs = (e) => {
-  const self = e.target;
+  const self = e.target || e;
 
-  if(self === archiveTabButton
+  if (self === archiveTabButton
   || self === statsTabButton 
   || self === settingTabButton) {
 
     const parentContainer = findFirstParentOfClass(self, 'tab');
-    const svgIcon = parentContainer.querySelector('.tab__svg');
+    const svgIcon = parentContainer.querySelector('.tab__svg--js');
     const tabContainer = parentContainer.querySelector('.tab__container');
     const isActive = svgIcon.classList.contains('tab__svg--active');
     
@@ -1313,19 +1313,34 @@ const handleCardButtons = (container, index) => {
     }
   } else return;
 }
+
+const closeTabContainers = () => {
+  const tabs = appSidebar.querySelectorAll('[class*=tab--js]');
+  
+  [...tabs].forEach(tab => {
+    const svgIcon = tab.querySelector('.tab__svg--js');
+    const tabButton = tab.querySelector('[class*=tab__button--js]');
+    const isActive = svgIcon.classList.contains('tab__svg--active');
+    if (isActive) {
+      toggleSidebarTabs(tabButton);
+    }
+  });
+}
 //#endregion
 
 //#region [ HorizonDark ] ARCHIVE
 const setArchiveDOM = () => {
 
   const { entries } = hydrappUser;
+  archiveContainer.innerHTML = '';
   for (let i = 0; i < entries.length; i++) {
     addArchiveEntry(i);
   }
-  // set the newest week as visible
+  // set the newest week as visible and handle buttons visibility
   weeks = document.querySelectorAll('.card--js-week');
   weekLists = document.querySelectorAll('.card__list--js-week');
   weeks[currentWeekIndex].classList.add('card--visible');
+  handleCardButtons(archiveContainer, 0);
   // add 'remove entry' button on the last entry
   handleArchiveLastEntry();
 }
@@ -1362,6 +1377,10 @@ const addArchiveEntry = (index, option) => {
     lastWeekList.appendChild(addEntryButton);
   }
   handleWeekHeading();
+
+
+
+
   // add event listeners to edit button
 
   // ! FIND ANOTHER WAY OF ASSIGNING EVENT LISTENERS TO THOSE BUTTONS
@@ -1833,6 +1852,7 @@ const quitLanding = () => {
   levelMin.style.bottom = 0;
   handleWaterLevel(0);
   setLogInDOM();
+  closeTabContainers();
   appUserProfile.classList.add('app__userProfile--visible');
 } 
 
