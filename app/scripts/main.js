@@ -745,6 +745,7 @@ const loadApp = () => {
   handleCounter(newEntryCounter, 0);
   handleCounterMessage(value);
   handleWaterLevel(value);
+  handleWaterMin(value);
   handleWaterShake();
   handleWaterMeasure();
   handleLandingCounterDate();
@@ -888,12 +889,13 @@ const handleWaterChange = (e) => {
   }
   // value has been changed
   hydrappUser.entries[0].value = value;
+  firstEntryValue.textContent = value;
   exportJsonToLS();
   handleWaterLevel(value);
   handleWaterShake();
   handleCounterMessage(value);
+  handleWaterMin(value);
   handleWaterAverage();
-  firstEntryValue.textContent = value;
   handleEmoji('controls', value);
   handleEmoji(id, value);
 }
@@ -959,8 +961,16 @@ const handleWaterShake = () => {
   handleWatersArray(addShakeAnimation);
 }
 
+const handleWaterMin = (value) => {
+  const waterMin = hydrappUser.waterMin.value;
+  value >= waterMin
+  ? levelMin.classList.remove('graph__level--negative')
+  : levelMin.classList.add('graph__level--negative');
+}
+
 const handleWaterAverage = () => {
   const { key, entries } = hydrappUser;
+  const waterMin = hydrappUser.waterMin.value;
   const waterMax = hydrappUser.waterMax.value;
   const prop = 'waterAvg';
   const interval = appLanding.clientHeight / waterMax;
@@ -971,6 +981,9 @@ const handleWaterAverage = () => {
     .reduce((a,b) => a + b) / entries.length;
   const roundedWaterAvg = Math.round(waterAvg * 100) / 100;
 
+  roundedWaterAvg >= waterMin
+  ? levelAvg.classList.remove('graph__level--negative')
+  : levelAvg.classList.add('graph__level--negative');
   levelAvg.style.bottom = `${roundedWaterAvg * interval}px`;
   hydrappUser.waterAvg.value = roundedWaterAvg;
   statsOutput.textContent = getGlasses(prop, roundedWaterAvg);
@@ -1111,7 +1124,6 @@ const getFeedbackValue = (value) => {
 
 const handleCounterMessage = (value) => {
   const feedbackValue = getFeedbackValue(value);
-
   counterMessage.innerHTML = feedbackValue === 8
   ? 'It\'s enough for today!'
   : feedbackValue === 7
@@ -1129,10 +1141,6 @@ const handleCounterMessage = (value) => {
   : feedbackValue === 1
   ? 'Uff.. Keep it going!'
   : 'Drink or you will dehydrate!';
-}
-
-const handleFeedback = () => {
-
 }
 
 const handleLandingCounterDate = () => {

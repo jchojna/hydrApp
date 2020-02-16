@@ -20,7 +20,7 @@
   
   &__level {
     border-radius: 0 50px 50px 0;
-    color: $blue;
+    color: $blue-light-3;
     font-weight: 700;
     font-size: 0.8em;
     left: 0;
@@ -31,11 +31,17 @@
     z-index: -1;
   
     &--avg {
-      background-color: $blue-light-2;
+      background-color: $blue-light-1;
+    }
+
+    &--min {
+      background-color: $blue-dark-1;
+      color: $blue-dark-5;
     }
   
-    &--min {
+    &--negative {
       background-color: $orange-dark-2;
+      color: $blue-light-3;
     }
 
     @media only screen and (min-width: $media-sm) {
