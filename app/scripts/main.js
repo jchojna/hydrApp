@@ -372,9 +372,8 @@ const getHtmlOfEdition = (tab, id) => {
 const getHtmlOfArchiveEntry = (index) => {
 
   const { date, day, id, value } = hydrappUser.entries[index];
-  const dateId = date.split(' ').join('-');
   return `
-    <li class="entry entry--js dateId-${dateId}">
+    <li class="entry entry--js dateId-${id}">
       <header class="entry__header entry__header--js">
         <p class="entry__heading entry__heading--day">${day}</p>
         <p class="entry__heading entry__heading--date entry__heading--js-date">${date}</p>
@@ -1190,30 +1189,30 @@ const toggleSidebarTabs = (e) => {
   }
 }
 
-const slideCard = (e, isLooped) => {
+const slideCard = (e) => {
 
   // slide cards with transition effect
   const slideCards = (newCard, newCardList, newCardHeading, offset) => {
     slideTimeoutId = setTimeout(() => {
       newCardList.style = `
         transform: translateX(0);
-        transition: transform ${transitionTime}ms;
+        transition: transform ${slideTime}ms;
       `;
       currentCardList.style = `
         transform: translateX(${offset}px);
-        transition: transform ${transitionTime}ms;
+        transition: transform ${slideTime}ms;
       `;
       currentCardHeader.style = `
         visibility: hidden;
-        transition: visibility 0ms ${transitionTime / 2}ms;
+        transition: visibility 0ms ${slideTime / 2}ms;
       `;
       newCardHeading.style = `
         opacity: 1;
-        transition: opacity ${transitionTime / 2}ms ${transitionTime / 2}ms;
+        transition: opacity ${slideTime / 2}ms ${slideTime / 2}ms;
       `;
       currentCardHeading.style = `
         opacity: 0;
-        transition: opacity ${transitionTime / 2}ms;
+        transition: opacity ${slideTime / 2}ms;
       `;
       newCard.classList.add('card--visible');
     }, delay);
@@ -1225,8 +1224,9 @@ const slideCard = (e, isLooped) => {
       clearTimeout(slideTimeoutId);
       clearTimeout(slideSecondTimeout);
       slideTimeoutId = null;
-    }, transitionTime);
+    }, slideTime);
   }
+
 
   const self = e.target || e;
   const action = /prev/.test(self.className) ? 'prev' : 'next';
@@ -1243,7 +1243,7 @@ const slideCard = (e, isLooped) => {
   const currentCardHeading = cardHeadings[currentIndex];
   const maxIndex = cards.length - 1;
   const delay = 50;
-  const transitionTime = 500;
+  const slideTime = 500;
   const isLast = currentIndex === 0 && action === 'prev'
   || currentIndex === maxIndex && action === 'next';
 
@@ -1265,7 +1265,7 @@ const slideCard = (e, isLooped) => {
     newCardList.style = `transform: translateX(${initialOffset}px);`;
     newCardHeader.style = `
       visibility: visible;
-      transition: visibility 0ms ${transitionTime / 2}ms;
+      transition: visibility 0ms ${slideTime / 2}ms;
     `;
     // create and set promise function
     const slidePromise = new Promise((resolve, reject) => {
@@ -1345,7 +1345,7 @@ const setArchiveDOM = () => {
   handleArchiveLastEntry();
 }
 
-const addArchiveEntry = (index, option) => {
+const addArchiveEntry = (index) => {
 
   const {value, id, day} = hydrappUser.entries[index];
   const weekHtml = getHtmlOfCard('week');
@@ -1363,44 +1363,42 @@ const addArchiveEntry = (index, option) => {
   }
 
   // add new week
-  if (((day === 'sunday' || index === 0)) && option !== 'add') addWeek();
+  if (day === 'sunday' || index === 0) addWeek();
 
   // add next day entry
   const lastWeekList = weekLists[weekLists.length - 1];
   lastWeekList.insertAdjacentHTML('beforeend', entryHtml);
+  const lastEntry = lastWeekList.lastElementChild;
+  const editButton = lastEntry.querySelector('.edition__button--js-edit');
+  editButton.index = index;
+  editButton.addEventListener('click', handleEntryEdit);
+
   handleEmoji(id, value);
   
-  // add 'add entry button at the end
+  // add 'add entry' button at the end
   if (index === hydrappUser.entries.length - 1) {
-    if (day === 'monday') addWeek();
     const lastWeekList = weekLists[weekLists.length - 1];
     lastWeekList.appendChild(addEntryButton);
   }
   handleWeekHeading();
-
-
-
-
-  // add event listeners to edit button
-
-  // ! FIND ANOTHER WAY OF ASSIGNING EVENT LISTENERS TO THOSE BUTTONS
-
-  // ! CHECK REMOVING EVENTS WHEN WEEK IS GETTING REMOVED
-
-  const editButtons = archiveContainer.querySelectorAll('.edition__button--js-edit');
-  const editButton = editButtons[index];
-  editButton.index = index;
-  editButton.addEventListener('click', handleEntryEdit);
 }
 
 const handleWeekHeading = () => {
-  weekLists = document.querySelectorAll('.card__list--js-week');
-  const weekHeadings = document.querySelectorAll('.card__heading--js-week');
+  weekLists = archiveContainer.querySelectorAll('.card__list--js-week');
+  const weekHeadings = archiveContainer.querySelectorAll('.card__heading--js-week');
 
-  const getDate = (element) => {
-    const dateId = element.className.split(' ').filter(a => /dateId-/.test(a));
-    return dateId.toString().replace(/dateId-/,'').split('-').join('.');
+  const getHeadingDate = (entry) => {
+    const entryDateId = entry.className
+    .split(' ')
+    .filter(a => /dateId-/.test(a))
+    .toString()
+    .replace('dateId-', '');
+
+    return [...hydrappUser.entries]
+    .filter(entry => entry.id === entryDateId)[0]
+    .date;
   }
+
   for (let i = 0; i < weekLists.length; i++) {
     const entries = weekLists[i].querySelectorAll('.entry--js');
     const heading = weekHeadings[i];
@@ -1410,8 +1408,8 @@ const handleWeekHeading = () => {
     } else {
       const currentWeekFirstEntry = entries[entries.length - 1];
       const currentWeekLastEntry = entries[0];
-      const startDate = getDate(currentWeekFirstEntry);
-      const endDate = getDate(currentWeekLastEntry);
+      const startDate = getHeadingDate(currentWeekFirstEntry);
+      const endDate = getHeadingDate(currentWeekLastEntry);
   
       heading.textContent = startDate === endDate
       ? startDate
@@ -1530,26 +1528,28 @@ const addNewEntry = (entry) => {
 
   let lastEntryIndex = hydrappUser.entries.length - 1;
   let lastEntry = document.querySelectorAll('.entry--js')[lastEntryIndex];
+  const { day } = hydrappUser.entries[lastEntryIndex];
+  let lastWeek = archiveContainer.lastElementChild;
+
   lastEntry.classList.remove('entry--last');
+  // jump to the last week
+  const cardNextButton = lastWeek.querySelector('.card__button--js-next');
+
   
   // create new entry node
   const { entries } = hydrappUser;
   hydrappUser.entries = [...entries, entry];
   lastEntryIndex = hydrappUser.entries.length - 1;
-  addArchiveEntry(lastEntryIndex, 'add');
+  addArchiveEntry(lastEntryIndex);
 
-  // jump to the last week
-  const weeks = archiveContainer.children
-  const lastWeekIndex = weeks.length - 1;
-  const lastWeek = weeks[lastWeekIndex];
-  const cardNextButton = archiveContainer.querySelectorAll('.card__button--js-next')[currentWeekIndex];
-  if (currentWeekIndex !== lastWeekIndex) {
-    currentWeekIndex = lastWeekIndex;
-    slideCard(cardNextButton);
-  }
+  if (day === 'monday') slideCard(cardNextButton);
+
+  lastWeek = archiveContainer.lastElementChild;
+  const lastWeekIndex = archiveContainer.children.length - 1;
   handleContainerHeight(archiveContainer, lastWeek);
   handleArchiveLastEntry();
   handleWeekHeading();
+  handleCardButtons(archiveContainer, lastWeekIndex);
   handleWaterAverage();
   exportJsonToLS();
 }
@@ -1569,35 +1569,37 @@ const removeLastEntry = (e) => {
   const self = e.keyCode || e. target;
   const { entries } = hydrappUser;
   const lastEntryIndex = entries.length - 1;
-  const {day, key} = entries[lastEntryIndex];
+  const { day } = entries[lastEntryIndex];
   const lastEntryNode = document.querySelectorAll('.entry--js')[lastEntryIndex];
   let lastWeek = weeks[weeks.length - 1];
 
   if (self === 109 || self === removeEntryButton) {
 
-    if (entries.length > 1) {
+    if (entries.length > 1 && !slideTimeoutId) {
+
       hydrappUser.entries = [...entries]
       .filter((entry, index) => index !== lastEntryIndex);
       exportJsonToLS();
       lastEntryNode.parentNode.removeChild(lastEntryNode);
 
       // removing last week section after deleting last day of that week
-      if (day === 'monday') {
+      if (day === 'sunday') {
         const weekToRemove = archiveContainer.lastElementChild;
-        const ifVisible = weekToRemove.classList.contains('week--visible');
-        archiveContainer.removeChild(archiveContainer.lastElementChild);
-        lastWeek = archiveContainer.lastElementChild;
-        if (ifVisible) {
-          lastWeek.className = 'week card--js-week week--visible week--slide-in-from-left';currentWeekIndex--;
-        }
+        const weekPrevButton = weekToRemove.querySelector('.card__button--js-prev');
+
+        slideCard(weekPrevButton);
+        archiveContainer.removeChild(weekToRemove);
+
         const weekLists = document.querySelectorAll('.card__list--js-week');
         const lastWeekList = weekLists[weekLists.length - 1];
         lastWeekList.appendChild(addEntryButton);
       }
       lastWeek = archiveContainer.lastElementChild;
+      const lastWeekIndex = archiveContainer.children.length - 1;
       // add remove button on current last item
       handleArchiveLastEntry();
       handleWeekHeading();
+      handleCardButtons(archiveContainer, lastWeekIndex);
       handleContainerHeight(archiveContainer, lastWeek);
       handleWaterAverage();
     }
