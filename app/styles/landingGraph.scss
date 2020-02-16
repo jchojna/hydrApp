@@ -26,6 +26,7 @@
     left: 0;
     padding: 0.5em 0.8em 0.5em 2.5em;
     position: absolute;
+    transform: translateY(50%);
     transition: bottom $verticalTranslation;
     z-index: -1;
   
@@ -34,7 +35,7 @@
     }
   
     &--min {
-      background-color: $warm-orange;
+      background-color: $orange-dark-2;
     }
 
     @media only screen and (min-width: $media-sm) {

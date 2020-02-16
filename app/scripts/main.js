@@ -229,7 +229,7 @@ const getHtmlOfUserLogIn = (user) => {
 }
 
 const getHtmlOfEmoji = (id) => {
-  let emojiHtml = `<div class="emoji emoji--${id} emoji--js-${id}">`;
+  let emojiHtml = `<div class="emoji__container emoji__container--${id} emoji__container--js-${id}">`;
 
   for (let i = 0; i < emojiAmount; i++) {
     emojiHtml += `
@@ -739,16 +739,15 @@ const loadApp = () => {
   handleStats();
   setSettingsDOM();
   setWaterMeasureDOM();
+  setEmojiDOM();
   setWaterWaves();
   handleCounter(landingCounter, value);
   handleCounter(newEntryCounter, 0);
+  handleCounterMessage(value);
   handleWaterLevel(value);
   handleWaterShake();
   handleWaterMeasure();
-  handleCounterMessage(value);
   handleLandingCounterDate();
-  emoji.innerHTML = getHtmlOfEmoji('controls');
-  emojiNewEntry.innerHTML = getHtmlOfEmoji('newEntry');
   handleEmoji('controls', value);
   handleEmoji('newEntry', 0);
   handleWeekHeading();
@@ -766,18 +765,25 @@ const loadApp = () => {
 }
 //#endregion
 
-//#region [ HorizonDark ] EMOJI 
+//#region [ HorizonDark ] EMOJI
+
+const setEmojiDOM = () => {
+  if (isFirstAppLoad) {
+    emoji.innerHTML = getHtmlOfEmoji('controls');
+    emojiNewEntry.innerHTML = getHtmlOfEmoji('newEntry');
+  }
+}
+
 const handleEmoji = (id, number) => {
-  number > 7 ? number = 7 : false;
+  let feedbackValue = getFeedbackValue(number);
+  feedbackValue > 7 ? feedbackValue = 7 : false;
   const emojis = document.querySelectorAll(`.emoji__svg--js-${id}`);
 
   [...emojis].forEach((emoji, index) => {
-    if (index === number) {
+    if (index === feedbackValue) {
       emoji.classList.add('emoji__svg--visible');
     } else {
-      if (emoji.classList.contains('emoji__svg--visible')) {
-        emoji.classList.remove('emoji__svg--visible');
-      }
+      emoji.classList.remove('emoji__svg--visible');
     }
   });  
 }
@@ -866,7 +872,7 @@ const handleWaterMeasure = () => {
 
 const handleWaterChange = (e) => {
   const self = e.target;
-  const { waterMax } = hydrappUser;
+  const waterMax = hydrappUser.waterMax.value;
   let { value, id } = hydrappUser.entries[0];
   const firstEntryValue = document.querySelector('.entry__value--js');
 
@@ -1087,30 +1093,46 @@ const handleCounter = (counterObj, currentValue, newValue) => {
   }
 }
 
+const getFeedbackValue = (value) => {
+  const waterMin = hydrappUser.waterMin.value;
+  const waterMax = hydrappUser.waterMax.value;
+  const diff = waterMax - waterMin;
+
+  return value >= waterMax
+  ? 8 : value >= Math.floor(waterMin + diff * 3/4)
+  ? 7 : value >= Math.floor(waterMin + diff * 1/4)
+  ? 6 : value >= Math.floor(waterMin)
+  ? 5 : value >= Math.floor(waterMin * 4/5)
+  ? 4 : value >= Math.floor(waterMin * 3/5)
+  ? 3 : value >= Math.floor(waterMin * 2/5)
+  ? 2 : value >= Math.floor(waterMin * 1/5)
+  ? 1 : 0;
+}
+
 const handleCounterMessage = (value) => {
-  const { waterMax, waterMin, waterAvg } = hydrappUser;
-  counterMessage.innerHTML = value === waterMax
+  const feedbackValue = getFeedbackValue(value);
+
+  counterMessage.innerHTML = feedbackValue === 8
   ? 'It\'s enough for today!'
-
-  : value >= waterMax - 2
-  ? 'Almost there..'
-
-  : value > waterMin + 1
-  ? 'Woow.. You\'re on fire!'
-
-  : value >= waterMin - 1
-  ? 'Good job! You reached your optimal water consumption'
-
-  : value >= waterMin - 3
+  : feedbackValue === 7
+  ? 'You almost reached the top!'
+  : feedbackValue === 6
+  ? 'Woow.. You\'re on ... fire!'
+  : feedbackValue === 5
+  ? 'Good job! You reached your minimum water consumption'
+  : feedbackValue === 4
   ? 'Keep going.. Yo\'re doing well'
-  
-  : value >= 4
+  : feedbackValue === 3
   ? 'Much better, but still you can do more!'
-  
-  : value >= 2
+  : feedbackValue === 2
   ? 'Still too little..'
-
+  : feedbackValue === 1
+  ? 'Uff.. Keep it going!'
   : 'Drink or you will dehydrate!';
+}
+
+const handleFeedback = () => {
+
 }
 
 const handleLandingCounterDate = () => {
@@ -1447,7 +1469,11 @@ const createAddEntryButton = () => {
 }
 
 const enterNewEntryValue = (e) => {
-  const self = e.keyCode || e.target || e;                // ! e only for tests
+  const self = e.keyCode || e.target;
+
+  const lastWeek = archiveContainer.lastElementChild;
+  if (e.keyCode && !lastWeek.classList.contains('card--visible')) return;
+
   // find date to display as new proposition
   const displayDate = new Date();
   let displayDateId = getDateId(displayDate);
@@ -1534,7 +1560,6 @@ const addNewEntry = (entry) => {
   lastEntry.classList.remove('entry--last');
   // jump to the last week
   const cardNextButton = lastWeek.querySelector('.card__button--js-next');
-
   
   // create new entry node
   const { entries } = hydrappUser;
@@ -1571,7 +1596,9 @@ const removeLastEntry = (e) => {
   const lastEntryIndex = entries.length - 1;
   const { day } = entries[lastEntryIndex];
   const lastEntryNode = document.querySelectorAll('.entry--js')[lastEntryIndex];
-  let lastWeek = weeks[weeks.length - 1];
+  let lastWeek = archiveContainer.lastElementChild;
+  // do not allow keyboard shortcut if the last week is not displayed
+  if (e.keyCode && !lastWeek.classList.contains('card--visible')) return;
 
   if (self === 109 || self === removeEntryButton) {
 
