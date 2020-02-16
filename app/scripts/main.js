@@ -475,7 +475,7 @@ const createNewUser = () => {
       const { maxLength } = hydrappUser[prop];
       const newUserHtml = `
         <div
-          class="newUser ${prop === 'login' ? 'newUser--visible' : ''} newUser--js"
+          class="newUser newUser--js ${prop === 'login' ? 'newUser--visible' : ''}"
         >
           <label
             for="${prop}Question"
@@ -508,9 +508,9 @@ const createNewUser = () => {
     }
     isNewUserDOM = true;
     newUserQuestions = document.querySelectorAll('.newUser--js');
-    newUserPrevButtons = document.querySelectorAll('.newUser__button--js-prev');
-    newUserNextButtons = document.querySelectorAll('.newUser__button--js-next');
-    newUserInputs = appNewUser.querySelectorAll('.newUser__input--js');
+    const newUserPrevButtons = document.querySelectorAll('.newUser__button--js-prev');
+    const newUserNextButtons = document.querySelectorAll('.newUser__button--js-next');
+    const newUserInputs = appNewUser.querySelectorAll('.newUser__input--js');
     // add buttons events
     [...newUserPrevButtons].forEach(button =>
     button.addEventListener('click', handleNewUser));
@@ -520,10 +520,12 @@ const createNewUser = () => {
     [...newUserInputs]
     .filter((input, index) => index !== 0)
     .forEach(input => input.addEventListener('keyup', filterUserInput));
+
     appNewUser.addEventListener('keypress', (e) => {
       if (e.keyCode  === 13 || e.keyCode  === 27) e.preventDefault();
     });
-    //appNewUser.addEventListener('keyup', handleNewUser);
+
+    appNewUser.addEventListener('keyup', handleNewUser);
   }
   
   const handleNewUserQuestion = (index, userName) => {
@@ -537,71 +539,90 @@ const createNewUser = () => {
     : false;
   }
   
-
-
-
-
-
-
-
-
-
-
   const handleNewUser = (e) => {
     e.preventDefault();
     const self = e.key || e.target;
-  
-    // TOGGLE VISIBILITY OF USER DETAIL WINDOW
-    const toggleQuestion = (current, next, action, timeout) => {
-      const hiddenSide = action === 'prev' ? 'Right' : 'Left';
-      const visibleSide = action === 'prev' ? 'Left' : 'Right';
-      const nextInput = next ? next.querySelector('.newUser__input--js') : false;
-  
-      current.classList.add(`newUser--hidden${hiddenSide}`);
-      current.classList.remove('newUser--visible');
-      next ? next.classList.add(`newUser--hidden${visibleSide}`) : false;
-  
-      questionTimeoutId = setTimeout(() => {
-        if (next) {
-          next.classList.add('newUser--visible');
-          next.classList.remove(`newUser--hidden${visibleSide}`);
-          nextInput.focus();
-        }
-        clearTimeout(questionTimeoutId);
-        questionTimeoutId = null;
-      }, timeout);
+    const action = e.key
+    ? e.key === 'Escape' ? 'prev' : 'next'
+    : /prev/.test(self.className) ? 'prev' : 'next';
+    // find current user question
+    const currentQuestion = e.key
+    ? [...newUserQuestions].filter(question => /visible/.test(question.className))[0]
+    : findFirstParentOfClass(self, 'newUser');
+
+    const container = currentQuestion.parentNode;
+    const containerWidth = container.clientWidth;
+    const currentIndex = [...newUserQuestions].indexOf(currentQuestion);
+    const maxIndex = newUserQuestions.length - 1;
+    const inputs = container.querySelectorAll('.newUser__input--js');
+    const delay = 100;
+    const transitionTime = 500;
+
+    // slide questions with transition effect
+    const slideQuestions = (newIndex, newQuestion, nextInput, offset) => {
+      slideTimeoutId = setTimeout(() => {
+        newQuestion.style = `
+          transform: translateX(0);
+          transition: opacity ${transitionTime}ms, transform ${transitionTime}ms;
+        `;
+        newQuestion.classList.add('newUser--visible');
+        currentQuestion.style = `
+          opacity: 0;
+          transform: translateX(${offset}px);
+          transition: opacity ${transitionTime}ms, transform ${transitionTime}ms;
+        `;
+        handleNewUserQuestion(newIndex, hydrappUser.login.name);
+        nextInput.focus();
+
+      }, delay);
+    }
+    // hide previous card and clear timeouts
+    const clearAfter = () => {
+      const slideSecondTimeout = setTimeout(() => {
+        currentQuestion.classList.remove('newUser--visible');
+        clearTimeout(slideTimeoutId);
+        clearTimeout(slideSecondTimeout);
+        slideTimeoutId = null;
+      }, transitionTime);
     }
     // RETURN USER INPUT VALUE AS INTEGER
     const getInputValue = (index) => parseInt(newUserInputs[index].value);
-  
+
+    // perform sliding effect if previous one is already finished
     if ((self.tagName === 'BUTTON' || self === 'Enter' || self === 'Escape')
-    && questionTimeoutId === null) {
-  
-      const toggleTime = 300;
-      const action = /prev/.test(self.className) ? 'prev' : 'next';
-      const maxIndex = newUserQuestions.length - 1;
-  
-      // GO TO PREVIOUS USER DETAIL
-      if (action === 'prev' || self === 'Escape') {
-        const currentQuestion = newUserQuestions[currentQuestionIndex];
-        const nextQuestion = newUserQuestions[currentQuestionIndex - 1];
-        if (currentQuestionIndex > 0) {
-          toggleQuestion(currentQuestion, nextQuestion, 'prev', toggleTime);
-          currentQuestionIndex--;
-        // go back to user log in box
-        } else {
-          appNewUser.classList.remove('app__newUser--visible');
-          appLogIn.classList.add('app__logIn--visible');
-        }
+      && slideTimeoutId === null) {
 
-      } else if (action === 'next' || self === 'Enter') {
-        const currentQuestion = newUserQuestions[currentQuestionIndex];
-        const currentInput = currentQuestion.querySelector('.newUser__input--js');
-        const currentAlert = currentQuestion.querySelector('.newUser__alert--js');
-        const currentProp = questions[currentQuestionIndex];
+      // find next index
+      const newIndex = action === 'prev'
+      ? limitedRange(maxIndex, currentIndex, 'decrease')
+      : limitedRange(maxIndex, currentIndex, 'increase');
+      // set new elements
+      const newQuestion = newUserQuestions[newIndex];
+      const nextInput = inputs[newIndex];
+      // set initial position of a new card element
+      const initialOffset = action === 'prev' ? -1 * containerWidth : containerWidth;
+      const finalOffset = action === 'next' ? -1 * containerWidth : containerWidth;
+      
+      const willGoBackToPrevious = action === 'prev' || self === 'Escape';
+      const willGoBackToLogin = willGoBackToPrevious && currentIndex === 0;
+      const willGoToNextQuestion = action === 'next' || self === 'Enter';
+      const willCreateNewUser = willGoToNextQuestion && currentIndex >= maxIndex;
 
-        // AQUIRE USER DATA AND GO TO LANDING SECTION
-        if (currentQuestionIndex >= maxIndex) {
+      const currentInput = currentQuestion.querySelector('.newUser__input--js');
+      const currentAlert = currentQuestion.querySelector('.newUser__alert--js');
+      const currentProp = questions[currentIndex];
+      const shouldQuestionSlide = ((willGoToNextQuestion && isInputValid(currentInput, currentProp, currentAlert)) || willGoBackToPrevious);
+
+      // GO BACK TO USER LOG IN
+      if (willGoBackToLogin) {
+        appNewUser.classList.remove('app__newUser--visible');
+        appLogIn.classList.add('app__logIn--visible');  
+
+      // GO TO THE NEXT QUESTION
+      } else if (willGoToNextQuestion) {
+
+        // CREATE NEW USER
+        if (willCreateNewUser) {
           if (isInputValid(currentInput, currentProp, currentAlert)) {
             hydrappUser.age.value    = getInputValue(1);
             hydrappUser.weight.value = getInputValue(2);
@@ -612,62 +633,64 @@ const createNewUser = () => {
             hydrappUsers = fetchUsersFromLS();
             loadApp();
             // change user section visibility
-            toggleQuestion(currentQuestion, null, 'next', toggleTime);
             appNewUser.classList.remove('app__newUser--visible');
           }
-        // GO TO NEXT USER DETAIL
+        // VALIDATE CURRENT INPUT AND GO TO NEXT USER QUESTION 
         } else if (isInputValid(currentInput, currentProp, currentAlert)) {
           const inputValue = currentInput.value;
-          if (currentQuestionIndex === 0) hydrappUser.login.name = inputValue;
+          if (currentIndex === 0) hydrappUser.login.name = inputValue;
 
           const { name } = hydrappUser.login;
-          handleNewUserQuestion(currentQuestionIndex + 1, name);
-          const nextQuestion = newUserQuestions[currentQuestionIndex + 1];
-          toggleQuestion(currentQuestion, nextQuestion, 'next', toggleTime);
-          currentQuestionIndex++;
+          handleNewUserQuestion(currentIndex + 1, name);
         }
       }
-    }
+
+      if (willGoBackToPrevious) {
+        handleInputAlert(currentAlert);
+      }
+
+      if (!willGoBackToLogin && !willCreateNewUser) {
+        newQuestion.style = `
+          transform: translateX(${initialOffset}px);
+        `;
+      }
+      if (!willGoBackToLogin) {
+        if (shouldQuestionSlide) {
+          slidePromise
+            .then(() => slideQuestions(newIndex, newQuestion, nextInput, finalOffset))
+            .then(clearAfter);
+            //catch(() => console.log('Something bad happened!'));
+        }
+      }
+    } else return;
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   // create new user object with empty entries
   const date = new Date();
   hydrappUser = new User(date);
   const newEntry = new Entry(date);
   hydrappUser.entries = [newEntry];
+  // create and set promise function
+  const slidePromise = new Promise((resolve, reject) => {
+    resolve();
+  });
   // user questions keys
   const questions = findUserPropsWithTag('questions');
+  let newUserQuestions = document.querySelectorAll('.newUser--js');
 
-  let currentQuestionIndex = 0;
-  let questionTimeoutId = null;
-  let newUserQuestions, newUserPrevButtons, newUserNextButtons;
-  let newUserInputs = appNewUser.querySelectorAll('.newUser__input--js');
-
-  // create user DOM structure
-  isNewUserDOM ? false : setNewUserDOM();
+  if (isNewUserDOM) {
+    newUserQuestions[0].style = 'transform: translateX(0px);';
+    newUserQuestions[0].classList.add('newUser--visible');
+  } else {
+    setNewUserDOM();
+  }
 
   // handle visibility of log in box and new user creator
   appLogIn.classList.remove('app__logIn--visible');
   appNewUser.classList.add('app__newUser--visible');
-  handleNewUserQuestion(currentQuestionIndex);
+  handleNewUserQuestion(0);
   // clear all inputs
+  const newUserInputs = appNewUser.querySelectorAll('.newUser__input--js');
   [...newUserInputs].forEach(input => input.value = '');
 }
 //#endregion
