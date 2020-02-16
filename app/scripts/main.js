@@ -519,11 +519,6 @@ const createNewUser = () => {
     [...newUserInputs]
     .filter((input, index) => index !== 0)
     .forEach(input => input.addEventListener('keyup', filterUserInput));
-
-    appNewUser.addEventListener('keypress', (e) => {
-      if (e.keyCode  === 13 || e.keyCode  === 27) e.preventDefault();
-    });
-
     appNewUser.addEventListener('keyup', handleNewUser);
   }
   
@@ -1155,6 +1150,7 @@ const handleLandingCounterDate = () => {
 const toggleSidebar = (e) => {
   const self = e.target || e;
   if (self === burgerBtn) {
+    isSidebarActive = !isSidebarActive;
     self.classList.toggle('button--active');
     appSidebar.classList.toggle('app__sidebar--visible');
     appLanding.classList.toggle('app__landing--onSide');
@@ -1184,12 +1180,13 @@ const toggleSidebarTabs = (e) => {
     const svgIcon = parentContainer.querySelector('.tab__svg--js');
     const tabContainer = parentContainer.querySelector('.tab__container');
     const isActive = svgIcon.classList.contains('tab__svg--active');
+    const weeks = archiveContainer.children;
+    const currentWeek = [...weeks].filter(week => week.classList.contains('card--visible'))[0];
     
     switch (self) {
       case archiveTabButton:
         // show archive content
         if (!isActive) {
-          const currentWeek = weeks[currentWeekIndex];
           handleContainerHeight(archiveContainer, currentWeek);
           window.addEventListener('keydown', enterNewEntryValue);
           window.addEventListener('keydown', removeLastEntry);
@@ -1369,7 +1366,7 @@ const setArchiveDOM = () => {
   // set the newest week as visible and handle buttons visibility
   weeks = document.querySelectorAll('.card--js-week');
   weekLists = document.querySelectorAll('.card__list--js-week');
-  weeks[currentWeekIndex].classList.add('card--visible');
+  weeks[0].classList.add('card--visible');
   handleCardButtons(archiveContainer, 0);
   // add 'remove entry' button on the last entry
   handleArchiveLastEntry();
@@ -2053,12 +2050,16 @@ const introObj = {
   }
 };
 //#endregion
-//#region [ HorizonDark ] VARIABLES - APP
-const mediaMd = 768;
-const mediaLg = 1200;
+//#region [ HorizonDark ] VARIABLES - FLAGS
+
 let isFirstAppLoad = true;
 let isFirstLoginLoad = true;
 let isNewUserDOM = false;
+let isSidebarActive = false;
+//#endregion
+//#region [ HorizonDark ] VARIABLES - APP
+const mediaMd = 768;
+const mediaLg = 1200;
 let slideTimeoutId = null;
 const weekDay = [
   'sunday',
@@ -2129,7 +2130,6 @@ const settingsContainer = document.querySelector('.tab__container--js-settings')
 //#region [ HorizonDark ] VARIABLES - ARCHIVE
 let weeks = null;
 let weekLists = null;
-let currentWeekIndex = 0;
 const addEntryButton = createAddEntryButton();
 const removeEntryButton = createRemoveEntryButton();
 //#endregion
@@ -2162,12 +2162,16 @@ if (hydrappUsers) {
 } else {
   createNewUser();
 };
+
+window.addEventListener('keypress', (e) => {
+  if (e.keyCode  === 13 || e.keyCode  === 27) e.preventDefault();
+});
 //#endregion
 
 //#region [ HorizonDark ] UNUSED
 
 const entriesFade = (action) => {
-  const currentWeekList = weekLists[currentWeekIndex];
+  const currentWeekList = weekLists[0];
   let delay = 0;
 
   if (action === 'in') {
@@ -2185,6 +2189,8 @@ const entriesFade = (action) => {
   }
 }
 //#endregion
+
+
 
 toggleSidebar(burgerBtn);
 //window.addEventListener('click', (e) => console.log(e.target));
