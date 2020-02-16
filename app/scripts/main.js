@@ -735,22 +735,22 @@ const handleUserLogin = (e) => {
 
 const loadApp = () => {
   updateJsonOnDateChange();
-  const startValue = hydrappUser.entries[0].value;
+  const { value } = hydrappUser.entries[0];
   setArchiveDOM();
   handleStats();
   setSettingsDOM();
   setWaterMeasureDOM();
   setWaterWaves();
-  handleCounter(landingCounter, startValue);
+  handleCounter(landingCounter, value);
   handleCounter(newEntryCounter, 0);
-  handleWaterLevel(startValue);
+  handleWaterLevel(value);
   handleWaterShake();
   handleWaterMeasure();
-  handleCounterMessage(startValue);
+  handleCounterMessage(value);
   handleLandingCounterDate();
   emoji.innerHTML = getHtmlOfEmoji('controls');
   emojiNewEntry.innerHTML = getHtmlOfEmoji('newEntry');
-  handleEmoji('controls', startValue);
+  handleEmoji('controls', value);
   handleEmoji('newEntry', 0);
   handleWeekHeading();
   handleWaterAverage();
@@ -1191,22 +1191,6 @@ const toggleSidebarTabs = (e) => {
 }
 
 const slideCard = (e, isLooped) => {
-  const self = e.target || e;
-  const action = /prev/.test(self.className) ? 'prev' : 'next';
-  const currentCard = findFirstParentOfClass(self, 'card');
-  const container = currentCard.parentNode;
-  const containerWidth = container.clientWidth;
-  const cards = container.children;
-  const cardLists = container.querySelectorAll('[class*=card__list--js]');
-  const cardHeaders = container.querySelectorAll('[class*=card__header---js]');
-  const cardHeadings = container.querySelectorAll('[class*=card__heading--js]');
-  const currentIndex = [...cards].indexOf(currentCard);
-  const currentCardList = cardLists[currentIndex];
-  const currentCardHeader = cardHeaders[currentIndex];
-  const currentCardHeading = cardHeadings[currentIndex];
-  const maxIndex = cards.length - 1;
-  const delay = 50;
-  const transitionTime = 500;
 
   // slide cards with transition effect
   const slideCards = (newCard, newCardList, newCardHeading, offset) => {
@@ -1244,20 +1228,40 @@ const slideCard = (e, isLooped) => {
     }, transitionTime);
   }
 
+  const self = e.target || e;
+  const action = /prev/.test(self.className) ? 'prev' : 'next';
+  const currentCard = findFirstParentOfClass(self, 'card');
+  const container = currentCard.parentNode;
+  const containerWidth = container.clientWidth;
+  const cards = container.children;
+  const cardLists = container.querySelectorAll('[class*=card__list--js]');
+  const cardHeaders = container.querySelectorAll('[class*=card__header---js]');
+  const cardHeadings = container.querySelectorAll('[class*=card__heading--js]');
+  const currentIndex = [...cards].indexOf(currentCard);
+  const currentCardList = cardLists[currentIndex];
+  const currentCardHeader = cardHeaders[currentIndex];
+  const currentCardHeading = cardHeadings[currentIndex];
+  const maxIndex = cards.length - 1;
+  const delay = 50;
+  const transitionTime = 500;
+  const isLast = currentIndex === 0 && action === 'prev'
+  || currentIndex === maxIndex && action === 'next';
+
   // perform sliding effect if previous one is already finished
-  if (slideTimeoutId === null) {
+  if (slideTimeoutId === null && !isLast) {
     // find next index
     const newIndex = action === 'prev'
     ? limitedRange(maxIndex, currentIndex, 'decrease')
     : limitedRange(maxIndex, currentIndex, 'increase');
     // set new elements
-    var newCard = cards[newIndex];
+    const newCard = cards[newIndex];
     const newCardList = cardLists[newIndex];
-    var newCardHeader = cardHeaders[newIndex];
-    var newCardHeading = cardHeadings[newIndex];
+    const newCardHeader = cardHeaders[newIndex];
+    const newCardHeading = cardHeadings[newIndex];
     // set initial position of a new card element
     const initialOffset = action === 'prev' ? -1 * containerWidth : containerWidth;
     const finalOffset = action === 'next' ? -1 * containerWidth : containerWidth;
+
     newCardList.style = `transform: translateX(${initialOffset}px);`;
     newCardHeader.style = `
       visibility: visible;
@@ -1274,7 +1278,40 @@ const slideCard = (e, isLooped) => {
 
     // adjust container height to its current content
     handleContainerHeight(container, newCard);
+    handleCardButtons(container, newIndex);
   }
+}
+
+const handleCardButtons = (container, index) => {
+
+  const cards = container.querySelectorAll('.card');
+  const cardPrevButtons = container.querySelectorAll('[class*=card__button--js-prev]');
+  const cardNextButtons = container.querySelectorAll('[class*=card__button--js-next]');
+  const areCardsValid = cards.length === cardPrevButtons.length
+  && cards.length === cardNextButtons.length;
+
+  if (areCardsValid) {
+    const maxIndex = cards.length - 1;
+    const currentPrevButton = cardPrevButtons[index];
+    const currentNextButton = cardNextButtons[index];
+
+    if (maxIndex === 0) {
+      currentPrevButton.classList.remove('card__button--visible');
+      currentNextButton.classList.remove('card__button--visible');
+
+    } else if (index === 0) {
+      currentPrevButton.classList.remove('card__button--visible');
+      currentNextButton.classList.add('card__button--visible');
+
+    } else if (index === maxIndex) {
+      currentPrevButton.classList.add('card__button--visible');
+      currentNextButton.classList.remove('card__button--visible');
+
+    } else {
+      currentPrevButton.classList.add('card__button--visible');
+      currentNextButton.classList.add('card__button--visible');
+    }
+  } else return;
 }
 //#endregion
 
@@ -1345,29 +1382,6 @@ const handleWeekHeading = () => {
     const dateId = element.className.split(' ').filter(a => /dateId-/.test(a));
     return dateId.toString().replace(/dateId-/,'').split('-').join('.');
   }
-  
-  const setButtonsVisiblity = (index, option) => {
-    const prevWeekButton = document.querySelectorAll('.card__button--js-prev')[index];
-    const nextWeekButton = document.querySelectorAll('.card__button--js-next')[index];
-    switch (index) {
-      case 0:
-        prevWeekButton.classList.remove('card__button--visible');
-        option === 'oneWeek'
-        ? nextWeekButton.classList.remove('card__button--visible')
-        : nextWeekButton.classList.add('card__button--visible');
-        break;
-      
-      case weekHeadings.length - 1:
-        prevWeekButton.classList.add('card__button--visible');
-        nextWeekButton.classList.remove('card__button--visible');
-        break;
-
-      default:
-        prevWeekButton.classList.add('card__button--visible');
-        nextWeekButton.classList.add('card__button--visible');
-        break;
-    }
-  }
   for (let i = 0; i < weekLists.length; i++) {
     const entries = weekLists[i].querySelectorAll('.entry--js');
     const heading = weekHeadings[i];
@@ -1384,7 +1398,6 @@ const handleWeekHeading = () => {
       ? startDate
       : `${startDate.slice(0,5)} - ${endDate}`;
     }
-    weekLists.length > 1 ? setButtonsVisiblity(i) : setButtonsVisiblity(i, 'oneWeek');
   }
 }
 //#endregion
@@ -1678,23 +1691,20 @@ const handleStatsDOM = (user) => {
 const handleStats = () => {
   const usersTotal = hydrappUsers.length;
   // create DOM structure
+  statsContainer.innerHTML = '';
   [...hydrappUsers].forEach(user => handleStatsDOM(user));
   // make logged in user's card visible
   const loggedUserCard = statsContainer.querySelector(`.card--js-${hydrappUser.key}`);
+  const cardIndex = [...loggedUserCard.parentNode.children].indexOf(loggedUserCard);
   loggedUserCard.classList.add('card--visible');
   // set visibility and events for card navigation buttons
-  const cardPrevButtons = statsContainer.querySelectorAll('.card__button--js-prev');
-  const cardNextButtons = statsContainer.querySelectorAll('.card__button--js-next');
+  const allButtons = statsContainer.querySelectorAll('[class*=card__button--js');
   if (usersTotal > 1) {
-    [...cardPrevButtons].forEach(button => {
-      button.classList.add('card__button--visible');
-      button.addEventListener('click', slideCard);
-    });
-    [...cardNextButtons].forEach(button => {
-      button.classList.add('card__button--visible');
+    [...allButtons].forEach(button => {
       button.addEventListener('click', slideCard);
     });
   }
+  handleCardButtons(statsContainer, cardIndex);
 }
 //#endregion
 
