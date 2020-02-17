@@ -520,6 +520,10 @@ const createNewUser = () => {
     .filter((input, index) => index !== 0)
     .forEach(input => input.addEventListener('keyup', filterUserInput));
     appNewUser.addEventListener('keyup', handleNewUser);
+    // remove default inputs behaviour on 'Enter' key press
+    window.addEventListener('keypress', (e) => {
+      if (e.keyCode  === 13) e.preventDefault();
+    });
   }
   
   const handleNewUserQuestion = (index, userName) => {
@@ -1190,14 +1194,12 @@ const toggleSidebarTabs = (e) => {
           handleContainerHeight(archiveContainer, currentWeek);
           window.addEventListener('keydown', enterNewEntryValue);
           window.addEventListener('keydown', removeLastEntry);
-          window.addEventListener('keydown', slideCard);
   
         // hide archive content
         } else {
           archiveContainer.style.height = 0;
           window.removeEventListener('keydown', enterNewEntryValue);
           window.removeEventListener('keydown', removeLastEntry);
-          window.removeEventListener('keydown', slideCard);
         }
         break;
       case statsTabButton:
@@ -1253,7 +1255,6 @@ const slideCard = (e) => {
       slideTimeoutId = null;
     }, slideTime);
   }
-
 
   const self = e.target || e;
   const action = /prev/.test(self.className) ? 'prev' : 'next';
@@ -1364,8 +1365,7 @@ const setArchiveDOM = () => {
     addArchiveEntry(i);
   }
   // set the newest week as visible and handle buttons visibility
-  weeks = document.querySelectorAll('.card--js-week');
-  weekLists = document.querySelectorAll('.card__list--js-week');
+  const weeks = document.querySelectorAll('.card--js-week');
   weeks[0].classList.add('card--visible');
   handleCardButtons(archiveContainer, 0);
   // add 'remove entry' button on the last entry
@@ -1377,6 +1377,7 @@ const addArchiveEntry = (index) => {
   const {value, id, day} = hydrappUser.entries[index];
   const weekHtml = getHtmlOfCard('week');
   const entryHtml = getHtmlOfArchiveEntry(index);
+  let weekLists = archiveContainer.querySelectorAll('.card__list--js-week');
 
   // function adding new week DOM node
   const addWeek = () => {
@@ -1411,7 +1412,7 @@ const addArchiveEntry = (index) => {
 }
 
 const handleWeekHeading = () => {
-  weekLists = archiveContainer.querySelectorAll('.card__list--js-week');
+  const weekLists = archiveContainer.querySelectorAll('.card__list--js-week');
   const weekHeadings = archiveContainer.querySelectorAll('.card__heading--js-week');
 
   const getHeadingDate = (entry) => {
@@ -1509,7 +1510,6 @@ const enterNewEntryValue = (e) => {
       newEntryMode.removeEventListener('click', handleValue);
       window.removeEventListener('keydown', handleValue);
       window.addEventListener('keydown', enterNewEntryValue);
-      window.addEventListener('keydown', slideCard);
     }
   
     const handleValue = (e) => {
@@ -1517,7 +1517,7 @@ const enterNewEntryValue = (e) => {
       const { value } = newEntry;
       switch (self) {
   
-        case 37:
+        case 40:
         case newEntryDecrease:
           if (value > 0) {
             newEntry.value--;
@@ -1526,7 +1526,7 @@ const enterNewEntryValue = (e) => {
           }
           break;
 
-        case 39:
+        case 38:
         case newEntryIncrease:
           if (value < waterMax) {
             newEntry.value++;
@@ -1551,7 +1551,6 @@ const enterNewEntryValue = (e) => {
     newEntryMode.addEventListener('click', handleValue);
     window.addEventListener('keydown', handleValue);
     window.removeEventListener('keydown', enterNewEntryValue);
-    window.removeEventListener('keydown', slideCard);
   }
 }
 
@@ -1671,7 +1670,6 @@ const handleEntryEdit = (e) => {
 
     window.removeEventListener('click', handleEdition);
     window.removeEventListener('keydown', handleEdition);
-    window.addEventListener('keydown', slideCard);
   }
   
   const handleEdition = (e) => {
@@ -1721,7 +1719,6 @@ const handleEntryEdit = (e) => {
   toggleItemDisplay();
   window.addEventListener('click', handleEdition);
   window.addEventListener('keydown', handleEdition);
-  window.removeEventListener('keydown', slideCard);
 }
 //#endregion
 
@@ -1833,8 +1830,6 @@ const handleSettingsEdition = (e) => {
     editSection.removeEventListener('click', handleEdition);
     window.removeEventListener('keydown', handleEdition);
     if (prop !== 'name') inputValue.removeEventListener('keyup', filterUserInput);
-
-    //window.addEventListener('keydown', slideCard); // ! slide between cards
   }
   
   const handleEdition = (e) => {
@@ -1877,8 +1872,6 @@ const handleSettingsEdition = (e) => {
   editSection.addEventListener('click', handleEdition);
   window.addEventListener('keydown', handleEdition);
   if (typeof value === 'number') inputValue.addEventListener('keyup', filterUserInput);
-
-  //window.removeEventListener('keydown', slideCard); // ! slide between cards
 }
 
 const quitLanding = () => {
@@ -2128,8 +2121,7 @@ const statsContainer = document.querySelector('.tab__container--js-stats');
 const settingsContainer = document.querySelector('.tab__container--js-settings');
 //#endregion
 //#region [ HorizonDark ] VARIABLES - ARCHIVE
-let weeks = null;
-let weekLists = null;
+
 const addEntryButton = createAddEntryButton();
 const removeEntryButton = createRemoveEntryButton();
 //#endregion
@@ -2162,15 +2154,11 @@ if (hydrappUsers) {
 } else {
   createNewUser();
 };
-
-window.addEventListener('keypress', (e) => {
-  if (e.keyCode  === 13 || e.keyCode  === 27) e.preventDefault();
-});
 //#endregion
 
 //#region [ HorizonDark ] UNUSED
 
-const entriesFade = (action) => {
+/* const entriesFade = (action) => {
   const currentWeekList = weekLists[0];
   let delay = 0;
 
@@ -2187,10 +2175,9 @@ const entriesFade = (action) => {
       elem.style.transitionDelay = 0;
     });
   }
-}
+} */
 //#endregion
 
 
 
 toggleSidebar(burgerBtn);
-//window.addEventListener('click', (e) => console.log(e.target));
