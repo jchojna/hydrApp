@@ -59,29 +59,43 @@
   &--front.water--fadeIn {
     animation:
       frontBounceIn 3s ease-in-out,
-      wavesVertical 1.5s alternate infinite ease-in-out 3s;
+      wavesVertical 1.5s alternate infinite 3s;
     animation-fill-mode: forwards;
   }
   &--center.water--fadeIn {
     animation:
       centerBounceIn 3s ease-in-out 0.2s,
-      wavesVertical 1.5s alternate infinite ease-in-out 3.4s;
+      wavesVertical 1.5s alternate infinite 3.5s;
     animation-fill-mode: forwards;
   }
   &--back.water--fadeIn {
     animation:
       backBounceIn 3s ease-in-out 0.4s,
+      wavesVertical 1.5s alternate infinite 4s;
+    animation-fill-mode: forwards;
+  }
+  
+  &--front.water--fadeOut {
+    animation:
+      frontBounceOut 1.7s,
+      wavesVertical 1.5s alternate infinite ease-in-out 3s;
+    animation-fill-mode: forwards;
+  }
+  &--center.water--fadeOut {
+    animation:
+      centerBounceOut 2s,
+      wavesVertical 1.5s alternate infinite ease-in-out 3.5s;
+    animation-fill-mode: forwards;
+  }
+  &--back.water--fadeOut {
+    animation:
+      backBounceOut 2.3s,
       wavesVertical 1.5s alternate infinite ease-in-out 4s;
     animation-fill-mode: forwards;
   }
-
-  /* &--fadeOut {
-    top: 0;
-  } */
 }
 
 .waves {
-  height: 5vw;
   left: 0;
   overflow: hidden;
   position: absolute;
@@ -147,8 +161,8 @@
   }
 
   &__svg {
-    width: 100%;
     stroke: none;
+    width: 100%;
 
     &--line {
       bottom: 0;
@@ -162,6 +176,7 @@
   }
 
   &__period {
+    @include flex-center;
     position: relative;
     width: 100%;
   }

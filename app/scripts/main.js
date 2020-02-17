@@ -266,6 +266,10 @@ const getHtmlOfWaterContainer = (obj, isIntro) => {
     </div>
   `;
 
+  const startButton = `
+    <button class="intro__start intro__start--js">Start</button>
+  `
+
   const getHtmlOfWavePeriodsSVGs = (amount, isIntro) => {
     let html = ''
     for (let i = 1; i <= amount; i++) {
@@ -308,8 +312,9 @@ const getHtmlOfWaterContainer = (obj, isIntro) => {
         </div>
       </div>
     `
-    position === 'center' ? html += introLogo : false;
+    html += position === 'center' && isIntro ? introLogo : '';
   });
+  html += isIntro ? startButton : '';
   return html;
 }
 
@@ -707,30 +712,51 @@ const createNewUser = () => {
 }
 //#endregion
 
-//#region [ HorizonDark ] APP INITIAL
-
+//#region [ HorizonDark ] INTRO
 const setIntroWaves = () => {
   if (intro.innerHTML === '') {
     intro.innerHTML = getHtmlOfWaterContainer(introObj, true);
+    // add button event
+    const startButton = intro.querySelector('.intro__start--js');
+    startButton.addEventListener('click', quitIntro);
   }
   setNodes(introObj, intro);
   // add fade in animation
-
-  //introObj.front.water
   const keys = Object.keys(introObj);
-  [...keys].forEach(key => {
-    const { water } = introObj[key];
-    water.classList.add('water--fadeIn');
-    water.classList.add('water--shake');
-  });
-
-
+  [...keys].forEach(key => introObj[key].water.classList.add('water--fadeIn'));
+  // calculate height of every wave
   handleWaterWaves(introObj);
-
+  // show start button after some time
+  const timeoutId = setTimeout(() => {
+    const startButton = intro.querySelector('.intro__start--js');
+    startButton.classList.add('intro__start--visible');
+    clearTimeout(timeoutId);
+  }, 3000);
   // add event listener
   const handleIntroResize = () => handleWaterWaves(introObj);
   window.addEventListener('resize', handleIntroResize);
 }
+
+const quitIntro = () => {
+  const keys = Object.keys(introObj);
+  [...keys].forEach(key => {
+    const { water } = introObj[key];
+    water.classList.remove('water--fadeIn');
+    water.classList.add('water--fadeOut');
+  });
+  intro.classList.remove('intro--visible');
+
+  const startButton = intro.querySelector('.intro__start--js');
+  startButton.classList.remove('intro__start--visible');
+
+  const timeoutId = setTimeout(() => {
+    intro.innerHTML = '';
+    clearTimeout(timeoutId);
+  }, 2000);
+}
+//#endregion
+
+//#region [ HorizonDark ] APP INITIAL
 
 const setLogInDOM = () => {
   // set DOM structure of list of users in log in box
