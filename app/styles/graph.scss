@@ -6,7 +6,7 @@
   height: 100%;
   left: 0;
   pointer-events: none;
-  position: absolute;
+  position: fixed;
   top: 0;
   width: 100%;
   
@@ -20,21 +20,28 @@
   
   &__level {
     border-radius: 0 50px 50px 0;
-    color: $blue;
+    color: $blue-light-3;
     font-weight: 700;
     font-size: 0.8em;
     left: 0;
     padding: 0.5em 0.8em 0.5em 2.5em;
-    position: absolute;
-    transition: bottom $verticalTranslation;
+    position: fixed;
+    transform: translateY(50%);
+    transition: bottom 1s $bezier;
     z-index: -1;
   
     &--avg {
-      background-color: $blue-light-2;
+      background-color: $blue-light-1;
+    }
+
+    &--min {
+      background-color: $blue-dark-1;
+      color: $blue-dark-5;
     }
   
-    &--min {
-      background-color: $warm-orange;
+    &--negative {
+      background-color: $orange-dark-2;
+      color: $blue-light-3;
     }
 
     @media only screen and (min-width: $media-sm) {

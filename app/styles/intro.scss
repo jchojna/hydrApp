@@ -1,0 +1,99 @@
+@import 'variables.scss';
+@import 'mixins.scss';
+
+.intro {
+  @include flex-center;
+  background-color: $blue;
+  bottom: 0;
+  left: 0;
+  opacity: 0;
+  position: fixed;
+  right: 0;
+  top: 0;
+  transition: opacity 0.5s 1.5s, visibility 0s 2s;
+  visibility: hidden;
+  z-index: 2;
+
+  &--visible {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  &__logo {
+    @include flex-center;
+    animation:
+      introLogo 6s ease-in-out infinite 4s,
+      introLogoBounceIn 4s ease-in-out;
+    max-width: 600px;
+    position: relative;
+    visibility: inherit;
+    width: 80%;
+    z-index: -3;
+  }
+
+  &__start {
+    @include button;
+    border: 2px solid $blue-light-1;
+    border-radius: 50px;
+    box-shadow: 0 0 0 0px $blue-dark-2;
+    bottom: 15%;
+    color: $blue-light-1;
+    font-size: 1.5em;
+    font-weight: 400;
+    left: 50%;
+    opacity: 0;
+    padding: 0.3em 1em;
+    position: absolute;
+    transform: translateX(-50%);
+    transition:
+      background-color $time-hover-effect,
+      box-shadow $time-hover-effect,
+      color $time-hover-effect,
+      opacity 0.5s,
+      visibility 0s 0.5s;
+    visibility: hidden;
+
+    &--visible {
+      opacity: 1;
+      transition:
+        background-color $time-hover-effect,
+        box-shadow $time-hover-effect,
+        color $time-hover-effect,
+        opacity 0.5s,
+        visibility 0s;
+      visibility: visible;
+    }
+
+    &:hover {
+      background-color: $blue-light-1;
+      box-shadow: 0 0 0 10px $blue-dark-2;
+      color: $blue-dark-3;
+    }
+
+    @media only screen and (min-width: $media-md) {
+  
+      font-size: 1.75em;
+    }
+
+    @media only screen and (min-width: $media-lg) {
+  
+      font-size: 2em;
+    }
+  }
+  
+  &__svg {
+    fill: $blue-dark-3;
+    pointer-events: all;
+    width: 100%;
+    transform-origin: center center;
+
+    &--color {
+      fill: $blue-light-3;
+      height: 100%;
+      left: 0;
+      position: absolute;
+      width: 100%;
+      top: 0;
+    }
+  }
+}

@@ -1,6 +1,6 @@
 //#region [ Horizon ] COLORS
 // BLUE
-$blue-dark-5: #041927a4;
+$blue-dark-5: #071d2c;
 $blue-dark-4: #102a3d;
 $blue-dark-3: #112f44;
 $blue-dark-2: #1d445f;
@@ -10,11 +10,11 @@ $blue-light-1: #549dc4;
 $blue-light-2: #75b3d4;
 $blue-light-3: #d3f3ff;
 // WARM
-$warm-red: #aa494c;
-$warm-dark-orange: #ba6353;
-$warm-orange: #d68960;
-$warm-light-orange: #e2b673;
-$warm-yellow: #edcf84;
+$orange-dark-2: #aa494c;
+$orange-dark-1: #ba6353;
+$orange: #d68960;
+$orange-light-1: #e2b673;
+$orange-light-2: #edcf84;
 //#endregion
 
 //#region [ Horizon ] MEDIA
@@ -28,17 +28,6 @@ $newUser-toggle: 0.5s;
 $newUser-box-maxWidth: 500px;
 //#endregion
 
-//#region [ Horizon ] PAGE HEADER
-$header-padding-xs: 10px;
-$header-padding-md: 20px;
-$header-padding-lg: 30px;
-$controls-gap-xs: 10px;
-$controls-gap-md: 15px;
-$controls-gap-lg: 20px;
-
-$logo-aspect-ratio: 512 / 135;
-//#endregion
-
 //#region [ Horizon ] BURGER BUTTON
 $burgerBtn-size-xs: 45px;
 $burgerBtn-size-md: 60px;
@@ -46,6 +35,20 @@ $burgerBtn-size-lg: 70px;
 $burgerBtn-padding-xs: 15px;
 $burgerBtn-padding-md: 17px;
 $burgerBtn-padding-lg: 20px;
+//#endregion
+
+//#region [ Horizon ] PAGE HEADER
+$header-padding-xs: 10px;
+$header-padding-md: 20px;
+$header-padding-lg: 30px;
+$controls-gap-xs: 10px;
+$controls-gap-md: 15px;
+$controls-gap-lg: 20px;
+$header-height-xs: $header-padding-xs * 2 + $burgerBtn-size-xs;
+$header-height-md: $header-padding-md * 2 + $burgerBtn-size-md;
+$header-height-lg: $header-padding-lg * 2 + $burgerBtn-size-lg;
+
+$logo-aspect-ratio: 512 / 135;
 //#endregion
 
 //#region [ Horizon ] WATER
@@ -56,9 +59,9 @@ $water-measure-size-lg: 5px;
 //#endregion
 
 //#region [ Horizon ] SIDEBAR
-$header-height-xs: $header-padding-xs * 2 + $burgerBtn-size-xs;
-$header-height-md: $header-padding-md * 2 + $burgerBtn-size-md;
-$header-height-lg: $header-padding-lg * 2 + $burgerBtn-size-lg;
+$sidebar-width-xs: 100%;
+$sidebar-width-md: 50%;
+$sidebar-width-lg: 40%;
 $sidebar-toggle: 0.4s;
 //#endregion
 
@@ -93,10 +96,8 @@ $time-edit-buttons: 0.5s;
 $time-week-slide: 0.5s;
 $time-week-entries: 0.6s;
 
-$time-new-entry: 0.5s;
+$time-newEntry: 0.4s;
 //#endregion
-
-$verticalTranslation: 1s cubic-bezier(0.5,-0.5,0.5,1.5);
 
 $size-main-buttons: 30px;
 
@@ -108,3 +109,5 @@ $br-items: 5px;
 
 $edit-group-cols: 4;
 $edit-group-col-gap: 5px;
+
+$bezier: cubic-bezier(0.5,-0.5,0.5,1.5);

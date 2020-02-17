@@ -9,9 +9,7 @@
   min-height: 60px;
   padding: $cardItem-padding;
   position: relative;
-  transition:
-    background-color $time-edit-buttons,
-    transform $archive-entries-fade-time;
+  transition: background-color $time-edit-buttons;
 
   &--last {
     grid-template-columns: 1fr repeat(4, auto);
@@ -49,22 +47,15 @@
     }
     
     &:hover {
-      fill: $warm-red;
+      fill: $orange-dark-2;
     }
   }
   
   &__button {
     @include button;
-    margin: 0;
-    padding: 0.6rem 0.8rem;
-    font-weight: bold;
-    color: $blue-light-2;
-    border-radius: 5px;
-    transition: background-color $time-hover-effect;
-    
-    &:hover {
-      background-color: $blue;
-    }
+    @include primaryButton;
+
+    margin-top: 10px;
   }
 
   &__svg {

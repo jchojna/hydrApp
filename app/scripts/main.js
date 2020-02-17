@@ -38,7 +38,7 @@ const findFirstParentOfClass = (node, classname) => {
 const handleWindowResize = () => {
   const waterValue = hydrappUser.entries[0].value;
   handleWaterLevel(waterValue);
-  handleWaterWaves();
+  handleWaterWaves(waterObj);
   handleWaterMeasure();
 }
 
@@ -51,7 +51,6 @@ const handleContainerHeight = (container, elements) => {
 const handleContainerHeightThroughTime = (container, elements, time) => {
   const intervalId = setInterval(() => {
     handleContainerHeight(container, elements);
-    console.log('interval');
   }, 10);
 
   const timeoutId = setTimeout(() => {
@@ -72,6 +71,15 @@ const findUserPropsWithTag = (tag) => {
   return [...keys]
   .filter(key => hydrappUser[key].tags)
   .filter(key => hydrappUser[key].tags.includes(tag));
+}
+
+const setNodes = (obj, root) => {
+  obj.front.water  = root.querySelector('.water--js-front');
+  obj.front.waves  = root.querySelector('.waves--js-front');
+  obj.center.water = root.querySelector('.water--js-center');
+  obj.center.waves = root.querySelector('.waves--js-center');
+  obj.back.water   = root.querySelector('.water--js-back');
+  obj.back.waves   = root.querySelector('.waves--js-back');
 }
 //#endregion
 
@@ -191,6 +199,10 @@ const fetchUsersFromLS = () => {
   .map(key => JSON.parse(localStorage.getItem(key)));
 }
 
+const getLoggedUserKey = () => {
+  return [...hydrappUsers].filter(user => user.isLoggedIn)[0].key;
+}
+
 const exportJsonToLS = () => {
   const { nameId } = hydrappUser.login;
   localStorage.setItem(`hydrapp-${nameId}`, JSON.stringify(hydrappUser));
@@ -225,7 +237,7 @@ const getHtmlOfUserLogIn = (user) => {
 }
 
 const getHtmlOfEmoji = (id) => {
-  let emojiHtml = `<div class="emoji emoji--${id} emoji--js-${id}">`;
+  let emojiHtml = `<div class="emoji__container emoji__container--${id} emoji__container--js-${id}">`;
 
   for (let i = 0; i < emojiAmount; i++) {
     emojiHtml += `
@@ -241,9 +253,24 @@ const getHtmlOfEmoji = (id) => {
   return emojiHtml;
 }
 
-const getHtmlOfWaterContainer = (isJsControlled) => {
+const getHtmlOfWaterContainer = (obj, isIntro) => {
 
-  const getHtmlOfWavePeriodsSVGs = (amount) => {
+  const introLogo = `
+    <div class="intro__logo">
+      <svg class="intro__svg" viewBox="0 0 512 135">
+        <use href="assets/svg/icons.svg#logo-white"></use>
+      </svg>
+      <svg class="intro__svg intro__svg--color" viewBox="0 0 512 135">
+        <use href="assets/svg/icons.svg#logo-color"></use>
+      </svg>
+    </div>
+  `;
+
+  const startButton = `
+    <button class="intro__start intro__start--js">Start</button>
+  `
+
+  const getHtmlOfWavePeriodsSVGs = (amount, position, isIntro) => {
     let html = ''
     for (let i = 1; i <= amount; i++) {
       html += `
@@ -251,33 +278,43 @@ const getHtmlOfWaterContainer = (isJsControlled) => {
           <svg class="wave__svg wave__svg--solid" viewBox="0 0 100 10">
             <use href="assets/svg/wave.svg#wave"></use>
           </svg>
-          <svg class="wave__svg wave__svg--line" viewBox="0 0 100 10">
-            <use href="assets/svg/wave.svg#waveLine"></use>
-          </svg>
+          ${
+            isIntro || position !== 'front' ? '' : `
+              <svg class="wave__svg wave__svg--line" viewBox="0 0 100 10">
+                <use href="assets/svg/wave.svg#waveLine"></use>
+              </svg>
+            `
+          }
         </div>
       `;
     }
     return html;
   }
-  const waterPositions = Object.keys(waterObj);
+  const waterPositions = Object.keys(obj);
   let html = '';
   [...waterPositions].forEach(position => {
-    const { wavePeriodsTotal } = waterObj[position];
+    const intro = isIntro ? 'intro' : '';
+    const { wavePeriodsTotal } = obj[position];
     html += `
-    <div class="water water--${position} water--js-${position}">
-      <div class="waves waves--${position} waves--js-${position}">
-        <div class="wave wave--before wave--${position} wave--js">
-          ${getHtmlOfWavePeriodsSVGs(wavePeriodsTotal)}
-        </div>
-        <div class="wave wave--${position} wave--js">
-          ${getHtmlOfWavePeriodsSVGs(wavePeriodsTotal)}
-        </div>
-        <div class="wave wave--after wave--${position} wave--js">
-          ${getHtmlOfWavePeriodsSVGs(wavePeriodsTotal)}
+      <div
+        class="water water--${intro} water--${position} water--js-${position}"
+      >
+        <div class="waves waves--${intro} waves--${position} waves--js-${position}">
+          <div class="wave wave--before wave--${intro} wave--${position} wave--js">
+            ${getHtmlOfWavePeriodsSVGs(wavePeriodsTotal, position, isIntro)}
+          </div>
+          <div class="wave wave--${intro} wave--${position} wave--js">
+            ${getHtmlOfWavePeriodsSVGs(wavePeriodsTotal, position, isIntro)}
+          </div>
+          <div class="wave wave--after wave--${intro} wave--${position} wave--js">
+            ${getHtmlOfWavePeriodsSVGs(wavePeriodsTotal, position, isIntro)}
+          </div>
         </div>
       </div>
-    </div>
-  `});
+    `
+    html += position === 'center' && isIntro ? introLogo : '';
+  });
+  html += isIntro ? startButton : '';
   return html;
 }
 
@@ -354,9 +391,8 @@ const getHtmlOfEdition = (tab, id) => {
 const getHtmlOfArchiveEntry = (index) => {
 
   const { date, day, id, value } = hydrappUser.entries[index];
-  const dateId = date.split(' ').join('-');
   return `
-    <li class="entry entry--js dateId-${dateId}">
+    <li class="entry entry--js dateId-${id}">
       <header class="entry__header entry__header--js">
         <p class="entry__heading entry__heading--day">${day}</p>
         <p class="entry__heading entry__heading--date entry__heading--js-date">${date}</p>
@@ -457,7 +493,7 @@ const createNewUser = () => {
       const { maxLength } = hydrappUser[prop];
       const newUserHtml = `
         <div
-          class="newUser ${prop === 'login' ? 'newUser--visible' : ''} newUser--js"
+          class="newUser newUser--js ${prop === 'login' ? 'newUser--visible' : ''}"
         >
           <label
             for="${prop}Question"
@@ -490,9 +526,9 @@ const createNewUser = () => {
     }
     isNewUserDOM = true;
     newUserQuestions = document.querySelectorAll('.newUser--js');
-    newUserPrevButtons = document.querySelectorAll('.newUser__button--js-prev');
-    newUserNextButtons = document.querySelectorAll('.newUser__button--js-next');
-    newUserInputs = appNewUser.querySelectorAll('.newUser__input--js');
+    const newUserPrevButtons = document.querySelectorAll('.newUser__button--js-prev');
+    const newUserNextButtons = document.querySelectorAll('.newUser__button--js-next');
+    const newUserInputs = appNewUser.querySelectorAll('.newUser__input--js');
     // add buttons events
     [...newUserPrevButtons].forEach(button =>
     button.addEventListener('click', handleNewUser));
@@ -502,10 +538,11 @@ const createNewUser = () => {
     [...newUserInputs]
     .filter((input, index) => index !== 0)
     .forEach(input => input.addEventListener('keyup', filterUserInput));
-    appNewUser.addEventListener('keypress', (e) => {
-      if (e.keyCode  === 13 || e.keyCode  === 27) e.preventDefault();
-    });
     appNewUser.addEventListener('keyup', handleNewUser);
+    // remove default inputs behaviour on 'Enter' key press
+    window.addEventListener('keypress', (e) => {
+      if (e.keyCode  === 13) e.preventDefault();
+    });
   }
   
   const handleNewUserQuestion = (index, userName) => {
@@ -522,106 +559,200 @@ const createNewUser = () => {
   const handleNewUser = (e) => {
     e.preventDefault();
     const self = e.key || e.target;
-  
-    // TOGGLE VISIBILITY OF USER DETAIL WINDOW
-    const toggleQuestion = (current, next, action, timeout) => {
-      const hiddenSide = action === 'prev' ? 'Right' : 'Left';
-      const visibleSide = action === 'prev' ? 'Left' : 'Right';
-      const nextInput = next ? next.querySelector('.newUser__input--js') : false;
-  
-      current.classList.add(`newUser--hidden${hiddenSide}`);
-      current.classList.remove('newUser--visible');
-      next ? next.classList.add(`newUser--hidden${visibleSide}`) : false;
-  
-      questionTimeoutId = setTimeout(() => {
-        if (next) {
-          next.classList.add('newUser--visible');
-          next.classList.remove(`newUser--hidden${visibleSide}`);
-          nextInput.focus();
-        }
-        clearTimeout(questionTimeoutId);
-        questionTimeoutId = null;
-      }, timeout);
+    const action = e.key
+    ? e.key === 'Escape' ? 'prev' : 'next'
+    : /prev/.test(self.className) ? 'prev' : 'next';
+    // find current user question
+    const currentQuestion = e.key
+    ? [...newUserQuestions].filter(question => /visible/.test(question.className))[0]
+    : findFirstParentOfClass(self, 'newUser');
+
+    const container = currentQuestion.parentNode;
+    const containerWidth = container.clientWidth;
+    const currentIndex = [...newUserQuestions].indexOf(currentQuestion);
+    const maxIndex = newUserQuestions.length - 1;
+    const inputs = container.querySelectorAll('.newUser__input--js');
+    const delay = 100;
+    const transitionTime = 500;
+
+    // slide questions with transition effect
+    const slideQuestions = (newIndex, newQuestion, nextInput, offset) => {
+      slideTimeoutId = setTimeout(() => {
+        newQuestion.style = `
+          transform: translateX(0);
+          transition: opacity ${transitionTime}ms, transform ${transitionTime}ms;
+        `;
+        newQuestion.classList.add('newUser--visible');
+        currentQuestion.style = `
+          opacity: 0;
+          transform: translateX(${offset}px);
+          transition: opacity ${transitionTime}ms, transform ${transitionTime}ms;
+        `;
+        handleNewUserQuestion(newIndex, hydrappUser.login.name);
+        nextInput.focus();
+
+      }, delay);
+    }
+    // hide previous card and clear timeouts
+    const clearAfter = () => {
+      const slideSecondTimeout = setTimeout(() => {
+        currentQuestion.classList.remove('newUser--visible');
+        clearTimeout(slideTimeoutId);
+        clearTimeout(slideSecondTimeout);
+        slideTimeoutId = null;
+      }, transitionTime);
     }
     // RETURN USER INPUT VALUE AS INTEGER
     const getInputValue = (index) => parseInt(newUserInputs[index].value);
-  
+
+    // perform sliding effect if previous one is already finished
     if ((self.tagName === 'BUTTON' || self === 'Enter' || self === 'Escape')
-    && questionTimeoutId === null) {
-  
-      const toggleTime = 300;
-      const action = /prev/.test(self.className) ? 'prev' : 'next';
-      const maxIndex = newUserQuestions.length - 1;
-  
-      // GO TO PREVIOUS USER DETAIL
-      if (action === 'prev' || self === 'Escape') {
-        const currentQuestion = newUserQuestions[currentQuestionIndex];
-        const nextQuestion = newUserQuestions[currentQuestionIndex - 1];
-        if (currentQuestionIndex > 0) {
-          toggleQuestion(currentQuestion, nextQuestion, 'prev', toggleTime);
-          currentQuestionIndex--;
-        // go back to user log in box
-        } else {
-          appNewUser.classList.remove('app__newUser--visible');
-          appLogIn.classList.add('app__logIn--visible');
-        }
+      && slideTimeoutId === null) {
 
-      } else if (action === 'next' || self === 'Enter') {
-        const currentQuestion = newUserQuestions[currentQuestionIndex];
-        const currentInput = currentQuestion.querySelector('.newUser__input--js');
-        const currentAlert = currentQuestion.querySelector('.newUser__alert--js');
-        const currentProp = questions[currentQuestionIndex];
+      // find next index
+      const newIndex = action === 'prev'
+      ? limitedRange(maxIndex, currentIndex, 'decrease')
+      : limitedRange(maxIndex, currentIndex, 'increase');
+      // set new elements
+      const newQuestion = newUserQuestions[newIndex];
+      const nextInput = inputs[newIndex];
+      // set initial position of a new card element
+      const initialOffset = action === 'prev' ? -1 * containerWidth : containerWidth;
+      const finalOffset = action === 'next' ? -1 * containerWidth : containerWidth;
+      
+      const willGoBackToPrevious = action === 'prev' || self === 'Escape';
+      const willGoBackToLogin = willGoBackToPrevious && currentIndex === 0;
+      const willGoToNextQuestion = action === 'next' || self === 'Enter';
+      const willCreateNewUser = willGoToNextQuestion && currentIndex >= maxIndex;
 
-        // AQUIRE USER DATA AND GO TO LANDING SECTION
-        if (currentQuestionIndex >= maxIndex) {
+      const currentInput = currentQuestion.querySelector('.newUser__input--js');
+      const currentAlert = currentQuestion.querySelector('.newUser__alert--js');
+      const currentProp = questions[currentIndex];
+      const shouldQuestionSlide = ((willGoToNextQuestion && isInputValid(currentInput, currentProp, currentAlert)) || willGoBackToPrevious);
+
+      // GO BACK TO USER LOG IN
+      if (willGoBackToLogin) {
+        appNewUser.classList.remove('app__newUser--visible');
+        appLogIn.classList.add('app__logIn--visible');  
+
+      // GO TO THE NEXT QUESTION
+      } else if (willGoToNextQuestion) {
+
+        // CREATE NEW USER
+        if (willCreateNewUser) {
           if (isInputValid(currentInput, currentProp, currentAlert)) {
             hydrappUser.age.value    = getInputValue(1);
             hydrappUser.weight.value = getInputValue(2);
             hydrappUser.height.value = getInputValue(3);
+            hydrappUser.isLoggedIn = true;
             // set JSON object as local storage item
             exportJsonToLS();
             hydrappUsers = fetchUsersFromLS();
             loadApp();
             // change user section visibility
-            toggleQuestion(currentQuestion, null, 'next', toggleTime);
             appNewUser.classList.remove('app__newUser--visible');
           }
-        // GO TO NEXT USER DETAIL
+        // VALIDATE CURRENT INPUT AND GO TO NEXT USER QUESTION 
         } else if (isInputValid(currentInput, currentProp, currentAlert)) {
           const inputValue = currentInput.value;
-          if (currentQuestionIndex === 0) hydrappUser.login.name = inputValue;
+          if (currentIndex === 0) hydrappUser.login.name = inputValue;
 
           const { name } = hydrappUser.login;
-          handleNewUserQuestion(currentQuestionIndex + 1, name);
-          const nextQuestion = newUserQuestions[currentQuestionIndex + 1];
-          toggleQuestion(currentQuestion, nextQuestion, 'next', toggleTime);
-          currentQuestionIndex++;
+          handleNewUserQuestion(currentIndex + 1, name);
         }
       }
-    }
+
+      if (willGoBackToPrevious) {
+        handleInputAlert(currentAlert);
+      }
+
+      if (!willGoBackToLogin && !willCreateNewUser) {
+        newQuestion.style = `
+          transform: translateX(${initialOffset}px);
+        `;
+      }
+      if (!willGoBackToLogin) {
+        if (shouldQuestionSlide) {
+          slidePromise
+            .then(() => slideQuestions(newIndex, newQuestion, nextInput, finalOffset))
+            .then(clearAfter);
+            //catch(() => console.log('Something bad happened!'));
+        }
+      }
+    } else return;
   }
+
   // create new user object with empty entries
   const date = new Date();
   hydrappUser = new User(date);
   const newEntry = new Entry(date);
   hydrappUser.entries = [newEntry];
+  // create and set promise function
+  const slidePromise = new Promise((resolve, reject) => {
+    resolve();
+  });
   // user questions keys
   const questions = findUserPropsWithTag('questions');
+  let newUserQuestions = document.querySelectorAll('.newUser--js');
 
-  let currentQuestionIndex = 0;
-  let questionTimeoutId = null;
-  let newUserQuestions, newUserPrevButtons, newUserNextButtons;
-  let newUserInputs = appNewUser.querySelectorAll('.newUser__input--js');
-
-  // create user DOM structure
-  isFirstAppLoad ? setNewUserDOM() : false;
+  if (isNewUserDOM) {
+    newUserQuestions[0].style = 'transform: translateX(0px);';
+    newUserQuestions[0].classList.add('newUser--visible');
+  } else {
+    setNewUserDOM();
+  }
 
   // handle visibility of log in box and new user creator
   appLogIn.classList.remove('app__logIn--visible');
   appNewUser.classList.add('app__newUser--visible');
-  handleNewUserQuestion(currentQuestionIndex);
+  handleNewUserQuestion(0);
   // clear all inputs
+  const newUserInputs = appNewUser.querySelectorAll('.newUser__input--js');
   [...newUserInputs].forEach(input => input.value = '');
+}
+//#endregion
+
+//#region [ HorizonDark ] INTRO
+const setIntroWaves = () => {
+  if (intro.innerHTML === '') {
+    intro.innerHTML = getHtmlOfWaterContainer(introObj, true);
+    // add button event
+    const startButton = intro.querySelector('.intro__start--js');
+    startButton.addEventListener('click', quitIntro);
+  }
+  setNodes(introObj, intro);
+  // add fade in animation
+  const keys = Object.keys(introObj);
+  [...keys].forEach(key => introObj[key].water.classList.add('water--fadeIn'));
+  // calculate height of every wave
+  handleWaterWaves(introObj);
+  // show start button after some time
+  const timeoutId = setTimeout(() => {
+    const startButton = intro.querySelector('.intro__start--js');
+    startButton.classList.add('intro__start--visible');
+    clearTimeout(timeoutId);
+  }, 3000);
+  // add event listener
+  const handleIntroResize = () => handleWaterWaves(introObj);
+  window.addEventListener('resize', handleIntroResize);
+}
+
+const quitIntro = () => {
+  const keys = Object.keys(introObj);
+  [...keys].forEach(key => {
+    const { water } = introObj[key];
+    water.classList.remove('water--fadeIn');
+    water.classList.add('water--fadeOut');
+  });
+  intro.classList.remove('intro--visible');
+
+  const startButton = intro.querySelector('.intro__start--js');
+  startButton.classList.remove('intro__start--visible');
+
+  const timeoutId = setTimeout(() => {
+    intro.innerHTML = '';
+    clearTimeout(timeoutId);
+  }, 2000);
 }
 //#endregion
 
@@ -640,10 +771,11 @@ const setLogInDOM = () => {
     userButton.addEventListener('click', handleUserLogin);
   });
   // add 'create new user' button event only at first page load
-  if (isFirstAppLoad) {
+  if (isFirstLoginLoad) {
     const createUserButton = appLogIn.querySelector('.app__createUserButton--js');
     createUserButton.addEventListener('click', createNewUser);
   }
+  isFirstLoginLoad = false;
   // show log in box
   appLogIn.classList.add('app__logIn--visible');
 }
@@ -653,6 +785,7 @@ const handleUserLogin = (e) => {
   const { userKey } = self;
   // assign selected user to JSON object and load app
   hydrappUser = [...hydrappUsers].filter(({ key }) => key === userKey)[0];
+  hydrappUser.isLoggedIn = true;
   loadApp();
   // hide log in box
   appLogIn.classList.remove('app__logIn--visible');
@@ -663,27 +796,31 @@ const handleUserLogin = (e) => {
 
 const loadApp = () => {
   updateJsonOnDateChange();
-  const startValue = hydrappUser.entries[0].value;
+  const { value } = hydrappUser.entries[0];
   setArchiveDOM();
   handleStats();
   setSettingsDOM();
   setWaterMeasureDOM();
+  setEmojiDOM();
+  handleCounter(landingCounter, value);
+  handleCounter(newEntryCounter, 0);
+  handleCounterMessage(value);
+  handleLandingCounterDate();
+  handleEmoji('controls', value);
+  handleEmoji('newEntry', 0);
   setWaterWaves();
-  handleCounter(startValue);
-  handleWaterLevel(startValue);
+  handleWaterLevel(value);
+  handleWaterMin(value);
+  handleWaterAverage();
   handleWaterShake();
   handleWaterMeasure();
-  handleCounterMessage(startValue);
-  handleCounterDate();
-  emoji.innerHTML = getHtmlOfEmoji('controls');
-  handleEmoji('controls', startValue);
   handleWeekHeading();
-  handleWaterAverage();
+
   appLanding.classList.add('app__landing--visible');
   appUserProfile.classList.remove('app__userProfile--visible');
 
   if (isFirstAppLoad) {
-    controls.addEventListener('click', handleWaterChange);
+    landingControls.addEventListener('click', handleWaterChange);
     window.addEventListener('resize', handleWindowResize);
     burgerBtn.addEventListener('click', toggleSidebar);
     appSidebar.addEventListener('click', toggleSidebarTabs);
@@ -692,18 +829,25 @@ const loadApp = () => {
 }
 //#endregion
 
-//#region [ HorizonDark ] EMOJI 
+//#region [ HorizonDark ] EMOJI
+
+const setEmojiDOM = () => {
+  if (isFirstAppLoad) {
+    emoji.innerHTML = getHtmlOfEmoji('controls');
+    emojiNewEntry.innerHTML = getHtmlOfEmoji('newEntry');
+  }
+}
+
 const handleEmoji = (id, number) => {
-  number > 7 ? number = 7 : false;
+  let feedbackValue = getFeedbackValue(number);
+  feedbackValue > 7 ? feedbackValue = 7 : false;
   const emojis = document.querySelectorAll(`.emoji__svg--js-${id}`);
 
   [...emojis].forEach((emoji, index) => {
-    if (index === number) {
+    if (index === feedbackValue) {
       emoji.classList.add('emoji__svg--visible');
     } else {
-      if (emoji.classList.contains('emoji__svg--visible')) {
-        emoji.classList.remove('emoji__svg--visible');
-      }
+      emoji.classList.remove('emoji__svg--visible');
     }
   });  
 }
@@ -712,25 +856,21 @@ const handleEmoji = (id, number) => {
 //#region [ HorizonDark ] LANDING - WATER
 
 const setWaterWaves = () => {
-  if (isFirstAppLoad) {
-    appWater.innerHTML = getHtmlOfWaterContainer(true);
-    waterObj.front.water = document.querySelector('.water--js-front');
-    waterObj.front.waves = document.querySelector('.waves--js-front');
-    waterObj.center.water = document.querySelector('.water--js-center');
-    waterObj.center.waves = document.querySelector('.waves--js-center');
-    waterObj.back.water = document.querySelector('.water--js-back');
-    waterObj.back.waves = document.querySelector('.waves--js-back');
+  if (appWater.innerHTML === '') {
+    appWater.innerHTML = getHtmlOfWaterContainer(waterObj, false);
   }
-  handleWaterWaves();
+  setNodes(waterObj, appWater);
+  handleWaterWaves(waterObj);
 }
 
-const handleWaterWaves = () => {
-  const waterPositions = Object.keys(waterObj);
+const handleWaterWaves = (obj) => {
+  const waterPositions = Object.keys(obj);
   [...waterPositions].forEach(position => {
-    const { waves, wavePeriodsTotal } = waterObj[position];
-    const height = appWater.clientWidth / wavePeriodsTotal / 10;
+    const { waves, wavePeriodsTotal } = obj[position];
+    
+    const height = window.innerWidth / wavePeriodsTotal / 10;
     waves.style.height = `${height}px`;
-    waves.style.top = `${-1 * (height - 1)}px`;
+    waves.style.top = `${-1 * (height - 2)}px`;
   });
 }
 
@@ -782,28 +922,29 @@ const handleWaterMeasure = () => {
 
 const handleWaterChange = (e) => {
   const self = e.target;
-  const { waterMax } = hydrappUser;
+  const waterMax = hydrappUser.waterMax.value;
   let { value, id } = hydrappUser.entries[0];
   const firstEntryValue = document.querySelector('.entry__value--js');
 
   // if add button clicked
   if (self === addBtn) {
     if (value >= waterMax) return;
-    handleCounter(value, ++value);
+    handleCounter(landingCounter, value, ++value);
 
   // if remove button clicked
   } else if (self === removeBtn) {
     if (value <= 0) return;
-    handleCounter(value, --value);
+    handleCounter(landingCounter, value, --value);
   }
   // value has been changed
   hydrappUser.entries[0].value = value;
+  firstEntryValue.textContent = value;
   exportJsonToLS();
   handleWaterLevel(value);
   handleWaterShake();
   handleCounterMessage(value);
+  handleWaterMin(value);
   handleWaterAverage();
-  firstEntryValue.textContent = value;
   handleEmoji('controls', value);
   handleEmoji(id, value);
 }
@@ -820,9 +961,9 @@ const handleWaterLevel = (value) => {
   const waterMax = hydrappUser.waterMax.value;
   const waterMin = hydrappUser.waterMin.value;
   const waterAvg = hydrappUser.waterAvg.value;
-  const landingHeight = appLanding.clientHeight;
-  const waterOffset = landingHeight / waterMax * (waterMax - value);
-  const waterOffsetPercent = waterOffset / landingHeight;
+  const height = window.innerHeight;
+  const waterOffset = height / waterMax * (waterMax - value);
+  const waterOffsetPercent = waterOffset / height;
   const maxOffsetBetween = 200;
   const waterOffsets = {
     front: waterOffset,
@@ -834,8 +975,8 @@ const handleWaterLevel = (value) => {
   water.style.top = `${waterOffsets[position]}px`;
   handleWatersArray(setTopOffset);
   // handle average and minimum levels of water measure
-  const avgOffset = landingHeight / waterMax * (waterAvg);
-  const minOffset = landingHeight / waterMax * (waterMin);
+  const avgOffset = height / waterMax * (waterAvg);
+  const minOffset = height / waterMax * (waterMin);
   levelAvg.style.bottom = `${avgOffset}px`;
   levelMin.style.bottom = `${minOffset}px`;
 }
@@ -869,8 +1010,16 @@ const handleWaterShake = () => {
   handleWatersArray(addShakeAnimation);
 }
 
+const handleWaterMin = (value) => {
+  const waterMin = hydrappUser.waterMin.value;
+  value >= waterMin
+  ? levelMin.classList.remove('graph__level--negative')
+  : levelMin.classList.add('graph__level--negative');
+}
+
 const handleWaterAverage = () => {
   const { key, entries } = hydrappUser;
+  const waterMin = hydrappUser.waterMin.value;
   const waterMax = hydrappUser.waterMax.value;
   const prop = 'waterAvg';
   const interval = appLanding.clientHeight / waterMax;
@@ -881,15 +1030,18 @@ const handleWaterAverage = () => {
     .reduce((a,b) => a + b) / entries.length;
   const roundedWaterAvg = Math.round(waterAvg * 100) / 100;
 
+  roundedWaterAvg >= waterMin
+  ? levelAvg.classList.remove('graph__level--negative')
+  : levelAvg.classList.add('graph__level--negative');
   levelAvg.style.bottom = `${roundedWaterAvg * interval}px`;
   hydrappUser.waterAvg.value = roundedWaterAvg;
   statsOutput.textContent = getGlasses(prop, roundedWaterAvg);
 }
 //#endregion
 
-//#region [ HorizonDark ] LANDING - COUNTER
+//#region [ HorizonDark ] COUNTER
 
-const handleCounter = (currentValue, newValue) => {
+const handleCounter = (counterObj, currentValue, newValue) => {
   const getTenthsValue = (value) => Math.floor(value / 10);
   const getOnesValue = (value) => value % 10;
 
@@ -898,12 +1050,17 @@ const handleCounter = (currentValue, newValue) => {
   const currentOnesValue = getOnesValue(currentValue);
   const currentTenthsHref = hrefPrefix + currentTenthsValue;
   const currentOnesHref = hrefPrefix + currentOnesValue;
+  const {
+    prevTenths,
+    prevOnes,
+    nextTenths,
+    nextOnes } = counterObj;
   // set counter on page load
   if (newValue === undefined) {
-    counterPrevTenths.firstElementChild.setAttribute('href', currentTenthsHref);
-    counterPrevOnes.firstElementChild.setAttribute('href', currentOnesHref);
-    counterNextTenths.firstElementChild.setAttribute('href', currentTenthsHref);
-    counterNextOnes.firstElementChild.setAttribute('href', currentOnesHref);
+    prevTenths.firstElementChild.setAttribute('href', currentTenthsHref);
+    prevOnes.firstElementChild.setAttribute('href', currentOnesHref);
+    nextTenths.firstElementChild.setAttribute('href', currentTenthsHref);
+    nextOnes.firstElementChild.setAttribute('href', currentOnesHref);
     return;
   }
   // return false if value did not change
@@ -918,46 +1075,46 @@ const handleCounter = (currentValue, newValue) => {
 
   const removeAnimations = (digits) => {
     if (digits === 'tenths') {
-      counterNextTenths.classList.remove('digit__svg--animateIn');
-      counterNextTenths.classList.remove('digit__svg--animateOut');
-      counterPrevTenths.classList.remove('digit__svg--animateOut');
+      nextTenths.classList.remove('digit__svg--animateIn');
+      nextTenths.classList.remove('digit__svg--animateOut');
+      prevTenths.classList.remove('digit__svg--animateOut');
     } else if (digits === 'ones') {
-      counterNextOnes.classList.remove('digit__svg--animateIn');
-      counterNextOnes.classList.remove('digit__svg--animateOut');
-      counterPrevOnes.classList.remove('digit__svg--animateOut');
+      nextOnes.classList.remove('digit__svg--animateIn');
+      nextOnes.classList.remove('digit__svg--animateOut');
+      prevOnes.classList.remove('digit__svg--animateOut');
     }
   }
   // handle tenths on add button click
   if (newValue > currentValue && newTenthsValue !== currentTenthsValue) {
 
-    counterNextTenths.firstElementChild.setAttribute('href', newTenthsHref);
-    counterPrevTenths.firstElementChild.setAttribute('href', currentTenthsHref);
-    counterNextTenths.classList.add('digit__svg--rotatedNext');
-    counterPrevTenths.classList.remove('digit__svg--rotatedPrev');
+    nextTenths.firstElementChild.setAttribute('href', newTenthsHref);
+    prevTenths.firstElementChild.setAttribute('href', currentTenthsHref);
+    nextTenths.classList.add('digit__svg--rotatedNext');
+    prevTenths.classList.remove('digit__svg--rotatedPrev');
     removeAnimations('tenths');
 
     const timeoutId = setTimeout(() => {
-      counterNextTenths.classList.remove('digit__svg--rotatedNext');
-      counterNextTenths.classList.add('digit__svg--animateIn');
-      counterPrevTenths.classList.add('digit__svg--rotatedPrev');
-      counterPrevTenths.classList.add('digit__svg--animateOut');
+      nextTenths.classList.remove('digit__svg--rotatedNext');
+      nextTenths.classList.add('digit__svg--animateIn');
+      prevTenths.classList.add('digit__svg--rotatedPrev');
+      prevTenths.classList.add('digit__svg--animateOut');
       clearTimeout(timeoutId);
     }, tenthsTimeout);
 
   // handle tenths on remove button click
   } else if (newValue < currentValue && newTenthsValue !== currentTenthsValue) {
 
-    counterNextTenths.firstElementChild.setAttribute('href', currentTenthsHref);
-    counterPrevTenths.firstElementChild.setAttribute('href', newTenthsHref);
-    counterNextTenths.classList.remove('digit__svg--rotatedNext');
-    counterPrevTenths.classList.add('digit__svg--rotatedPrev');
+    nextTenths.firstElementChild.setAttribute('href', currentTenthsHref);
+    prevTenths.firstElementChild.setAttribute('href', newTenthsHref);
+    nextTenths.classList.remove('digit__svg--rotatedNext');
+    prevTenths.classList.add('digit__svg--rotatedPrev');
     removeAnimations('tenths');
 
     const timeoutId = setTimeout(() => {
-      counterNextTenths.classList.add('digit__svg--rotatedNext');
-      counterNextTenths.classList.add('digit__svg--animateOut');
-      counterPrevTenths.classList.remove('digit__svg--rotatedPrev');
-      counterPrevTenths.classList.add('digit__svg--animateOut');
+      nextTenths.classList.add('digit__svg--rotatedNext');
+      nextTenths.classList.add('digit__svg--animateOut');
+      prevTenths.classList.remove('digit__svg--rotatedPrev');
+      prevTenths.classList.add('digit__svg--animateOut');
       clearTimeout(timeoutId);
     }, tenthsTimeout);
   }
@@ -965,76 +1122,89 @@ const handleCounter = (currentValue, newValue) => {
   // handle ones on add button click
   if (newValue > currentValue && newOnesValue !== currentOnesValue) {
 
-    counterNextOnes.firstElementChild.setAttribute('href', newOnesHref);
-    counterPrevOnes.firstElementChild.setAttribute('href', currentOnesHref);
-    counterNextOnes.classList.add('digit__svg--rotatedNext');
-    counterPrevOnes.classList.remove('digit__svg--rotatedPrev');
+    nextOnes.firstElementChild.setAttribute('href', newOnesHref);
+    prevOnes.firstElementChild.setAttribute('href', currentOnesHref);
+    nextOnes.classList.add('digit__svg--rotatedNext');
+    prevOnes.classList.remove('digit__svg--rotatedPrev');
     removeAnimations('ones');
 
     const timeoutId = setTimeout(() => {
-      counterNextOnes.classList.remove('digit__svg--rotatedNext');
-      counterNextOnes.classList.add('digit__svg--animateIn');
-      counterPrevOnes.classList.add('digit__svg--rotatedPrev');
-      counterPrevOnes.classList.add('digit__svg--animateOut');
+      nextOnes.classList.remove('digit__svg--rotatedNext');
+      nextOnes.classList.add('digit__svg--animateIn');
+      prevOnes.classList.add('digit__svg--rotatedPrev');
+      prevOnes.classList.add('digit__svg--animateOut');
       clearTimeout(timeoutId);
     }, onesTimeout);
     
   // handle ones on remove button click
   } else if (newValue < currentValue && newOnesValue !== currentOnesValue) {
         
-    counterNextOnes.firstElementChild.setAttribute('href', currentOnesHref);
-    counterPrevOnes.firstElementChild.setAttribute('href', newOnesHref);
-    counterNextOnes.classList.remove('digit__svg--rotatedNext');
-    counterPrevOnes.classList.add('digit__svg--rotatedPrev');
+    nextOnes.firstElementChild.setAttribute('href', currentOnesHref);
+    prevOnes.firstElementChild.setAttribute('href', newOnesHref);
+    nextOnes.classList.remove('digit__svg--rotatedNext');
+    prevOnes.classList.add('digit__svg--rotatedPrev');
     removeAnimations('ones');
     
     const timeoutId = setTimeout(() => {
-      counterNextOnes.classList.add('digit__svg--rotatedNext');
-      counterNextOnes.classList.add('digit__svg--animateOut');
-      counterPrevOnes.classList.remove('digit__svg--rotatedPrev');
-      counterPrevOnes.classList.add('digit__svg--animateOut');
+      nextOnes.classList.add('digit__svg--rotatedNext');
+      nextOnes.classList.add('digit__svg--animateOut');
+      prevOnes.classList.remove('digit__svg--rotatedPrev');
+      prevOnes.classList.add('digit__svg--animateOut');
       clearTimeout(timeoutId);
     }, onesTimeout);
   }
 }
 
+const getFeedbackValue = (value) => {
+  const waterMin = hydrappUser.waterMin.value;
+  const waterMax = hydrappUser.waterMax.value;
+  const diff = waterMax - waterMin;
+
+  return value >= waterMax
+  ? 8 : value >= Math.floor(waterMin + diff * 3/4)
+  ? 7 : value >= Math.floor(waterMin + diff * 1/4)
+  ? 6 : value >= Math.floor(waterMin)
+  ? 5 : value >= Math.floor(waterMin * 4/5)
+  ? 4 : value >= Math.floor(waterMin * 3/5)
+  ? 3 : value >= Math.floor(waterMin * 2/5)
+  ? 2 : value >= Math.floor(waterMin * 1/5)
+  ? 1 : 0;
+}
+
 const handleCounterMessage = (value) => {
-  const { waterMax, waterMin, waterAvg } = hydrappUser;
-  counterMessage.innerHTML = value === waterMax
+  const feedbackValue = getFeedbackValue(value);
+  counterMessage.innerHTML = feedbackValue === 8
   ? 'It\'s enough for today!'
-
-  : value >= waterMax - 2
-  ? 'Almost there..'
-
-  : value > waterMin + 1
-  ? 'Woow.. You\'re on fire!'
-
-  : value >= waterMin - 1
-  ? 'Good job! You reached your optimal water consumption'
-
-  : value >= waterMin - 3
+  : feedbackValue === 7
+  ? 'You almost reached the top!'
+  : feedbackValue === 6
+  ? 'Woow.. You\'re on ... fire!'
+  : feedbackValue === 5
+  ? 'Good job! You reached your minimum water consumption'
+  : feedbackValue === 4
   ? 'Keep going.. Yo\'re doing well'
-  
-  : value >= 4
+  : feedbackValue === 3
   ? 'Much better, but still you can do more!'
-  
-  : value >= 2
+  : feedbackValue === 2
   ? 'Still too little..'
-
+  : feedbackValue === 1
+  ? 'Uff.. Keep it going!'
   : 'Drink or you will dehydrate!';
 }
 
-const handleCounterDate = () => {
+const handleLandingCounterDate = () => {
   const { day, date } = hydrappUser.entries[0];
-  counterDay.innerHTML = day;
-  counterDate.innerHTML = date.slice().split(' ').join('.');
+  landingDay.innerHTML = day;
+  landingDate.innerHTML = date.slice().split(' ').join('.');
 }
 //#endregion
 
 //#region [ HorizonDark ] SIDEBAR
+
 const toggleSidebar = (e) => {
   const self = e.target || e;
   if (self === burgerBtn) {
+    isSidebarActive = !isSidebarActive;
     self.classList.toggle('button--active');
     appSidebar.classList.toggle('app__sidebar--visible');
     appLanding.classList.toggle('app__landing--onSide');
@@ -1043,7 +1213,7 @@ const toggleSidebar = (e) => {
     clearTimeout(wavesTimeoutId);
     if (window.innerWidth >= mediaMd) {
       wavesIntervalId = setInterval(() => {
-        handleWaterWaves();
+        handleWaterWaves(waterObj);
       }, 10);
       wavesTimeoutId = setTimeout(() => {
         clearInterval(wavesIntervalId);
@@ -1052,34 +1222,34 @@ const toggleSidebar = (e) => {
     }
   }
 }
-const toggleSidebarTabs = (e) => {
-  const self = e.target;
 
-  if(self === archiveTabButton
+const toggleSidebarTabs = (e) => {
+  const self = e.target || e;
+
+  if (self === archiveTabButton
   || self === statsTabButton 
   || self === settingTabButton) {
 
     const parentContainer = findFirstParentOfClass(self, 'tab');
-    const svgIcon = parentContainer.querySelector('.tab__svg');
+    const svgIcon = parentContainer.querySelector('.tab__svg--js');
     const tabContainer = parentContainer.querySelector('.tab__container');
     const isActive = svgIcon.classList.contains('tab__svg--active');
+    const weeks = archiveContainer.children;
+    const currentWeek = [...weeks].filter(week => week.classList.contains('card--visible'))[0];
     
     switch (self) {
       case archiveTabButton:
         // show archive content
         if (!isActive) {
-          const currentWeek = weeks[currentWeekIndex];
           handleContainerHeight(archiveContainer, currentWeek);
           window.addEventListener('keydown', enterNewEntryValue);
           window.addEventListener('keydown', removeLastEntry);
-          window.addEventListener('keydown', slideCard);
   
         // hide archive content
         } else {
           archiveContainer.style.height = 0;
           window.removeEventListener('keydown', enterNewEntryValue);
           window.removeEventListener('keydown', removeLastEntry);
-          window.removeEventListener('keydown', slideCard);
         }
         break;
       case statsTabButton:
@@ -1097,8 +1267,46 @@ const toggleSidebarTabs = (e) => {
     svgIcon.classList.toggle('tab__svg--active');
   }
 }
-const slideCard = (e, isLooped) => {
-  const self = e.target;
+
+const slideCard = (e) => {
+
+  // slide cards with transition effect
+  const slideCards = (newCard, newCardList, newCardHeading, offset) => {
+    slideTimeoutId = setTimeout(() => {
+      newCardList.style = `
+        transform: translateX(0);
+        transition: transform ${slideTime}ms;
+      `;
+      currentCardList.style = `
+        transform: translateX(${offset}px);
+        transition: transform ${slideTime}ms;
+      `;
+      currentCardHeader.style = `
+        visibility: hidden;
+        transition: visibility 0ms ${slideTime / 2}ms;
+      `;
+      newCardHeading.style = `
+        opacity: 1;
+        transition: opacity ${slideTime / 2}ms ${slideTime / 2}ms;
+      `;
+      currentCardHeading.style = `
+        opacity: 0;
+        transition: opacity ${slideTime / 2}ms;
+      `;
+      newCard.classList.add('card--visible');
+    }, delay);
+  }
+  // hide previous card and clear timeouts
+  const clearAfter = () => {
+    const slideSecondTimeout = setTimeout(() => {
+      currentCard.classList.remove('card--visible');
+      clearTimeout(slideTimeoutId);
+      clearTimeout(slideSecondTimeout);
+      slideTimeoutId = null;
+    }, slideTime);
+  }
+
+  const self = e.target || e;
   const action = /prev/.test(self.className) ? 'prev' : 'next';
   const currentCard = findFirstParentOfClass(self, 'card');
   const container = currentCard.parentNode;
@@ -1113,62 +1321,29 @@ const slideCard = (e, isLooped) => {
   const currentCardHeading = cardHeadings[currentIndex];
   const maxIndex = cards.length - 1;
   const delay = 50;
-  const transitionTime = 500;
-
-  // slide cards with transition effect
-  const slideCards = (newCard, newCardList, newCardHeading, offset) => {
-    slideTimeoutId = setTimeout(() => {
-      newCardList.style = `
-        transform: translateX(0);
-        transition: transform ${transitionTime}ms;
-      `;
-      currentCardList.style = `
-        transform: translateX(${offset}px);
-        transition: transform ${transitionTime}ms;
-      `;
-      currentCardHeader.style = `
-        visibility: hidden;
-        transition: visibility 0ms ${transitionTime / 2}ms;
-      `;
-      newCardHeading.style = `
-        opacity: 1;
-        transition: opacity ${transitionTime / 2}ms ${transitionTime / 2}ms;
-      `;
-      currentCardHeading.style = `
-        opacity: 0;
-        transition: opacity ${transitionTime / 2}ms;
-      `;
-      newCard.classList.add('card--visible');
-    }, delay);
-  }
-  // hide previous card and clear timeouts
-  const clearAfter = () => {
-    const slideSecondTimeout = setTimeout(() => {
-      currentCard.classList.remove('card--visible');
-      clearTimeout(slideTimeoutId);
-      clearTimeout(slideSecondTimeout);
-      slideTimeoutId = null;
-    }, transitionTime);
-  }
+  const slideTime = 500;
+  const isLast = currentIndex === 0 && action === 'prev'
+  || currentIndex === maxIndex && action === 'next';
 
   // perform sliding effect if previous one is already finished
-  if (slideTimeoutId === null) {
+  if (slideTimeoutId === null && !isLast) {
     // find next index
     const newIndex = action === 'prev'
-    ? loopedRange(maxIndex, currentIndex, 'decrease')
-    : loopedRange(maxIndex, currentIndex, 'increase');
+    ? limitedRange(maxIndex, currentIndex, 'decrease')
+    : limitedRange(maxIndex, currentIndex, 'increase');
     // set new elements
-    var newCard = cards[newIndex];
+    const newCard = cards[newIndex];
     const newCardList = cardLists[newIndex];
-    var newCardHeader = cardHeaders[newIndex];
-    var newCardHeading = cardHeadings[newIndex];
+    const newCardHeader = cardHeaders[newIndex];
+    const newCardHeading = cardHeadings[newIndex];
     // set initial position of a new card element
     const initialOffset = action === 'prev' ? -1 * containerWidth : containerWidth;
     const finalOffset = action === 'next' ? -1 * containerWidth : containerWidth;
+
     newCardList.style = `transform: translateX(${initialOffset}px);`;
     newCardHeader.style = `
       visibility: visible;
-      transition: visibility 0ms ${transitionTime / 2}ms;
+      transition: visibility 0ms ${slideTime / 2}ms;
     `;
     // create and set promise function
     const slidePromise = new Promise((resolve, reject) => {
@@ -1181,7 +1356,53 @@ const slideCard = (e, isLooped) => {
 
     // adjust container height to its current content
     handleContainerHeight(container, newCard);
+    handleCardButtons(container, newIndex);
   }
+}
+
+const handleCardButtons = (container, index) => {
+
+  const cards = container.querySelectorAll('.card');
+  const cardPrevButtons = container.querySelectorAll('[class*=card__button--js-prev]');
+  const cardNextButtons = container.querySelectorAll('[class*=card__button--js-next]');
+  const areCardsValid = cards.length === cardPrevButtons.length
+  && cards.length === cardNextButtons.length;
+
+  if (areCardsValid) {
+    const maxIndex = cards.length - 1;
+    const currentPrevButton = cardPrevButtons[index];
+    const currentNextButton = cardNextButtons[index];
+
+    if (maxIndex === 0) {
+      currentPrevButton.classList.remove('card__button--visible');
+      currentNextButton.classList.remove('card__button--visible');
+
+    } else if (index === 0) {
+      currentPrevButton.classList.remove('card__button--visible');
+      currentNextButton.classList.add('card__button--visible');
+
+    } else if (index === maxIndex) {
+      currentPrevButton.classList.add('card__button--visible');
+      currentNextButton.classList.remove('card__button--visible');
+
+    } else {
+      currentPrevButton.classList.add('card__button--visible');
+      currentNextButton.classList.add('card__button--visible');
+    }
+  } else return;
+}
+
+const closeTabContainers = () => {
+  const tabs = appSidebar.querySelectorAll('[class*=tab--js]');
+  
+  [...tabs].forEach(tab => {
+    const svgIcon = tab.querySelector('.tab__svg--js');
+    const tabButton = tab.querySelector('[class*=tab__button--js]');
+    const isActive = svgIcon.classList.contains('tab__svg--active');
+    if (isActive) {
+      toggleSidebarTabs(tabButton);
+    }
+  });
 }
 //#endregion
 
@@ -1189,25 +1410,25 @@ const slideCard = (e, isLooped) => {
 const setArchiveDOM = () => {
 
   const { entries } = hydrappUser;
+  archiveContainer.innerHTML = '';
   for (let i = 0; i < entries.length; i++) {
     addArchiveEntry(i);
   }
-  // set the newest week as visible
-  weeks = document.querySelectorAll('.card--js-week');
-  weekLists = document.querySelectorAll('.card__list--js-week');
-  weeks[currentWeekIndex].classList.add('card--visible');
+  // set the newest week as visible and handle buttons visibility
+  const weeks = document.querySelectorAll('.card--js-week');
+  weeks[0].classList.add('card--visible');
+  handleCardButtons(archiveContainer, 0);
   // add 'remove entry' button on the last entry
   handleArchiveLastEntry();
-  // generate indicators for new entry mode
-  const emojiContainer = document.querySelector('.emoji--js-new');
-  emojiContainer.innerHTML = getHtmlOfEmoji('new');
-  handleEmoji('new', 0);
 }
 
-const addArchiveEntry = (index, option) => {
+const addArchiveEntry = (index) => {
+
   const {value, id, day} = hydrappUser.entries[index];
   const weekHtml = getHtmlOfCard('week');
   const entryHtml = getHtmlOfArchiveEntry(index);
+  let weekLists = archiveContainer.querySelectorAll('.card__list--js-week');
+
   // function adding new week DOM node
   const addWeek = () => {
     archiveContainer.insertAdjacentHTML('beforeend', weekHtml);
@@ -1218,62 +1439,44 @@ const addArchiveEntry = (index, option) => {
     weekNextButton.addEventListener('click', slideCard);
     weekLists = archiveContainer.querySelectorAll('.card__list--js-week');
   }
+
   // add new week
-  if (((day === 'sunday' || index === 0)) && option !== 'add') addWeek();
+  if (day === 'sunday' || index === 0) addWeek();
+
   // add next day entry
   const lastWeekList = weekLists[weekLists.length - 1];
   lastWeekList.insertAdjacentHTML('beforeend', entryHtml);
+  const lastEntry = lastWeekList.lastElementChild;
+  const editButton = lastEntry.querySelector('.edition__button--js-edit');
+  editButton.index = index;
+  editButton.addEventListener('click', handleEntryEdit);
+
   handleEmoji(id, value);
-  // add 'add entry button at the end
+  
+  // add 'add entry' button at the end
   if (index === hydrappUser.entries.length - 1) {
-    if (day === 'monday') addWeek();
     const lastWeekList = weekLists[weekLists.length - 1];
     lastWeekList.appendChild(addEntryButton);
   }
   handleWeekHeading();
-  // add event listeners to edit button
-
-  // ! FIND ANOTHER WAY OF ASSIGNING EVENT LISTENERS TO THOSE BUTTONS
-
-  // ! CHECK REMOVING EVENTS WHEN WEEK IS GETTING REMOVED
-
-  const editButtons = archiveContainer.querySelectorAll('.edition__button--js-edit');
-  const editButton = editButtons[index];
-  editButton.index = index;
-  editButton.addEventListener('click', handleEntryEdit);
 }
 
 const handleWeekHeading = () => {
-  weekLists = document.querySelectorAll('.card__list--js-week');
-  const weekHeadings = document.querySelectorAll('.card__heading--js-week');
+  const weekLists = archiveContainer.querySelectorAll('.card__list--js-week');
+  const weekHeadings = archiveContainer.querySelectorAll('.card__heading--js-week');
 
-  const getDate = (element) => {
-    const dateId = element.className.split(' ').filter(a => /dateId-/.test(a));
-    return dateId.toString().replace(/dateId-/,'').split('-').join('.');
-  }
-  
-  const setButtonsVisiblity = (index, option) => {
-    const prevWeekButton = document.querySelectorAll('.card__button--js-prev')[index];
-    const nextWeekButton = document.querySelectorAll('.card__button--js-next')[index];
-    switch (index) {
-      case 0:
-        prevWeekButton.classList.remove('card__button--visible');
-        option === 'oneWeek'
-        ? nextWeekButton.classList.remove('card__button--visible')
-        : nextWeekButton.classList.add('card__button--visible');
-        break;
-      
-      case weekHeadings.length - 1:
-        prevWeekButton.classList.add('card__button--visible');
-        nextWeekButton.classList.remove('card__button--visible');
-        break;
+  const getHeadingDate = (entry) => {
+    const entryDateId = entry.className
+    .split(' ')
+    .filter(a => /dateId-/.test(a))
+    .toString()
+    .replace('dateId-', '');
 
-      default:
-        prevWeekButton.classList.add('card__button--visible');
-        nextWeekButton.classList.add('card__button--visible');
-        break;
-    }
+    return [...hydrappUser.entries]
+    .filter(entry => entry.id === entryDateId)[0]
+    .date;
   }
+
   for (let i = 0; i < weekLists.length; i++) {
     const entries = weekLists[i].querySelectorAll('.entry--js');
     const heading = weekHeadings[i];
@@ -1283,14 +1486,13 @@ const handleWeekHeading = () => {
     } else {
       const currentWeekFirstEntry = entries[entries.length - 1];
       const currentWeekLastEntry = entries[0];
-      const startDate = getDate(currentWeekFirstEntry);
-      const endDate = getDate(currentWeekLastEntry);
+      const startDate = getHeadingDate(currentWeekFirstEntry);
+      const endDate = getHeadingDate(currentWeekLastEntry);
   
       heading.textContent = startDate === endDate
       ? startDate
       : `${startDate.slice(0,5)} - ${endDate}`;
     }
-    weekLists.length > 1 ? setButtonsVisiblity(i) : setButtonsVisiblity(i, 'oneWeek');
   }
 }
 //#endregion
@@ -1310,24 +1512,29 @@ const createRemoveEntryButton = () => {
 }
 
 const createAddEntryButton = () => {
-  const addEntryButton = document.createElement('li');
-  addEntryButton.className = 'entry entry__add';
-  addEntryButton.innerHTML = `
+  const addEntryItem = document.createElement('li');
+  addEntryItem.className = 'entry entry__add';
+  addEntryItem.innerHTML = `
     <button class="entry__button entry__button--add entry__button--js-add">
       Add previous day..
     </button>
   `;
+  const addEntryButton = addEntryItem.firstElementChild;
   addEntryButton.addEventListener('click', enterNewEntryValue);
   return addEntryButton;
 }
 
 const enterNewEntryValue = (e) => {
-  const self = e.keyCode || e.target || e;                // ! e only for tests
-  const addEntryButton = document.querySelector('.entry__button--js-add');
-  // find date for display
+  const self = e.keyCode || e.target;
+
+  const lastWeek = archiveContainer.lastElementChild;
+  if (e.keyCode && !lastWeek.classList.contains('card--visible')) return;
+
+  // find date to display as new proposition
   const displayDate = new Date();
   let displayDateId = getDateId(displayDate);
-  const { entries, waterMax } = hydrappUser;
+  const { entries } = hydrappUser;
+  const waterMax = hydrappUser.waterMax.value;
   const oldestEntryIndex = entries.length - 1;
   const oldestEntryDateId = entries[oldestEntryIndex].id;
   while (displayDateId !== oldestEntryDateId) {
@@ -1340,41 +1547,41 @@ const enterNewEntryValue = (e) => {
   const { day, date } = newEntry;
 
   if (self === 107 || self === addEntryButton) {
-    let value = 0;
     newEntryMode.classList.add('newEntry--visible');
-    newEntryValue.textContent = value;
+    burgerBtn.classList.add('button--hidden');
     newEntryDay.textContent = day;
     newEntryDate.textContent = date;
+    handleCounter(newEntryCounter, 0);
+    handleEmoji('newEntry', 0);
   
     const modeOff = () => {
       newEntryMode.classList.remove('newEntry--visible');
+      burgerBtn.classList.remove('button--hidden');
       newEntryMode.removeEventListener('click', handleValue);
       window.removeEventListener('keydown', handleValue);
       window.addEventListener('keydown', enterNewEntryValue);
-      window.addEventListener('keydown', slideCard);
     }
   
     const handleValue = (e) => {
       const self = e.keyCode || e.target;
+      const { value } = newEntry;
       switch (self) {
   
-        case 37:
+        case 40:
         case newEntryDecrease:
           if (value > 0) {
-            value--;
             newEntry.value--;
-            newEntryValue.textContent = value;
-            handleEmoji('new', value);
+            handleCounter(newEntryCounter, value, newEntry.value);
+            handleEmoji('newEntry', newEntry.value);
           }
           break;
 
-        case 39:
+        case 38:
         case newEntryIncrease:
           if (value < waterMax) {
-            value++;
             newEntry.value++;
-            newEntryValue.textContent = value;
-            handleEmoji('new', value);
+            handleCounter(newEntryCounter, value, newEntry.value);
+            handleEmoji('newEntry', newEntry.value);
           }
           break;
   
@@ -1394,7 +1601,6 @@ const enterNewEntryValue = (e) => {
     newEntryMode.addEventListener('click', handleValue);
     window.addEventListener('keydown', handleValue);
     window.removeEventListener('keydown', enterNewEntryValue);
-    window.removeEventListener('keydown', slideCard);
   }
 }
 
@@ -1402,31 +1608,27 @@ const addNewEntry = (entry) => {
 
   let lastEntryIndex = hydrappUser.entries.length - 1;
   let lastEntry = document.querySelectorAll('.entry--js')[lastEntryIndex];
+  const { day } = hydrappUser.entries[lastEntryIndex];
+  let lastWeek = archiveContainer.lastElementChild;
+
   lastEntry.classList.remove('entry--last');
+  // jump to the last week
+  const cardNextButton = lastWeek.querySelector('.card__button--js-next');
   
-  // handle local storage and array of objects
+  // create new entry node
   const { entries } = hydrappUser;
   hydrappUser.entries = [...entries, entry];
-
-  // create new entry node
   lastEntryIndex = hydrappUser.entries.length - 1;
-  addArchiveEntry(lastEntryIndex, 'add');
-  lastEntry = document.querySelectorAll('.entry--js')[lastEntryIndex];
-  lastEntry.classList.add('entry--visible');
-  lastEntry.classList.add('entry--fadeIn');
-  // jump to the last week
-  weeks = archiveContainer.children;
-  const currentWeek = weeks[currentWeekIndex];
-  const lastWeekIndex = weeks.length - 1;
-  const lastWeek = weeks[lastWeekIndex];
-  if (currentWeekIndex !== lastWeekIndex) {
-    currentWeekIndex = lastWeekIndex;
-    currentWeek.className = 'week card--js-week week--slide-out-to-left';
-    lastWeek.className = 'week card--js-week week--visible week--slide-in-from-right';
-  }
+  addArchiveEntry(lastEntryIndex);
+
+  if (day === 'monday') slideCard(cardNextButton);
+
+  lastWeek = archiveContainer.lastElementChild;
+  const lastWeekIndex = archiveContainer.children.length - 1;
   handleContainerHeight(archiveContainer, lastWeek);
   handleArchiveLastEntry();
   handleWeekHeading();
+  handleCardButtons(archiveContainer, lastWeekIndex);
   handleWaterAverage();
   exportJsonToLS();
 }
@@ -1446,35 +1648,39 @@ const removeLastEntry = (e) => {
   const self = e.keyCode || e. target;
   const { entries } = hydrappUser;
   const lastEntryIndex = entries.length - 1;
-  const {day, key} = entries[lastEntryIndex];
+  const { day } = entries[lastEntryIndex];
   const lastEntryNode = document.querySelectorAll('.entry--js')[lastEntryIndex];
-  let lastWeek = weeks[weeks.length - 1];
+  let lastWeek = archiveContainer.lastElementChild;
+  // do not allow keyboard shortcut if the last week is not displayed
+  if (e.keyCode && !lastWeek.classList.contains('card--visible')) return;
 
   if (self === 109 || self === removeEntryButton) {
 
-    if (entries.length > 1) {
+    if (entries.length > 1 && !slideTimeoutId) {
+
       hydrappUser.entries = [...entries]
       .filter((entry, index) => index !== lastEntryIndex);
       exportJsonToLS();
       lastEntryNode.parentNode.removeChild(lastEntryNode);
 
       // removing last week section after deleting last day of that week
-      if (day === 'monday') {
+      if (day === 'sunday') {
         const weekToRemove = archiveContainer.lastElementChild;
-        const ifVisible = weekToRemove.classList.contains('week--visible');
-        archiveContainer.removeChild(archiveContainer.lastElementChild);
-        lastWeek = archiveContainer.lastElementChild;
-        if (ifVisible) {
-          lastWeek.className = 'week card--js-week week--visible week--slide-in-from-left';currentWeekIndex--;
-        }
+        const weekPrevButton = weekToRemove.querySelector('.card__button--js-prev');
+
+        slideCard(weekPrevButton);
+        archiveContainer.removeChild(weekToRemove);
+
         const weekLists = document.querySelectorAll('.card__list--js-week');
         const lastWeekList = weekLists[weekLists.length - 1];
         lastWeekList.appendChild(addEntryButton);
       }
       lastWeek = archiveContainer.lastElementChild;
+      const lastWeekIndex = archiveContainer.children.length - 1;
       // add remove button on current last item
       handleArchiveLastEntry();
       handleWeekHeading();
+      handleCardButtons(archiveContainer, lastWeekIndex);
       handleContainerHeight(archiveContainer, lastWeek);
       handleWaterAverage();
     }
@@ -1514,13 +1720,12 @@ const handleEntryEdit = (e) => {
 
     window.removeEventListener('click', handleEdition);
     window.removeEventListener('keydown', handleEdition);
-    window.addEventListener('keydown', slideCard);
   }
   
   const handleEdition = (e) => {
     const self = e.keyCode || e.target;
     let dayValue = parseInt(entryValue.textContent);
-    const { waterMax } = hydrappUser;
+    const waterMax = hydrappUser.waterMax.value;
     const { id, value } = hydrappUser.entries[itemIndex];
 
     switch (self) {
@@ -1547,7 +1752,7 @@ const handleEntryEdit = (e) => {
       case 13:
       case saveButton:
         if (itemIndex === 0) {
-          handleCounter(value, dayValue);
+          handleCounter(landingCounter, value, dayValue);
           handleWaterLevel(dayValue);
           handleWaterShake();
           handleCounterMessage(dayValue);
@@ -1564,26 +1769,6 @@ const handleEntryEdit = (e) => {
   toggleItemDisplay();
   window.addEventListener('click', handleEdition);
   window.addEventListener('keydown', handleEdition);
-  window.removeEventListener('keydown', slideCard);
-}
-
-const entriesFade = (action) => {
-  const currentWeekList = weekLists[currentWeekIndex];
-  let delay = 0;
-
-  if (action === 'in') {
-    [...currentWeekList.children].forEach(elem => {
-      elem.classList.add('entry--visible');
-      elem.style.transitionDelay = `${delay}s`;
-      delay += 0.1;
-    });
-
-  } else if (action === 'out') {
-    [...currentWeekList.children].reverse().forEach(elem => {
-      elem.classList.remove('entry--visible');
-      elem.style.transitionDelay = 0;
-    });
-  }
 }
 //#endregion
 
@@ -1606,23 +1791,20 @@ const handleStatsDOM = (user) => {
 const handleStats = () => {
   const usersTotal = hydrappUsers.length;
   // create DOM structure
+  statsContainer.innerHTML = '';
   [...hydrappUsers].forEach(user => handleStatsDOM(user));
   // make logged in user's card visible
   const loggedUserCard = statsContainer.querySelector(`.card--js-${hydrappUser.key}`);
+  const cardIndex = [...loggedUserCard.parentNode.children].indexOf(loggedUserCard);
   loggedUserCard.classList.add('card--visible');
   // set visibility and events for card navigation buttons
-  const cardPrevButtons = statsContainer.querySelectorAll('.card__button--js-prev');
-  const cardNextButtons = statsContainer.querySelectorAll('.card__button--js-next');
+  const allButtons = statsContainer.querySelectorAll('[class*=card__button--js');
   if (usersTotal > 1) {
-    [...cardPrevButtons].forEach(button => {
-      button.classList.add('card__button--visible');
-      button.addEventListener('click', slideCard);
-    });
-    [...cardNextButtons].forEach(button => {
-      button.classList.add('card__button--visible');
+    [...allButtons].forEach(button => {
       button.addEventListener('click', slideCard);
     });
   }
+  handleCardButtons(statsContainer, cardIndex);
 }
 //#endregion
 
@@ -1698,8 +1880,6 @@ const handleSettingsEdition = (e) => {
     editSection.removeEventListener('click', handleEdition);
     window.removeEventListener('keydown', handleEdition);
     if (prop !== 'name') inputValue.removeEventListener('keyup', filterUserInput);
-
-    //window.addEventListener('keydown', slideCard); // ! slide between cards
   }
   
   const handleEdition = (e) => {
@@ -1742,110 +1922,42 @@ const handleSettingsEdition = (e) => {
   editSection.addEventListener('click', handleEdition);
   window.addEventListener('keydown', handleEdition);
   if (typeof value === 'number') inputValue.addEventListener('keyup', filterUserInput);
-
-  //window.removeEventListener('keydown', slideCard); // ! slide between cards
 }
 
-const handleUserLogOut = () => {
+const quitLanding = () => {
   levelAvg.style.bottom = 0;
   levelMin.style.bottom = 0;
   handleWaterLevel(0);
   setLogInDOM();
+  closeTabContainers();
   appUserProfile.classList.add('app__userProfile--visible');
+} 
+
+const handleUserLogOut = () => {
+  hydrappUser.isLoggedIn = false;
+  exportJsonToLS();
+  quitLanding();
 }
 
 const handleUserRemove = () => {
   const { nameId } = hydrappUser.login;
   localStorage.removeItem(`hydrapp-${nameId}`);
   hydrappUsers = fetchUsersFromLS();
-  handleUserLogOut();
+  quitLanding();
 }
 //#endregion
 
-//#region [ HorizonDark ] VARIABLES
-
-const mediaMd = 768;
-const mediaLg = 1200;
-let isNewUserDOM = false;
-let isFirstAppLoad = true;
-// APP
-const appHeader = document.querySelector('.app__header--js');
-const appUserProfile = document.querySelector('.app__userProfile--js');
-const appLogIn = document.querySelector('.app__logIn--js');
-const appNewUser = document.querySelector('.app__newUser--js');
-const appLanding = document.querySelector('.app__landing--js');
-const appWater = document.querySelector('.app__water--js');
-const appSidebar = document.querySelector('.app__sidebar--js');
-let slideTimeoutId = null
-// LOG IN
-const usersList = document.querySelector('.usersList--js');
-// COUNTER
-const counter = document.querySelector('.counter--js');
-const counterPrevTenths = document.querySelector('.digit__svg--js-prevTenths');
-const counterNextTenths = document.querySelector('.digit__svg--js-nextTenths');
-const counterPrevOnes = document.querySelector('.digit__svg--js-prevOnes');
-const counterNextOnes = document.querySelector('.digit__svg--js-nextOnes');
-const counterDay = document.querySelector('.counter__day--js');
-const counterDate = document.querySelector('.counter__date--js');
-const counterMessage = document.querySelector('.counter__message--js');
-// CONTROLS
-const controls = document.querySelector('.controls--js');
-const addBtn = document.querySelector('.button--js-add');
-const removeBtn = document.querySelector('.button--js-remove');
-const emoji = document.querySelector('.emoji--js-controls');
-const emojiAmount = 8;
-// WATER
-const waterObj = {
-  front: {
-    wavePeriodsTotal: 2,
-    shakeTimeoutDelay: 0,
-    isShakeTimeoutActive: false
-  },
-  center: {
-    wavePeriodsTotal: 3,
-    shakeTimeoutDelay: 100,
-    isShakeTimeoutActive: false
-  },
-  back: {
-    wavePeriodsTotal: 4,
-    shakeTimeoutDelay: 200,
-    isShakeTimeoutActive: false
-  }
-};
-let wavesIntervalId = null;
-let wavesTimeoutId = null;
-const measure = document.querySelector('.graph__measure--js');
-const levelAvg = document.querySelector('.graph__level--js-avg');
-const levelMin = document.querySelector('.graph__level--js-min');
-// MENU
-const burgerBtn = document.querySelector('.button--js-burger');
-// SIDEBAR
-const archiveTabButton = document.querySelector('.tab__button--js-archive');
-const statsTabButton = document.querySelector('.tab__button--js-stats');
-const settingTabButton = document.querySelector('.tab__button--js-settings');
-const archiveContainer = document.querySelector('.tab__container--js-archive');
-const statsContainer = document.querySelector('.tab__container--js-stats');
-const settingsContainer = document.querySelector('.tab__container--js-settings');
-// ARCHIVE
-let weeks = null;
-let weekLists = null;
-const addEntryButton = createAddEntryButton();
-const removeEntryButton = createRemoveEntryButton();
-let currentWeekIndex = 0;
-// NEW ENTRY
-const newEntryMode = document.querySelector('.newEntry--js');
-const newEntryValue = document.querySelector('.newEntry__value--js');
-const newEntryDay = document.querySelector('.newEntry__day--js');
-const newEntryDate = document.querySelector('.newEntry__date--js');
-const newEntryDecrease = document.querySelector('.newEntry__button--js-decrease');
-const newEntryIncrease = document.querySelector('.newEntry__button--js-increase');
-const newEntryCancel = document.querySelector('.newEntry__button--js-cancel');
-const newEntrySave = document.querySelector('.newEntry__button--js-save');
-
-const weekDay = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
-//#endregion
-
 //#region [ HorizonDark ] CLASSES
+
+class Counter {
+  constructor(container) {
+    this.container = container,
+    this.prevTenths = container.querySelector('.digit__svg--js-prevTenths'),
+    this.nextTenths = container.querySelector('.digit__svg--js-nextTenths'),
+    this.prevOnes = container.querySelector('.digit__svg--js-prevOnes'),
+    this.nextOnes = container.querySelector('.digit__svg--js-nextOnes')
+  }
+}
 
 class User {
   constructor(date) {
@@ -1949,13 +2061,13 @@ class Entry {
     .slice(0,10)
     .split('-')
     .reverse()
-    .join(' ');
+    .join('.');
   }
   get _id() {
     return this.id;
   }
   set _id(date) {
-    this.id = date.replace(/\s/g,'');
+    this.id = date.replace(/[.]/g,'');
   }
   get _day() {
     return this.day;
@@ -1967,14 +2079,156 @@ class Entry {
 }
 //#endregion
 
+//#region [ HorizonDark ] VARIABLES - INTRO
+const intro = document.querySelector('.intro--js');
+const introObj = {
+  front: {
+    wavePeriodsTotal: 2
+  },
+  center: {
+    wavePeriodsTotal: 3
+  },
+  back: {
+    wavePeriodsTotal: 4
+  }
+};
+//#endregion
+//#region [ HorizonDark ] VARIABLES - FLAGS
+
+let isFirstAppLoad = true;
+let isFirstLoginLoad = true;
+let isNewUserDOM = false;
+let isSidebarActive = false;
+//#endregion
+//#region [ HorizonDark ] VARIABLES - APP
+const mediaMd = 768;
+const mediaLg = 1200;
+let slideTimeoutId = null;
+const weekDay = [
+  'sunday',
+  'monday',
+  'tuesday',
+  'wednesday',
+  'thursday',
+  'friday',
+  'saturday'
+];
+const appHeader = document.querySelector('.app__header--js');
+const appUserProfile = document.querySelector('.app__userProfile--js');
+const appLogIn = document.querySelector('.app__logIn--js');
+const appNewUser = document.querySelector('.app__newUser--js');
+const appLanding = document.querySelector('.app__landing--js');
+const appWater = document.querySelector('.app__water--js');
+const appSidebar = document.querySelector('.app__sidebar--js');
+
+const usersList = document.querySelector('.usersList--js');
+//#endregion
+//#region [ HorizonDark ] VARIABLES - COUNTER
+const landingCounterContainer = document.querySelector('.counter--js-landing');
+const landingCounter = new Counter(landingCounterContainer);
+const landingDay = landingCounterContainer.querySelector('.counter__day--js-landing');
+const landingDate = landingCounterContainer.querySelector('.counter__date--js-landing');
+const counterMessage = document.querySelector('.counter__message--js');
+//#endregion
+//#region [ HorizonDark ] VARIABLES - CONTROLS
+const landingControls = document.querySelector('.controls--js-landing');
+const addBtn = document.querySelector('.button--js-add');
+const removeBtn = document.querySelector('.button--js-remove');
+const emoji = document.querySelector('.emoji--js-controls');
+const emojiAmount = 8;
+const burgerBtn = document.querySelector('.button--js-burger');
+//#endregion
+//#region [ HorizonDark ] VARIABLES - WATER
+const waterObj = {
+  front: {
+    wavePeriodsTotal: 2,
+    shakeTimeoutDelay: 0,
+    isShakeTimeoutActive: false
+  },
+  center: {
+    wavePeriodsTotal: 3,
+    shakeTimeoutDelay: 100,
+    isShakeTimeoutActive: false
+  },
+  back: {
+    wavePeriodsTotal: 4,
+    shakeTimeoutDelay: 200,
+    isShakeTimeoutActive: false
+  }
+};
+let wavesIntervalId = null;
+let wavesTimeoutId = null;
+const measure = document.querySelector('.graph__measure--js');
+const levelAvg = document.querySelector('.graph__level--js-avg');
+const levelMin = document.querySelector('.graph__level--js-min');
+//#endregion
+//#region [ HorizonDark ] VARIABLES - SIDEBAR
+const archiveTabButton = document.querySelector('.tab__button--js-archive');
+const statsTabButton = document.querySelector('.tab__button--js-stats');
+const settingTabButton = document.querySelector('.tab__button--js-settings');
+const archiveContainer = document.querySelector('.tab__container--js-archive');
+const statsContainer = document.querySelector('.tab__container--js-stats');
+const settingsContainer = document.querySelector('.tab__container--js-settings');
+//#endregion
+//#region [ HorizonDark ] VARIABLES - ARCHIVE
+
+const addEntryButton = createAddEntryButton();
+const removeEntryButton = createRemoveEntryButton();
+//#endregion
+//#region [ HorizonDark ] VARIABLES - NEW ENTRY
+const newEntryMode = document.querySelector('.newEntry--js');
+const newEntryCounterContainer = document.querySelector('.counter--js-newEntry');
+const newEntryCounter = new Counter(newEntryCounterContainer);
+const newEntryDay = newEntryCounterContainer.querySelector('.counter__day--js-newEntry');
+const newEntryDate = newEntryCounterContainer.querySelector('.counter__date--js-newEntry');
+const newEntryDecrease = newEntryMode.querySelector('.button--js-decrease');
+const newEntryIncrease = newEntryMode.querySelector('.button--js-increase');
+const newEntryCancel = newEntryMode.querySelector('.button--js-cancel');
+const newEntrySave = newEntryMode.querySelector('.button--js-save');
+const emojiNewEntry = document.querySelector('.emoji--js-newEntry');
+//#endregion
+
 //#region [ HorizonDark ] FUNCTION CALLS
 let hydrappUser = {};
 let hydrappUsers = fetchUsersFromLS();
+const loggedUser = [...hydrappUsers].filter(user => user.isLoggedIn);
 
 // fix visibility
-hydrappUsers ? setLogInDOM() : createNewUser();
+if (hydrappUsers) {
+  if (loggedUser.length > 0) {
+    hydrappUser = loggedUser[0];
+    loadApp() 
+  } else {
+    setLogInDOM();
+  }
+} else {
+  createNewUser();
+};
+setIntroWaves();
+//#endregion
+
+//#region [ HorizonDark ] UNUSED
+
+/* const entriesFade = (action) => {
+  const currentWeekList = weekLists[0];
+  let delay = 0;
+
+  if (action === 'in') {
+    [...currentWeekList.children].forEach(elem => {
+      elem.classList.add('entry--visible');
+      elem.style.transitionDelay = `${delay}s`;
+      delay += 0.1;
+    });
+
+  } else if (action === 'out') {
+    [...currentWeekList.children].reverse().forEach(elem => {
+      elem.classList.remove('entry--visible');
+      elem.style.transitionDelay = 0;
+    });
+  }
+} */
 //#endregion
 
 
+
 //toggleSidebar(burgerBtn);
-//window.addEventListener('click', (e) => console.log(e.target));

@@ -4,22 +4,17 @@
 .controls {
   bottom: 0;
   display: grid;
+  gap: $controls-gap-xs;
+  grid-template-columns: 1fr;
   padding: $header-padding-xs;
   position: fixed;
   right: 0;
-  row-gap: $controls-gap-xs;
   z-index: 1;
 
-  &__button {
-    @include button;
-    @include flex-center;
-    fill: $blue;
-    width: $burgerBtn-size-xs;
-  }
+  &--top {
+    bottom: initial;
+    top: 0;
 
-  &__svg {
-    pointer-events: none;
-    width: 100%;
   }
 
   @media only screen and (min-width: $media-md) {
@@ -27,11 +22,7 @@
     & {
       padding: $header-padding-md;
       position: absolute;
-      row-gap: $controls-gap-md;
-    
-      &__button {
-        width: $burgerBtn-size-md;
-      }
+      gap: $controls-gap-md;
     }
   }
 
@@ -39,11 +30,7 @@
 
     & {
       padding: $header-padding-lg;
-      row-gap: $controls-gap-lg;
-    
-      &__button {
-        width: $burgerBtn-size-lg;
-      }
+      gap: $controls-gap-lg;
     }
   }
 }
