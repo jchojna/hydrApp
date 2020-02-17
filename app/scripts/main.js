@@ -270,7 +270,7 @@ const getHtmlOfWaterContainer = (obj, isIntro) => {
     <button class="intro__start intro__start--js">Start</button>
   `
 
-  const getHtmlOfWavePeriodsSVGs = (amount, isIntro) => {
+  const getHtmlOfWavePeriodsSVGs = (amount, position, isIntro) => {
     let html = ''
     for (let i = 1; i <= amount; i++) {
       html += `
@@ -279,7 +279,7 @@ const getHtmlOfWaterContainer = (obj, isIntro) => {
             <use href="assets/svg/wave.svg#wave"></use>
           </svg>
           ${
-            isIntro ? '' : `
+            isIntro || position !== 'front' ? '' : `
               <svg class="wave__svg wave__svg--line" viewBox="0 0 100 10">
                 <use href="assets/svg/wave.svg#waveLine"></use>
               </svg>
@@ -301,13 +301,13 @@ const getHtmlOfWaterContainer = (obj, isIntro) => {
       >
         <div class="waves waves--${intro} waves--${position} waves--js-${position}">
           <div class="wave wave--before wave--${intro} wave--${position} wave--js">
-            ${getHtmlOfWavePeriodsSVGs(wavePeriodsTotal, isIntro)}
+            ${getHtmlOfWavePeriodsSVGs(wavePeriodsTotal, position, isIntro)}
           </div>
           <div class="wave wave--${intro} wave--${position} wave--js">
-            ${getHtmlOfWavePeriodsSVGs(wavePeriodsTotal, isIntro)}
+            ${getHtmlOfWavePeriodsSVGs(wavePeriodsTotal, position, isIntro)}
           </div>
           <div class="wave wave--after wave--${intro} wave--${position} wave--js">
-            ${getHtmlOfWavePeriodsSVGs(wavePeriodsTotal, isIntro)}
+            ${getHtmlOfWavePeriodsSVGs(wavePeriodsTotal, position, isIntro)}
           </div>
         </div>
       </div>
@@ -869,10 +869,8 @@ const handleWaterWaves = (obj) => {
     const { waves, wavePeriodsTotal } = obj[position];
     
     const height = window.innerWidth / wavePeriodsTotal / 10;
-    if (waves) {
-      waves.style.height = `${height}px`;
-      waves.style.top = `${-1 * (height - 1)}px`;
-    }
+    waves.style.height = `${height}px`;
+    waves.style.top = `${-1 * (height - 2)}px`;
   });
 }
 
@@ -963,9 +961,9 @@ const handleWaterLevel = (value) => {
   const waterMax = hydrappUser.waterMax.value;
   const waterMin = hydrappUser.waterMin.value;
   const waterAvg = hydrappUser.waterAvg.value;
-  const landingHeight = appLanding.clientHeight;
-  const waterOffset = landingHeight / waterMax * (waterMax - value);
-  const waterOffsetPercent = waterOffset / landingHeight;
+  const height = window.innerHeight;
+  const waterOffset = height / waterMax * (waterMax - value);
+  const waterOffsetPercent = waterOffset / height;
   const maxOffsetBetween = 200;
   const waterOffsets = {
     front: waterOffset,
@@ -977,8 +975,8 @@ const handleWaterLevel = (value) => {
   water.style.top = `${waterOffsets[position]}px`;
   handleWatersArray(setTopOffset);
   // handle average and minimum levels of water measure
-  const avgOffset = landingHeight / waterMax * (waterAvg);
-  const minOffset = landingHeight / waterMax * (waterMin);
+  const avgOffset = height / waterMax * (waterAvg);
+  const minOffset = height / waterMax * (waterMin);
   levelAvg.style.bottom = `${avgOffset}px`;
   levelMin.style.bottom = `${minOffset}px`;
 }
@@ -2091,7 +2089,7 @@ const introObj = {
     wavePeriodsTotal: 3
   },
   back: {
-    wavePeriodsTotal: 5
+    wavePeriodsTotal: 4
   }
 };
 //#endregion
