@@ -99,8 +99,6 @@ $time-week-entries: 0.6s;
 $time-newEntry: 0.4s;
 //#endregion
 
-$verticalTranslation: 1s cubic-bezier(0.5,-0.5,0.5,1.5);
-
 $size-main-buttons: 30px;
 
 $size-xs-archive-add-new: 100px;
@@ -111,3 +109,5 @@ $br-items: 5px;
 
 $edit-group-cols: 4;
 $edit-group-col-gap: 5px;
+
+$bezier: cubic-bezier(0.5,-0.5,0.5,1.5);

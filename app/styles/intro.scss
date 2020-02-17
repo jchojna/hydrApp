@@ -1,14 +1,6 @@
 @import 'variables.scss';
 @import 'mixins.scss';
 
-@keyframes upAndDown {
-  0% { transform: translateY(0) rotate(0); }
-  25% { transform: translateY(-50%) rotate(3deg); }
-  50% { transform: translateY(0) rotate(0); }
-  75% { transform: translateY(-50%) rotate(-5deg); }
-  100% { transform: translateY(0) rotate(0); }
-}
-
 .intro {
   @include flex-center;
   background-color: $blue;
@@ -18,21 +10,24 @@
   right: 0;
   top: 0;
   z-index: 2;
-  display: none;
+  //display: none;
 
   &__logo {
     @include flex-center;
+    animation:
+      introLogo 6s ease-in-out infinite 4s,
+      introLogoBounceIn 4s ease-in-out;
     position: relative;
-    width: 60%;
+    width: 80%;
+    max-width: 600px;
     z-index: -3;
-    display: none;
+    //display: none;
   }
   
   &__svg {
     fill: $blue-dark-3;
     pointer-events: all;
     width: 100%;
-    animation: upAndDown 5s ease-in-out infinite;
     transform-origin: center center;
 
     &--color {

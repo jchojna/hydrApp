@@ -39,7 +39,6 @@ const handleWindowResize = () => {
   const waterValue = hydrappUser.entries[0].value;
   handleWaterLevel(waterValue);
   handleWaterWaves(waterObj);
-  handleWaterWaves(introObj);
   handleWaterMeasure();
 }
 
@@ -72,6 +71,15 @@ const findUserPropsWithTag = (tag) => {
   return [...keys]
   .filter(key => hydrappUser[key].tags)
   .filter(key => hydrappUser[key].tags.includes(tag));
+}
+
+const setNodes = (obj, root) => {
+  obj.front.water  = root.querySelector('.water--js-front');
+  obj.front.waves  = root.querySelector('.waves--js-front');
+  obj.center.water = root.querySelector('.water--js-center');
+  obj.center.waves = root.querySelector('.waves--js-center');
+  obj.back.water   = root.querySelector('.water--js-back');
+  obj.back.waves   = root.querySelector('.waves--js-back');
 }
 //#endregion
 
@@ -258,7 +266,7 @@ const getHtmlOfWaterContainer = (obj, isIntro) => {
     </div>
   `;
 
-  const getHtmlOfWavePeriodsSVGs = (amount) => {
+  const getHtmlOfWavePeriodsSVGs = (amount, isIntro) => {
     let html = ''
     for (let i = 1; i <= amount; i++) {
       html += `
@@ -266,9 +274,13 @@ const getHtmlOfWaterContainer = (obj, isIntro) => {
           <svg class="wave__svg wave__svg--solid" viewBox="0 0 100 10">
             <use href="assets/svg/wave.svg#wave"></use>
           </svg>
-          <svg class="wave__svg wave__svg--line" viewBox="0 0 100 10">
-            <use href="assets/svg/wave.svg#waveLine"></use>
-          </svg>
+          ${
+            isIntro ? '' : `
+              <svg class="wave__svg wave__svg--line" viewBox="0 0 100 10">
+                <use href="assets/svg/wave.svg#waveLine"></use>
+              </svg>
+            `
+          }
         </div>
       `;
     }
@@ -280,16 +292,18 @@ const getHtmlOfWaterContainer = (obj, isIntro) => {
     const intro = isIntro ? 'intro' : '';
     const { wavePeriodsTotal } = obj[position];
     html += `
-      <div class="water water--${intro} water--${position} water--js-${position}">
+      <div
+        class="water water--${intro} water--${position} water--js-${position}"
+      >
         <div class="waves waves--${intro} waves--${position} waves--js-${position}">
           <div class="wave wave--before wave--${intro} wave--${position} wave--js">
-            ${getHtmlOfWavePeriodsSVGs(wavePeriodsTotal)}
+            ${getHtmlOfWavePeriodsSVGs(wavePeriodsTotal, isIntro)}
           </div>
           <div class="wave wave--${intro} wave--${position} wave--js">
-            ${getHtmlOfWavePeriodsSVGs(wavePeriodsTotal)}
+            ${getHtmlOfWavePeriodsSVGs(wavePeriodsTotal, isIntro)}
           </div>
           <div class="wave wave--after wave--${intro} wave--${position} wave--js">
-            ${getHtmlOfWavePeriodsSVGs(wavePeriodsTotal)}
+            ${getHtmlOfWavePeriodsSVGs(wavePeriodsTotal, isIntro)}
           </div>
         </div>
       </div>
@@ -695,6 +709,29 @@ const createNewUser = () => {
 
 //#region [ HorizonDark ] APP INITIAL
 
+const setIntroWaves = () => {
+  if (intro.innerHTML === '') {
+    intro.innerHTML = getHtmlOfWaterContainer(introObj, true);
+  }
+  setNodes(introObj, intro);
+  // add fade in animation
+
+  //introObj.front.water
+  const keys = Object.keys(introObj);
+  [...keys].forEach(key => {
+    const { water } = introObj[key];
+    water.classList.add('water--fadeIn');
+    water.classList.add('water--shake');
+  });
+
+
+  handleWaterWaves(introObj);
+
+  // add event listener
+  const handleIntroResize = () => handleWaterWaves(introObj);
+  window.addEventListener('resize', handleIntroResize);
+}
+
 const setLogInDOM = () => {
   // set DOM structure of list of users in log in box
   usersList.innerHTML = '';
@@ -739,19 +776,20 @@ const loadApp = () => {
   setSettingsDOM();
   setWaterMeasureDOM();
   setEmojiDOM();
-  setWaterWaves();
   handleCounter(landingCounter, value);
   handleCounter(newEntryCounter, 0);
   handleCounterMessage(value);
-  handleWaterLevel(value);
-  handleWaterMin(value);
-  handleWaterShake();
-  handleWaterMeasure();
   handleLandingCounterDate();
   handleEmoji('controls', value);
   handleEmoji('newEntry', 0);
-  handleWeekHeading();
+  setWaterWaves();
+  handleWaterLevel(value);
+  handleWaterMin(value);
   handleWaterAverage();
+  handleWaterShake();
+  handleWaterMeasure();
+  handleWeekHeading();
+
   appLanding.classList.add('app__landing--visible');
   appUserProfile.classList.remove('app__userProfile--visible');
 
@@ -792,31 +830,19 @@ const handleEmoji = (id, number) => {
 //#region [ HorizonDark ] LANDING - WATER
 
 const setWaterWaves = () => {
-
-  const setNodes = (obj, root) => {
-    obj.front.water  = root.querySelector('.water--js-front');
-    obj.front.waves  = root.querySelector('.waves--js-front');
-    obj.center.water = root.querySelector('.water--js-center');
-    obj.center.waves = root.querySelector('.waves--js-center');
-    obj.back.water   = root.querySelector('.water--js-back');
-    obj.back.waves   = root.querySelector('.waves--js-back');
-  }
-
-  if (isFirstAppLoad) {
+  if (appWater.innerHTML === '') {
     appWater.innerHTML = getHtmlOfWaterContainer(waterObj, false);
-    intro.innerHTML = getHtmlOfWaterContainer(introObj, true);
-    setNodes(waterObj, appWater);
-    setNodes(introObj, intro);
   }
+  setNodes(waterObj, appWater);
   handleWaterWaves(waterObj);
-  handleWaterWaves(introObj);
 }
 
 const handleWaterWaves = (obj) => {
   const waterPositions = Object.keys(obj);
   [...waterPositions].forEach(position => {
     const { waves, wavePeriodsTotal } = obj[position];
-    const height = appWater.clientWidth / wavePeriodsTotal / 10;
+    
+    const height = window.innerWidth / wavePeriodsTotal / 10;
     if (waves) {
       waves.style.height = `${height}px`;
       waves.style.top = `${-1 * (height - 1)}px`;
@@ -2154,6 +2180,7 @@ if (hydrappUsers) {
 } else {
   createNewUser();
 };
+setIntroWaves();
 //#endregion
 
 //#region [ HorizonDark ] UNUSED
@@ -2180,4 +2207,4 @@ if (hydrappUsers) {
 
 
 
-toggleSidebar(burgerBtn);
+//toggleSidebar(burgerBtn);
