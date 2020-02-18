@@ -81,6 +81,10 @@ const setNodes = (obj, root) => {
   obj.back.water   = root.querySelector('.water--js-back');
   obj.back.waves   = root.querySelector('.waves--js-back');
 }
+
+const getRandomFromRange = (min, max) => {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 //#endregion
 
 //#region [ HorizonDark ] DATES
@@ -185,13 +189,6 @@ const isInputValid = (input, prop, alertBox) => {
 
 //#region [ HorizonDark ] LOCAL STORAGE & JSON
 
-const getHydrappUsers = () => {
-  const regex = /hydrapp-/;
-  return Object
-  .keys(localStorage)
-  .filter(key => regex.test(key))
-}
-
 const fetchUsersFromLS = () => {
   return Object
   .keys(localStorage)
@@ -206,6 +203,10 @@ const getLoggedUserKey = () => {
 const exportJsonToLS = () => {
   const { nameId } = hydrappUser.login;
   localStorage.setItem(`hydrapp-${nameId}`, JSON.stringify(hydrappUser));
+}
+
+const exportJSON = (json) => {
+  localStorage.setItem('hydrapp', JSON.stringify(json));
 }
 
 const updateJsonOnDateChange = () => {
@@ -482,6 +483,91 @@ const getHtmlOfProfileButtons = () => {
   return html;
 }
 //#endregion HTML CODE
+
+//#region [ HorizonDark ] INITIAL USERS
+
+const initialUsers = [
+  {
+    name: 'Anna',
+    age: 29,
+    weight: 58,
+    height: 176,
+    dateCreated: 'February 01, 2020 23:30:05'
+  },
+  {
+    name: 'Agnieszka',
+    age: 28,
+    weight: 75,
+    height: 165,
+    dateCreated: 'February 03, 2020 15:32:56'
+  },
+  {
+    name: 'Aleksander',
+    age: 28,
+    weight: 70,
+    height: 174,
+    dateCreated: 'February 05, 2020 12:07:23'
+  },
+  {
+    name: 'Jakub',
+    age: 32,
+    weight: 67,
+    height: 181,
+    dateCreated: 'February 06, 2020 14:45:13'
+  }
+];
+
+const createInitialUsers = () => {
+  let hydrapp = {};
+
+  [...initialUsers].forEach(user => {
+    const {
+      name,
+      nameId = getFormattedString(name),
+      age,
+      weight,
+      height,
+      dateCreated } = user;
+
+      // create today's date and id
+      const todaysDate = new Date();
+      const todaysDateId = getDateId(todaysDate);
+
+      // create date and id based on specific date
+      let date = new Date(dateCreated);
+      let dateId = getDateId(date);
+
+      // create new initial user and set props
+      const newUser = new User(date);
+      newUser.name = name;
+      newUser.age = age;
+      newUser.weight = weight;
+      newUser.height = height;
+      
+      // create the oldest archive entry
+      const { waterMax } = newUser;
+      const newEntry = new Entry(getRandomFromRange(0, waterMax), date);
+      newUser.entries = [newEntry];      
+
+      // keep adding archive entries until today's date
+      while (dateId !== todaysDateId) {
+
+        // move date one day ahead
+        date = new Date(date.setDate(date.getDate() + 1));
+        dateId = getDateId(date);
+
+        // update entries array
+        const newEntry = new Entry(getRandomFromRange(0, waterMax), date);
+        const { entries } = newUser;
+        newUser.entries = [...entries, newEntry];
+      }
+    
+    // add new user to hydrapp JSON object
+    hydrapp = { ...hydrapp, [nameId]: newUser };
+  });
+  exportJSON(hydrapp);
+}
+//#endregion
 
 //#region [ HorizonDark ] CREATE NEW USER
 const createNewUser = () => {
@@ -1959,7 +2045,7 @@ class Counter {
   }
 }
 
-class User {
+class UserCreator {
   constructor(date) {
     this.login = {
       name: '',
@@ -2018,7 +2104,7 @@ class User {
     }
     this._dateCreated = date;    
     this._key = date;
-    this.entries = ['stats'];
+    this.entries = [];
   }
 
   get _dateCreated() {
@@ -2045,9 +2131,45 @@ class User {
   }
 }
 
-class Entry {
+class User {
   constructor(date) {
-    this.value = 0;
+    this.name = '',
+    this.age = 0,
+    this.weight = 0,
+    this.height = 0,
+    this.waterMax = 20,
+    this.waterMin = 8,
+    this.waterAvg = 0,
+    this.userRank = 0,
+    this._dateCreated = date;    
+    this._key = date;
+    this.entries = [];
+  }
+
+  get _dateCreated() {
+    return this.dateCreated;
+  }
+  set _dateCreated(date) {
+    const dateTime = getOffsetedDate(date)
+    .toISOString()
+    .slice(0,10)
+    .split('-')
+    .reverse()
+    .join('.');
+    const hourTime = getOffsetedDate(date).toISOString().slice(11,16);
+    this.dateCreated = `${dateTime}, ${hourTime}`;
+  }
+  get _key() {
+    return this.key;
+  }
+  set _key(date) {
+    this.key = date.getTime();
+  }
+}
+
+class Entry {
+  constructor(value, date) {
+    this.value = value;
     this._date = date;
     this._id = this.date;
     this._day = date;
@@ -2099,6 +2221,7 @@ let isFirstAppLoad = true;
 let isFirstLoginLoad = true;
 let isNewUserDOM = false;
 let isSidebarActive = false;
+let areInitialUsersAdded = false;
 //#endregion
 //#region [ HorizonDark ] VARIABLES - APP
 const mediaMd = 768;
@@ -2193,18 +2316,15 @@ let hydrappUser = {};
 let hydrappUsers = fetchUsersFromLS();
 const loggedUser = [...hydrappUsers].filter(user => user.isLoggedIn);
 
-// fix visibility
-if (hydrappUsers) {
-  if (loggedUser.length > 0) {
-    hydrappUser = loggedUser[0];
-    loadApp() 
-  } else {
-    setLogInDOM();
-  }
+if (loggedUser.length > 0) {
+  hydrappUser = loggedUser[0];
+  loadApp() 
 } else {
-  createNewUser();
-};
-setIntroWaves();
+  areInitialUsersAdded ? false : createInitialUsers();
+  //setLogInDOM();
+}
+areInitialUsersAdded = true;
+//setIntroWaves();
 //#endregion
 
 //#region [ HorizonDark ] UNUSED
