@@ -656,6 +656,7 @@ const quitIntro = () => {
 
 const showLoginBox = () => {
 
+  loginInput.value = '';
   loginBox.classList.add('loginBox--visible');
   appNewUser.classList.remove('app__newUser--visible');
 }
@@ -665,7 +666,9 @@ const isMatchingUser = (login) => Object
 .filter(key => key === login)
 .length > 0;
 
-const handleLoginBox = () => {
+const handleLoginBox = (e) => {
+
+  if (e.key && e.key !== 'Enter') return;
 
   const login = getFormattedString(loginInput.value);
 
@@ -2079,12 +2082,8 @@ const handleSettingsEdition = (e) => {
 
         if (value === newValue || isInputValid(input, prop, inputAlert)) {
 
-          output.textContent = getGlasses(prop, newValue);
-
-          // handle updated local storage key
-
+          // handle user name and login change
           if (prop === 'name' && newValue !== value) {
-            
             const oldLogin = getFormattedString(value);
             const newLogin = getFormattedString(newValue);
 
@@ -2095,11 +2094,12 @@ const handleSettingsEdition = (e) => {
             hydrappJSON.users[newLogin] = loggedUser;
             settingsHeading.textContent = newValue;
             
+          // handle numerical settings
           } else if (newValue !== value) {
             loggedUser[prop] = newValue;
           }
-          // handle JSON object
-          updateJSON();
+
+          output.textContent = getGlasses(prop, newValue);
           exportJSON();
           exitEditMode();
 
@@ -2117,17 +2117,17 @@ const handleSettingsEdition = (e) => {
 }
 
 const quitLanding = () => {
-  levelAvg.style.bottom = 0;
-  levelMin.style.bottom = 0;
   handleWaterLevel(0);
+  levelAvg.style.bottom = '0';
+  levelMin.style.bottom = 0;
   showLoginBox();
   closeTabContainers();
-  appUserProfile.classList.add('app__userProfile--visible');
+  appUser.classList.add('app__user--visible');
 } 
 
 const handleUserLogOut = () => {
-  hydrappUser.isLoggedIn = false;
-  exportJsonToLS();
+  hydrappJSON.loggedUser = '';
+  exportJSON();
   quitLanding();
 }
 
@@ -2246,6 +2246,7 @@ const signUpButton = loginBox.querySelector('.loginBox__button--js-signUp');
 
 loginButton.addEventListener('click', handleLoginBox);
 signUpButton.addEventListener('click', createNewUser);
+loginInput.addEventListener('keydown', handleLoginBox);
 
 //#endregion
 //#region [ HorizonDark ] VARIABLES - FLAGS
@@ -2419,4 +2420,4 @@ if (loggedUser !== '') {
 
 
 
-toggleSidebar(burgerBtn);
+//toggleSidebar(burgerBtn);
