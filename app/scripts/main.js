@@ -189,25 +189,27 @@ const isInputValid = (input, prop, alertBox) => {
 
 //#region [ HorizonDark ] LOCAL STORAGE & JSON
 
-const fetchUsersFromLS = () => {
+/* const fetchUsersFromLS = () => {
   return Object
   .keys(localStorage)
   .filter(key => key.match(/hydrapp/))
   .map(key => JSON.parse(localStorage.getItem(key)));
-}
+} */
 
 const getLoggedUserKey = () => {
   return [...hydrappUsers].filter(user => user.isLoggedIn)[0].key;
 }
 
-const exportJsonToLS = () => {
+/* const exportJsonToLS = () => {
   const { nameId } = hydrappUser.login;
   localStorage.setItem(`hydrapp-${nameId}`, JSON.stringify(hydrappUser));
-}
+} */
 
 const exportJSON = (json) => {
-  localStorage.setItem('hydrapp', JSON.stringify(json));
+  localStorage.setItem(localStorageKeyName, JSON.stringify(json));
 }
+
+const fetchJSON = () => JSON.parse(localStorage.getItem(localStorageKeyName));
 
 const updateJsonOnDateChange = () => {
   const currentDate = new Date();
@@ -227,14 +229,38 @@ const updateJsonOnDateChange = () => {
 
 //#region [ HorizonDark ] HTML CODE
 
-const getHtmlOfUserLogIn = (user) => {
+const getHtmlOfNewUser = () => {
   return `
-    <li class="usersList__item">
-      <button class="usersList__button userList__button--js">
-        ${user}
+    <div
+      class="newUser newUser--js ${prop === 'login' ? 'newUser--visible' : ''}"
+    >
+      <label
+        for="${prop}Question"
+        class="newUser__label newUser__label--js"
+      >
+      </label>
+      <input
+        id="${prop}Question"
+        class="newUser__input newUser__input--js"
+        type="text"
+        maxlength="${maxLength}"
+        ${prop === 'login' ? 'autofocus' : ''}
+      >
+      <div class="newUser__alert newUser__alert--js">
+        <p class="newUser__alertText"></p>
+      </div>
+      <button class="newUser__button newUser__button--prev newUser__button--js-prev">
+        <svg class="newUser__svg" viewBox="0 0 512 512">
+          <use href="assets/svg/icons.svg#left-arrow"></use>
+        </svg>
       </button>
-    </li>
-  `;  
+      <button class="newUser__button newUser__button--next newUser__button--js-next">
+        <svg class="newUser__svg" viewBox="0 0 512 512">
+          <use href="assets/svg/icons.svg#right-arrow"></use>
+        </svg>
+      </button>
+    </div>
+  `;
 }
 
 const getHtmlOfEmoji = (id) => {
@@ -517,8 +543,11 @@ const initialUsers = [
   }
 ];
 
-const createInitialUsers = () => {
-  let hydrapp = {};
+const addInitialUsers = () => {
+  let hydrapp = {
+    loggedUser: '',
+    users: []
+  };
 
   [...initialUsers].forEach(user => {
     const {
@@ -563,242 +592,15 @@ const createInitialUsers = () => {
       }
     
     // add new user to hydrapp JSON object
-    hydrapp = { ...hydrapp, [nameId]: newUser };
+    const { users } = hydrapp;
+    hydrapp.users = { ...users, [nameId]: newUser };
   });
   exportJSON(hydrapp);
 }
 //#endregion
 
-//#region [ HorizonDark ] CREATE NEW USER
-const createNewUser = () => {
-  
-  const setNewUserDOM = () => {
-    
-    for (let i = 0; i < questions.length; i++) {
-      const prop = questions[i];     
-      const { maxLength } = hydrappUser[prop];
-      const newUserHtml = `
-        <div
-          class="newUser newUser--js ${prop === 'login' ? 'newUser--visible' : ''}"
-        >
-          <label
-            for="${prop}Question"
-            class="newUser__label newUser__label--js"
-          >
-          </label>
-          <input
-            id="${prop}Question"
-            class="newUser__input newUser__input--js"
-            type="text"
-            maxlength="${maxLength}"
-            ${prop === 'login' ? 'autofocus' : ''}
-          >
-          <div class="newUser__alert newUser__alert--js">
-            <p class="newUser__alertText"></p>
-          </div>
-          <button class="newUser__button newUser__button--prev newUser__button--js-prev">
-            <svg class="newUser__svg" viewBox="0 0 512 512">
-              <use href="assets/svg/icons.svg#left-arrow"></use>
-            </svg>
-          </button>
-          <button class="newUser__button newUser__button--next newUser__button--js-next">
-            <svg class="newUser__svg" viewBox="0 0 512 512">
-              <use href="assets/svg/icons.svg#right-arrow"></use>
-            </svg>
-          </button>
-        </div>
-      `;
-      appNewUser.innerHTML += newUserHtml;
-    }
-    isNewUserDOM = true;
-    newUserQuestions = document.querySelectorAll('.newUser--js');
-    const newUserPrevButtons = document.querySelectorAll('.newUser__button--js-prev');
-    const newUserNextButtons = document.querySelectorAll('.newUser__button--js-next');
-    const newUserInputs = appNewUser.querySelectorAll('.newUser__input--js');
-    // add buttons events
-    [...newUserPrevButtons].forEach(button =>
-    button.addEventListener('click', handleNewUser));
-    [...newUserNextButtons].forEach(button =>
-    button.addEventListener('click', handleNewUser));
-    // add keyboard events
-    [...newUserInputs]
-    .filter((input, index) => index !== 0)
-    .forEach(input => input.addEventListener('keyup', filterUserInput));
-    appNewUser.addEventListener('keyup', handleNewUser);
-    // remove default inputs behaviour on 'Enter' key press
-    window.addEventListener('keypress', (e) => {
-      if (e.keyCode  === 13) e.preventDefault();
-    });
-  }
-  
-  const handleNewUserQuestion = (index, userName) => {
-    const questionLabels = appNewUser.querySelectorAll('.newUser__label--js');
-    const currentLabel = questionLabels[index];
-    currentLabel.textContent =
-    index === 0 ? 'What\'s your name, dear guest?' :
-    index === 1 ? `Hello ${userName}, what\'s your age?` :
-    index === 2 ? `What\'s your weight, ${userName}?` :
-    index === 3 ? `Last question ${userName}, what\'s your height?`
-    : false;
-  }
-  
-  const handleNewUser = (e) => {
-    e.preventDefault();
-    const self = e.key || e.target;
-    const action = e.key
-    ? e.key === 'Escape' ? 'prev' : 'next'
-    : /prev/.test(self.className) ? 'prev' : 'next';
-    // find current user question
-    const currentQuestion = e.key
-    ? [...newUserQuestions].filter(question => /visible/.test(question.className))[0]
-    : findFirstParentOfClass(self, 'newUser');
-
-    const container = currentQuestion.parentNode;
-    const containerWidth = container.clientWidth;
-    const currentIndex = [...newUserQuestions].indexOf(currentQuestion);
-    const maxIndex = newUserQuestions.length - 1;
-    const inputs = container.querySelectorAll('.newUser__input--js');
-    const delay = 100;
-    const transitionTime = 500;
-
-    // slide questions with transition effect
-    const slideQuestions = (newIndex, newQuestion, nextInput, offset) => {
-      slideTimeoutId = setTimeout(() => {
-        newQuestion.style = `
-          transform: translateX(0);
-          transition: opacity ${transitionTime}ms, transform ${transitionTime}ms;
-        `;
-        newQuestion.classList.add('newUser--visible');
-        currentQuestion.style = `
-          opacity: 0;
-          transform: translateX(${offset}px);
-          transition: opacity ${transitionTime}ms, transform ${transitionTime}ms;
-        `;
-        handleNewUserQuestion(newIndex, hydrappUser.login.name);
-        nextInput.focus();
-
-      }, delay);
-    }
-    // hide previous card and clear timeouts
-    const clearAfter = () => {
-      const slideSecondTimeout = setTimeout(() => {
-        currentQuestion.classList.remove('newUser--visible');
-        clearTimeout(slideTimeoutId);
-        clearTimeout(slideSecondTimeout);
-        slideTimeoutId = null;
-      }, transitionTime);
-    }
-    // RETURN USER INPUT VALUE AS INTEGER
-    const getInputValue = (index) => parseInt(newUserInputs[index].value);
-
-    // perform sliding effect if previous one is already finished
-    if ((self.tagName === 'BUTTON' || self === 'Enter' || self === 'Escape')
-      && slideTimeoutId === null) {
-
-      // find next index
-      const newIndex = action === 'prev'
-      ? limitedRange(maxIndex, currentIndex, 'decrease')
-      : limitedRange(maxIndex, currentIndex, 'increase');
-      // set new elements
-      const newQuestion = newUserQuestions[newIndex];
-      const nextInput = inputs[newIndex];
-      // set initial position of a new card element
-      const initialOffset = action === 'prev' ? -1 * containerWidth : containerWidth;
-      const finalOffset = action === 'next' ? -1 * containerWidth : containerWidth;
-      
-      const willGoBackToPrevious = action === 'prev' || self === 'Escape';
-      const willGoBackToLogin = willGoBackToPrevious && currentIndex === 0;
-      const willGoToNextQuestion = action === 'next' || self === 'Enter';
-      const willCreateNewUser = willGoToNextQuestion && currentIndex >= maxIndex;
-
-      const currentInput = currentQuestion.querySelector('.newUser__input--js');
-      const currentAlert = currentQuestion.querySelector('.newUser__alert--js');
-      const currentProp = questions[currentIndex];
-      const shouldQuestionSlide = ((willGoToNextQuestion && isInputValid(currentInput, currentProp, currentAlert)) || willGoBackToPrevious);
-
-      // GO BACK TO USER LOG IN
-      if (willGoBackToLogin) {
-        appNewUser.classList.remove('app__newUser--visible');
-        appLogIn.classList.add('app__logIn--visible');  
-
-      // GO TO THE NEXT QUESTION
-      } else if (willGoToNextQuestion) {
-
-        // CREATE NEW USER
-        if (willCreateNewUser) {
-          if (isInputValid(currentInput, currentProp, currentAlert)) {
-            hydrappUser.age.value    = getInputValue(1);
-            hydrappUser.weight.value = getInputValue(2);
-            hydrappUser.height.value = getInputValue(3);
-            hydrappUser.isLoggedIn = true;
-            // set JSON object as local storage item
-            exportJsonToLS();
-            hydrappUsers = fetchUsersFromLS();
-            loadApp();
-            // change user section visibility
-            appNewUser.classList.remove('app__newUser--visible');
-          }
-        // VALIDATE CURRENT INPUT AND GO TO NEXT USER QUESTION 
-        } else if (isInputValid(currentInput, currentProp, currentAlert)) {
-          const inputValue = currentInput.value;
-          if (currentIndex === 0) hydrappUser.login.name = inputValue;
-
-          const { name } = hydrappUser.login;
-          handleNewUserQuestion(currentIndex + 1, name);
-        }
-      }
-
-      if (willGoBackToPrevious) {
-        handleInputAlert(currentAlert);
-      }
-
-      if (!willGoBackToLogin && !willCreateNewUser) {
-        newQuestion.style = `
-          transform: translateX(${initialOffset}px);
-        `;
-      }
-      if (!willGoBackToLogin) {
-        if (shouldQuestionSlide) {
-          slidePromise
-            .then(() => slideQuestions(newIndex, newQuestion, nextInput, finalOffset))
-            .then(clearAfter);
-            //catch(() => console.log('Something bad happened!'));
-        }
-      }
-    } else return;
-  }
-
-  // create new user object with empty entries
-  const date = new Date();
-  hydrappUser = new User(date);
-  const newEntry = new Entry(date);
-  hydrappUser.entries = [newEntry];
-  // create and set promise function
-  const slidePromise = new Promise((resolve, reject) => {
-    resolve();
-  });
-  // user questions keys
-  const questions = findUserPropsWithTag('questions');
-  let newUserQuestions = document.querySelectorAll('.newUser--js');
-
-  if (isNewUserDOM) {
-    newUserQuestions[0].style = 'transform: translateX(0px);';
-    newUserQuestions[0].classList.add('newUser--visible');
-  } else {
-    setNewUserDOM();
-  }
-
-  // handle visibility of log in box and new user creator
-  appLogIn.classList.remove('app__logIn--visible');
-  appNewUser.classList.add('app__newUser--visible');
-  handleNewUserQuestion(0);
-  // clear all inputs
-  const newUserInputs = appNewUser.querySelectorAll('.newUser__input--js');
-  [...newUserInputs].forEach(input => input.value = '');
-}
-//#endregion
-
 //#region [ HorizonDark ] INTRO
+
 const setIntroWaves = () => {
   if (intro.innerHTML === '') {
     intro.innerHTML = getHtmlOfWaterContainer(introObj, true);
@@ -840,13 +642,15 @@ const quitIntro = () => {
     clearTimeout(timeoutId);
   }, 2000);
 }
+
 //#endregion
 
-//#region [ HorizonDark ] APP INITIAL
+//#region [ HorizonDark ] LOG IN
 
-const setLogInDOM = () => {
+const showLoginBox = () => {
+
   // set DOM structure of list of users in log in box
-  usersList.innerHTML = '';
+  /* usersList.innerHTML = '';
   [...hydrappUsers].forEach(user => {
     const { key } = user;
     const { name } = user.login;
@@ -854,19 +658,18 @@ const setLogInDOM = () => {
     const userItem = usersList.lastElementChild;
     const userButton = userItem.querySelector('.userList__button--js');
     userButton.userKey = key;
-    userButton.addEventListener('click', handleUserLogin);
-  });
+    userButton.addEventListener('click', handleLoginBox);
+  }); */
+
   // add 'create new user' button event only at first page load
-  if (isFirstLoginLoad) {
-    const createUserButton = appLogIn.querySelector('.app__createUserButton--js');
-    createUserButton.addEventListener('click', createNewUser);
-  }
-  isFirstLoginLoad = false;
+    /* const createUserButton = appLogin.querySelector('.app__createUserButton--js');
+    createUserButton.addEventListener('click', createNewUser); */
+    
   // show log in box
-  appLogIn.classList.add('app__logIn--visible');
+  loginBox.classList.add('loginBox--visible');
 }
 
-const handleUserLogin = (e) => {
+const handleLoginBox = (e) => {
   const self = e.target;
   const { userKey } = self;
   // assign selected user to JSON object and load app
@@ -874,11 +677,215 @@ const handleUserLogin = (e) => {
   hydrappUser.isLoggedIn = true;
   loadApp();
   // hide log in box
-  appLogIn.classList.remove('app__logIn--visible');
+  appLogin.classList.remove('app__logIn--visible');
 
   /* const userLogInButtons = usersList.querySelectorAll('.userList__button--js');
-  [...userLogInButtons].forEach(button => button.removeEventListener('click', handleUserLogin)); */
+  [...userLogInButtons].forEach(button => button.removeEventListener('click', handleLoginBox)); */
 }
+
+//#endregion
+
+//#region [ HorizonDark ] CREATE NEW USER
+  
+const createNewUser = () => {
+    
+  // create new user object with empty entries
+  const date = new Date();
+  hydrappUser = new User(date);
+  const newEntry = new Entry(date);
+  hydrappUser.entries = [newEntry];
+  // create and set promise function
+  const slidePromise = new Promise((resolve, reject) => {
+    resolve();
+  });
+  // user questions keys
+  const questions = findUserPropsWithTag('questions');
+  let newUserQuestions = document.querySelectorAll('.newUser--js');
+
+  if (isNewUserDOM) {
+    newUserQuestions[0].style = 'transform: translateX(0px);';
+    newUserQuestions[0].classList.add('newUser--visible');
+  } else {
+    setNewUserDOM();
+  }
+
+  // handle visibility of log in box and new user creator
+  appLogin.classList.remove('app__logIn--visible');
+  appNewUser.classList.add('app__newUser--visible');
+  handleNewUserQuestion(0);
+  // clear all inputs
+  const newUserInputs = appNewUser.querySelectorAll('.newUser__input--js');
+  [...newUserInputs].forEach(input => input.value = '');
+}
+
+const setNewUserDOM = () => {
+  
+  for (let i = 0; i < questions.length; i++) {
+    const prop = questions[i];     
+    const { maxLength } = hydrappUser[prop];
+    const newUserHtml = getHtmlOfNewUser();
+    appNewUser.innerHTML += newUserHtml;
+  }
+  isNewUserDOM = true;
+  newUserQuestions = document.querySelectorAll('.newUser--js');
+  const newUserPrevButtons = document.querySelectorAll('.newUser__button--js-prev');
+  const newUserNextButtons = document.querySelectorAll('.newUser__button--js-next');
+  const newUserInputs = appNewUser.querySelectorAll('.newUser__input--js');
+  // add buttons events
+  [...newUserPrevButtons].forEach(button =>
+  button.addEventListener('click', handleNewUser));
+  [...newUserNextButtons].forEach(button =>
+  button.addEventListener('click', handleNewUser));
+  // add keyboard events
+  [...newUserInputs]
+  .filter((input, index) => index !== 0)
+  .forEach(input => input.addEventListener('keyup', filterUserInput));
+  appNewUser.addEventListener('keyup', handleNewUser);
+  // remove default inputs behaviour on 'Enter' key press
+  window.addEventListener('keypress', (e) => {
+    if (e.keyCode  === 13) e.preventDefault();
+  });
+}
+
+const handleNewUserQuestion = (index, userName) => {
+  const questionLabels = appNewUser.querySelectorAll('.newUser__label--js');
+  const currentLabel = questionLabels[index];
+  currentLabel.textContent =
+  index === 0 ? 'What\'s your name, dear guest?' :
+  index === 1 ? `Hello ${userName}, what\'s your age?` :
+  index === 2 ? `What\'s your weight, ${userName}?` :
+  index === 3 ? `Last question ${userName}, what\'s your height?`
+  : false;
+}
+
+const handleNewUser = (e) => {
+  e.preventDefault();
+  const self = e.key || e.target;
+  const action = e.key
+  ? e.key === 'Escape' ? 'prev' : 'next'
+  : /prev/.test(self.className) ? 'prev' : 'next';
+  // find current user question
+  const currentQuestion = e.key
+  ? [...newUserQuestions].filter(question => /visible/.test(question.className))[0]
+  : findFirstParentOfClass(self, 'newUser');
+
+  const container = currentQuestion.parentNode;
+  const containerWidth = container.clientWidth;
+  const currentIndex = [...newUserQuestions].indexOf(currentQuestion);
+  const maxIndex = newUserQuestions.length - 1;
+  const inputs = container.querySelectorAll('.newUser__input--js');
+  const delay = 100;
+  const transitionTime = 500;
+
+  // slide questions with transition effect
+  const slideQuestions = (newIndex, newQuestion, nextInput, offset) => {
+    slideTimeoutId = setTimeout(() => {
+      newQuestion.style = `
+        transform: translateX(0);
+        transition: opacity ${transitionTime}ms, transform ${transitionTime}ms;
+      `;
+      newQuestion.classList.add('newUser--visible');
+      currentQuestion.style = `
+        opacity: 0;
+        transform: translateX(${offset}px);
+        transition: opacity ${transitionTime}ms, transform ${transitionTime}ms;
+      `;
+      handleNewUserQuestion(newIndex, hydrappUser.login.name);
+      nextInput.focus();
+
+    }, delay);
+  }
+  // hide previous card and clear timeouts
+  const clearAfter = () => {
+    const slideSecondTimeout = setTimeout(() => {
+      currentQuestion.classList.remove('newUser--visible');
+      clearTimeout(slideTimeoutId);
+      clearTimeout(slideSecondTimeout);
+      slideTimeoutId = null;
+    }, transitionTime);
+  }
+  // RETURN USER INPUT VALUE AS INTEGER
+  const getInputValue = (index) => parseInt(newUserInputs[index].value);
+
+  // perform sliding effect if previous one is already finished
+  if ((self.tagName === 'BUTTON' || self === 'Enter' || self === 'Escape')
+    && slideTimeoutId === null) {
+
+    // find next index
+    const newIndex = action === 'prev'
+    ? limitedRange(maxIndex, currentIndex, 'decrease')
+    : limitedRange(maxIndex, currentIndex, 'increase');
+    // set new elements
+    const newQuestion = newUserQuestions[newIndex];
+    const nextInput = inputs[newIndex];
+    // set initial position of a new card element
+    const initialOffset = action === 'prev' ? -1 * containerWidth : containerWidth;
+    const finalOffset = action === 'next' ? -1 * containerWidth : containerWidth;
+    
+    const willGoBackToPrevious = action === 'prev' || self === 'Escape';
+    const willGoBackToLogin = willGoBackToPrevious && currentIndex === 0;
+    const willGoToNextQuestion = action === 'next' || self === 'Enter';
+    const willCreateNewUser = willGoToNextQuestion && currentIndex >= maxIndex;
+
+    const currentInput = currentQuestion.querySelector('.newUser__input--js');
+    const currentAlert = currentQuestion.querySelector('.newUser__alert--js');
+    const currentProp = questions[currentIndex];
+    const shouldQuestionSlide = ((willGoToNextQuestion && isInputValid(currentInput, currentProp, currentAlert)) || willGoBackToPrevious);
+
+    // GO BACK TO USER LOG IN
+    if (willGoBackToLogin) {
+      appNewUser.classList.remove('app__newUser--visible');
+      appLogin.classList.add('app__logIn--visible');  
+
+    // GO TO THE NEXT QUESTION
+    } else if (willGoToNextQuestion) {
+
+      // CREATE NEW USER
+      if (willCreateNewUser) {
+        if (isInputValid(currentInput, currentProp, currentAlert)) {
+          hydrappUser.age.value    = getInputValue(1);
+          hydrappUser.weight.value = getInputValue(2);
+          hydrappUser.height.value = getInputValue(3);
+          hydrappUser.isLoggedIn = true;
+          // set JSON object as local storage item
+          exportJsonToLS();
+          hydrappUsers = fetchUsersFromLS();
+          loadApp();
+          // change user section visibility
+          appNewUser.classList.remove('app__newUser--visible');
+        }
+      // VALIDATE CURRENT INPUT AND GO TO NEXT USER QUESTION 
+      } else if (isInputValid(currentInput, currentProp, currentAlert)) {
+        const inputValue = currentInput.value;
+        if (currentIndex === 0) hydrappUser.login.name = inputValue;
+
+        const { name } = hydrappUser.login;
+        handleNewUserQuestion(currentIndex + 1, name);
+      }
+    }
+
+    if (willGoBackToPrevious) {
+      handleInputAlert(currentAlert);
+    }
+
+    if (!willGoBackToLogin && !willCreateNewUser) {
+      newQuestion.style = `
+        transform: translateX(${initialOffset}px);
+      `;
+    }
+    if (!willGoBackToLogin) {
+      if (shouldQuestionSlide) {
+        slidePromise
+          .then(() => slideQuestions(newIndex, newQuestion, nextInput, finalOffset))
+          .then(clearAfter);
+          //catch(() => console.log('Something bad happened!'));
+      }
+    }
+  } else return;
+}
+//#endregion
+
+//#region [ HorizonDark ] APP LOADING
 
 const loadApp = () => {
   updateJsonOnDateChange();
@@ -2014,7 +2021,7 @@ const quitLanding = () => {
   levelAvg.style.bottom = 0;
   levelMin.style.bottom = 0;
   handleWaterLevel(0);
-  setLogInDOM();
+  showLoginBox();
   closeTabContainers();
   appUserProfile.classList.add('app__userProfile--visible');
 } 
@@ -2133,14 +2140,15 @@ class UserCreator {
 
 class User {
   constructor(date) {
-    this.name = '',
-    this.age = 0,
-    this.weight = 0,
-    this.height = 0,
-    this.waterMax = 20,
-    this.waterMin = 8,
-    this.waterAvg = 0,
-    this.userRank = 0,
+    this.name = '';
+    this.age = 0;
+    this.weight = 0;
+    this.height = 0;
+    this.waterMax = 20;
+    this.waterMin = 8;
+    this.waterAvg = 0;
+    this.userRank = 0;
+    this.isLogged = false;
     this._dateCreated = date;    
     this._key = date;
     this.entries = [];
@@ -2218,16 +2226,18 @@ const introObj = {
 //#region [ HorizonDark ] VARIABLES - FLAGS
 
 let isFirstAppLoad = true;
-let isFirstLoginLoad = true;
 let isNewUserDOM = false;
 let isSidebarActive = false;
-let areInitialUsersAdded = false;
+
 //#endregion
 //#region [ HorizonDark ] VARIABLES - APP
+
+const localStorageKeyName = 'hydrapp';
 const mediaMd = 768;
 const mediaLg = 1200;
 let slideTimeoutId = null;
-const weekDay = [
+
+const weekDay = [ // ! USE DATE OBJECT
   'sunday',
   'monday',
   'tuesday',
@@ -2236,15 +2246,15 @@ const weekDay = [
   'friday',
   'saturday'
 ];
+
 const appHeader = document.querySelector('.app__header--js');
-const appUserProfile = document.querySelector('.app__userProfile--js');
-const appLogIn = document.querySelector('.app__logIn--js');
+const appUser = document.querySelector('.app__user--js');
+const loginBox = document.querySelector('.loginBox--js');
 const appNewUser = document.querySelector('.app__newUser--js');
 const appLanding = document.querySelector('.app__landing--js');
 const appWater = document.querySelector('.app__water--js');
 const appSidebar = document.querySelector('.app__sidebar--js');
 
-const usersList = document.querySelector('.usersList--js');
 //#endregion
 //#region [ HorizonDark ] VARIABLES - COUNTER
 const landingCounterContainer = document.querySelector('.counter--js-landing');
@@ -2312,41 +2322,23 @@ const emojiNewEntry = document.querySelector('.emoji--js-newEntry');
 //#endregion
 
 //#region [ HorizonDark ] FUNCTION CALLS
-let hydrappUser = {};
-let hydrappUsers = fetchUsersFromLS();
-const loggedUser = [...hydrappUsers].filter(user => user.isLoggedIn);
 
-if (loggedUser.length > 0) {
-  hydrappUser = loggedUser[0];
+// create JSON object with initial users on first app load
+let hydrappJSON = fetchJSON();
+if (!hydrappJSON) {
+  addInitialUsers();
+}
+
+// automatically log in unlogged user
+const { loggedUser } = hydrappJSON;
+
+if (loggedUser !== '') {
+  hydrappUser = hydrappJSON.users[loggedUser];
   loadApp() 
 } else {
-  areInitialUsersAdded ? false : createInitialUsers();
-  //setLogInDOM();
+  showLoginBox();
 }
-areInitialUsersAdded = true;
 //setIntroWaves();
-//#endregion
-
-//#region [ HorizonDark ] UNUSED
-
-/* const entriesFade = (action) => {
-  const currentWeekList = weekLists[0];
-  let delay = 0;
-
-  if (action === 'in') {
-    [...currentWeekList.children].forEach(elem => {
-      elem.classList.add('entry--visible');
-      elem.style.transitionDelay = `${delay}s`;
-      delay += 0.1;
-    });
-
-  } else if (action === 'out') {
-    [...currentWeekList.children].reverse().forEach(elem => {
-      elem.classList.remove('entry--visible');
-      elem.style.transitionDelay = 0;
-    });
-  }
-} */
 //#endregion
 
 

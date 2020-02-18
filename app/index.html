@@ -60,19 +60,39 @@
     </header>
     <!-- #endregion -->
     
-    <!-- #region [ HorizonDark ] USER PROFILE -->
-    <div class="app__userProfile app__userProfile--visible app__userProfile--js">
-      <!-- USER LOG IN -->
-      <section class="app__logIn app__logIn--js">
-        <h2 class="app__heading">Log In</h2>
-        <ul class="usersList usersList--js"></ul>
-        <button class="app__createUserButton app__createUserButton--js">
-          Create New User
+    <!-- #region [ HorizonDark ] USER SECTION -->
+    <div class="app__user app__user--visible app__user--js">
+      <!-- LOGIN BOX -->
+      <section class="loginBox loginBox--js">
+        <h2 class="loginBox__heading">Welcome!</h2>
+        <!-- LABEL -->
+        <label for="userLogin" class="loginBox__label">
+          Please, enter your login or sign up
+        </label>
+        <!-- INPUT -->
+        <input
+          id="userLogin"
+          class="loginBox__input loginBox__input--js"
+          type="text"
+          maxlength="20"
+          autofocus
+        >
+        <!-- ALERT -->
+        <div class="loginBox__alert loginBox__alert--js">
+          <p class="loginBox__alertText"></p>
+        </div>
+        <!-- LOG IN BUTTON -->
+        <button class="loginBox__button loginBox__button--logIn loginBox__button--js-logIn">
+          Log In
+        </button>
+        <!-- SIGN UP BUTTON -->
+        <button class="loginBox__button loginBox__button--signUp loginBox__button--js-signUp">
+          Sign Up
         </button>
       </section>
       <!-- NEW USER CREATOR -->
       <form class="app__newUser app__newUser--js">
-        <h2 class="app__heading visuallyhidden">User data</h2>
+        <h2 class="app__heading visuallyhidden">New User Creator</h2>
       </form>
     </div>
     <!-- #endregion -->
