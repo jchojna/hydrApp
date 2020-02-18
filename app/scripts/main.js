@@ -195,11 +195,18 @@ const isInputValid = (input, prop, alertBox) => {
 
 //#region [ HorizonDark ] LOCAL STORAGE & JSON
 
-const exportJSON = (json) => {
-  localStorage.setItem(localStorageKeyName, JSON.stringify(json));
+const fetchJSON = () => {
+  hydrappJSON = JSON.parse(localStorage.getItem(localStorageKeyName));
 }
 
-const fetchJSON = () => JSON.parse(localStorage.getItem(localStorageKeyName));
+const updateJSON = () => {
+  const { login } = loggedUser;
+  hydrappJSON.users[login] = loggedUser;
+}
+
+const exportJSON = () => {
+  localStorage.setItem(localStorageKeyName, JSON.stringify(hydrappJSON));
+}
 
 const updateJsonOnDateChange = () => {
 
@@ -207,6 +214,7 @@ const updateJsonOnDateChange = () => {
   let currentDateId = getDateId(currentDate);
   let newEntries = [];
   const newestEntryDateId = loggedUser.entries[0].id;
+  
 
   // keep adding new empty entries between today and latest new archive entry
   while (currentDateId !== newestEntryDateId) {
@@ -217,8 +225,9 @@ const updateJsonOnDateChange = () => {
 
   // update entries array
   loggedUser.entries = [...newEntries, ...loggedUser.entries];
+  updateJSON();
+  exportJSON();
   startWaterValue = loggedUser.entries[0].value;
-  exportJSON(hydrappJSON);
 }
 //#endregion
 
@@ -542,7 +551,7 @@ const initialUsers = [
 ];
 
 const addInitialUsers = () => {
-  let hydrapp = {
+  hydrappJSON = {
     loggedUser: '',
     users: []
   };
@@ -590,10 +599,10 @@ const addInitialUsers = () => {
       }
     
     // add new user to hydrapp JSON object
-    const { users } = hydrapp;
-    hydrapp.users = { ...users, [nameId]: newUser };
+    const { users } = hydrappJSON;
+    hydrappJSON.users = { ...users, [nameId]: newUser };
   });
-  exportJSON(hydrapp);
+  exportJSON();
 }
 //#endregion
 
@@ -669,7 +678,7 @@ const handleLoginBox = () => {
     loggedUser = hydrappJSON.users[login];
     loggedUser.login = login;
     hydrappJSON.loggedUser = login;
-    exportJSON(hydrappJSON);
+    exportJSON();
 
     loadApp();
     loginBox.classList.remove('loginBox--visible');
@@ -1041,25 +1050,34 @@ const handleWaterMeasure = () => {
 }
 
 const handleWaterChange = (e) => {
+
   const self = e.target;
-  const waterMax = hydrappUser.waterMax.value;
-  let { value, id } = hydrappUser.entries[0];
+  if (self.tagName !== 'BUTTON') return false;
+
+  const { waterMax } = loggedUser;
+  let { value, id } = loggedUser.entries[0];
   const firstEntryValue = document.querySelector('.entry__value--js');
 
-  // if add button clicked
-  if (self === addBtn) {
-    if (value >= waterMax) return;
-    handleCounter(landingCounter, value, ++value);
+  switch (self) {
 
-  // if remove button clicked
-  } else if (self === removeBtn) {
-    if (value <= 0) return;
-    handleCounter(landingCounter, value, --value);
+    case addBtn:
+      if (value >= waterMax) return;
+      handleCounter(landingCounter, value, ++value);
+      break;
+
+    case removeBtn:
+      if (value <= 0) return;
+      handleCounter(landingCounter, value, --value);
+      break;
+
+    default: break;
   }
+
   // value has been changed
-  hydrappUser.entries[0].value = value;
+  loggedUser.entries[0].value = value;
   firstEntryValue.textContent = value;
-  exportJsonToLS();
+  updateJSON();
+  exportJSON()
   handleWaterLevel(value);
   handleWaterShake();
   handleCounterMessage(value);
@@ -1815,31 +1833,43 @@ const removeLastEntry = (e) => {
 }
 
 const handleEntryEdit = (e) => {
+  
   const itemIndex = e.target.index;
-  const entry = document.querySelectorAll('.entry--js')[itemIndex];
-  const entryHeader = document.querySelectorAll('.entry__header--js')[itemIndex];
-  const entryValue = document.querySelectorAll('.entry__value--js')[itemIndex];
-  const editSection = document.querySelectorAll('.edition--js')[itemIndex];
-  const decreaseButton = document.querySelectorAll('.edition__button--js-decrease')[itemIndex];
-  const increaseButton = document.querySelectorAll('.edition__button--js-increase')[itemIndex];
-  const cancelButton = document.querySelectorAll('.edition__button--js-cancel')[itemIndex];
-  const saveButton = document.querySelectorAll('.edition__button--js-save')[itemIndex];
+  const entry = document.querySelectorAll('.entry--js')
+  [itemIndex];
+  const entryHeader = document.querySelectorAll('.entry__header--js')
+  [itemIndex];
+  const entryValue = document.querySelectorAll('.entry__value--js')
+  [itemIndex];
+  const editSection = document.querySelectorAll('.edition--js')
+  [itemIndex];
+  const decreaseButton = document.querySelectorAll('.edition__button--js-decrease')
+  [itemIndex];
+  const increaseButton = document.querySelectorAll('.edition__button--js-increase')
+  [itemIndex];
+  const cancelButton = document.querySelectorAll('.edition__button--js-cancel')
+  [itemIndex];
+  const saveButton = document.querySelectorAll('.edition__button--js-save')
+  [itemIndex];
 
   const toggleItemDisplay = () => {
+
     for (const editButton of editSection.children) {
       editButton.classList.toggle('edition__button--visible');
     }
+
     editSection.classList.toggle('edition--visible');
     entry.classList.toggle('entry--edit-mode');
     entryHeader.classList.toggle('entry__header--edit-mode');
 
-    itemIndex === hydrappUser.entries.length - 1
+    itemIndex === loggedUser.entries.length - 1
     ? removeEntryButton.classList.toggle('entry__remove--hidden')
     : false;
   }
   
   const exitEditMode = () => {
-    const {value, id} = hydrappUser.entries[itemIndex];
+
+    const { value, id } = loggedUser.entries[itemIndex];
     
     toggleItemDisplay();
     entryValue.textContent = value;
@@ -1850,10 +1880,11 @@ const handleEntryEdit = (e) => {
   }
   
   const handleEdition = (e) => {
+
     const self = e.keyCode || e.target;
     let dayValue = parseInt(entryValue.textContent);
-    const waterMax = hydrappUser.waterMax.value;
-    const { id, value } = hydrappUser.entries[itemIndex];
+    const { waterMax } = loggedUser;
+    const { id, value } = loggedUser.entries[itemIndex];
 
     switch (self) {
 
@@ -1885,8 +1916,9 @@ const handleEntryEdit = (e) => {
           handleCounterMessage(dayValue);
           handleEmoji('controls', dayValue);
         }
-        hydrappUser.entries[itemIndex].value = dayValue;
-        exportJsonToLS();
+        loggedUser.entries[itemIndex].value = dayValue;
+        updateJSON();
+        exportJSON();
         handleWaterAverage();
         exitEditMode();
       break;
@@ -1979,15 +2011,16 @@ const setSettingsDOM = () => {
 }
 
 const handleSettingsEdition = (e) => {
+
   const self = e.target;
   const { id } = self;
   const prop = id.replace('EditButton', '');
-  const propObj = hydrappUser[prop];
-  const value = prop === 'login' ? propObj.name : propObj.value;
+  const value = loggedUser[prop];
+
   const userProp = findFirstParentOfClass(self, 'userProp');
   const propName = userProp.querySelector('.userProp__label--js');
-  const outputValue = userProp.querySelector('.userProp__output--js');
-  const inputValue = userProp.querySelector('.userProp__input--js');
+  const output = userProp.querySelector('.userProp__output--js');
+  const input = userProp.querySelector('.userProp__input--js');
   const cancelButton = userProp.querySelector('.edition__button--js-cancel');
   const saveButton = userProp.querySelector('.edition__button--js-save');
   const editSection = userProp.querySelector('.edition--js');
@@ -2003,55 +2036,73 @@ const handleSettingsEdition = (e) => {
     editSection.classList.toggle('edition--visible');
     userProp.classList.toggle('userProp--editMode');
     propName.classList.toggle('userProp__label--editMode');
-    outputValue.classList.toggle('userProp__output--hidden');
-    inputValue.classList.toggle('userProp__input--visible');
-    inputValue.focus();
+    output.classList.toggle('userProp__output--hidden');
+    input.classList.toggle('userProp__input--visible');
+    input.focus();
+
     // change placeholder of edited input
-    inputValue.value = '';
-    inputValue.placeholder = prop === 'weight'
+    input.value = '';
+    input.placeholder = prop === 'weight'
     ? `${value} kg` : prop === 'height'
     ? `${value} cm` : prop === 'waterMax'
     ? `${getGlasses('waterMax', value)}` : value;
   }
   
   const exitEditMode = () => {
+
     togglePropDisplay();
     handleInputAlert(inputAlert);
     handleContainerHeightThroughTime(settingsContainer, settingsContainer.firstElementChild, transitionTime);
     editSection.removeEventListener('click', handleEdition);
     window.removeEventListener('keydown', handleEdition);
-    if (prop !== 'name') inputValue.removeEventListener('keyup', filterUserInput);
+    if (prop !== 'name') input.removeEventListener('keyup', filterUserInput);
   }
   
   const handleEdition = (e) => {
+
     const self = e.keyCode || e.target;
+
     switch (self) {
+
       case 27:
       case cancelButton:
         exitEditMode();
       break;
+
       case 13:
       case saveButton:
-        if (isInputValid(inputValue, prop, inputAlert)) {
-          // update new value
-          const newValue = typeof value === 'number'
-          ? parseInt(inputValue.value)
-          : inputValue.value
-          outputValue.textContent = getGlasses(prop, newValue);
+        
+        // set new value
+        const newValue = typeof value === 'number'
+        ? parseInt(input.value)
+        : input.value;
+
+        if (value === newValue || isInputValid(input, prop, inputAlert)) {
+
+          output.textContent = getGlasses(prop, newValue);
+
           // handle updated local storage key
-          if (prop === 'login' && newValue !== value) {
-            const oldNameId = getFormattedString(value);
-            const newNameId = getFormattedString(newValue);
-            localStorage.removeItem(`hydrapp-${oldNameId}`);
-            hydrappUser[prop].name = newValue;
-            hydrappUser[prop].nameId = newNameId;
+
+          if (prop === 'name' && newValue !== value) {
+            
+            const oldLogin = getFormattedString(value);
+            const newLogin = getFormattedString(newValue);
+
+            delete hydrappJSON.users[oldLogin];
+            loggedUser.name = newValue;
+            loggedUser.login = newLogin;
+            hydrappJSON.loggedUser = newLogin;
+            hydrappJSON.users[newLogin] = loggedUser;
             settingsHeading.textContent = newValue;
+            
           } else if (newValue !== value) {
-            hydrappUser[prop].value = newValue;
+            loggedUser[prop] = newValue;
           }
           // handle JSON object
-          exportJsonToLS();
+          updateJSON();
+          exportJSON();
           exitEditMode();
+
         } else {
           handleContainerHeightThroughTime(settingsContainer, settingsContainer.firstElementChild, transitionTime);
         }
@@ -2062,7 +2113,7 @@ const handleSettingsEdition = (e) => {
   togglePropDisplay();
   editSection.addEventListener('click', handleEdition);
   window.addEventListener('keydown', handleEdition);
-  if (typeof value === 'number') inputValue.addEventListener('keyup', filterUserInput);
+  if (typeof value === 'number') input.addEventListener('keyup', filterUserInput);
 }
 
 const quitLanding = () => {
@@ -2268,21 +2319,26 @@ const appSidebar = document.querySelector('.app__sidebar--js');
 
 //#endregion
 //#region [ HorizonDark ] VARIABLES - COUNTER
+
 const landingCounterContainer = document.querySelector('.counter--js-landing');
 const landingCounter = new Counter(landingCounterContainer);
 const landingDay = landingCounterContainer.querySelector('.counter__day--js-landing');
 const landingDate = landingCounterContainer.querySelector('.counter__date--js-landing');
 const counterMessage = document.querySelector('.counter__message--js');
+
 //#endregion
 //#region [ HorizonDark ] VARIABLES - CONTROLS
+
 const landingControls = document.querySelector('.controls--js-landing');
 const addBtn = document.querySelector('.button--js-add');
 const removeBtn = document.querySelector('.button--js-remove');
 const emoji = document.querySelector('.emoji--js-controls');
 const emojiAmount = 8;
 const burgerBtn = document.querySelector('.button--js-burger');
+
 //#endregion
 //#region [ HorizonDark ] VARIABLES - WATER
+
 const waterObj = {
   front: {
     wavePeriodsTotal: 2,
@@ -2305,21 +2361,26 @@ let wavesTimeoutId = null;
 const measure = document.querySelector('.graph__measure--js');
 const levelAvg = document.querySelector('.graph__level--js-avg');
 const levelMin = document.querySelector('.graph__level--js-min');
+
 //#endregion
 //#region [ HorizonDark ] VARIABLES - SIDEBAR
+
 const archiveTabButton = document.querySelector('.tab__button--js-archive');
 const statsTabButton = document.querySelector('.tab__button--js-stats');
 const settingTabButton = document.querySelector('.tab__button--js-settings');
 const archiveContainer = document.querySelector('.tab__container--js-archive');
 const statsContainer = document.querySelector('.tab__container--js-stats');
 const settingsContainer = document.querySelector('.tab__container--js-settings');
+
 //#endregion
 //#region [ HorizonDark ] VARIABLES - ARCHIVE
 
 const addEntryButton = createAddEntryButton();
 const removeEntryButton = createRemoveEntryButton();
+
 //#endregion
 //#region [ HorizonDark ] VARIABLES - NEW ENTRY
+
 const newEntryMode = document.querySelector('.newEntry--js');
 const newEntryCounterContainer = document.querySelector('.counter--js-newEntry');
 const newEntryCounter = new Counter(newEntryCounterContainer);
@@ -2330,15 +2391,17 @@ const newEntryIncrease = newEntryMode.querySelector('.button--js-increase');
 const newEntryCancel = newEntryMode.querySelector('.button--js-cancel');
 const newEntrySave = newEntryMode.querySelector('.button--js-save');
 const emojiNewEntry = document.querySelector('.emoji--js-newEntry');
+
 //#endregion
 
 //#region [ HorizonDark ] FUNCTION CALLS
 
 // create JSON object with initial users on first app load
-let hydrappJSON = fetchJSON();
+let hydrappJSON;
+fetchJSON();
 if (!hydrappJSON) {
   addInitialUsers();
-  hydrappJSON = fetchJSON();
+  fetchJSON();
 }
 
 // automatically log in unlogged user
@@ -2351,8 +2414,9 @@ if (loggedUser !== '') {
   showLoginBox();
 }
 //setIntroWaves();
+
 //#endregion
 
 
 
-//toggleSidebar(burgerBtn);
+toggleSidebar(burgerBtn);
