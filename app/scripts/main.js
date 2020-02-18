@@ -119,66 +119,71 @@ const filterUserInput = (e) => {
 }
 
 const handleInputAlert = (alertBox, prop, option) => {
+
   const alertText = alertBox.firstElementChild;
   let alertTextContent = '';
 
   if (!prop) {
     alertBox.style.height = '';
     alertText.textContent = '';
+
   } else {
 
-    if (prop === 'login' && option === 'empty') {
+    if (prop === 'name' && option === 'empty') {
       alertTextContent = 'Please enter your name'
 
-    } else if (prop === 'login' && option === 'existing') {
+    } else if (prop === 'name' && option === 'existing') {
       alertTextContent = 'This user name is already taken'
 
     } else {
-      const userProp = hydrappUser[prop];
+      const userProp = userHelper[prop];
       const { min, max } = userProp;
       const label = prop === 'waterMax' ? userProp.alertLabel : userProp.label;
       alertTextContent = `${label} should be between ${min} and ${max}`;
-    }  
+    }
+
     alertText.textContent = alertTextContent;
     alertBox.style.height = `${alertText.clientHeight}px`;
   }
 }
 
 const isInputValid = (input, prop, alertBox) => {
+
   const { value } = input;
-  // check user login input
-  if (prop === 'login') {
-    // check if input is empty
-    const isEmpty = value.slice().replace(/\s/g,'').length <= 0;
-    // get new nameId
-    const { nameId } = hydrappUser.login;
-    const newNameId = getFormattedString(value);
-    // exclude user's nameId when editing existing value
-    const otherUsersNames = [...hydrappUsers]
-    .map(({login}) => login.nameId)
-    .filter(userNameId => userNameId !== nameId);
+
+  // validate user name
+  if (prop === 'name') {
+    
     // check if there is no the same user name existing
-    const isExisting = [...otherUsersNames]
-    .filter(userNameId => userNameId === newNameId).length > 0;
+    const newLogin = getFormattedString(value);
+    const isExisting = Object.keys(hydrappJSON.users)
+    .filter(existingLogin => existingLogin === newLogin).length > 0;
+
+    // check if text input is empty
+    const isEmpty = value.slice().replace(/\s/g,'').length <= 0;
 
     if (isEmpty) {
       handleInputAlert(alertBox, prop, 'empty');
       return false;
+
     } else if (isExisting) {
       handleInputAlert(alertBox, prop, 'existing');
       return false;
+
     } else {
       handleInputAlert(alertBox);
-      hydrappUser.login.nameId = newNameId;
       return true;
     }
+
   // check user's numerical inputs
   } else {
-    const { min, max } = hydrappUser[prop];
+    const { min, max } = userHelper[prop];
+
     if (value < min || value > max) {
       handleInputAlert(alertBox, prop);
       input.focus();
       return false;
+
     } else {
       handleInputAlert(alertBox);
       return true;
@@ -229,7 +234,7 @@ const updateJsonOnDateChange = () => {
 
 //#region [ HorizonDark ] HTML CODE
 
-const getHtmlOfNewUser = () => {
+const getHtmlOfNewUser = (prop, maxLength) => {
   return `
     <div
       class="newUser newUser--js ${prop === 'login' ? 'newUser--visible' : ''}"
@@ -649,27 +654,12 @@ const quitIntro = () => {
 
 const showLoginBox = () => {
 
-  // set DOM structure of list of users in log in box
-  /* usersList.innerHTML = '';
-  [...hydrappUsers].forEach(user => {
-    const { key } = user;
-    const { name } = user.login;
-    usersList.insertAdjacentHTML('beforeend', getHtmlOfUserLogIn(name));
-    const userItem = usersList.lastElementChild;
-    const userButton = userItem.querySelector('.userList__button--js');
-    userButton.userKey = key;
-    userButton.addEventListener('click', handleLoginBox);
-  }); */
-
-  // add 'create new user' button event only at first page load
-    /* const createUserButton = appLogin.querySelector('.app__createUserButton--js');
-    createUserButton.addEventListener('click', createNewUser); */
-    
-  // show log in box
   loginBox.classList.add('loginBox--visible');
+  appNewUser.classList.remove('app__newUser--visible');
 }
 
 const handleLoginBox = (e) => {
+
   const self = e.target;
   const { userKey } = self;
   // assign selected user to JSON object and load app
@@ -677,7 +667,7 @@ const handleLoginBox = (e) => {
   hydrappUser.isLoggedIn = true;
   loadApp();
   // hide log in box
-  appLogin.classList.remove('app__logIn--visible');
+  loginBox.classList.remove('app__logIn--visible');
 
   /* const userLogInButtons = usersList.querySelectorAll('.userList__button--js');
   [...userLogInButtons].forEach(button => button.removeEventListener('click', handleLoginBox)); */
@@ -688,29 +678,17 @@ const handleLoginBox = (e) => {
 //#region [ HorizonDark ] CREATE NEW USER
   
 const createNewUser = () => {
-    
+  
   // create new user object with empty entries
   const date = new Date();
-  hydrappUser = new User(date);
-  const newEntry = new Entry(date);
-  hydrappUser.entries = [newEntry];
-  // create and set promise function
-  const slidePromise = new Promise((resolve, reject) => {
-    resolve();
-  });
-  // user questions keys
-  const questions = findUserPropsWithTag('questions');
-  let newUserQuestions = document.querySelectorAll('.newUser--js');
+  loggedUser = new User(date);
+  const newEntry = new Entry(0, date);
+  loggedUser.entries = [ newEntry ];
 
-  if (isNewUserDOM) {
-    newUserQuestions[0].style = 'transform: translateX(0px);';
-    newUserQuestions[0].classList.add('newUser--visible');
-  } else {
-    setNewUserDOM();
-  }
+  setNewUserDOM();
 
   // handle visibility of log in box and new user creator
-  appLogin.classList.remove('app__logIn--visible');
+  loginBox.classList.remove('loginBox--visible');
   appNewUser.classList.add('app__newUser--visible');
   handleNewUserQuestion(0);
   // clear all inputs
@@ -719,56 +697,75 @@ const createNewUser = () => {
 }
 
 const setNewUserDOM = () => {
-  
-  for (let i = 0; i < questions.length; i++) {
-    const prop = questions[i];     
-    const { maxLength } = hydrappUser[prop];
-    const newUserHtml = getHtmlOfNewUser();
-    appNewUser.innerHTML += newUserHtml;
+
+  if (!isNewUserDOM) {
+
+    // add html code of each user question
+    const { questionsProps } = userHelper;
+    [...questionsProps].forEach(prop => {
+      const { maxLength } = userHelper[prop];
+      appNewUser.innerHTML += getHtmlOfNewUser(prop, maxLength);
+    });
+    isNewUserDOM = true;
+
+    // set variables
+    const newUserButtons = appNewUser.querySelectorAll('[class*=newUser__button--js]');
+    const newUserInputs = appNewUser.querySelectorAll('.newUser__input--js');
+
+    // add buttons events
+    [...newUserButtons].forEach(button =>
+      button.addEventListener('click', handleNewUser));
+
+    // add keyboard events
+    [...newUserInputs]
+    .filter((input, index) => index !== 0)
+    .forEach(input => input.addEventListener('keyup', filterUserInput));
+    appNewUser.addEventListener('keyup', handleNewUser);
+
+    // remove default inputs behaviour on 'Enter' key press
+    window.addEventListener('keypress', (e) =>
+    e.keyCode  === 13 ? e.preventDefault() : false);
   }
-  isNewUserDOM = true;
-  newUserQuestions = document.querySelectorAll('.newUser--js');
-  const newUserPrevButtons = document.querySelectorAll('.newUser__button--js-prev');
-  const newUserNextButtons = document.querySelectorAll('.newUser__button--js-next');
-  const newUserInputs = appNewUser.querySelectorAll('.newUser__input--js');
-  // add buttons events
-  [...newUserPrevButtons].forEach(button =>
-  button.addEventListener('click', handleNewUser));
-  [...newUserNextButtons].forEach(button =>
-  button.addEventListener('click', handleNewUser));
-  // add keyboard events
-  [...newUserInputs]
-  .filter((input, index) => index !== 0)
-  .forEach(input => input.addEventListener('keyup', filterUserInput));
-  appNewUser.addEventListener('keyup', handleNewUser);
-  // remove default inputs behaviour on 'Enter' key press
-  window.addEventListener('keypress', (e) => {
-    if (e.keyCode  === 13) e.preventDefault();
-  });
+
+  // set visibility of first user question
+  const newUserQuestions = appNewUser.querySelectorAll('.newUser--js');
+  newUserQuestions[0].style = 'transform: translateX(0px);';
+  newUserQuestions[0].classList.add('newUser--visible');
 }
 
-const handleNewUserQuestion = (index, userName) => {
+const handleNewUserQuestion = (index, name) => {
   const questionLabels = appNewUser.querySelectorAll('.newUser__label--js');
   const currentLabel = questionLabels[index];
   currentLabel.textContent =
   index === 0 ? 'What\'s your name, dear guest?' :
-  index === 1 ? `Hello ${userName}, what\'s your age?` :
-  index === 2 ? `What\'s your weight, ${userName}?` :
-  index === 3 ? `Last question ${userName}, what\'s your height?`
+  index === 1 ? `Hello ${name}, what\'s your age?` :
+  index === 2 ? `What\'s your weight, ${name}?` :
+  index === 3 ? `Last question ${name}, what\'s your height?`
   : false;
 }
 
 const handleNewUser = (e) => {
-  e.preventDefault();
-  const self = e.key || e.target;
-  const action = e.key
-  ? e.key === 'Escape' ? 'prev' : 'next'
-  : /prev/.test(self.className) ? 'prev' : 'next';
-  // find current user question
-  const currentQuestion = e.key
-  ? [...newUserQuestions].filter(question => /visible/.test(question.className))[0]
-  : findFirstParentOfClass(self, 'newUser');
 
+  // block default event behaviours
+  e.preventDefault();
+  let self, action, currentQuestion;
+  const newUserQuestions = appNewUser.querySelectorAll('.newUser--js');
+
+  // when keyboard is pressed
+  if (e.key) {
+    if (e.key !== 'Enter' && e.key !== 'Escape') return false;
+    action = e.key === 'Escape' ? 'prev' : 'next';
+    currentQuestion = [...newUserQuestions]
+    .filter(question => /visible/.test(question.className))[0];
+
+  // when button is pressed
+  } else if (e.target) {
+    self = e.target;
+    if (self.tagName !== 'BUTTON') return false;
+    action = /prev/.test(self.className) ? 'prev' : 'next';
+    currentQuestion = findFirstParentOfClass(self, 'newUser');
+  }
+  
   const container = currentQuestion.parentNode;
   const containerWidth = container.clientWidth;
   const currentIndex = [...newUserQuestions].indexOf(currentQuestion);
@@ -776,6 +773,11 @@ const handleNewUser = (e) => {
   const inputs = container.querySelectorAll('.newUser__input--js');
   const delay = 100;
   const transitionTime = 500;
+
+  // create and set promise function
+  const slidePromise = new Promise((resolve, reject) => {
+    resolve();
+  });
 
   // slide questions with transition effect
   const slideQuestions = (newIndex, newQuestion, nextInput, offset) => {
@@ -790,11 +792,12 @@ const handleNewUser = (e) => {
         transform: translateX(${offset}px);
         transition: opacity ${transitionTime}ms, transform ${transitionTime}ms;
       `;
-      handleNewUserQuestion(newIndex, hydrappUser.login.name);
+      handleNewUserQuestion(newIndex, loggedUser.name);
       nextInput.focus();
 
     }, delay);
   }
+
   // hide previous card and clear timeouts
   const clearAfter = () => {
     const slideSecondTimeout = setTimeout(() => {
@@ -804,38 +807,40 @@ const handleNewUser = (e) => {
       slideTimeoutId = null;
     }, transitionTime);
   }
-  // RETURN USER INPUT VALUE AS INTEGER
+
+  // return user input value as integer
   const getInputValue = (index) => parseInt(newUserInputs[index].value);
 
   // perform sliding effect if previous one is already finished
-  if ((self.tagName === 'BUTTON' || self === 'Enter' || self === 'Escape')
-    && slideTimeoutId === null) {
+  if (slideTimeoutId === null) {
 
     // find next index
     const newIndex = action === 'prev'
     ? limitedRange(maxIndex, currentIndex, 'decrease')
     : limitedRange(maxIndex, currentIndex, 'increase');
+
     // set new elements
     const newQuestion = newUserQuestions[newIndex];
     const nextInput = inputs[newIndex];
+
     // set initial position of a new card element
     const initialOffset = action === 'prev' ? -1 * containerWidth : containerWidth;
     const finalOffset = action === 'next' ? -1 * containerWidth : containerWidth;
     
     const willGoBackToPrevious = action === 'prev' || self === 'Escape';
-    const willGoBackToLogin = willGoBackToPrevious && currentIndex === 0;
+    const willGoBackToLogin = willGoBackToPrevious && currentIndex <= 0;
     const willGoToNextQuestion = action === 'next' || self === 'Enter';
     const willCreateNewUser = willGoToNextQuestion && currentIndex >= maxIndex;
 
     const currentInput = currentQuestion.querySelector('.newUser__input--js');
     const currentAlert = currentQuestion.querySelector('.newUser__alert--js');
-    const currentProp = questions[currentIndex];
+    const currentProp = userHelper.questionsProps[currentIndex];
     const shouldQuestionSlide = ((willGoToNextQuestion && isInputValid(currentInput, currentProp, currentAlert)) || willGoBackToPrevious);
 
     // GO BACK TO USER LOG IN
     if (willGoBackToLogin) {
       appNewUser.classList.remove('app__newUser--visible');
-      appLogin.classList.add('app__logIn--visible');  
+      loginBox.classList.add('loginBox--visible');  
 
     // GO TO THE NEXT QUESTION
     } else if (willGoToNextQuestion) {
@@ -847,39 +852,49 @@ const handleNewUser = (e) => {
           hydrappUser.weight.value = getInputValue(2);
           hydrappUser.height.value = getInputValue(3);
           hydrappUser.isLoggedIn = true;
+
           // set JSON object as local storage item
           exportJsonToLS();
           hydrappUsers = fetchUsersFromLS();
           loadApp();
+
           // change user section visibility
           appNewUser.classList.remove('app__newUser--visible');
         }
+
       // VALIDATE CURRENT INPUT AND GO TO NEXT USER QUESTION 
       } else if (isInputValid(currentInput, currentProp, currentAlert)) {
-        const inputValue = currentInput.value;
-        if (currentIndex === 0) hydrappUser.login.name = inputValue;
 
-        const { name } = hydrappUser.login;
-        handleNewUserQuestion(currentIndex + 1, name);
+        // set name and login id of a new user
+        const inputValue = currentInput.value;
+        if (currentIndex === 0) {
+          loggedUser.name = inputValue;
+          loggedUser.login = getFormattedString(inputValue);
+        }
+
+        // show entered user name in the next questions
+        handleNewUserQuestion(currentIndex + 1, inputValue);
       }
     }
 
+    // hide alert box when going back to previous questions
     if (willGoBackToPrevious) {
       handleInputAlert(currentAlert);
     }
 
+    // set position of next question shortly before slide
     if (!willGoBackToLogin && !willCreateNewUser) {
       newQuestion.style = `
         transform: translateX(${initialOffset}px);
       `;
     }
-    if (!willGoBackToLogin) {
-      if (shouldQuestionSlide) {
-        slidePromise
-          .then(() => slideQuestions(newIndex, newQuestion, nextInput, finalOffset))
-          .then(clearAfter);
-          //catch(() => console.log('Something bad happened!'));
-      }
+    
+    // apply sliding transition effect
+    if (shouldQuestionSlide) {
+      slidePromise
+        .then(() => slideQuestions(newIndex, newQuestion, nextInput, finalOffset))
+        .then(clearAfter);
+        //catch(() => console.log('Something bad happened!'));
     }
   } else return;
 }
@@ -2052,92 +2067,6 @@ class Counter {
   }
 }
 
-class UserCreator {
-  constructor(date) {
-    this.login = {
-      name: '',
-      nameId: '',
-      label: 'Name',
-      maxLength: 20,
-      tags: ['questions', 'settings']
-    };
-    this.age = {
-      value: 0,
-      label: 'Age',
-      maxLength: 3,
-      min: 10,
-      max: 120,
-      tags: ['questions', 'settings']
-    };
-    this.weight = {
-      value: 0,
-      label: 'Weight',
-      maxLength: 3,
-      min: 8,
-      max: 200,
-      tags: ['questions', 'settings']
-    };
-    this.height = {
-      value: 0,
-      label: 'Height',
-      maxLength: 3,
-      min: 70,
-      max: 250,
-      tags: ['questions', 'settings']
-    };
-    this.waterMax = {
-      value: 20,
-      label: 'Maximum per day',
-      alertLabel: 'Maximum amount of glasses per day',
-      maxLength: 2,
-      min: 10,
-      max: 40,
-      tags: ['settings']
-    };
-    this.waterMin = {
-      value: 8,
-      label: 'Minimum per day',
-      tags: ['stats']
-    };
-    this.waterAvg = {
-      value: 0,
-      label: 'Average per day',
-      tags: ['stats']
-    };
-    this.userRank = {
-      value: 0,
-      label: 'Ranking position',
-      tags: ['stats']
-    }
-    this._dateCreated = date;    
-    this._key = date;
-    this.entries = [];
-  }
-
-  get _dateCreated() {
-    return this.dateCreated;
-  }
-  set _dateCreated(date) {
-    const dateTime = getOffsetedDate(date)
-    .toISOString()
-    .slice(0,10)
-    .split('-')
-    .reverse()
-    .join('.');
-    const hourTime = getOffsetedDate(date).toISOString().slice(11,16);
-    this.dateCreated = {
-      value: `${dateTime}, ${hourTime}`,
-      label: 'Created at'
-    }
-  }
-  get _key() {
-    return this.key;
-  }
-  set _key(date) {
-    this.key = date.getTime();
-  }
-}
-
 class User {
   constructor(date) {
     this.name = '';
@@ -2203,13 +2132,13 @@ class Entry {
     return this.day;
   }
   set _day(date) {
-    const dayIndex = date.getDay();
-    this.day = weekDay[dayIndex];
+    this.day = userHelper.weekDays[date.getDay()];
   }
 }
 //#endregion
 
 //#region [ HorizonDark ] VARIABLES - INTRO
+
 const intro = document.querySelector('.intro--js');
 const introObj = {
   front: {
@@ -2222,6 +2151,16 @@ const introObj = {
     wavePeriodsTotal: 4
   }
 };
+
+//#endregion
+//#region [ HorizonDark ] VARIABLES - LOGIN BOX
+
+const loginBox = document.querySelector('.loginBox--js');
+const logInButton = loginBox.querySelector('.loginBox__button--js-logIn');
+const signUpButton = loginBox.querySelector('.loginBox__button--js-signUp');
+
+signUpButton.addEventListener('click', createNewUser);
+
 //#endregion
 //#region [ HorizonDark ] VARIABLES - FLAGS
 
@@ -2237,19 +2176,55 @@ const mediaMd = 768;
 const mediaLg = 1200;
 let slideTimeoutId = null;
 
-const weekDay = [ // ! USE DATE OBJECT
-  'sunday',
-  'monday',
-  'tuesday',
-  'wednesday',
-  'thursday',
-  'friday',
-  'saturday'
-];
+const userHelper = {
+  name: {
+    label: 'Name',
+    maxLength: 20
+  },
+  age: {
+    label: 'Age',
+    maxLength: 3,
+    min: 10,
+    max: 120
+  },
+  weight: {
+    label: 'Weight',
+    maxLength: 3,
+    min: 8,
+    max: 200
+  },
+  height: {
+    label: 'Height',
+    maxLength: 3,
+    min: 70,
+    max: 250
+  },
+  waterMax: {
+    label: 'Maximum per day',
+    alertLabel: 'Maximum amount of glasses per day',
+    maxLength: 2,
+    min: 10,
+    max: 40
+  },
+  waterMin: { label: 'Minimum per day' },
+  waterAvg: { label: 'Average per day' },
+  rank: { label: 'Ranking position' },
+  questionsProps: ['name', 'age', 'weight', 'height'],
+  settingsProps: ['name', 'age', 'weight', 'height', 'waterMax'],
+  statsProps: ['waterMin', 'waterAvg', 'rank'],
+  weekDays: [
+    'sunday',
+    'monday',
+    'tuesday',
+    'wednesday',
+    'thursday',
+    'friday',
+    'saturday'
+  ]
+}
 
 const appHeader = document.querySelector('.app__header--js');
 const appUser = document.querySelector('.app__user--js');
-const loginBox = document.querySelector('.loginBox--js');
 const appNewUser = document.querySelector('.app__newUser--js');
 const appLanding = document.querySelector('.app__landing--js');
 const appWater = document.querySelector('.app__water--js');
@@ -2330,10 +2305,10 @@ if (!hydrappJSON) {
 }
 
 // automatically log in unlogged user
-const { loggedUser } = hydrappJSON;
+let { loggedUser } = hydrappJSON;
 
 if (loggedUser !== '') {
-  hydrappUser = hydrappJSON.users[loggedUser];
+  loggedUser = hydrappJSON.users[loggedUser];
   loadApp() 
 } else {
   showLoginBox();
