@@ -15,7 +15,10 @@ if ('serviceWorker' in navigator) {
 
 //#region [ HorizonDark ] HELPERS FUNCTIONS
 
-const getFormattedString = (string) => string.replace(/\s/g,'_').toLowerCase();
+const getFormattedString = (string) => string
+.replace(/^\s+/, '')
+.replace(/\s/g,'_')
+.toLowerCase();
 
 const loopedRange = (max, num, action) => {
   action === 'increase' ? num >= max ? num = 0 : num++ : false;
@@ -85,6 +88,8 @@ const setNodes = (obj, root) => {
 const getRandomFromRange = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+
+const isStringEmpty = (string) => string.slice().replace(/\s/g,'').length <= 0;
 //#endregion
 
 //#region [ HorizonDark ] DATES
@@ -130,10 +135,16 @@ const handleInputAlert = (alertBox, prop, option) => {
   } else {
 
     if (prop === 'name' && option === 'empty') {
-      alertTextContent = 'Please enter your name'
+      alertTextContent = 'Please enter your name';
 
     } else if (prop === 'name' && option === 'existing') {
-      alertTextContent = 'This user name is already taken'
+      alertTextContent = 'This user name is already taken';
+
+    } else if (prop === 'login' && option === 'empty') {
+      alertTextContent = 'Please enter your login';
+
+    } else if (prop === 'login' && option === 'noMatch') {
+      alertTextContent = 'There is no user of that name...';
 
     } else {
       const userProp = userHelper[prop];
@@ -159,10 +170,7 @@ const isInputValid = (input, prop, alertBox) => {
     const isExisting = Object.keys(hydrappJSON.users)
     .filter(existingLogin => existingLogin === newLogin).length > 0;
 
-    // check if text input is empty
-    const isEmpty = value.slice().replace(/\s/g,'').length <= 0;
-
-    if (isEmpty) {
+    if (newLogin === '') {
       handleInputAlert(alertBox, prop, 'empty');
       return false;
 
@@ -193,13 +201,6 @@ const isInputValid = (input, prop, alertBox) => {
 //#endregion
 
 //#region [ HorizonDark ] LOCAL STORAGE & JSON
-
-/* const fetchUsersFromLS = () => {
-  return Object
-  .keys(localStorage)
-  .filter(key => key.match(/hydrapp/))
-  .map(key => JSON.parse(localStorage.getItem(key)));
-} */
 
 const getLoggedUserKey = () => {
   return [...hydrappUsers].filter(user => user.isLoggedIn)[0].key;
@@ -658,19 +659,32 @@ const showLoginBox = () => {
   appNewUser.classList.remove('app__newUser--visible');
 }
 
-const handleLoginBox = (e) => {
+const isMatchingUser = (login) => Object
+.keys(hydrappJSON.users)
+.filter(key => key === login)
+.length > 0;
 
-  const self = e.target;
-  const { userKey } = self;
-  // assign selected user to JSON object and load app
-  hydrappUser = [...hydrappUsers].filter(({ key }) => key === userKey)[0];
-  hydrappUser.isLoggedIn = true;
-  loadApp();
-  // hide log in box
-  loginBox.classList.remove('app__logIn--visible');
+const handleLoginBox = () => {
 
-  /* const userLogInButtons = usersList.querySelectorAll('.userList__button--js');
-  [...userLogInButtons].forEach(button => button.removeEventListener('click', handleLoginBox)); */
+  const login = getFormattedString(loginInput.value);
+
+  if (login === '') {
+    handleInputAlert(loginAlert, 'login', 'empty');
+
+  } else if (isMatchingUser(login)) {
+    handleInputAlert(loginAlert);
+
+    loggedUser = hydrappJSON.users[login];
+    loggedUser.login = login;
+    hydrappJSON.loggedUser = login;
+    exportJSON(hydrappJSON);
+
+    loadApp();
+    loginBox.classList.remove('loginBox--visible');
+
+  } else {
+    handleInputAlert(loginAlert, 'login', 'noMatch');
+  }
 }
 
 //#endregion
@@ -888,13 +902,15 @@ const handleNewUser = (e) => {
         transform: translateX(${initialOffset}px);
       `;
     }
-    
+
     // apply sliding transition effect
-    if (shouldQuestionSlide) {
-      slidePromise
-        .then(() => slideQuestions(newIndex, newQuestion, nextInput, finalOffset))
-        .then(clearAfter);
-        //catch(() => console.log('Something bad happened!'));
+    if (!willGoBackToLogin) {
+      if (shouldQuestionSlide) {
+        slidePromise
+          .then(() => slideQuestions(newIndex, newQuestion, nextInput, finalOffset))
+          .then(clearAfter);
+          //catch(() => console.log('Something bad happened!'));
+      }
     }
   } else return;
 }
@@ -2077,7 +2093,6 @@ class User {
     this.waterMin = 8;
     this.waterAvg = 0;
     this.userRank = 0;
-    this.isLogged = false;
     this._dateCreated = date;    
     this._key = date;
     this.entries = [];
@@ -2156,9 +2171,12 @@ const introObj = {
 //#region [ HorizonDark ] VARIABLES - LOGIN BOX
 
 const loginBox = document.querySelector('.loginBox--js');
-const logInButton = loginBox.querySelector('.loginBox__button--js-logIn');
+const loginInput = document.querySelector('.loginBox__input--js');
+const loginAlert = document.querySelector('.loginBox__alert--js');
+const loginButton = loginBox.querySelector('.loginBox__button--js-logIn');
 const signUpButton = loginBox.querySelector('.loginBox__button--js-signUp');
 
+loginButton.addEventListener('click', handleLoginBox);
 signUpButton.addEventListener('click', createNewUser);
 
 //#endregion
@@ -2302,6 +2320,7 @@ const emojiNewEntry = document.querySelector('.emoji--js-newEntry');
 let hydrappJSON = fetchJSON();
 if (!hydrappJSON) {
   addInitialUsers();
+  hydrappJSON = fetchJSON();
 }
 
 // automatically log in unlogged user
