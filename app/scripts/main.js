@@ -2132,9 +2132,10 @@ const handleUserLogOut = () => {
 }
 
 const handleUserRemove = () => {
-  const { nameId } = hydrappUser.login;
-  localStorage.removeItem(`hydrapp-${nameId}`);
-  hydrappUsers = fetchUsersFromLS();
+  const { loggedUser } = hydrappJSON;
+  delete hydrappJSON.users[loggedUser];
+  hydrappJSON.loggedUser = '';
+  exportJSON();
   quitLanding();
 }
 //#endregion
