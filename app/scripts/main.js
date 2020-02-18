@@ -69,13 +69,6 @@ const getGlasses = (key, value) => {
   return glasses;
 }
 
-const findUserPropsWithTag = (tag) => {
-  const keys = Object.keys(hydrappUser);
-  return [...keys]
-  .filter(key => hydrappUser[key].tags)
-  .filter(key => hydrappUser[key].tags.includes(tag));
-}
-
 const setNodes = (obj, root) => {
   obj.front.water  = root.querySelector('.water--js-front');
   obj.front.waves  = root.querySelector('.waves--js-front');
@@ -202,15 +195,6 @@ const isInputValid = (input, prop, alertBox) => {
 
 //#region [ HorizonDark ] LOCAL STORAGE & JSON
 
-const getLoggedUserKey = () => {
-  return [...hydrappUsers].filter(user => user.isLoggedIn)[0].key;
-}
-
-/* const exportJsonToLS = () => {
-  const { nameId } = hydrappUser.login;
-  localStorage.setItem(`hydrapp-${nameId}`, JSON.stringify(hydrappUser));
-} */
-
 const exportJSON = (json) => {
   localStorage.setItem(localStorageKeyName, JSON.stringify(json));
 }
@@ -218,18 +202,23 @@ const exportJSON = (json) => {
 const fetchJSON = () => JSON.parse(localStorage.getItem(localStorageKeyName));
 
 const updateJsonOnDateChange = () => {
+
   const currentDate = new Date();
   let currentDateId = getDateId(currentDate);
   let newEntries = [];
-  const lastEntryDateId = hydrappUser.entries[0].id;
+  const newestEntryDateId = loggedUser.entries[0].id;
 
-  while (currentDateId !== lastEntryDateId) {
+  // keep adding new empty entries between today and latest new archive entry
+  while (currentDateId !== newestEntryDateId) {
     const newEntry = new Entry(currentDate);
     newEntries = [...newEntries, newEntry];
     currentDateId = getDateId(currentDate.setDate(currentDate.getDate() - 1));
   }
-  hydrappUser.entries = [...newEntries, ...hydrappUser.entries];
-  exportJsonToLS();
+
+  // update entries array
+  loggedUser.entries = [...newEntries, ...loggedUser.entries];
+  startWaterValue = loggedUser.entries[0].value;
+  exportJSON(hydrappJSON);
 }
 //#endregion
 
@@ -423,7 +412,7 @@ const getHtmlOfEdition = (tab, id) => {
 
 const getHtmlOfArchiveEntry = (index) => {
 
-  const { date, day, id, value } = hydrappUser.entries[index];
+  const { date, day, id, value } = loggedUser.entries[index];
   return `
     <li class="entry entry--js dateId-${id}">
       <header class="entry__header entry__header--js">
@@ -438,11 +427,14 @@ const getHtmlOfArchiveEntry = (index) => {
 }
 
 const getHtmlOfUserStats = (user) => {
-  const stats = findUserPropsWithTag('stats');
-  
+
+  const { statsProps } = userHelper;
   let html = '';
-  [...stats].forEach(prop => {
-    const { value, label } = user[prop];
+
+  [...statsProps].forEach(prop => {
+
+    const value = user[prop];
+    const { label } = userHelper[prop];
 
     html += `
       <li class="userProp userProp--stats">
@@ -460,13 +452,13 @@ const getHtmlOfUserStats = (user) => {
 
 const getHtmlOfUserSettings = () => {
 
-  const settings = findUserPropsWithTag('settings');
-  
+  const { settingsProps } = userHelper;
   let html = '';
-  [...settings].forEach(prop => {
-    const userProp = hydrappUser[prop];
-    const value = prop === 'login' ? userProp.name : userProp.value;
-    const { label, maxLength } = hydrappUser[prop];
+
+  [...settingsProps].forEach(prop => {
+
+    const value = loggedUser[prop];
+    const { label, maxLength } = userHelper[prop];
 
     html += `
       <li class="userProp userProps--settings">
@@ -594,7 +586,7 @@ const addInitialUsers = () => {
         // update entries array
         const newEntry = new Entry(getRandomFromRange(0, waterMax), date);
         const { entries } = newUser;
-        newUser.entries = [...entries, newEntry];
+        newUser.entries = [newEntry, ...entries];
       }
     
     // add new user to hydrapp JSON object
@@ -919,29 +911,29 @@ const handleNewUser = (e) => {
 //#region [ HorizonDark ] APP LOADING
 
 const loadApp = () => {
+
   updateJsonOnDateChange();
-  const { value } = hydrappUser.entries[0];
   setArchiveDOM();
   handleStats();
   setSettingsDOM();
   setWaterMeasureDOM();
   setEmojiDOM();
-  handleCounter(landingCounter, value);
+  handleCounter(landingCounter, startWaterValue);
   handleCounter(newEntryCounter, 0);
-  handleCounterMessage(value);
+  handleCounterMessage(startWaterValue);
   handleLandingCounterDate();
-  handleEmoji('controls', value);
+  handleEmoji('controls', startWaterValue);
   handleEmoji('newEntry', 0);
   setWaterWaves();
-  handleWaterLevel(value);
-  handleWaterMin(value);
+  handleWaterLevel(startWaterValue);
+  handleWaterMin(startWaterValue);
   handleWaterAverage();
   handleWaterShake();
   handleWaterMeasure();
   handleWeekHeading();
 
   appLanding.classList.add('app__landing--visible');
-  appUserProfile.classList.remove('app__userProfile--visible');
+  appUser.classList.remove('app__user--visible');
 
   if (isFirstAppLoad) {
     landingControls.addEventListener('click', handleWaterChange);
@@ -999,9 +991,12 @@ const handleWaterWaves = (obj) => {
 }
 
 const setWaterMeasureDOM = () => {
-  const waterMax = hydrappUser.waterMax.value;
+
+  const { waterMax } = loggedUser;
   measure.innerHTML = '';
+
   for (let i = 0; i <= waterMax; i++) {
+
     const digit = waterMax - i;
     measure.innerHTML += `
       <li class="measurePart measurePart--js">
@@ -1013,8 +1008,9 @@ const setWaterMeasureDOM = () => {
 }
 
 const handleWaterMeasure = () => {
+
+  const { waterMax } = loggedUser;
   const headerHeight = appHeader.clientHeight;
-  const waterMax = hydrappUser.waterMax.value;
   const interval = appLanding.clientHeight / waterMax;
   const measureLevels = document.querySelectorAll('.measurePart--js');
 
@@ -1082,9 +1078,8 @@ const handleWatersArray = (callback) => {
 }
 
 const handleWaterLevel = (value) => {
-  const waterMax = hydrappUser.waterMax.value;
-  const waterMin = hydrappUser.waterMin.value;
-  const waterAvg = hydrappUser.waterAvg.value;
+
+  const { waterMax, waterMin, waterAvg } = loggedUser;
   const height = window.innerHeight;
   const waterOffset = height / waterMax * (waterMax - value);
   const waterOffsetPercent = waterOffset / height;
@@ -1094,10 +1089,12 @@ const handleWaterLevel = (value) => {
     center: waterOffset - (maxOffsetBetween / 1.5 * waterOffsetPercent),
     back: waterOffset - (maxOffsetBetween * waterOffsetPercent)
   }
+
   // use callback function to set waters levels
   const setTopOffset = (water, position) =>
   water.style.top = `${waterOffsets[position]}px`;
   handleWatersArray(setTopOffset);
+
   // handle average and minimum levels of water measure
   const avgOffset = height / waterMax * (waterAvg);
   const minOffset = height / waterMax * (waterMin);
@@ -1135,30 +1132,33 @@ const handleWaterShake = () => {
 }
 
 const handleWaterMin = (value) => {
-  const waterMin = hydrappUser.waterMin.value;
+
+  const { waterMin } = loggedUser;
   value >= waterMin
   ? levelMin.classList.remove('graph__level--negative')
   : levelMin.classList.add('graph__level--negative');
 }
 
 const handleWaterAverage = () => {
-  const { key, entries } = hydrappUser;
-  const waterMin = hydrappUser.waterMin.value;
-  const waterMax = hydrappUser.waterMax.value;
+
+  const { key, entries, waterMin, waterMax } = loggedUser;
   const prop = 'waterAvg';
   const interval = appLanding.clientHeight / waterMax;
   const userCard = document.querySelector(`.card--js-${key}`);
   const statsOutput = userCard.querySelector(`.userProp__value--js-${prop}`);
+
+  // calculate average number of consumed water
   const waterAvg = [...entries]
     .map(elem => elem.value)
     .reduce((a,b) => a + b) / entries.length;
   const roundedWaterAvg = Math.round(waterAvg * 100) / 100;
+  loggedUser.waterAvg = roundedWaterAvg;
 
+  // change app appearance using updated water average number
   roundedWaterAvg >= waterMin
   ? levelAvg.classList.remove('graph__level--negative')
   : levelAvg.classList.add('graph__level--negative');
   levelAvg.style.bottom = `${roundedWaterAvg * interval}px`;
-  hydrappUser.waterAvg.value = roundedWaterAvg;
   statsOutput.textContent = getGlasses(prop, roundedWaterAvg);
 }
 //#endregion
@@ -1280,8 +1280,8 @@ const handleCounter = (counterObj, currentValue, newValue) => {
 }
 
 const getFeedbackValue = (value) => {
-  const waterMin = hydrappUser.waterMin.value;
-  const waterMax = hydrappUser.waterMax.value;
+
+  const { waterMin, waterMax } = loggedUser;
   const diff = waterMax - waterMin;
 
   return value >= waterMax
@@ -1317,7 +1317,8 @@ const handleCounterMessage = (value) => {
 }
 
 const handleLandingCounterDate = () => {
-  const { day, date } = hydrappUser.entries[0];
+
+  const { day, date } = loggedUser.entries[0];
   landingDay.innerHTML = day;
   landingDate.innerHTML = date.slice().split(' ').join('.');
 }
@@ -1531,24 +1532,27 @@ const closeTabContainers = () => {
 //#endregion
 
 //#region [ HorizonDark ] ARCHIVE
+
 const setArchiveDOM = () => {
 
-  const { entries } = hydrappUser;
+  // create DOM node with archive entries
   archiveContainer.innerHTML = '';
-  for (let i = 0; i < entries.length; i++) {
+  for (let i = 0; i < loggedUser.entries.length; i++) {
     addArchiveEntry(i);
   }
+
   // set the newest week as visible and handle buttons visibility
   const weeks = document.querySelectorAll('.card--js-week');
   weeks[0].classList.add('card--visible');
   handleCardButtons(archiveContainer, 0);
+
   // add 'remove entry' button on the last entry
   handleArchiveLastEntry();
 }
 
 const addArchiveEntry = (index) => {
 
-  const {value, id, day} = hydrappUser.entries[index];
+  const { value, id, day } = loggedUser.entries[index];
   const weekHtml = getHtmlOfCard('week');
   const entryHtml = getHtmlOfArchiveEntry(index);
   let weekLists = archiveContainer.querySelectorAll('.card__list--js-week');
@@ -1574,11 +1578,10 @@ const addArchiveEntry = (index) => {
   const editButton = lastEntry.querySelector('.edition__button--js-edit');
   editButton.index = index;
   editButton.addEventListener('click', handleEntryEdit);
-
   handleEmoji(id, value);
   
   // add 'add entry' button at the end
-  if (index === hydrappUser.entries.length - 1) {
+  if (index === loggedUser.entries.length - 1) {
     const lastWeekList = weekLists[weekLists.length - 1];
     lastWeekList.appendChild(addEntryButton);
   }
@@ -1586,6 +1589,7 @@ const addArchiveEntry = (index) => {
 }
 
 const handleWeekHeading = () => {
+
   const weekLists = archiveContainer.querySelectorAll('.card__list--js-week');
   const weekHeadings = archiveContainer.querySelectorAll('.card__heading--js-week');
 
@@ -1596,9 +1600,7 @@ const handleWeekHeading = () => {
     .toString()
     .replace('dateId-', '');
 
-    return [...hydrappUser.entries]
-    .filter(entry => entry.id === entryDateId)[0]
-    .date;
+    return [...loggedUser.entries].filter(entry => entry.id === entryDateId)[0].date;
   }
 
   for (let i = 0; i < weekLists.length; i++) {
@@ -1619,6 +1621,7 @@ const handleWeekHeading = () => {
     }
   }
 }
+
 //#endregion
 
 //#region [ HorizonDark ] ARCHIVE ENTRIES
@@ -1899,28 +1902,36 @@ const handleEntryEdit = (e) => {
 //#region [ HorizonDark ] STATS
 
 const handleStatsDOM = (user) => {
+
   // get html codes of user card and user props
-  const { key } = user;
-  const { name } = user.login;
+  const { name, key } = user;
   const statsCardHtml = getHtmlOfCard('stats', name, key);
   const userHtml = getHtmlOfUserStats(user);
+
   // create DOM node of user card
   statsContainer.insertAdjacentHTML('beforeend', statsCardHtml);
   const userCard = statsContainer.querySelector(`.card--js-${key}`);
+
   // create DOM nodes of user props
   const cardList = userCard.querySelector('.card__list--js-stats');
   cardList.insertAdjacentHTML('beforeend', userHtml);
 }
 
 const handleStats = () => {
-  const usersTotal = hydrappUsers.length;
+
+  const usersLogins = Object.keys(hydrappJSON.users);
+  const usersTotal = usersLogins.length;
+  const users = [...usersLogins].map(login => hydrappJSON.users[login]);
+
   // create DOM structure
   statsContainer.innerHTML = '';
-  [...hydrappUsers].forEach(user => handleStatsDOM(user));
+  [...users].forEach(user => handleStatsDOM(user));
+
   // make logged in user's card visible
-  const loggedUserCard = statsContainer.querySelector(`.card--js-${hydrappUser.key}`);
+  const loggedUserCard = statsContainer.querySelector(`.card--js-${loggedUser.key}`);
   const cardIndex = [...loggedUserCard.parentNode.children].indexOf(loggedUserCard);
   loggedUserCard.classList.add('card--visible');
+
   // set visibility and events for card navigation buttons
   const allButtons = statsContainer.querySelectorAll('[class*=card__button--js');
   if (usersTotal > 1) {
@@ -1930,28 +1941,34 @@ const handleStats = () => {
   }
   handleCardButtons(statsContainer, cardIndex);
 }
+
 //#endregion
 
 //#region [ HorizonDark ] SETTINGS
   
 const setSettingsDOM = () => {
+
   // get html codes of user card and user settings
-  const { name } = hydrappUser.login;
+  const { name } = loggedUser;
   const settingsCardHtml = getHtmlOfCard('settings', name);
   const settingsHtml = getHtmlOfUserSettings();
   const profileButtonsHtml = getHtmlOfProfileButtons();
+
   // create DOM node of settings card
   settingsContainer.innerHTML = settingsCardHtml;
   const settingsCard = settingsContainer.querySelector('.card--js-settings');
   const cardContainer = settingsCard.firstElementChild;
   settingsCard.classList.add('card--visible');
+
   // create DOM nodes of user props
   const cardList = settingsContainer.querySelector('.card__list--js-settings');
   cardList.innerHTML = settingsHtml;
+
   // create DOM nodes of user profile buttons
   cardContainer.insertAdjacentHTML('beforeend', profileButtonsHtml);
   const logOutButton = document.querySelector('.profile__button--js-logOut');
   const removeButton = document.querySelector('.profile__button--js-remove');
+
   // add event listeners
   const editButtons = settingsContainer.querySelectorAll('.edition__button--js-edit');
   [...editButtons].forEach(button => {
@@ -2193,6 +2210,7 @@ const localStorageKeyName = 'hydrapp';
 const mediaMd = 768;
 const mediaLg = 1200;
 let slideTimeoutId = null;
+let startWaterValue = 0;
 
 const userHelper = {
   name: {
