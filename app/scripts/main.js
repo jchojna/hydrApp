@@ -2011,7 +2011,7 @@ const setSettingsDOM = () => {
     button.addEventListener('click', handleSettingsEdition);
   });
   logOutButton.addEventListener('click', handleUserLogOut);
-  removeButton.addEventListener('click', handleUserRemove);
+  removeButton.addEventListener('click', toggleUserRemoveConfirmation);
 }
 
 const handleSettingsEdition = (e) => {
@@ -2130,6 +2130,25 @@ const handleUserLogOut = () => {
   hydrappJSON.loggedUser = '';
   exportJSON();
   quitLanding();
+}
+
+const toggleUserRemoveConfirmation = () => {
+  
+  const userRemove = document.querySelector('.userRemove--js');
+  const removeButton = document.querySelector('.userRemove__confirm--js');
+  const cancelButton = document.querySelector('.userRemove__cancel--js');
+  const isActive = userRemove.classList.contains('userRemove--visible');
+
+  if (!isActive) {
+    userRemove.classList.add('userRemove--visible');
+    removeButton.addEventListener('click', handleUserRemove);
+    cancelButton.addEventListener('click', toggleUserRemoveConfirmation);
+
+  } else {
+    userRemove.classList.remove('userRemove--visible');
+    removeButton.removeEventListener('click', handleUserRemove);
+    cancelButton.removeEventListener('click', toggleUserRemoveConfirmation);
+  }
 }
 
 const handleUserRemove = () => {
