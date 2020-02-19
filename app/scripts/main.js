@@ -247,6 +247,39 @@ const updateUsersEntries = () => {
   exportJSON();
 }
 
+const updateUsersStats = () => {
+
+  const users = getArrayOfUsers();
+
+  // update users average water consumption amount
+  [...users].forEach(user => {
+    const { entries } = user;
+    user.waterAvg = getAverageOfArrayValues(entries);
+  });
+
+  // update users rank position based on water average amount
+  const sortedUsers = [...users]
+  .sort((nextUser, user) => user.waterAvg - nextUser.waterAvg);
+
+  [...sortedUsers].forEach((user, index) => {
+
+    const prevUser = index > 0 ? sortedUsers[index - 1] : false;
+    prevUser
+    ? prevUser.waterAvg === user.waterAvg
+      ? user.rank = prevUser.rank
+      : user.rank = prevUser.rank + 1
+    : user.rank = 1;
+  });
+
+  // sort object keys respectively to users array
+  [...sortedUsers].forEach(user => {
+    delete hydrappJSON.users[user.login];
+    hydrappJSON.users[user.login] = user;
+  });
+
+  exportJSON();
+}
+
 //#endregion
 
 //#region [ HorizonDark ] HTML CODE
@@ -2378,6 +2411,7 @@ const emojiNewEntry = document.querySelector('.emoji--js-newEntry');
 const loadApp = () => {
 
   updateUsersEntries();
+  updateUsersStats();
   setArchiveDOM();
   handleStats();
   setSettingsDOM();
