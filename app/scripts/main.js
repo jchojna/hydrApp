@@ -280,6 +280,51 @@ const updateUsersStats = () => {
   exportJSON();
 }
 
+const updateUsersStreaks = () => {
+
+  const logins = Object.keys(hydrappJSON.users);
+
+
+
+
+}
+
+const updateUsersLongestStreaks = () => {
+
+  const logins = Object.keys(hydrappJSON.users);
+
+  [...logins].forEach(login => {
+
+    const { entries, waterMin } = hydrappJSON.users[login];
+    let counter = 0, streaks = 0;
+    let startDate, endDate, tmpStartDate, tmpEndDate;
+
+    const checkLongestStreak = () => {
+      
+      if (streaks <= counter) {
+        streaks = counter;
+        startDate = tmpStartDate;
+        endDate = tmpEndDate;
+      }
+    }
+
+    for (let i = entries.length - 1; i >= 0; i--) {
+
+      const entry = entries[i];
+      const { value, date } = entry;
+
+      if (value >= waterMin) {
+        counter === 0 ? tmpStartDate = date : tmpEndDate = date;
+        i === 0 ? checkLongestStreak() : counter++;
+
+      } else {
+        checkLongestStreak();
+        counter = 0;
+      }
+    }
+  });
+}
+
 //#endregion
 
 //#region [ HorizonDark ] HTML CODE
@@ -2433,26 +2478,34 @@ const emojiNewEntry = document.querySelector('.emoji--js-newEntry');
 //#region [ HorizonDark ] APP LOADING
 
 const loadApp = () => {
-
+  
+  // json update
   updateUsersEntries();
   updateUsersStats();
+  updateUsersStreaks();
+  updateUsersLongestStreaks();
+  // DOM
   setArchiveDOM();
   handleStats();
   setSettingsDOM();
   setWaterMeasureDOM();
   setEmojiDOM();
+  // counter
   handleCounter(landingCounter, startWaterValue);
   handleCounter(newEntryCounter, 0);
   handleCounterMessage(startWaterValue);
   handleLandingCounterDate();
+  // emoji
   handleEmoji('controls', startWaterValue);
   handleEmoji('newEntry', 0);
+  // water
   setWaterWaves();
   handleWaterLevel(startWaterValue);
   handleWaterMin(startWaterValue);
   handleWaterAverage();
   handleWaterShake();
   handleWaterMeasure();
+  // archive
   handleWeekHeading();
 
   appLanding.classList.add('app__landing--visible');
