@@ -43,7 +43,7 @@
     <header class="app__header app__header--js">
       <h1 class="app__heading visuallyhidden">hydrApp</h1>
       <!-- APP LOGO -->
-      <a class="logo" href="index.html">
+      <a class="logo logo--app" href="index.html">
         <svg class="logo__svg" viewBox="0 0 512 135">
           <use href="assets/svg/icons.svg#logo-white"></use>
         </svg>
@@ -63,8 +63,16 @@
     <!-- #region [ HorizonDark ] USER SECTION -->
     <div class="app__user app__user--visible app__user--js">
       <!-- LOGIN BOX -->
-      <section class="loginBox loginBox--js">
-        <h2 class="loginBox__heading">Welcome!</h2>
+      <div class="loginBox loginBox--js">
+        <!-- APP LOGO -->
+        <div class="logo logo--login">
+          <svg class="logo__svg" viewBox="0 0 512 135">
+            <use href="assets/svg/icons.svg#logo-white"></use>
+          </svg>
+          <svg class="logo__svg logo__svg--color" viewBox="0 0 512 135">
+            <use href="assets/svg/icons.svg#logo-color"></use>
+          </svg>
+        </div>
         <!-- LABEL -->
         <label for="userLogin" class="loginBox__label">
           Please, enter your login or sign up
@@ -89,7 +97,7 @@
         <button class="loginBox__button loginBox__button--signUp loginBox__button--js-signUp">
           Sign Up
         </button>
-      </section>
+      </div>
       <!-- NEW USER CREATOR -->
       <form class="app__newUser app__newUser--js">
         <h2 class="app__heading visuallyhidden">New User Creator</h2>

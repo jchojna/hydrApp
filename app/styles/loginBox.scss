@@ -6,7 +6,7 @@
   display: grid;
   gap: 30px;
   grid-template-areas:
-    "heading"
+    "logo   "
     "label  "
     "input  "
     "alert  "
@@ -16,6 +16,7 @@
   max-width: $newUser-box-maxWidth;
   opacity: 0;
   padding: 0 20px;
+  padding-top: 20px;
   position: absolute;
   top: 0;
   transition: opacity $newUser-toggle, visibility 0s $newUser-toggle;
@@ -32,7 +33,7 @@
 
     & {
       grid-template-areas:
-        "heading heading"
+        "logo    logo   "
         "label   label  "
         "input   input  "
         "alert   alert  "

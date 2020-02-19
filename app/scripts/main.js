@@ -758,6 +758,7 @@ const createNewUser = () => {
   setNewUserDOM();
 
   // handle visibility of log in box and new user creator
+  handleInputAlert(loginAlert);
   loginBox.classList.remove('loginBox--visible');
   appNewUser.classList.add('app__newUser--visible');
   handleNewUserQuestion(0);
@@ -910,7 +911,7 @@ const handleNewUser = (e) => {
     // GO BACK TO USER LOG IN
     if (willGoBackToLogin) {
       appNewUser.classList.remove('app__newUser--visible');
-      loginBox.classList.add('loginBox--visible');  
+      loginBox.classList.add('loginBox--visible');
 
     // GO TO THE NEXT QUESTION
     } else if (willGoToNextQuestion) {

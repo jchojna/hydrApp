@@ -3,9 +3,18 @@
 
 .logo {
   @include flex-center;
-  max-width: ($burgerBtn-size-xs - 10px) * $logo-aspect-ratio;
   position: relative;
   width: 100%;
+
+  &--app {
+    max-width: ($burgerBtn-size-xs - 10px) * $logo-aspect-ratio;
+  }
+
+  &--login {
+    justify-self: center;
+    grid-area: logo;
+    max-width: 300px;
+  }
 
   &__svg {
     fill: $blue;
@@ -23,10 +32,16 @@
   }
 
   @media only screen and (min-width: $media-md) {
-    max-width: $burgerBtn-size-md * $logo-aspect-ratio;
+
+    &--app {
+      max-width: $burgerBtn-size-md * $logo-aspect-ratio;
+    }
   }
   
   @media only screen and (min-width: $media-lg) {
-    max-width: $burgerBtn-size-lg * $logo-aspect-ratio;
+    
+    &--app {
+      max-width: $burgerBtn-size-lg * $logo-aspect-ratio;
+    }
   }
 }
