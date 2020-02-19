@@ -207,6 +207,47 @@ const getArrayOfUsers = () => {
   return [...usersLogins].map(login => hydrappJSON.users[login]);
 }
 
+const getUserStreaks = (entries, minValue) => {
+
+  let counter = 0, longest = 0, current = 0;
+  let startDate, endDate, tmpStartDate, tmpEndDate;
+
+  const checkLongestStreak = () => {
+    if (longest <= counter) {
+      longest = counter;
+      startDate = tmpStartDate;
+      endDate = tmpEndDate;
+    }
+  }
+
+  // longest streaks
+  for (let i = entries.length - 1; i >= 0; i--) {
+
+    const entry = entries[i];
+    const { value, date } = entry;
+
+    if (value >= minValue) {
+      counter === 0 ? tmpStartDate = date : tmpEndDate = date;
+      i === 0 ? checkLongestStreak() : counter++;
+
+    } else {
+      checkLongestStreak();
+      counter = 0;
+    }
+  }
+
+  // streaks number
+  for (let entry of entries) {
+
+    if (entry.value >= minValue) {
+      current++;
+    } else break;
+  }
+
+  // return object
+  return { current, longest, startDate, endDate };
+}
+
 const fetchJSON = () => {
   hydrappJSON = JSON.parse(localStorage.getItem(localStorageKeyName));
 }
@@ -233,7 +274,7 @@ const updateUsersEntries = () => {
     
     // keep adding new empty entries between today and latest new archive entry
     while (currentDateId !== newestEntryDateId) {
-      const newEntry = new Entry(currentDate);
+      const newEntry = new Entry(0, currentDate);
       newEntries = [...newEntries, newEntry];
       currentDateId = getDateId(currentDate.setDate(currentDate.getDate() - 1));
     }
@@ -277,52 +318,17 @@ const updateUsersStats = () => {
     hydrappJSON.users[user.login] = user;
   });
 
-  exportJSON();
-}
-
-const updateUsersStreaks = () => {
-
   const logins = Object.keys(hydrappJSON.users);
 
-
-
-
-}
-
-const updateUsersLongestStreaks = () => {
-
-  const logins = Object.keys(hydrappJSON.users);
-
+  // update users streaks  
   [...logins].forEach(login => {
-
     const { entries, waterMin } = hydrappJSON.users[login];
-    let counter = 0, streaks = 0;
-    let startDate, endDate, tmpStartDate, tmpEndDate;
+    const streaks = getUserStreaks(entries, waterMin);
 
-    const checkLongestStreak = () => {
-      
-      if (streaks <= counter) {
-        streaks = counter;
-        startDate = tmpStartDate;
-        endDate = tmpEndDate;
-      }
-    }
-
-    for (let i = entries.length - 1; i >= 0; i--) {
-
-      const entry = entries[i];
-      const { value, date } = entry;
-
-      if (value >= waterMin) {
-        counter === 0 ? tmpStartDate = date : tmpEndDate = date;
-        i === 0 ? checkLongestStreak() : counter++;
-
-      } else {
-        checkLongestStreak();
-        counter = 0;
-      }
-    }
+    hydrappJSON.users[login].streaks = streaks;
   });
+
+  exportJSON();
 }
 
 //#endregion
@@ -2482,8 +2488,6 @@ const loadApp = () => {
   // json update
   updateUsersEntries();
   updateUsersStats();
-  updateUsersStreaks();
-  updateUsersLongestStreaks();
   // DOM
   setArchiveDOM();
   handleStats();
