@@ -566,6 +566,7 @@ const getHtmlOfProfileButtons = () => {
     `
   return html;
 }
+
 //#endregion HTML CODE
 
 //#region [ HorizonDark ] INITIAL USERS
@@ -2470,4 +2471,4 @@ if (loggedUser !== '') {
 
 
 
-//toggleSidebar(burgerBtn);
+toggleSidebar(burgerBtn);

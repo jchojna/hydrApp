@@ -72,6 +72,10 @@
     }
   }
 
+  &__wrapper {
+    position: relative;
+  }
+
   &__container {
     display: flex;
     background-color: $blue-dark-2;
