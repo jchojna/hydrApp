@@ -2132,22 +2132,25 @@ const handleUserLogOut = () => {
   quitLanding();
 }
 
-const toggleUserRemoveConfirmation = () => {
-  
-  const userRemove = document.querySelector('.userRemove--js');
-  const removeButton = document.querySelector('.userRemove__confirm--js');
-  const cancelButton = document.querySelector('.userRemove__cancel--js');
+const toggleUserRemoveConfirmation = (e) => {
+
+  const self = e.target;
+  const userRemove = appSidebar.querySelector('.userRemove--js');
+  const alert = userRemove.querySelector('.userRemove__alert--js');
+  const removeButton = appSidebar.querySelector('.profile__button--js-remove');
+  const confirmRemoveButton = userRemove.querySelector('.userRemove__confirm--js');
   const isActive = userRemove.classList.contains('userRemove--visible');
 
-  if (!isActive) {
+  if (self === removeButton && !isActive) {
+    alert.textContent = `Are you sure to remove "${loggedUser.name}" profile?`
     userRemove.classList.add('userRemove--visible');
-    removeButton.addEventListener('click', handleUserRemove);
-    cancelButton.addEventListener('click', toggleUserRemoveConfirmation);
+    confirmRemoveButton.addEventListener('click', handleUserRemove);
+    window.addEventListener('click', toggleUserRemoveConfirmation);
 
-  } else {
+  } else if (self !== confirmRemoveButton && self !== removeButton) {
     userRemove.classList.remove('userRemove--visible');
-    removeButton.removeEventListener('click', handleUserRemove);
-    cancelButton.removeEventListener('click', toggleUserRemoveConfirmation);
+    confirmRemoveButton.removeEventListener('click', handleUserRemove);
+    window.removeEventListener('click', toggleUserRemoveConfirmation);
   }
 }
 
