@@ -82,7 +82,14 @@ const getRandomFromRange = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-const isStringEmpty = (string) => string.slice().replace(/\s/g,'').length <= 0;
+const getAverageOfArrayValues = (array) => {
+  const average = [...array]
+    .map(elem => elem.value)
+    .reduce((a,b) => a + b) / array.length;
+
+  return Math.round(average * 100) / 100;
+}
+
 //#endregion
 
 //#region [ HorizonDark ] DATES
@@ -193,42 +200,53 @@ const isInputValid = (input, prop, alertBox) => {
 }
 //#endregion
 
-//#region [ HorizonDark ] LOCAL STORAGE & JSON
+//#region [ HorizonDark ] JSON
+
+const getArrayOfUsers = () => {
+  const usersLogins = Object.keys(hydrappJSON.users);
+  return [...usersLogins].map(login => hydrappJSON.users[login]);
+}
 
 const fetchJSON = () => {
   hydrappJSON = JSON.parse(localStorage.getItem(localStorageKeyName));
 }
 
-const updateJSON = () => {
-  const { login } = loggedUser;
-  hydrappJSON.users[login] = loggedUser;
+const updateJSON = (user) => {
+  const { login } = user;
+  hydrappJSON.users[login] = user;
 }
 
 const exportJSON = () => {
   localStorage.setItem(localStorageKeyName, JSON.stringify(hydrappJSON));
 }
 
-const updateJsonOnDateChange = () => {
+const updateUsersEntries = () => {
 
-  const currentDate = new Date();
-  let currentDateId = getDateId(currentDate);
-  let newEntries = [];
-  const newestEntryDateId = loggedUser.entries[0].id;
+  const users = getArrayOfUsers();
+
+  [...users].forEach(user => {
+
+    const currentDate = new Date();
+    let currentDateId = getDateId(currentDate);
+    let newEntries = [];
+    const newestEntryDateId = user.entries[0].id;
+    
+    // keep adding new empty entries between today and latest new archive entry
+    while (currentDateId !== newestEntryDateId) {
+      const newEntry = new Entry(currentDate);
+      newEntries = [...newEntries, newEntry];
+      currentDateId = getDateId(currentDate.setDate(currentDate.getDate() - 1));
+    }
   
+    // update user entries
+    user.entries = [...newEntries, ...user.entries];
+    updateJSON(user);
+  });
 
-  // keep adding new empty entries between today and latest new archive entry
-  while (currentDateId !== newestEntryDateId) {
-    const newEntry = new Entry(currentDate);
-    newEntries = [...newEntries, newEntry];
-    currentDateId = getDateId(currentDate.setDate(currentDate.getDate() - 1));
-  }
-
-  // update entries array
-  loggedUser.entries = [...newEntries, ...loggedUser.entries];
-  updateJSON();
-  exportJSON();
   startWaterValue = loggedUser.entries[0].value;
+  exportJSON();
 }
+
 //#endregion
 
 //#region [ HorizonDark ] HTML CODE
@@ -559,7 +577,7 @@ const addInitialUsers = () => {
   [...initialUsers].forEach(user => {
     const {
       name,
-      nameId = getFormattedString(name),
+      login = getFormattedString(name),
       age,
       weight,
       height,
@@ -575,6 +593,7 @@ const addInitialUsers = () => {
 
       // create new initial user and set props
       const newUser = new User(date);
+      newUser.login = login;
       newUser.name = name;
       newUser.age = age;
       newUser.weight = weight;
@@ -600,7 +619,7 @@ const addInitialUsers = () => {
     
     // add new user to hydrapp JSON object
     const { users } = hydrappJSON;
-    hydrappJSON.users = { ...users, [nameId]: newUser };
+    hydrappJSON.users = { ...users, [login]: newUser };
   });
   exportJSON();
 }
@@ -679,7 +698,6 @@ const handleLoginBox = (e) => {
     handleInputAlert(loginAlert);
 
     loggedUser = hydrappJSON.users[login];
-    loggedUser.login = login;
     hydrappJSON.loggedUser = login;
     exportJSON();
 
@@ -827,7 +845,7 @@ const handleNewUser = (e) => {
   }
 
   // return user input value as integer
-  const getInputValue = (index) => parseInt(newUserInputs[index].value);
+  const getInputValue = (index) => parseInt(inputs[index].value);
 
   // perform sliding effect if previous one is already finished
   if (slideTimeoutId === null) {
@@ -866,14 +884,13 @@ const handleNewUser = (e) => {
       // CREATE NEW USER
       if (willCreateNewUser) {
         if (isInputValid(currentInput, currentProp, currentAlert)) {
-          hydrappUser.age.value    = getInputValue(1);
-          hydrappUser.weight.value = getInputValue(2);
-          hydrappUser.height.value = getInputValue(3);
-          hydrappUser.isLoggedIn = true;
+          loggedUser.age    = getInputValue(1);
+          loggedUser.weight = getInputValue(2);
+          loggedUser.height = getInputValue(3);
+          hydrappJSON.loggedUser = loggedUser.login;
 
-          // set JSON object as local storage item
-          exportJsonToLS();
-          hydrappUsers = fetchUsersFromLS();
+          updateJSON(loggedUser);
+          exportJSON();
           loadApp();
 
           // change user section visibility
@@ -917,43 +934,6 @@ const handleNewUser = (e) => {
       }
     }
   } else return;
-}
-//#endregion
-
-//#region [ HorizonDark ] APP LOADING
-
-const loadApp = () => {
-
-  updateJsonOnDateChange();
-  setArchiveDOM();
-  handleStats();
-  setSettingsDOM();
-  setWaterMeasureDOM();
-  setEmojiDOM();
-  handleCounter(landingCounter, startWaterValue);
-  handleCounter(newEntryCounter, 0);
-  handleCounterMessage(startWaterValue);
-  handleLandingCounterDate();
-  handleEmoji('controls', startWaterValue);
-  handleEmoji('newEntry', 0);
-  setWaterWaves();
-  handleWaterLevel(startWaterValue);
-  handleWaterMin(startWaterValue);
-  handleWaterAverage();
-  handleWaterShake();
-  handleWaterMeasure();
-  handleWeekHeading();
-
-  appLanding.classList.add('app__landing--visible');
-  appUser.classList.remove('app__user--visible');
-
-  if (isFirstAppLoad) {
-    landingControls.addEventListener('click', handleWaterChange);
-    window.addEventListener('resize', handleWindowResize);
-    burgerBtn.addEventListener('click', toggleSidebar);
-    appSidebar.addEventListener('click', toggleSidebarTabs);
-  }
-  isFirstAppLoad = false;
 }
 //#endregion
 
@@ -1079,7 +1059,7 @@ const handleWaterChange = (e) => {
   // value has been changed
   loggedUser.entries[0].value = value;
   firstEntryValue.textContent = value;
-  updateJSON();
+  updateJSON(loggedUser);
   exportJSON()
   handleWaterLevel(value);
   handleWaterShake();
@@ -1167,20 +1147,17 @@ const handleWaterAverage = () => {
   const interval = appLanding.clientHeight / waterMax;
   const userCard = document.querySelector(`.card--js-${key}`);
   const statsOutput = userCard.querySelector(`.userProp__value--js-${prop}`);
-
+  
   // calculate average number of consumed water
-  const waterAvg = [...entries]
-    .map(elem => elem.value)
-    .reduce((a,b) => a + b) / entries.length;
-  const roundedWaterAvg = Math.round(waterAvg * 100) / 100;
-  loggedUser.waterAvg = roundedWaterAvg;
+  const average = getAverageOfArrayValues(entries);
+  loggedUser.waterAvg = average;
 
   // change app appearance using updated water average number
-  roundedWaterAvg >= waterMin
+  average >= waterMin
   ? levelAvg.classList.remove('graph__level--negative')
   : levelAvg.classList.add('graph__level--negative');
-  levelAvg.style.bottom = `${roundedWaterAvg * interval}px`;
-  statsOutput.textContent = getGlasses(prop, roundedWaterAvg);
+  levelAvg.style.bottom = `${average * interval}px`;
+  statsOutput.textContent = getGlasses(prop, average);
 }
 //#endregion
 
@@ -1911,7 +1888,7 @@ const handleEntryEdit = (e) => {
           handleEmoji('controls', dayValue);
         }
         loggedUser.entries[itemIndex].value = dayValue;
-        updateJSON();
+        updateJSON(loggedUser);
         exportJSON();
         handleWaterAverage();
         exitEditMode();
@@ -1945,9 +1922,8 @@ const handleStatsDOM = (user) => {
 
 const handleStats = () => {
 
-  const usersLogins = Object.keys(hydrappJSON.users);
-  const usersTotal = usersLogins.length;
-  const users = [...usersLogins].map(login => hydrappJSON.users[login]);
+  const users = getArrayOfUsers();
+  const usersTotal = Object.keys(hydrappJSON.users).length;
 
   // create DOM structure
   statsContainer.innerHTML = '';
@@ -2146,13 +2122,14 @@ class Counter {
 class User {
   constructor(date) {
     this.name = '';
+    this.login = '';
     this.age = 0;
     this.weight = 0;
     this.height = 0;
     this.waterMax = 20;
     this.waterMin = 8;
     this.waterAvg = 0;
-    this.userRank = 0;
+    this.rank = 0;
     this._dateCreated = date;    
     this._key = date;
     this.entries = [];
@@ -2396,6 +2373,44 @@ const emojiNewEntry = document.querySelector('.emoji--js-newEntry');
 
 //#endregion
 
+//#region [ HorizonDark ] APP LOADING
+
+const loadApp = () => {
+
+  updateUsersEntries();
+  setArchiveDOM();
+  handleStats();
+  setSettingsDOM();
+  setWaterMeasureDOM();
+  setEmojiDOM();
+  handleCounter(landingCounter, startWaterValue);
+  handleCounter(newEntryCounter, 0);
+  handleCounterMessage(startWaterValue);
+  handleLandingCounterDate();
+  handleEmoji('controls', startWaterValue);
+  handleEmoji('newEntry', 0);
+  setWaterWaves();
+  handleWaterLevel(startWaterValue);
+  handleWaterMin(startWaterValue);
+  handleWaterAverage();
+  handleWaterShake();
+  handleWaterMeasure();
+  handleWeekHeading();
+
+  appLanding.classList.add('app__landing--visible');
+  appUser.classList.remove('app__user--visible');
+
+  if (isFirstAppLoad) {
+    landingControls.addEventListener('click', handleWaterChange);
+    window.addEventListener('resize', handleWindowResize);
+    burgerBtn.addEventListener('click', toggleSidebar);
+    appSidebar.addEventListener('click', toggleSidebarTabs);
+  }
+  isFirstAppLoad = false;
+}
+
+//#endregion
+
 //#region [ HorizonDark ] FUNCTION CALLS
 
 // create JSON object with initial users on first app load
@@ -2421,4 +2436,4 @@ if (loggedUser !== '') {
 
 
 
-toggleSidebar(burgerBtn);
+//toggleSidebar(burgerBtn);
