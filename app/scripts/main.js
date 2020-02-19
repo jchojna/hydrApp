@@ -39,7 +39,7 @@ const findFirstParentOfClass = (node, classname) => {
 }
 
 const handleWindowResize = () => {
-  const waterValue = hydrappUser.entries[0].value;
+  const waterValue = loggedUser.entries[0].value;
   handleWaterLevel(waterValue);
   handleWaterWaves(waterObj);
   handleWaterMeasure();
@@ -1388,14 +1388,10 @@ const toggleSidebarTabs = (e) => {
         // show archive content
         if (!isActive) {
           handleContainerHeight(archiveContainer, currentWeek);
-          window.addEventListener('keydown', enterNewEntryValue);
-          window.addEventListener('keydown', removeLastEntry);
   
         // hide archive content
         } else {
           archiveContainer.style.height = 0;
-          window.removeEventListener('keydown', enterNewEntryValue);
-          window.removeEventListener('keydown', removeLastEntry);
         }
         break;
       case statsTabButton:
@@ -1673,28 +1669,23 @@ const createAddEntryButton = () => {
 }
 
 const enterNewEntryValue = (e) => {
-  const self = e.keyCode || e.target;
-
+  
+  const self = e.target;
+  const { entries, waterMax } = loggedUser;
   const lastWeek = archiveContainer.lastElementChild;
-  if (e.keyCode && !lastWeek.classList.contains('card--visible')) return;
-
+  
   // find date to display as new proposition
-  const displayDate = new Date();
-  let displayDateId = getDateId(displayDate);
-  const { entries } = hydrappUser;
-  const waterMax = hydrappUser.waterMax.value;
   const oldestEntryIndex = entries.length - 1;
-  const oldestEntryDateId = entries[oldestEntryIndex].id;
-  while (displayDateId !== oldestEntryDateId) {
-    displayDate.setDate(displayDate.getDate() - 1);
-    displayDateId = getDateId(displayDate);
-  }
-  displayDate.setDate(displayDate.getDate() - 1);
+  const oldestEntryDateKey = entries[oldestEntryIndex].dateKey;
+  const prevDate = new Date(oldestEntryDateKey);
+  prevDate.setDate(prevDate.getDate() - 1);
+  
   // create new Entry object
-  const newEntry = new Entry(displayDate);
+  const newEntry = new Entry(0, prevDate);
   const { day, date } = newEntry;
 
-  if (self === 107 || self === addEntryButton) {
+  if (self === addEntryButton) {
+
     newEntryMode.classList.add('newEntry--visible');
     burgerBtn.classList.add('button--hidden');
     newEntryDay.textContent = day;
@@ -1703,11 +1694,11 @@ const enterNewEntryValue = (e) => {
     handleEmoji('newEntry', 0);
   
     const modeOff = () => {
+
       newEntryMode.classList.remove('newEntry--visible');
       burgerBtn.classList.remove('button--hidden');
       newEntryMode.removeEventListener('click', handleValue);
       window.removeEventListener('keydown', handleValue);
-      window.addEventListener('keydown', enterNewEntryValue);
     }
   
     const handleValue = (e) => {
@@ -1748,25 +1739,24 @@ const enterNewEntryValue = (e) => {
     }
     newEntryMode.addEventListener('click', handleValue);
     window.addEventListener('keydown', handleValue);
-    window.removeEventListener('keydown', enterNewEntryValue);
   }
 }
 
 const addNewEntry = (entry) => {
 
-  let lastEntryIndex = hydrappUser.entries.length - 1;
+  let lastEntryIndex = loggedUser.entries.length - 1;
   let lastEntry = document.querySelectorAll('.entry--js')[lastEntryIndex];
-  const { day } = hydrappUser.entries[lastEntryIndex];
   let lastWeek = archiveContainer.lastElementChild;
+  const { day } = loggedUser.entries[lastEntryIndex];
 
   lastEntry.classList.remove('entry--last');
   // jump to the last week
   const cardNextButton = lastWeek.querySelector('.card__button--js-next');
   
   // create new entry node
-  const { entries } = hydrappUser;
-  hydrappUser.entries = [...entries, entry];
-  lastEntryIndex = hydrappUser.entries.length - 1;
+  const { entries } = loggedUser;
+  loggedUser.entries = [...entries, entry];
+  lastEntryIndex = loggedUser.entries.length - 1;
   addArchiveEntry(lastEntryIndex);
 
   if (day === 'monday') slideCard(cardNextButton);
@@ -1778,7 +1768,7 @@ const addNewEntry = (entry) => {
   handleWeekHeading();
   handleCardButtons(archiveContainer, lastWeekIndex);
   handleWaterAverage();
-  exportJsonToLS();
+  exportJSON();
 }
 
 const handleArchiveLastEntry = () => {
@@ -1793,25 +1783,25 @@ const handleArchiveLastEntry = () => {
 }
 
 const removeLastEntry = (e) => {
-  const self = e.keyCode || e. target;
-  const { entries } = hydrappUser;
+  
+  const self = e.target;
+  const { entries } = loggedUser;
   const lastEntryIndex = entries.length - 1;
   const { day } = entries[lastEntryIndex];
   const lastEntryNode = document.querySelectorAll('.entry--js')[lastEntryIndex];
   let lastWeek = archiveContainer.lastElementChild;
-  // do not allow keyboard shortcut if the last week is not displayed
-  if (e.keyCode && !lastWeek.classList.contains('card--visible')) return;
-
-  if (self === 109 || self === removeEntryButton) {
+  
+  if (self === removeEntryButton) {
 
     if (entries.length > 1 && !slideTimeoutId) {
 
-      hydrappUser.entries = [...entries]
+      // remove entry from array and entry node from DOM
+      loggedUser.entries = [...entries]
       .filter((entry, index) => index !== lastEntryIndex);
-      exportJsonToLS();
       lastEntryNode.parentNode.removeChild(lastEntryNode);
+      exportJSON();
 
-      // removing last week section after deleting last day of that week
+      // remove last week section after deleting last day of that week
       if (day === 'sunday') {
         const weekToRemove = archiveContainer.lastElementChild;
         const weekPrevButton = weekToRemove.querySelector('.card__button--js-prev');
@@ -1823,9 +1813,10 @@ const removeLastEntry = (e) => {
         const lastWeekList = weekLists[weekLists.length - 1];
         lastWeekList.appendChild(addEntryButton);
       }
+
       lastWeek = archiveContainer.lastElementChild;
       const lastWeekIndex = archiveContainer.children.length - 1;
-      // add remove button on current last item
+      
       handleArchiveLastEntry();
       handleWeekHeading();
       handleCardButtons(archiveContainer, lastWeekIndex);
@@ -2191,9 +2182,18 @@ class User {
 class Entry {
   constructor(value, date) {
     this.value = value;
+    this._dateKey = date;
     this._date = date;
-    this._id = this.date;
     this._day = date;
+    this._id = this.date;
+  }
+  get _dateKey() {
+    return this.dateKey;
+  }
+  set _dateKey(date) {
+    this.dateKey = getOffsetedDate(date)
+    .toISOString()
+    .slice(0,10);
   }
   get _date() {
     return this.date;
@@ -2421,4 +2421,4 @@ if (loggedUser !== '') {
 
 
 
-//toggleSidebar(burgerBtn);
+toggleSidebar(burgerBtn);
