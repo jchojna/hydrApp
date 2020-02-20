@@ -1461,7 +1461,8 @@ const toggleSidebarTabs = (e) => {
   const self = e.target || e;
 
   if (self === archiveTabButton
-  || self === statsTabButton 
+  || self === statsTabButton
+  || self === rankingTabButton
   || self === settingTabButton) {
 
     const parentContainer = findFirstParentOfClass(self, 'tab');
@@ -1471,29 +1472,11 @@ const toggleSidebarTabs = (e) => {
     const weeks = archiveContainer.children;
     const currentWeek = [...weeks].filter(week => week.classList.contains('card--visible'))[0];
     
-    switch (self) {
-      case archiveTabButton:
-        // show archive content
-        if (!isActive) {
-          handleContainerHeight(archiveContainer, currentWeek);
-  
-        // hide archive content
-        } else {
-          archiveContainer.style.height = 0;
-        }
-        break;
-      case statsTabButton:
-      case settingTabButton:
-        // show stats content
-        if (!isActive) {
-          handleContainerHeight(tabContainer, tabContainer.firstElementChild);
-        // hide stats content
-        } else {
-          tabContainer.style.height = 0;
-        }
-        break;
-      default: false;
-    }
+    !isActive
+    ? self === archiveTabButton
+      ? handleContainerHeight(archiveContainer, currentWeek)
+      : handleContainerHeight(tabContainer, tabContainer.firstElementChild)
+    : tabContainer.style.height = 0;
     svgIcon.classList.toggle('tab__svg--active');
   }
 }
@@ -2057,6 +2040,58 @@ const handleStats = () => {
 
 //#endregion
 
+//#region [ HorizonDark ] RANKING
+
+const handleRankingDOM = () => {
+
+  const users = getArrayOfUsers();
+  let counter = 0;
+
+  for (let user of users) {
+
+    const { name, key } = user;
+
+    // create card every 10th user
+    if (counter % 10 === 0) {
+      const rankingCardHtml = getHtmlOfCard('ranking', name);
+      rankingContainer.insertAdjacentHTML('beforeend', rankingCardHtml);
+    }
+    const lastCard = rankingContainer.lastElementChild;
+    const cardList = lastCard.querySelector('.card__list--js-ranking');
+
+    // create DOM nodes of user props
+    cardList.insertAdjacentHTML('beforeend', 'test');
+
+    counter++;
+  }
+
+}
+
+const handleRanking = () => {
+  
+  //const users = getArrayOfUsers();
+
+  // create DOM structure
+  //rankingContainer.innerHTML = '';
+  //[...users].forEach(user => handleStatsDOM(user));
+
+  // make logged in user's card visible
+  //const loggedUserCard = statsContainer.querySelector(`.card--js-${loggedUser.key}`);
+  //const cardIndex = [...loggedUserCard.parentNode.children].indexOf(loggedUserCard);
+  //loggedUserCard.classList.add('card--visible');
+
+  // set visibility and events for card navigation buttons
+  /* const allButtons = statsContainer.querySelectorAll('[class*=card__button--js');
+  if (usersTotal > 1) {
+    [...allButtons].forEach(button => {
+      button.addEventListener('click', slideCard);
+    });
+  } */
+  //handleCardButtons(statsContainer, cardIndex);
+}
+
+//#endregion
+
 //#region [ HorizonDark ] SETTINGS
   
 const setSettingsDOM = () => {
@@ -2501,9 +2536,12 @@ const levelMin = document.querySelector('.graph__level--js-min');
 
 const archiveTabButton = document.querySelector('.tab__button--js-archive');
 const statsTabButton = document.querySelector('.tab__button--js-stats');
+const rankingTabButton = document.querySelector('.tab__button--js-ranking');
 const settingTabButton = document.querySelector('.tab__button--js-settings');
+
 const archiveContainer = document.querySelector('.tab__container--js-archive');
 const statsContainer = document.querySelector('.tab__container--js-stats');
+const rankingContainer = document.querySelector('.tab__container--js-ranking');
 const settingsContainer = document.querySelector('.tab__container--js-settings');
 
 //#endregion
@@ -2538,6 +2576,7 @@ const loadApp = () => {
   // DOM
   setArchiveDOM();
   handleStats();
+  handleRankingDOM();
   setSettingsDOM();
   setWaterMeasureDOM();
   setEmojiDOM();
