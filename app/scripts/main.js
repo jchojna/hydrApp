@@ -78,11 +78,15 @@ const handleContainerHeightThroughTime = (container, elements, time) => {
   }, time);
 }
 
-const getGlasses = (key, value) => {
-  const glasses = key === 'waterMax' || key === 'waterMin' || key === 'waterAvg'
+const getSingularOrPlural = (key, value) => {
+
+  const word = key === 'waterMax' || key === 'waterMin' || key === 'waterAvg'
   ? `${value} ${value > 1 || value === 0 ? 'glasses' : 'glass'}`
+  : key === 'points'
+
+  ? `${value} ${value > 1 || value === 0 ? 'pts' : 'pt'}`
   : value;
-  return glasses;
+  return word;
 }
 
 const setNodes = (obj, root) => {
@@ -503,7 +507,7 @@ const getHtmlOfCard = (card, userName, key) => {
           </button>
           ` : ''}
         </header>
-        <ul class="card__list card__list--js-${card}"></ul>
+        <ul class="card__list card__list--${card} card__list--js-${card}"></ul>
       </div>
     </section>
   `;
@@ -578,12 +582,27 @@ const getHtmlOfUserStats = (user) => {
           ${label}
         </span>
         <span class="userProp__value userProp__value--${prop} userProp__value--js-${prop}">
-            ${getGlasses(prop, value)}
+            ${getSingularOrPlural(prop, value)}
         </span>
       </li>
     `
   });
   return html;
+}
+
+const getHtmlOfUserRank = (user) => {
+
+  const { name, key, points, rank } = user;
+
+  return `
+    <li class="userProp userProp--rank userProp--js-${key}">
+      <span class="userProp__label">${rank}</span>
+      <span class="userProp__label">${name}</span>
+      <span class="userProp__value userProp__value--rank userProp__value--js-rank">
+        ${getSingularOrPlural('points', points)}
+      </span>
+    </li>
+  `;
 }
 
 const getHtmlOfUserSettings = () => {
@@ -603,7 +622,7 @@ const getHtmlOfUserSettings = () => {
         </label>
         <div class="userProp__value">
           <span class="userProp__output userProp__output--${prop} userProp__output--js userProp__output--js-${prop}">
-            ${getGlasses(prop, value)}
+            ${getSingularOrPlural(prop, value)}
           </span>
           <input
             id="${prop}Settings"
@@ -675,6 +694,13 @@ const initialUsers = [
     weight: 67,
     height: 181,
     dateCreated: 'February 06, 2020 14:45:13'
+  },
+  {
+    name: 'Jakub C',
+    age: 32,
+    weight: 67,
+    height: 181,
+    dateCreated: 'February 06, 2020 14:45:45'
   }
 ];
 
@@ -1268,7 +1294,7 @@ const handleWaterAverage = () => {
   ? levelAvg.classList.remove('graph__level--negative')
   : levelAvg.classList.add('graph__level--negative');
   levelAvg.style.bottom = `${average * interval}px`;
-  statsOutput.textContent = getGlasses(prop, average);
+  statsOutput.textContent = getSingularOrPlural(prop, average);
 }
 //#endregion
 
@@ -2045,49 +2071,71 @@ const handleStats = () => {
 const handleRankingDOM = () => {
 
   const users = getArrayOfUsers();
-  let counter = 0;
+  const { rankingMaxUsersPerCard } = userHelper;
+  let lastCard = rankingContainer.lastElementChild;
+  let counter = 1;
 
   for (let user of users) {
 
-    const { name, key } = user;
-
     // create card every 10th user
-    if (counter % 10 === 0) {
-      const rankingCardHtml = getHtmlOfCard('ranking', name);
+    if (counter % rankingMaxUsersPerCard === 1) {
+      const rankingCardHtml = getHtmlOfCard('ranking');
       rankingContainer.insertAdjacentHTML('beforeend', rankingCardHtml);
     }
-    const lastCard = rankingContainer.lastElementChild;
+
+    // create DOM nodes of every user rank
+    lastCard = rankingContainer.lastElementChild;
     const cardList = lastCard.querySelector('.card__list--js-ranking');
+    const userRankHtml = getHtmlOfUserRank(user);
+    cardList.insertAdjacentHTML('beforeend', userRankHtml);
 
-    // create DOM nodes of user props
-    cardList.insertAdjacentHTML('beforeend', 'test');
+    // set top offset for each item
+    const lastUser = cardList.lastElementChild;
+    const lastUserIndex = cardList.children.length - 1;
+    const height = lastUser.clientHeight;
+    const topOffset = height * lastUserIndex;
+    lastUser.style.top = `${topOffset}px`;
 
+    // set height of cardList container
+    cardList.style.height = `${topOffset + height}px`;
     counter++;
   }
 
+  // set visibility and events for card navigation buttons
+  const cardsTotal = rankingContainer.children.length;
+  const allButtons = rankingContainer.querySelectorAll('[class*=card__button--js');
+  if (cardsTotal > 1) {
+    [...allButtons].forEach(button => button.addEventListener('click', slideCard));
+  }
+}
+
+const handleRankingHeading = () => {
+
+  const cards = rankingContainer.children;
+  const { rankingMaxUsersPerCard } = userHelper;
+  const currentCard = rankingContainer.querySelector('.card--visible');
+  const currentIndex = [...cards].indexOf(currentCard);
+  const currentCardHeading = currentCard.querySelector('.card__heading--js-ranking');
+  const currentCardList = currentCard.querySelector('.card__list--js-ranking');
+  const currentItemsTotal = currentCardList.children.length;
+  
+  const previousPlaces = currentIndex * rankingMaxUsersPerCard;
+  const firstNum = previousPlaces + 1;
+  const secondNum = previousPlaces + currentItemsTotal;
+
+  const heading = currentItemsTotal <= 1
+  ? `Place [${firstNum}]`
+  : `Places [${firstNum} - ${secondNum}]`;
+  currentCardHeading.textContent = heading;
 }
 
 const handleRanking = () => {
-  
-  //const users = getArrayOfUsers();
 
-  // create DOM structure
-  //rankingContainer.innerHTML = '';
-  //[...users].forEach(user => handleStatsDOM(user));
-
-  // make logged in user's card visible
-  //const loggedUserCard = statsContainer.querySelector(`.card--js-${loggedUser.key}`);
-  //const cardIndex = [...loggedUserCard.parentNode.children].indexOf(loggedUserCard);
-  //loggedUserCard.classList.add('card--visible');
-
-  // set visibility and events for card navigation buttons
-  /* const allButtons = statsContainer.querySelectorAll('[class*=card__button--js');
-  if (usersTotal > 1) {
-    [...allButtons].forEach(button => {
-      button.addEventListener('click', slideCard);
-    });
-  } */
-  //handleCardButtons(statsContainer, cardIndex);
+  handleRankingDOM();
+  const firstCard = rankingContainer.firstElementChild;
+  firstCard.classList.add('card--visible');
+  handleRankingHeading();
+  handleCardButtons(rankingContainer, 0);
 }
 
 //#endregion
@@ -2161,7 +2209,7 @@ const handleSettingsEdition = (e) => {
     input.placeholder = prop === 'weight'
     ? `${value} kg` : prop === 'height'
     ? `${value} cm` : prop === 'waterMax'
-    ? `${getGlasses('waterMax', value)}` : value;
+    ? `${getSingularOrPlural('waterMax', value)}` : value;
   }
   
   const exitEditMode = () => {
@@ -2212,7 +2260,7 @@ const handleSettingsEdition = (e) => {
             loggedUser[prop] = newValue;
           }
 
-          output.textContent = getGlasses(prop, newValue);
+          output.textContent = getSingularOrPlural(prop, newValue);
           exportJSON();
           exitEditMode();
 
@@ -2457,6 +2505,7 @@ const userHelper = {
   rank: {
     label: 'Ranking position'
   },
+  rankingMaxUsersPerCard: 10,
   questionsProps: ['name', 'age', 'weight', 'height'],
   settingsProps: ['name', 'age', 'weight', 'height', 'waterMax'],
   statsProps: [
@@ -2576,7 +2625,7 @@ const loadApp = () => {
   // DOM
   setArchiveDOM();
   handleStats();
-  handleRankingDOM();
+  handleRanking();
   setSettingsDOM();
   setWaterMeasureDOM();
   setEmojiDOM();

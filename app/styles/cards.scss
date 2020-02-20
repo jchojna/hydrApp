@@ -84,6 +84,10 @@
     min-width: $tab-minWidth;
     padding: 0;
     width: 100%;
+
+    &--ranking {
+      position: relative;
+    }
   }
 
   @media only screen and (min-width: $media-md) {

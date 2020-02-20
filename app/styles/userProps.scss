@@ -12,6 +12,12 @@
     grid-template-columns: 60% 1fr;
   }
 
+  &--rank {
+    grid-template-columns: auto 1fr auto;
+    position: absolute;
+    width: 100%;
+  }
+
   &--editMode {
     background-color: $blue-dark-3;
   }
