@@ -32,6 +32,22 @@ const limitedRange = (max, num, action) => {
   return num;
 }
 
+const getRangeOfDates = (startDate, endDate) => {
+  
+  let [startDay, startMonth, startYear] = startDate.split('.');
+  let [endDay, endMonth, endYear] = endDate.split('.');
+  startYear = startYear.slice(2,4);
+  endYear = endYear.slice(2,4);
+
+  return `${startYear === endYear
+  ? startMonth === endMonth
+    ? startDay === endDay
+      ? ''
+      : `${startDay} - `
+    : `${startDay}.${startMonth} - `
+  : `${startDay}.${startMonth}.${startYear} - `}${endDay}.${endMonth}.${endYear}`;
+}
+
 const findFirstParentOfClass = (node, classname) => {
   while (!node.parentNode.classList.contains(classname)
   && node.parentNode.tagName !== 'HTML') node = node.parentNode;
@@ -209,12 +225,12 @@ const getArrayOfUsers = () => {
 
 const getUserStreaks = (entries, minValue) => {
 
-  let counter = 0, longest = 0, current = 0;
+  let counter = 0, longestStreak = 0, currentStreak = 0;
   let startDate, endDate, tmpStartDate, tmpEndDate;
 
   const checkLongestStreak = () => {
-    if (longest <= counter) {
-      longest = counter;
+    if (longestStreak <= counter) {
+      longestStreak = counter;
       startDate = tmpStartDate;
       endDate = tmpEndDate;
     }
@@ -236,16 +252,19 @@ const getUserStreaks = (entries, minValue) => {
     }
   }
 
+  // last longest streak dates
+  const lastLongestStreakDates = getRangeOfDates(startDate, endDate);
+
   // streaks number
   for (let entry of entries) {
 
     if (entry.value >= minValue) {
-      current++;
+      currentStreak++;
     } else break;
   }
 
   // return object
-  return { current, longest, startDate, endDate };
+  return { currentStreak, longestStreak, lastLongestStreakDates };
 }
 
 const fetchJSON = () => {
@@ -323,9 +342,15 @@ const updateUsersStats = () => {
   // update users streaks  
   [...logins].forEach(login => {
     const { entries, waterMin } = hydrappJSON.users[login];
-    const streaks = getUserStreaks(entries, waterMin);
+    const {
+      currentStreak,
+      longestStreak,
+      lastLongestStreakDates
+    } = getUserStreaks(entries, waterMin);
 
-    hydrappJSON.users[login].streaks = streaks;
+    hydrappJSON.users[login].currentStreak = currentStreak;
+    hydrappJSON.users[login].longestStreak = longestStreak;
+    hydrappJSON.users[login].lastLongestStreakDates = lastLongestStreakDates;
   });
 
   exportJSON();
