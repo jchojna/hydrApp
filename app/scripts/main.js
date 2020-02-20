@@ -1198,6 +1198,8 @@ const handleWaterChange = (e) => {
   // value has been changed
   loggedUser.entries[0].value = value;
   firstEntryValue.textContent = value;
+  updateUsersStats();
+  updateStats();
   updateJSON(loggedUser);
   exportJSON()
   handleWaterLevel(value);
@@ -1281,22 +1283,17 @@ const handleWaterMin = (value) => {
 
 const handleWaterAverage = () => {
 
-  const { key, entries, waterMin, waterMax } = loggedUser;
-  const prop = 'waterAvg';
+  const { entries, waterMin, waterMax } = loggedUser;
   const interval = appLanding.clientHeight / waterMax;
-  const userCard = document.querySelector(`.card--js-${key}`);
-  const statsOutput = userCard.querySelector(`.userProp__value--js-${prop}`);
   
   // calculate average number of consumed water
   const average = getAverageOfArrayValues(entries);
-  loggedUser.waterAvg = average;
 
   // change app appearance using updated water average number
   average >= waterMin
   ? levelAvg.classList.remove('graph__level--negative')
   : levelAvg.classList.add('graph__level--negative');
   levelAvg.style.bottom = `${average * interval}px`;
-  statsOutput.textContent = getSingularOrPlural(prop, average);
 }
 //#endregion
 
@@ -1867,6 +1864,8 @@ const addNewEntry = (entry) => {
   handleWeekHeading();
   handleCardButtons(archiveContainer, lastWeekIndex);
   handleWaterAverage();
+  updateUsersStats();
+  updateStats();
   exportJSON();
 }
 
@@ -1920,6 +1919,8 @@ const removeLastEntry = (e) => {
       handleWeekHeading();
       handleCardButtons(archiveContainer, lastWeekIndex);
       handleContainerHeight(archiveContainer, lastWeek);
+      updateUsersStats();
+      updateStats();
       handleWaterAverage();
     }
   }
@@ -2010,6 +2011,8 @@ const handleEntryEdit = (e) => {
           handleEmoji('controls', dayValue);
         }
         loggedUser.entries[itemIndex].value = dayValue;
+        updateUsersStats();
+        updateStats();
         updateJSON(loggedUser);
         exportJSON();
         handleWaterAverage();
@@ -2040,12 +2043,20 @@ const handleStatsDOM = (user) => {
   // create DOM nodes of user props
   const cardList = userCard.querySelector('.card__list--js-stats');
   cardList.insertAdjacentHTML('beforeend', userHtml);
+
+  // set events for card navigation buttons
+  const usersTotal = Object.keys(hydrappJSON.users).length;
+  const allButtons = statsContainer.querySelectorAll('[class*=card__button--js');
+  if (usersTotal > 1) {
+    [...allButtons].forEach(button => {
+      button.addEventListener('click', slideCard);
+    });
+  }
 }
 
 const handleStats = () => {
 
   const users = getArrayOfUsers();
-  const usersTotal = Object.keys(hydrappJSON.users).length;
 
   // create DOM structure
   statsContainer.innerHTML = '';
@@ -2056,14 +2067,27 @@ const handleStats = () => {
   const cardIndex = [...loggedUserCard.parentNode.children].indexOf(loggedUserCard);
   loggedUserCard.classList.add('card--visible');
 
-  // set visibility and events for card navigation buttons
-  const allButtons = statsContainer.querySelectorAll('[class*=card__button--js');
-  if (usersTotal > 1) {
-    [...allButtons].forEach(button => {
-      button.addEventListener('click', slideCard);
-    });
-  }
+  // set visibility of card navigation buttons
   handleCardButtons(statsContainer, cardIndex);
+}
+
+const updateStats = () => {
+  
+  const users = getArrayOfUsers();
+  const { statsProps } = userHelper;
+
+  [...users].forEach(user => {
+
+    const { key, login } = user;
+    const userCard = statsContainer.querySelector(`.card--js-${key}`);
+
+    [...statsProps].forEach(prop => {
+
+      const stat = userCard.querySelector(`.userProp__value--js-${prop}`);
+      const updatedStat = getSingularOrPlural(prop, hydrappJSON.users[login][prop]);
+      stat.textContent = updatedStat;
+    });
+  });
 }
 
 //#endregion
