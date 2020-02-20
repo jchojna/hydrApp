@@ -598,7 +598,7 @@ const getHtmlOfUserRank = (user) => {
 
   return `
     <li class="userProp userProp--rank userProp--js-${key}">
-      <span class="userProp__label">${rank}</span>
+      <span class="userProp__rank userProp__rank--js">${rank}</span>
       <span class="userProp__label">${name}</span>
       <span class="userProp__value userProp__value--rank userProp__value--js-rank">
         ${getSingularOrPlural('points', points)}
@@ -1199,9 +1199,11 @@ const handleWaterChange = (e) => {
   loggedUser.entries[0].value = value;
   firstEntryValue.textContent = value;
   updateUsersStats();
-  updateStats();
   updateJSON(loggedUser);
   exportJSON()
+
+  updateStats();
+  updateRanking();
   handleWaterLevel(value);
   handleWaterShake();
   handleCounterMessage(value);
@@ -1866,6 +1868,7 @@ const addNewEntry = (entry) => {
   handleWaterAverage();
   updateUsersStats();
   updateStats();
+  updateRanking();
   exportJSON();
 }
 
@@ -1921,6 +1924,7 @@ const removeLastEntry = (e) => {
       handleContainerHeight(archiveContainer, lastWeek);
       updateUsersStats();
       updateStats();
+      updateRanking();
       handleWaterAverage();
     }
   }
@@ -2012,9 +2016,11 @@ const handleEntryEdit = (e) => {
         }
         loggedUser.entries[itemIndex].value = dayValue;
         updateUsersStats();
-        updateStats();
         updateJSON(loggedUser);
         exportJSON();
+
+        updateStats();
+        updateRanking();
         handleWaterAverage();
         exitEditMode();
       break;
@@ -2083,9 +2089,9 @@ const updateStats = () => {
 
     [...statsProps].forEach(prop => {
 
-      const stat = userCard.querySelector(`.userProp__value--js-${prop}`);
+      const node = userCard.querySelector(`.userProp__value--js-${prop}`);
       const updatedStat = getSingularOrPlural(prop, hydrappJSON.users[login][prop]);
-      stat.textContent = updatedStat;
+      node.textContent = updatedStat;
     });
   });
 }
@@ -2162,6 +2168,22 @@ const handleRanking = () => {
   firstCard.classList.add('card--visible');
   handleRankingHeading();
   handleCardButtons(rankingContainer, 0);
+}
+
+const updateRanking = () => {
+  
+  const users = getArrayOfUsers();
+
+  [...users].forEach(user => {
+
+    const { key, login } = user;
+    const userRank = rankingContainer.querySelector(`.userProp--js-${key}`);
+    const rankNode = userRank.querySelector('.userProp__rank--js');
+    const pointsNode = userRank.querySelector('.userProp__value--js-rank');
+    const { rank, points } = hydrappJSON.users[login];
+    rankNode.textContent = rank;
+    pointsNode.textContent = getSingularOrPlural('points', points);
+  });
 }
 
 //#endregion
