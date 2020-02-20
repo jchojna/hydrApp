@@ -225,7 +225,7 @@ const getArrayOfUsers = () => {
 
 const getUserStreaks = (entries, minValue) => {
 
-  let counter = 0, longestStreak = 0, currentStreak = 0;
+  let counter = 0, longestStreak = 0, currentStreak = 0, points = 0;
   let startDate, endDate, tmpStartDate, tmpEndDate;
 
   const checkLongestStreak = () => {
@@ -244,12 +244,14 @@ const getUserStreaks = (entries, minValue) => {
 
     if (value >= minValue) {
       counter === 0 ? tmpStartDate = date : tmpEndDate = date;
-      i === 0 ? checkLongestStreak() : counter++;
+      i === 0 ? checkLongestStreak() : false;
+      counter++;
 
     } else {
       checkLongestStreak();
       counter = 0;
     }
+    points += counter;
   }
 
   // last longest streak dates
@@ -264,7 +266,7 @@ const getUserStreaks = (entries, minValue) => {
   }
 
   // return object
-  return { currentStreak, longestStreak, lastLongestStreakDates };
+  return { currentStreak, longestStreak, lastLongestStreakDates, points };
 }
 
 const fetchJSON = () => {
@@ -309,25 +311,39 @@ const updateUsersEntries = () => {
 
 const updateUsersStats = () => {
 
-  const users = getArrayOfUsers();
+  const logins = Object.keys(hydrappJSON.users);
 
-  // update users average water consumption amount
-  [...users].forEach(user => {
-    const { entries } = user;
-    user.waterAvg = getAverageOfArrayValues(entries);
+  // update average water consumption number and users streaks  
+  [...logins].forEach(login => {
+    const { entries, waterMin } = hydrappJSON.users[login];
+    const waterAvg = getAverageOfArrayValues(entries);
+    const {
+      currentStreak,
+      longestStreak,
+      lastLongestStreakDates,
+      points
+    } = getUserStreaks(entries, waterMin);
+
+    hydrappJSON.users[login].waterAvg = waterAvg;
+    hydrappJSON.users[login].currentStreak = currentStreak;
+    hydrappJSON.users[login].longestStreak = longestStreak;
+    hydrappJSON.users[login].lastLongestStreakDates = lastLongestStreakDates;
+    hydrappJSON.users[login].points = points;
   });
 
-  // update users rank position based on water average amount
+  // sort users based on number of points
+  const users = getArrayOfUsers();
   const sortedUsers = [...users]
-  .sort((nextUser, user) => user.waterAvg - nextUser.waterAvg);
-
+  .sort((nextUser, user) => user.points - nextUser.points);
+  
+  // set users rank position based on points amount
   [...sortedUsers].forEach((user, index) => {
-
+    
     const prevUser = index > 0 ? sortedUsers[index - 1] : false;
     prevUser
-    ? prevUser.waterAvg === user.waterAvg
-      ? user.rank = prevUser.rank
-      : user.rank = prevUser.rank + 1
+    ? prevUser.points === user.points
+    ? user.rank = prevUser.rank
+    : user.rank = prevUser.rank + 1
     : user.rank = 1;
   });
 
@@ -335,22 +351,6 @@ const updateUsersStats = () => {
   [...sortedUsers].forEach(user => {
     delete hydrappJSON.users[user.login];
     hydrappJSON.users[user.login] = user;
-  });
-
-  const logins = Object.keys(hydrappJSON.users);
-
-  // update users streaks  
-  [...logins].forEach(login => {
-    const { entries, waterMin } = hydrappJSON.users[login];
-    const {
-      currentStreak,
-      longestStreak,
-      lastLongestStreakDates
-    } = getUserStreaks(entries, waterMin);
-
-    hydrappJSON.users[login].currentStreak = currentStreak;
-    hydrappJSON.users[login].longestStreak = longestStreak;
-    hydrappJSON.users[login].lastLongestStreakDates = lastLongestStreakDates;
   });
 
   exportJSON();
@@ -2407,10 +2407,32 @@ const userHelper = {
   },
   waterMin: { label: 'Minimum per day' },
   waterAvg: { label: 'Average per day' },
-  rank: { label: 'Ranking position' },
+  currentStreak: {
+    label: 'Current streak'
+  },
+  longestStreak: {
+    label: 'Longest streak ever'
+  },
+  lastLongestStreakDates: {
+    label: 'Last longest streak dates'
+  },
+  points: {
+    label: 'User Points'
+  },
+  rank: {
+    label: 'Ranking position'
+  },
   questionsProps: ['name', 'age', 'weight', 'height'],
   settingsProps: ['name', 'age', 'weight', 'height', 'waterMax'],
-  statsProps: ['waterMin', 'waterAvg', 'rank'],
+  statsProps: [
+    'waterMin',
+    'waterAvg',
+    'currentStreak',
+    'longestStreak',
+    'lastLongestStreakDates',
+    'points',
+    'rank',
+  ],
   weekDays: [
     'sunday',
     'monday',
