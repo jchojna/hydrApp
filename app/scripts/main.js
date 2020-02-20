@@ -33,6 +33,8 @@ const limitedRange = (max, num, action) => {
 }
 
 const getRangeOfDates = (startDate, endDate) => {
+
+  if (startDate === '' || endDate === '') return 'Too soon for that ...';
   
   let [startDay, startMonth, startYear] = startDate.split('.');
   let [endDay, endMonth, endYear] = endDate.split('.');
@@ -230,7 +232,7 @@ const getArrayOfUsers = () => {
 const getUserStreaks = (entries, minValue) => {
 
   let counter = 0, longestStreak = 0, currentStreak = 0, points = 0;
-  let startDate, endDate, tmpStartDate, tmpEndDate;
+  let startDate = '', endDate = '', tmpStartDate = '', tmpEndDate = '';
 
   const checkLongestStreak = () => {
     if (longestStreak <= counter) {
@@ -248,8 +250,8 @@ const getUserStreaks = (entries, minValue) => {
 
     if (value >= minValue) {
       counter === 0 ? tmpStartDate = date : tmpEndDate = date;
-      i === 0 ? checkLongestStreak() : false;
       counter++;
+      i === 0 ? checkLongestStreak() : false;
 
     } else {
       checkLongestStreak();
