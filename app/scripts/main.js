@@ -127,7 +127,6 @@ const toggleChildrenFocusability = (parent) => {
     .filter(exception => button.classList.contains(exception)).length > 0;
   }
 
-
   [...buttons].forEach(button => {
     
     if (!isException(button)) {

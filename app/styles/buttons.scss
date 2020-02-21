@@ -25,17 +25,22 @@
     transform: rotate(180deg);
   }
 
-  &:hover {
-    fill: $blue-light-2;
-  }
-
   &__svg {
     width: 100%;
     pointer-events: none;
   }
 
+  &:active {
+    fill: $blue-light-3;
+  }
+
   @media only screen and (min-width: $media-md) {
     width: $burgerBtn-size-md;
+
+    &:focus,
+    &:hover {
+      fill: $blue-light-3;
+    }
   }
   
   @media only screen and (min-width: $media-lg) {

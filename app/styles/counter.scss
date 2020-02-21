@@ -79,6 +79,14 @@
     grid-area: message;
   }
 
+  @media only screen and (min-width: $media-sm) {
+
+    &--landing {
+      $header-height: $header-padding-xs * 2 + $burgerBtn-size-xs;
+      margin: 0 $header-height + 20;
+    } 
+  }
+
   @media only screen and (min-width: $media-md) {
 
     & {

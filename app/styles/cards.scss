@@ -20,7 +20,7 @@
 
   &--visible {
     animation-fill-mode: forwards;
-    visibility: visible;
+    visibility: inherit;
   }
 
   &__header {
