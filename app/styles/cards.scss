@@ -84,6 +84,10 @@
     min-width: $tab-minWidth;
     padding: 0;
     width: 100%;
+
+    &--ranking {
+      position: relative;
+    }
   }
 
   @media only screen and (min-width: $media-md) {
@@ -129,3 +133,93 @@
     }
   }
 }
+
+//#region [ HorizonDark ] USER REMOVE
+
+.userRemove {
+  background-color: $orange-dark-2;
+  bottom: 0;
+  display: grid;
+  grid-template-areas:
+    "cancel "
+    "alert  "
+    "confirm";
+  grid-template-rows: auto 1fr 1fr;
+  justify-items: center;
+  left: 0;
+  overflow: hidden;
+  opacity: 0;
+  padding: $header-padding-xs;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transition: opacity $sidebar-toggle, visibility 0s $sidebar-toggle;
+  visibility: hidden;
+
+  &--visible {
+    opacity: 1;
+    transition: opacity $sidebar-toggle, visibility 0s;
+    visibility: visible;
+  }
+
+  &__alert {
+    align-self: end;
+    color: $orange-dark-3;
+    grid-area: alert;
+    font-size: 1.5em;
+    text-align: center;
+    font-weight: 700;
+  }
+
+  &__cancel {
+    @include button;
+    @include flex-center;
+    fill: $blue-dark-3;
+    grid-area: cancel;
+    height: $tab-icon-size;
+    justify-self: end;
+    transform: rotate(45deg);
+    width: $tab-icon-size;
+
+    &:hover {
+      fill: $orange-dark-3;
+    }
+  }
+
+  &__confirm {
+    @include button;
+    @include primaryButton;
+    align-self: center;
+    background-color: $blue-dark-3;
+    box-shadow: 0 2px 4px $orange-dark-3;
+    color: $orange-dark-2;
+    grid-area: confirm;
+    font-size: 1.3em;
+    font-weight: 700;
+
+    &:hover {
+      background-color: $orange-dark-3;
+    }
+  }
+
+  &__svg {
+    pointer-events: none;
+    width: 100%;
+  }
+    
+  @media only screen and (min-width: $media-md) {
+
+    & {
+      padding: $header-padding-md;
+    }
+  }
+  
+  @media only screen and (min-width: $media-lg) {
+
+    & {
+      padding: $header-padding-lg;
+    }
+  }
+}
+
+//#endregion

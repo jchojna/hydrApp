@@ -1,73 +1,81 @@
 @import 'variables.scss';
 @import 'mixins.scss';
 
-.newUser {
+.loginBox {
+  align-content: center;
   display: grid;
+  gap: 30px;
   grid-template-areas:
-  "label label"
-  "input input"
-  "alert alert"
-  "prev  next ";
-  grid-template-columns: repeat(2, 1fr);
+    "logo   "
+    "label  "
+    "input  "
+    "alert  "
+    "logIn  "
+    "signUp ";
+  height: 100%;
+  max-width: $newUser-box-maxWidth;
   opacity: 0;
   padding: 0 20px;
   padding-top: 20px;
   position: absolute;
-  row-gap: 30px;
+  top: 0;
+  transition: opacity $newUser-toggle, visibility 0s $newUser-toggle;
   visibility: hidden;
+  width: 100%;
 
   &--visible {
     opacity: 1;
     visibility: inherit;
+    transition: opacity $newUser-toggle, visibility 0s;
   }
-
+  
   @media only screen and (min-width: $media-md) {
 
     & {
-      width: 100%;
-      max-width: $newUser-box-maxWidth;
+      grid-template-areas:
+        "logo    logo   "
+        "label   label  "
+        "input   input  "
+        "alert   alert  "
+        "logIn   signUp ";
+      grid-template-columns: repeat(2, 1fr);
+      padding: 0;
     }
+  }
+  
+  &__heading {
+    color: $blue-light-2;
+    font-size: 2.2em;
+    grid-area: heading;
+    margin: 0;
+    text-align: center;
   }
 
   &__label {
-    color: $blue-light-2;
+    color: $blue-dark-1;
+    font-size: 1.1em;
     font-weight: 700;
-    font-size: 1.4em;
     grid-area: label;
-    margin-bottom: 20px;
     text-align: center;
-
-    @media only screen and (min-width: $media-md) {
-  
-      & {
-        font-size: 1.6em;
-      }
-    }
-
-    @media only screen and (min-width: $media-lg) {
-  
-      & {
-        font-size: 1.8em;
-      }
-    }
   }
 
   &__input {
     background-color: transparent;
     border: 2px solid $blue;
-    border-radius: 50px;
+    border-radius: 100px;
     color: $blue-light-3;
     font-size: 1.4em;
     grid-area: input;
     min-height: 50px;
+    min-width: 100px;
     outline: none;
     padding: 10px 20px;
     text-align: center;
-
+  
     &:focus {
       border-color: $blue-light-3;
     }
-
+  
     @media only screen and (min-width: $media-md) {
   
       & {
@@ -80,7 +88,7 @@
     grid-area: alert;
     height: 0;
     overflow: hidden;
-    transition: height $newUser-toggle;
+    transition: height $time-alert;
   }
 
   &__alertText {
@@ -98,40 +106,32 @@
   &__button {
     @include button;
     @include flex-center;
-    fill: $blue-dark-1;
-    width: $burgerBtn-size-xs;
-
-    &--prev {
-      grid-area: prev;
-      justify-self: start;
-      
-    }
-
-    &--next {
-      grid-area: next;
-      justify-self: end;
-
-    }
-
+    background-color: $blue-dark-1;
+    border-radius: 100px;
+    color: $blue-dark-4;
+    font-weight: 700;
+    font-size: 1.3em;
+    padding: 0.5em;
+  
     &:hover {
-      fill: $blue-light-3;
+      background-color: $blue-dark-5;
+      color: $blue-light-3;
     }
-
+  
+    &--logIn {
+      background-color: $blue;
+      grid-area: logIn;
+    }
+  
+    &--signUp {
+      grid-area: signUp;
+    }
+  
     @media only screen and (min-width: $media-md) {
+  
       & {
-        width: $burgerBtn-size-md;
+        font-size: 1.5em;
       }
     }
-
-    @media only screen and (min-width: $media-lg) {
-      & {
-        width: $burgerBtn-size-lg;
-      }
-    }
-  }
-
-  &__svg {
-    pointer-events: none;
-    width: 100%;
   }
 }
