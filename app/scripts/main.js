@@ -648,7 +648,7 @@ const getHtmlOfUserRank = (user) => {
       <span class="userProp__rank userProp__rank--js">
         ${rank}
       </span>
-      <span class="userProp__label userProp__label--js">
+      <span class="userProp__label userProp__label--rank userProp__label--js">
         ${name}
         </span>
       <span class="userProp__value userProp__value--rank userProp__value--js">
@@ -1170,7 +1170,7 @@ const handleWaterWaves = (obj) => {
     
     const height = window.innerWidth / wavePeriodsTotal / 10;
     waves.style.height = `${height}px`;
-    waves.style.top = `${-1 * (height - 2)}px`;
+    waves.style.top = `${-1 * (height - 1)}px`;
   });
 }
 
@@ -2017,6 +2017,7 @@ const handleEntryEdit = (e) => {
     editSection.classList.toggle('edition--visible');
     entry.classList.toggle('entry--edit-mode');
     entryHeader.classList.toggle('entry__header--edit-mode');
+    entryValue.classList.toggle('entry__value--edit-mode');
 
     itemIndex === loggedUser.entries.length - 1
     ? removeEntryButton.classList.toggle('entry__remove--hidden')

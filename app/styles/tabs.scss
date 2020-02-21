@@ -8,16 +8,7 @@
   width: 100%;
 
   &--archive {
-    flex-grow: 1;
     justify-content: flex-end;
-  }
-
-  &--stats {
-
-  }
-  
-  &--settings {
-    flex-grow: 1
   }
 
   &__header {
@@ -34,20 +25,27 @@
     width: 100%;
     padding: $header-padding-xs;
 
+    &:active {
+      fill: $blue-light-2;
+      color: $blue-light-2;
+      background-color: $blue-dark-3;
+    }
+
     // display: grid in buttons doesn't work correctly on Chrome
     &::before {
       content: '';
       width: $burgerBtn-size-xs;
     }
-
-    &:hover {
-      fill: $blue-light-2;
-      color: $blue-light-2;
-      background-color: $blue-dark-2;
-    }
     
     @media only screen and (min-width: $media-md) {
       padding: $header-padding-md;
+
+      &:focus,
+      &:hover {
+        fill: $blue-light-2;
+        color: $blue-light-2;
+        background-color: $blue-dark-3;
+      }
     }
     
     @media only screen and (min-width: $media-lg) {
@@ -57,18 +55,36 @@
 
   &__heading {
     font-weight: 700;
-    font-size: 1.9em;
+    font-size: 1.6em;
     pointer-events: none;
+    
+    @media only screen and (min-width: $media-md) {
+      font-size: 2em;
+    }
+    
+    @media only screen and (min-width: $media-lg) {
+      font-size: 2.4em;
+    }
   }
 
   &__svg {
     width: $burgerBtn-size-xs;
+    padding: 5px;
     pointer-events: none;
-    transform: rotate(0);
+    transform: rotateZ(0);
+    transform-origin: center center;
     transition: transform $button-time-active;
 
     &--active {
-      transform: rotate(135deg);
+      transform: rotateZ(135deg);
+    }
+    
+    @media only screen and (min-width: $media-md) {
+      width: $burgerBtn-size-md;
+    }
+    
+    @media only screen and (min-width: $media-lg) {
+      width: $burgerBtn-size-lg;
     }
   }
 
@@ -78,7 +94,7 @@
 
   &__container {
     display: flex;
-    background-color: $blue-dark-2;
+    background-color: $blue-dark-1;
     position: relative;
     height: 0;
     overflow: hidden;

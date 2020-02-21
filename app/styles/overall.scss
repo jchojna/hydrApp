@@ -11,7 +11,7 @@
 html {
   box-sizing: border-box;
   touch-action: manipulation;
-  //-webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color: transparent;
 }
 
 *,
@@ -28,5 +28,5 @@ body {
 }
 
 input {
-  //outline: none;
+  outline: none;
 }

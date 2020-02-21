@@ -4,7 +4,7 @@
 .button {
   @include button;
   @include flex-center;
-  fill: $blue-light-1;
+  fill: $blue;
   transition: fill $button-time-active, transform $button-time-active;
   width: $burgerBtn-size-xs;
 
