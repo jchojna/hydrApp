@@ -20,6 +20,10 @@
     grid-template-columns: auto 1fr auto;
   }
 
+  &--updated {
+    background-color: $blue-dark-3;
+  }
+
   &--editMode {
     background-color: $blue-dark-3;
   }

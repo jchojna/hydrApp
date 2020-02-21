@@ -2113,7 +2113,8 @@ const handleRankingDOM = () => {
   const users = getArrayOfUsers();
   const { rankingMaxUsersPerCard } = userHelper;
   let lastCard = rankingContainer.lastElementChild;
-  
+  rankingContainer.innerHTML = '';
+
   for (let i = 0; i < users.length; i++) {
     
     const user = users[i];
@@ -2129,25 +2130,10 @@ const handleRankingDOM = () => {
     const cardList = lastCard.querySelector('.card__list--js-ranking');
     const userRankHtml = getHtmlOfUserRank(user);
     cardList.insertAdjacentHTML('beforeend', userRankHtml);
-
-    // set top offset for each item
-    const lastUser = cardList.lastElementChild;
-    const lastUserIndex = cardList.children.length - 1;
-
-
-
-    //const height = lastUser.clientHeight;
-    //const topOffset = (height + rankOffset) * lastUserIndex;
-    //lastUser.style.top = `${topOffset}px`;
-    //lastUser.style.height = `${height}px`;
-
-    // set height of cardList container
-    //cardList.parentNode.style.height = `${topOffset + height * 2}px`;
     
     const { login } = user;
     hydrappJSON.users[login].position = getPositionInCard(i);
     exportJSON();
-
   }
 
   // set visibility and events for card navigation buttons
@@ -2158,24 +2144,26 @@ const handleRankingDOM = () => {
   }
 }
 
-const handleRankingHeading = () => {
+const handleRankingHeadings = () => {
 
   const cards = rankingContainer.children;
   const { rankingMaxUsersPerCard } = userHelper;
-  const currentCard = rankingContainer.querySelector('.card--visible');
-  const currentIndex = [...cards].indexOf(currentCard);
-  const currentCardHeading = currentCard.querySelector('.card__heading--js-ranking');
-  const currentCardList = currentCard.querySelector('.card__list--js-ranking');
-  const currentItemsTotal = currentCardList.children.length;
-  
-  const previousPlaces = currentIndex * rankingMaxUsersPerCard;
-  const firstNum = previousPlaces + 1;
-  const secondNum = previousPlaces + currentItemsTotal;
 
-  const heading = currentItemsTotal <= 1
-  ? `Place [${firstNum}]`
-  : `Places [${firstNum} - ${secondNum}]`;
-  currentCardHeading.textContent = heading;
+  [...cards].forEach((card, index) => {
+
+    const cardHeading = card.querySelector('.card__heading--js-ranking');
+    const cardList = card.querySelector('.card__list--js-ranking');
+    const currentItemsTotal = cardList.children.length;
+  
+    const previousPlaces = index * rankingMaxUsersPerCard;
+    const firstNum = previousPlaces + 1;
+    const secondNum = previousPlaces + currentItemsTotal;
+
+    const heading = currentItemsTotal <= 1
+    ? `Place [ ${firstNum} ]`
+    : `Places [ ${firstNum} - ${secondNum} ]`;
+    cardHeading.textContent = heading;
+  });
 }
 
 const getPositionInCard = (index) => {
@@ -2191,7 +2179,7 @@ const handleRanking = () => {
   handleRankingDOM();
   const firstCard = rankingContainer.firstElementChild;
   firstCard.classList.add('card--visible');
-  handleRankingHeading();
+  handleRankingHeadings();
   handleCardButtons(rankingContainer, 0);
 }
 
@@ -2207,10 +2195,14 @@ const updateRanking = () => {
   .forEach((user, index) => {
 
     const { key, login, rank, name, points } = user;
+    const rankingCards = rankingContainer.children;
+    const visibleCard = rankingContainer.querySelector('.card--visible');
+    const visibleCardIndex = [...rankingCards].indexOf(visibleCard);
     const userBadge = userBadges[index];
     const rankNode = userBadge.querySelector('.userProp__rank--js');
     const labelNode = userBadge.querySelector('.userProp__label--js');
     const pointsNode = userBadge.querySelector('.userProp__value--js');
+    const transitionTime = 300;
 
     // update user badge data
     userBadge.className = `userProp userProp--rank userProp--js-${key}`;
@@ -2218,42 +2210,54 @@ const updateRanking = () => {
     labelNode.textContent = name;
     pointsNode.textContent = getSingularOrPlural('points', points);
 
-    // handle user badge transition effect
+    // get user badge old and new positions
     const height = userBadge.clientHeight;
     const newPosition = getPositionInCard(index);
     const [oldCardIndex, oldBadgePosition] = user.position;
     const [newCardIndex, newBadgePosition] = newPosition;
 
-    if (oldBadgePosition !== newBadgePosition) {
+    // handle user badge transition effect
+    // handle user badge appearing on visibile card
+    if (oldCardIndex !== newCardIndex) {
+
+      if (newCardIndex === visibleCardIndex) {
+
+        userBadge.style = 'transform: translateX(100%);';
+        userBadge.classList.add('userProp--updated');
+
+        const timeoutId  = setTimeout(() => {
+          userBadge.style = `
+            transform: translateX(0);
+            transition:
+              background-color ${transitionTime}ms ${transitionTime}ms,
+              transform ${transitionTime}ms;
+          `;
+          userBadge.classList.remove('userProp--updated');
+          clearTimeout(timeoutId);
+        }, 30);
+      }
+
+    // handle user badge moving inside visible card
+    } else if (oldBadgePosition !== newBadgePosition) {
 
       const positionOffset = (newBadgePosition - oldBadgePosition) * -1;
-      userBadge.style = `
-        transform: translateY(${positionOffset * height}px);
-      `;
+      userBadge.style = `transform: translateY(${positionOffset * height}px);`;
+      userBadge.classList.add('userProp--updated');
 
-      setTimeout(() => {
+      const timeoutId  = setTimeout(() => {
         userBadge.style = `
           transform: translateY(0);
-          transition: transform 0.2s;
+          transition:
+            background-color ${transitionTime}ms ${transitionTime}ms,
+            transform ${transitionTime}ms;
         `;
-        
-      }, 50);
+        userBadge.classList.remove('userProp--updated');
+        clearTimeout(timeoutId);
+      }, 30);
     }
 
     hydrappJSON.users[login].position = newPosition;
     exportJSON();
-
-
-
-
-
-
-
-
-
-
-
-
   });
 }
 
