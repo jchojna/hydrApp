@@ -7,23 +7,21 @@
   column-gap: 10px;
   grid-template-columns: 40% 1fr auto;
   padding: $cardItem-padding;
-    
+
+  &:not(:last-child) {
+    border-bottom: 2px solid $blue-dark-3;
+  }
+
   &--stats {
     grid-template-columns: 60% 1fr;
   }
 
   &--rank {
     grid-template-columns: auto 1fr auto;
-    position: absolute;
-    width: 100%;
   }
 
   &--editMode {
     background-color: $blue-dark-3;
-  }
-
-  &:not(:last-child) {
-    border-bottom: 2px solid $blue-dark-3;
   }
 
   &__label {

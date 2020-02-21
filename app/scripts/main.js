@@ -598,9 +598,13 @@ const getHtmlOfUserRank = (user) => {
 
   return `
     <li class="userProp userProp--rank userProp--js-${key}">
-      <span class="userProp__rank userProp__rank--js">${rank}</span>
-      <span class="userProp__label">${name}</span>
-      <span class="userProp__value userProp__value--rank userProp__value--js-rank">
+      <span class="userProp__rank userProp__rank--js">
+        ${rank}
+      </span>
+      <span class="userProp__label userProp__label--js">
+        ${name}
+        </span>
+      <span class="userProp__value userProp__value--rank userProp__value--js">
         ${getSingularOrPlural('points', points)}
       </span>
     </li>
@@ -1498,11 +1502,15 @@ const toggleSidebarTabs = (e) => {
     const isActive = svgIcon.classList.contains('tab__svg--active');
     const weeks = archiveContainer.children;
     const currentWeek = [...weeks].filter(week => week.classList.contains('card--visible'))[0];
+    const rankingCards = rankingContainer.children;
+    const currentRankingCard = [...rankingCards].filter(card => card.classList.contains('card--visible'))[0];
     
     !isActive
     ? self === archiveTabButton
       ? handleContainerHeight(archiveContainer, currentWeek)
-      : handleContainerHeight(tabContainer, tabContainer.firstElementChild)
+      : self === rankingTabButton
+        ? handleContainerHeight(rankingContainer, currentRankingCard)
+        : handleContainerHeight(tabContainer, tabContainer.firstElementChild)
     : tabContainer.style.height = 0;
     svgIcon.classList.toggle('tab__svg--active');
   }
@@ -2105,12 +2113,13 @@ const handleRankingDOM = () => {
   const users = getArrayOfUsers();
   const { rankingMaxUsersPerCard } = userHelper;
   let lastCard = rankingContainer.lastElementChild;
-  let counter = 1;
-
-  for (let user of users) {
+  
+  for (let i = 0; i < users.length; i++) {
+    
+    const user = users[i];
 
     // create card every 10th user
-    if (counter % rankingMaxUsersPerCard === 1) {
+    if (i % rankingMaxUsersPerCard === 0) {
       const rankingCardHtml = getHtmlOfCard('ranking');
       rankingContainer.insertAdjacentHTML('beforeend', rankingCardHtml);
     }
@@ -2124,13 +2133,21 @@ const handleRankingDOM = () => {
     // set top offset for each item
     const lastUser = cardList.lastElementChild;
     const lastUserIndex = cardList.children.length - 1;
-    const height = lastUser.clientHeight;
-    const topOffset = height * lastUserIndex;
-    lastUser.style.top = `${topOffset}px`;
+
+
+
+    //const height = lastUser.clientHeight;
+    //const topOffset = (height + rankOffset) * lastUserIndex;
+    //lastUser.style.top = `${topOffset}px`;
+    //lastUser.style.height = `${height}px`;
 
     // set height of cardList container
-    cardList.style.height = `${topOffset + height}px`;
-    counter++;
+    //cardList.parentNode.style.height = `${topOffset + height * 2}px`;
+    
+    const { login } = user;
+    hydrappJSON.users[login].position = getPositionInCard(i);
+    exportJSON();
+
   }
 
   // set visibility and events for card navigation buttons
@@ -2161,6 +2178,14 @@ const handleRankingHeading = () => {
   currentCardHeading.textContent = heading;
 }
 
+const getPositionInCard = (index) => {
+  const { rankingMaxUsersPerCard } = userHelper;
+  return [
+    Math.floor(index / rankingMaxUsersPerCard),
+    index % rankingMaxUsersPerCard + 1
+  ];
+}
+
 const handleRanking = () => {
 
   handleRankingDOM();
@@ -2174,15 +2199,61 @@ const updateRanking = () => {
   
   const users = getArrayOfUsers();
 
-  [...users].forEach(user => {
+  const userBadges = rankingContainer.querySelectorAll('[class*=userProp--js]');
 
-    const { key, login } = user;
-    const userRank = rankingContainer.querySelector(`.userProp--js-${key}`);
-    const rankNode = userRank.querySelector('.userProp__rank--js');
-    const pointsNode = userRank.querySelector('.userProp__value--js-rank');
-    const { rank, points } = hydrappJSON.users[login];
+  // sort array of users based on rank position
+  [...users]
+  .sort((nextUser, user) => nextUser.rank - user.rank)
+  .forEach((user, index) => {
+
+    const { key, login, rank, name, points } = user;
+    const userBadge = userBadges[index];
+    const rankNode = userBadge.querySelector('.userProp__rank--js');
+    const labelNode = userBadge.querySelector('.userProp__label--js');
+    const pointsNode = userBadge.querySelector('.userProp__value--js');
+
+    // update user badge data
+    userBadge.className = `userProp userProp--rank userProp--js-${key}`;
     rankNode.textContent = rank;
+    labelNode.textContent = name;
     pointsNode.textContent = getSingularOrPlural('points', points);
+
+    // handle user badge transition effect
+    const height = userBadge.clientHeight;
+    const newPosition = getPositionInCard(index);
+    const [oldCardIndex, oldBadgePosition] = user.position;
+    const [newCardIndex, newBadgePosition] = newPosition;
+
+    if (oldBadgePosition !== newBadgePosition) {
+
+      const positionOffset = (newBadgePosition - oldBadgePosition) * -1;
+      userBadge.style = `
+        transform: translateY(${positionOffset * height}px);
+      `;
+
+      setTimeout(() => {
+        userBadge.style = `
+          transform: translateY(0);
+          transition: transform 0.2s;
+        `;
+        
+      }, 50);
+    }
+
+    hydrappJSON.users[login].position = newPosition;
+    exportJSON();
+
+
+
+
+
+
+
+
+
+
+
+
   });
 }
 
@@ -2505,6 +2576,7 @@ const mediaMd = 768;
 const mediaLg = 1200;
 let slideTimeoutId = null;
 let startWaterValue = 0;
+const rankOffset = 10;
 
 const userHelper = {
   name: {
