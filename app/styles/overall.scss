@@ -10,9 +10,8 @@
 
 html {
   box-sizing: border-box;
-  scroll-behavior: smooth;
   touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
+  //-webkit-tap-highlight-color: transparent;
 }
 
 *,
@@ -29,5 +28,5 @@ body {
 }
 
 input {
-  outline: none;
+  //outline: none;
 }

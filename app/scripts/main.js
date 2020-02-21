@@ -112,6 +112,32 @@ const getAverageOfArrayValues = (array) => {
   return Math.round(average * 100) / 100;
 }
 
+const toggleChildrenFocusability = (parent) => {
+
+  const buttons = parent.querySelectorAll('BUTTON');
+  const exceptions = [
+    'edition__button--js-decrease',
+    'edition__button--js-increase',
+    'edition__button--js-cancel',
+    'edition__button--js-save'
+  ];
+
+  const isException = (button) => {
+    return [...exceptions]
+    .filter(exception => button.classList.contains(exception)).length > 0;
+  }
+
+
+  [...buttons].forEach(button => {
+    
+    if (!isException(button)) {
+      button.getAttribute('tabIndex') === '-1'
+      ? button.setAttribute('tabIndex', '0')
+      : button.setAttribute('tabIndex', '-1');
+    }
+  });
+}
+
 //#endregion
 
 //#region [ HorizonDark ] DATES
@@ -491,7 +517,10 @@ const getHtmlOfCard = (card, userName, key) => {
         <header class="card__header card__header--${card} card__header---js-${card}">
           ${card !== 'settings'
           ? `
-          <button class="card__button card__button--prev card__button--js-prev">
+          <button
+            class="card__button card__button--prev card__button--js-prev"
+            tabIndex="-1"
+          >
             <svg class="card__svg" viewBox="0 0 512 512">
               <use href="assets/svg/icons.svg#left-arrow"></use>
             </svg>
@@ -502,7 +531,10 @@ const getHtmlOfCard = (card, userName, key) => {
           </h4>
           ${card !== 'settings'
           ? `
-          <button class="card__button card__button--next card__button--js-next">
+          <button
+            class="card__button card__button--next card__button--js-next"
+            tabIndex="-1"
+          >
             <svg class="card__svg" viewBox="0 0 512 512">
               <use href="assets/svg/icons.svg#right-arrow"></use>
             </svg>
@@ -518,19 +550,29 @@ const getHtmlOfCard = (card, userName, key) => {
 const getHtmlOfEdition = (tab, id) => {
   return `
     <div class="edition edition--${tab} edition--js">
-      <button class="edition__button edition__button--visible edition__button--edit edition__button--js-edit" ${id ? `id="${id}EditButton"` : ''}>
+      <button
+        class="edition__button edition__button--visible edition__button--edit edition__button--js-edit"
+        ${id ? `id="${id}EditButton"` : ''}
+        tabIndex="-1"
+      >
         <svg class="edition__svg edition__svg--edit">
           <use href="assets/svg/icons.svg#edit-mode"></use>
         </svg>
       </button>
       ${ tab === 'archive'
       ? `
-      <button class="edition__button edition__button--decrease edition__button--js-decrease">
+      <button
+        class="edition__button edition__button--decrease edition__button--js-decrease"
+        tabIndex="-1"
+      >
         <svg class="edition__svg edition__svg--decrease">
           <use href="assets/svg/icons.svg#down-arrow"></use>
         </svg>
       </button>
-      <button class="edition__button edition__button--increase edition__button--js-increase">
+      <button
+        class="edition__button edition__button--increase edition__button--js-increase"
+        tabIndex="-1"
+      >
         <svg class="edition__svg edition__svg--increase">
           <use href="assets/svg/icons.svg#up-arrow"></use>
         </svg>
@@ -538,12 +580,18 @@ const getHtmlOfEdition = (tab, id) => {
       `
       : ''
       }      
-      <button class="edition__button edition__button--cancel edition__button--js-cancel">
+      <button
+        class="edition__button edition__button--cancel edition__button--js-cancel"
+        tabIndex="-1"
+      >
         <svg class="edition__svg edition__svg--cancel">
           <use href="assets/svg/icons.svg#back-arrow"></use>
         </svg>
       </button>
-      <button class="edition__button edition__button--save edition__button--js-save">
+      <button
+        class="edition__button edition__button--save edition__button--js-save"
+        tabIndex="-1"
+      >
         <svg class="edition__svg edition__svg--save">
           <use href="assets/svg/icons.svg#save-icon"></use>
         </svg>
@@ -655,11 +703,13 @@ const getHtmlOfProfileButtons = () => {
       <div class="profile">
         <button
           class="profile__button profile__button--logOut profile__button--js-logOut"
+          tabIndex="-1"
         >
           Log Out
         </button>
         <button
           class="profile__button profile__button--remove profile__button--js-remove"
+          tabIndex="-1"
         >
           Remove User
         </button>
@@ -1513,6 +1563,7 @@ const toggleSidebarTabs = (e) => {
         : handleContainerHeight(tabContainer, tabContainer.firstElementChild)
     : tabContainer.style.height = 0;
     svgIcon.classList.toggle('tab__svg--active');
+    toggleChildrenFocusability(tabContainer);
   }
 }
 
@@ -2810,4 +2861,4 @@ if (loggedUser !== '') {
 
 
 
-toggleSidebar(burgerBtn);
+//toggleSidebar(burgerBtn);
