@@ -1,4 +1,5 @@
 'use strict';
+
 //#region [ HorizonDark ] SERVICE WORKER
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
@@ -727,37 +728,198 @@ const initialUsers = [
     age: 29,
     weight: 58,
     height: 176,
-    dateCreated: 'February 01, 2020 23:30:05'
+    dateCreated: 'January 7, 2020 23:30:05'
   },
   {
     name: 'Agnieszka',
     age: 28,
-    weight: 75,
+    weight: 65,
     height: 165,
-    dateCreated: 'February 03, 2020 15:32:56'
+    dateCreated: 'February 21, 2020 15:32:56'
   },
   {
     name: 'Aleksander',
     age: 28,
     weight: 70,
     height: 174,
-    dateCreated: 'February 05, 2020 12:07:23'
+    dateCreated: 'February 14, 2020 12:07:23'
   },
   {
     name: 'Jakub',
     age: 32,
     weight: 67,
     height: 181,
-    dateCreated: 'February 06, 2020 14:45:13'
+    dateCreated: 'January 3, 2020 14:45:13'
   },
   {
-    name: 'Jakub C',
-    age: 32,
-    weight: 67,
+    name: 'John',
+    age: 24,
+    weight: 82,
+    height: 185,
+    dateCreated: 'March 3, 2020 13:29:54'
+  },
+  {
+    name: 'Jane',
+    age: 18,
+    weight: 62,
+    height: 162,
+    dateCreated: 'March 2, 2020 11:59:01'
+  },
+  {
+    name: 'Adam_26',
+    age: 26,
+    weight: 93,
+    height: 178,
+    dateCreated: 'February 1, 2020 18:13:15'
+  },
+  {
+    name: 'Steven',
+    age: 35,
+    weight: 81,
+    height: 183,
+    dateCreated: 'January 23, 2020 13:02:16'
+  },
+  {
+    name: 'Mary Ann',
+    age: 26,
+    weight: 63,
+    height: 155,
+    dateCreated: 'February 18, 2020 07:30:21'
+  },
+  {
+    name: 'Maciej C',
+    age: 34,
+    weight: 98,
+    height: 192,
+    dateCreated: 'January 18, 2020 08:30:01'
+  },
+  {
+    name: 'Ala',
+    age: 20,
+    weight: 75,
+    height: 170,
+    dateCreated: 'March 6, 2020 03:11:05'
+  },
+  {
+    name: 'Jack',
+    age: 25,
+    weight: 69,
+    height: 180,
+    dateCreated: 'February 2, 2020 09:41:32'
+  },
+  {
+    name: 'Angelica',
+    age: 33,
+    weight: 59,
+    height: 157,
+    dateCreated: 'February 27, 2020 17:21:57'
+  },
+  {
+    name: 'Jeff Adams',
+    age: 36,
+    weight: 105,
+    height: 186,
+    dateCreated: 'February 8, 2020 06:18:21'
+  },
+  {
+    name: 'Brian',
+    age: 33,
+    weight: 88,
+    height: 178,
+    dateCreated: 'January 30, 2020 22:45:46'
+  },
+  {
+    name: 'Angie24',
+    age: 24,
+    weight: 55,
+    height: 165,
+    dateCreated: 'February 3, 2020 10:32:54'
+  },
+  {
+    name: 'Tom',
+    age: 21,
+    weight: 87,
+    height: 174,
+    dateCreated: 'March 1, 2020 21:38:41'
+  },
+  {
+    name: 'Filip',
+    age: 19,
+    weight: 65,
+    height: 178,
+    dateCreated: 'February 26, 2020 11:12:11'
+  },
+  {
+    name: 'Marcin P',
+    age: 31,
+    weight: 76,
+    height: 184,
+    dateCreated: 'March 3, 2020 22:45:31'
+  },
+  {
+    name: 'Ola',
+    age: 26,
+    weight: 61,
+    height: 167,
+    dateCreated: 'February 17, 2020 12:11:34'
+  },
+  {
+    name: 'Andrew',
+    age: 23,
+    weight: 89,
     height: 181,
-    dateCreated: 'February 06, 2020 14:45:45'
+    dateCreated: 'January 8, 2020 13:08:54'
+  },
+  {
+    name: 'Stacy',
+    age: 39,
+    weight: 86,
+    height: 176,
+    dateCreated: 'February 9, 2020 14:21:56'
+  },
+  {
+    name: 'Gregory',
+    age: 42,
+    weight: 95,
+    height: 173,
+    dateCreated: 'March 06, 2020 16:07:51'
+  },
+  {
+    name: 'Peter J',
+    age: 38,
+    weight: 81,
+    height: 176,
+    dateCreated: 'February 22, 2020 20:24:56'
+  },
+  {
+    name: 'Paulina',
+    age: 29,
+    weight: 65,
+    height: 174,
+    dateCreated: 'January 13, 2020 18:21:34'
+  },
+  {
+    name: 'Tara',
+    age: 34,
+    weight: 72,
+    height: 169,
+    dateCreated: 'January 17, 2020 09:34:25'
+  },
+  {
+    name: 'Molly',
+    age: 44,
+    weight: 82,
+    height: 165,
+    dateCreated: 'March 7, 2020 23:21:38'
+  },
+  {
+    name: 'Amanda',
+    age: 30,
+    weight: 56,
+    height: 158,
+    dateCreated: 'February 15, 2020 19:23:54'
   }
-];
+]
 
 const addInitialUsers = () => {
   hydrappJSON = {

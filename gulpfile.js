@@ -1,6 +1,7 @@
 // generated on 2020-01-30 using generator-webapp 4.0.0-7
 const { src, dest, watch, series, parallel, lastRun } = require('gulp');
 const gulpLoadPlugins = require('gulp-load-plugins');
+//const ghPages = require('gulp-gh-pages');
 const fs = require('fs');
 const mkdirp = require('mkdirp');
 const Modernizr = require('modernizr');
@@ -18,6 +19,14 @@ const port = argv.port || 9000;
 const isProd = process.env.NODE_ENV === 'production';
 const isTest = process.env.NODE_ENV === 'test';
 const isDev = !isProd && !isTest;
+
+var gulp = require('gulp');
+var ghPages = require('gulp-gh-pages');
+ 
+gulp.task('deploy', function() {
+  return gulp.src('./dist/**/*')
+    .pipe(ghPages());
+});
 
 function styles() {
   return src('app/styles/*.scss')
@@ -115,13 +124,8 @@ function images() {
     .pipe(dest('dist/assets/img'));
 };
 
-function fonts() {
-  return src('app/assets/fonts/**/*.{eot,svg,ttf,woff,woff2}')
-    .pipe($.if(!isProd, dest('.tmp/assets/fonts'), dest('dist/assets/fonts')));
-};
-
 function svgs() {
-  return src('app/assets/svgs/**/*')
+  return src('app/assets/svg/**/*')
     .pipe($.if(!isProd, dest('.tmp/assets/svg'), dest('dist/assets/svg')));
 };
 
@@ -149,7 +153,6 @@ const build = series(
     lint,
     series(parallel(styles, scripts, modernizr), html),
     images,
-    fonts,
     svgs,
     extras
   ),
@@ -172,13 +175,11 @@ function startAppServer() {
     'app/*.html',
     'app/assets/img/**/*',
     'app/assets/svg/**/*',
-    '.tmp/assets/fonts/**/*'
   ]).on('change', server.reload);
 
   watch('app/styles/**/*.scss', styles);
   watch('app/scripts/**/*.js', scripts);
   watch('modernizr.json', modernizr);
-  watch('app/assets/fonts/**/*', fonts);
 }
 
 function startTestServer() {
@@ -215,7 +216,7 @@ function startDistServer() {
 
 let serve;
 if (isDev) {
-  serve = series(clean, parallel(styles, scripts, modernizr, fonts), startAppServer);
+  serve = series(clean, parallel(styles, scripts, modernizr), startAppServer);
 } else if (isTest) {
   serve = series(clean, scripts, startTestServer);
 } else if (isProd) {
