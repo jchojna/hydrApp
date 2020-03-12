@@ -4,7 +4,7 @@
 .loginBox {
   align-content: center;
   display: grid;
-  gap: 30px;
+  gap: 15px;
   grid-template-areas:
     "logo   "
     "label  "
@@ -32,6 +32,7 @@
   @media only screen and (min-width: $media-md) {
 
     & {
+      gap: 30px;
       grid-template-areas:
         "logo    logo   "
         "label   label  "
@@ -53,10 +54,14 @@
 
   &__label {
     color: $blue-dark-1;
-    font-size: 1.1em;
+    font-size: 0.8em;
     font-weight: 700;
     grid-area: label;
     text-align: center;
+  
+    @media only screen and (min-width: $media-md) {
+      font-size: 1.1em;
+    }
   }
 
   &__input {
@@ -78,9 +83,7 @@
   
     @media only screen and (min-width: $media-md) {
   
-      & {
-        min-height: 60px;
-      }
+      min-height: 60px;
     }
   }
 
@@ -112,6 +115,7 @@
     font-weight: 700;
     font-size: 1.3em;
     padding: 0.5em;
+    transition: background-color $time-hover-effect, color $time-hover-effect;
   
     &:hover {
       background-color: $blue-dark-5;
