@@ -384,7 +384,6 @@ const getHtmlOfNewUser = (prop, maxLength) => {
         class="newUser__input newUser__input--js"
         type="text"
         maxlength="${maxLength}"
-        ${prop === 'login' ? 'autofocus' : ''}
       >
       <div class="newUser__alert newUser__alert--js">
         <p class="newUser__alertText"></p>
@@ -1004,10 +1003,11 @@ const quitIntro = () => {
 
 const showLoginBox = () => {
   const { loggedUserId } = hydrapp;
-  
+
   loginInput.value = loggedUserId ? hydrapp.users[loggedUserId].name : '';
   loginBox.classList.add('loginBox--visible');
   appNewUser.classList.remove('app__newUser--visible');
+  loginInput.focus();
 }
 
 const getUser = (login) => Object
@@ -1057,6 +1057,7 @@ const createNewUser = () => {
   // clear all inputs
   const newUserInputs = appNewUser.querySelectorAll('.newUser__input--js');
   [...newUserInputs].forEach(input => input.value = '');
+  newUserInputs[0].focus();
 }
 
 const setNewUserDOM = () => {
@@ -1146,24 +1147,24 @@ const handleNewUser = (e) => {
   const slideQuestions = (newIndex, newQuestion, nextInput, offset) => {
     slideTimeoutId = setTimeout(() => {
       newQuestion.style = `
-        transform: translateX(0);
-        transition: opacity ${transitionTime}ms, transform ${transitionTime}ms;
+        left: 0;
+        transition: opacity ${transitionTime}ms, left ${transitionTime}ms;
       `;
       newQuestion.classList.add('newUser--visible');
       currentQuestion.style = `
         opacity: 0;
-        transform: translateX(${offset}px);
-        transition: opacity ${transitionTime}ms, transform ${transitionTime}ms;
+        left: ${offset}px;
+        transition: opacity ${transitionTime}ms, left ${transitionTime}ms;
       `;
       handleNewUserQuestion(newIndex, loggedUser.name);
-      nextInput.focus();
 
     }, delay);
   }
 
   // hide previous card and clear timeouts
-  const clearAfter = () => {
+  const clearAfter = (input) => {
     const slideSecondTimeout = setTimeout(() => {
+      input.focus();
       currentQuestion.classList.remove('newUser--visible');
       clearTimeout(slideTimeoutId);
       clearTimeout(slideSecondTimeout);
@@ -1218,7 +1219,6 @@ const handleNewUser = (e) => {
             ...hydrapp.users,
             [loggedUser.id]: loggedUser
           };
-
           exportJSON();
           loadApp();
 
@@ -1246,7 +1246,7 @@ const handleNewUser = (e) => {
     // set position of next question shortly before slide
     if (!willGoBackToLogin && !willCreateNewUser) {
       newQuestion.style = `
-        transform: translateX(${initialOffset}px);
+        left: ${initialOffset}px;
       `;
     }
 
@@ -1255,7 +1255,7 @@ const handleNewUser = (e) => {
       if (shouldQuestionSlide) {
         slidePromise
           .then(() => slideQuestions(newIndex, newQuestion, nextInput, finalOffset))
-          .then(clearAfter);
+          .then(() => clearAfter(nextInput));
           //catch(() => console.log('Something bad happened!'));
       }
     }

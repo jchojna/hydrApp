@@ -9,24 +9,17 @@
   "alert alert"
   "prev  next ";
   grid-template-columns: repeat(2, 1fr);
+  left: 0;
   opacity: 0;
-  padding: 0 20px;
-  padding-top: 20px;
+  padding: 20px;
   position: absolute;
-  row-gap: 30px;
+  row-gap: 15px;
   visibility: hidden;
+  width: 100%;
 
   &--visible {
     opacity: 1;
     visibility: inherit;
-  }
-
-  @media only screen and (min-width: $media-md) {
-
-    & {
-      width: 100%;
-      max-width: $newUser-box-maxWidth;
-    }
   }
 
   &__label {

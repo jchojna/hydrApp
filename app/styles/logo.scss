@@ -3,8 +3,9 @@
 
 .logo {
   @include flex-center;
+  margin-bottom: 10px;
   position: relative;
-  width: 60%;
+  width: 80%;
 
   &--app {
     max-width: ($burgerBtn-size-xs - 10px) * $logo-aspect-ratio;
