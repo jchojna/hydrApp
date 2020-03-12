@@ -129,6 +129,11 @@ function svgs() {
     .pipe($.if(!isProd, dest('.tmp/assets/svg'), dest('dist/assets/svg')));
 };
 
+function icons() {
+  return src('app/assets/icons/**/*')
+    .pipe(dest('dist/assets/icons'));
+};
+
 function extras() {
   return src([
     'app/*',
@@ -154,6 +159,7 @@ const build = series(
     series(parallel(styles, scripts, modernizr), html),
     images,
     svgs,
+    icons,
     extras
   ),
   measureSize
@@ -175,6 +181,7 @@ function startAppServer() {
     'app/*.html',
     'app/assets/img/**/*',
     'app/assets/svg/**/*',
+    'app/assets/icons/**/*',
   ]).on('change', server.reload);
 
   watch('app/styles/**/*.scss', styles);
