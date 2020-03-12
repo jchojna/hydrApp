@@ -195,7 +195,10 @@ const handleInputAlert = (alertBox, prop, option) => {
 
     } else {
       const userProp = userHelper[prop];
-      const { min, max } = userProp;
+      let { min, max } = userProp;
+      const waterValue = loggedUser.entries[0].value;
+      min = waterValue < min ? min : waterValue;
+
       const label = prop === 'waterMax' ? userProp.alertLabel : userProp.label;
       alertTextContent = `${label} should be between ${min} and ${max}`;
     }
@@ -231,7 +234,10 @@ const isInputValid = (input, prop, alertBox) => {
 
   // check user's numerical inputs
   } else {
-    const { min, max } = userHelper[prop];
+    let { min, max } = userHelper[prop];
+    
+    const waterValue = loggedUser.entries[0].value;
+    min = waterValue < min ? min : waterValue;
 
     if (value < min || value > max) {
       handleInputAlert(alertBox, prop);
@@ -2540,6 +2546,15 @@ const handleSettingsEdition = (e) => {
           if (newValue !== value) {
             loggedUser[prop] = newValue;
             prop === 'name' ? settingsHeading.textContent = newValue : false;
+
+            if (prop === 'waterMax') {
+              let value = loggedUser.entries[0].value;
+              
+              setWaterMeasureDOM();
+              handleWaterMeasure();
+              handleWaterLevel(value);
+              handleCounterMessage(value);
+            }
           }
 
           output.textContent = getSingularOrPlural(prop, newValue);
