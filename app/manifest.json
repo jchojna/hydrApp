@@ -1,12 +1,12 @@
 {
   "name": "hydrApp",
   "short_name": "hydrApp",
-  "theme_color": "#2196f3",
-  "background_color": "#3767AD",
+  "theme_color": "#3f7ea0",
+  "background_color": "#12344C",
   "display": "standalone",
   "orientation": "portrait",
-  "scope": "/hydrApp/",
-  "start_url": "/hydrApp/",
+  "scope": ".",
+  "start_url": "./index.html",
   "icons": [
     {
       "src": "assets/icons/icon-72x72.png",

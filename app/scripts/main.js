@@ -1,4 +1,5 @@
 'use strict';
+
 //#region [ HorizonDark ] SERVICE WORKER
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
@@ -14,11 +15,6 @@ if ('serviceWorker' in navigator) {
 //#endregion
 
 //#region [ HorizonDark ] HELPERS FUNCTIONS
-
-const getFormattedString = (string) => string
-.replace(/^\s+/, '')
-.replace(/\s/g,'_')
-.toLowerCase();
 
 const loopedRange = (max, num, action) => {
   action === 'increase' ? num >= max ? num = 0 : num++ : false;
@@ -105,12 +101,41 @@ const getRandomFromRange = (min, max) => {
 }
 
 const getAverageOfArrayValues = (array) => {
-  const average = [...array]
+  const average = array
     .map(elem => elem.value)
     .reduce((a,b) => a + b) / array.length;
 
   return Math.round(average * 100) / 100;
 }
+
+const toggleChildrenFocusability = (parent) => {
+
+  const buttons = parent.querySelectorAll('BUTTON');
+  const exceptions = [
+    'edition__button--js-decrease',
+    'edition__button--js-increase',
+    'edition__button--js-cancel',
+    'edition__button--js-save'
+  ];
+
+  const isException = (button) => {
+    return exceptions
+    .filter(exception => button.classList.contains(exception)).length > 0;
+  }
+
+  [...buttons].forEach(button => {
+    
+    if (!isException(button)) {
+      button.getAttribute('tabIndex') === '-1'
+      ? button.setAttribute('tabIndex', '0')
+      : button.setAttribute('tabIndex', '-1');
+    }
+  });
+}
+
+const getSortedUsersIds = () => Object.values(hydrapp.users)
+.sort((nextUser, user) => user.points - nextUser.points)
+.map(user => user.id);
 
 //#endregion
 
@@ -170,7 +195,10 @@ const handleInputAlert = (alertBox, prop, option) => {
 
     } else {
       const userProp = userHelper[prop];
-      const { min, max } = userProp;
+      let { min, max } = userProp;
+      const waterValue = loggedUser.entries[0].value;
+      min = waterValue < min ? min : waterValue;
+
       const label = prop === 'waterMax' ? userProp.alertLabel : userProp.label;
       alertTextContent = `${label} should be between ${min} and ${max}`;
     }
@@ -188,11 +216,10 @@ const isInputValid = (input, prop, alertBox) => {
   if (prop === 'name') {
     
     // check if there is no the same user name existing
-    const newLogin = getFormattedString(value);
-    const isExisting = Object.keys(hydrappJSON.users)
-    .filter(existingLogin => existingLogin === newLogin).length > 0;
+    const isExisting = Object.values(hydrapp.users)
+    .find(user => user.name === value);
 
-    if (newLogin === '') {
+    if (value === '') {
       handleInputAlert(alertBox, prop, 'empty');
       return false;
 
@@ -207,7 +234,10 @@ const isInputValid = (input, prop, alertBox) => {
 
   // check user's numerical inputs
   } else {
-    const { min, max } = userHelper[prop];
+    let { min, max } = userHelper[prop];
+    
+    const waterValue = loggedUser.entries[0].value;
+    min = waterValue < min ? min : waterValue;
 
     if (value < min || value > max) {
       handleInputAlert(alertBox, prop);
@@ -223,11 +253,6 @@ const isInputValid = (input, prop, alertBox) => {
 //#endregion
 
 //#region [ HorizonDark ] JSON
-
-const getArrayOfUsers = () => {
-  const usersLogins = Object.keys(hydrappJSON.users);
-  return [...usersLogins].map(login => hydrappJSON.users[login]);
-}
 
 const getUserStreaks = (entries, minValue) => {
 
@@ -276,23 +301,19 @@ const getUserStreaks = (entries, minValue) => {
 }
 
 const fetchJSON = () => {
-  hydrappJSON = JSON.parse(localStorage.getItem(localStorageKeyName));
-}
-
-const updateJSON = (user) => {
-  const { login } = user;
-  hydrappJSON.users[login] = user;
+  return JSON.parse(localStorage.getItem(localStorageKeyName));
 }
 
 const exportJSON = () => {
-  localStorage.setItem(localStorageKeyName, JSON.stringify(hydrappJSON));
+  console.log('exported');
+  localStorage.setItem(localStorageKeyName, JSON.stringify(hydrapp));
 }
 
 const updateUsersEntries = () => {
 
-  const users = getArrayOfUsers();
+  const users = Object.values(hydrapp.users);
 
-  [...users].forEach(user => {
+  users.forEach(user => {
 
     const currentDate = new Date();
     let currentDateId = getDateId(currentDate);
@@ -308,20 +329,18 @@ const updateUsersEntries = () => {
   
     // update user entries
     user.entries = [...newEntries, ...user.entries];
-    updateJSON(user);
   });
 
   startWaterValue = loggedUser.entries[0].value;
-  exportJSON();
 }
 
 const updateUsersStats = () => {
 
-  const logins = Object.keys(hydrappJSON.users);
+  const users = Object.values(hydrapp.users);
 
   // update average water consumption number and users streaks  
-  [...logins].forEach(login => {
-    const { entries, waterMin } = hydrappJSON.users[login];
+  users.forEach(user => {
+    const { entries, waterMin } = user;
     const waterAvg = getAverageOfArrayValues(entries);
     const {
       currentStreak,
@@ -330,36 +349,26 @@ const updateUsersStats = () => {
       points
     } = getUserStreaks(entries, waterMin);
 
-    hydrappJSON.users[login].waterAvg = waterAvg;
-    hydrappJSON.users[login].currentStreak = currentStreak;
-    hydrappJSON.users[login].longestStreak = longestStreak;
-    hydrappJSON.users[login].lastLongestStreakDates = lastLongestStreakDates;
-    hydrappJSON.users[login].points = points;
+    user.waterAvg = waterAvg;
+    user.currentStreak = currentStreak;
+    user.longestStreak = longestStreak;
+    user.lastLongestStreakDates = lastLongestStreakDates;
+    user.points = points;
   });
 
   // sort users based on number of points
-  const users = getArrayOfUsers();
-  const sortedUsers = [...users]
-  .sort((nextUser, user) => user.points - nextUser.points);
+  const sortedUsersIds = getSortedUsersIds();
   
   // set users rank position based on points amount
-  [...sortedUsers].forEach((user, index) => {
-    
-    const prevUser = index > 0 ? sortedUsers[index - 1] : false;
+  sortedUsersIds.forEach((id, index) => {
+    const user = hydrapp.users[id];
+    const prevUser = index > 0 ? hydrapp.users[sortedUsersIds[index - 1]] : false;
     prevUser
     ? prevUser.points === user.points
-    ? user.rank = prevUser.rank
-    : user.rank = prevUser.rank + 1
+      ? user.rank = prevUser.rank
+      : user.rank = prevUser.rank + 1
     : user.rank = 1;
   });
-
-  // sort object keys respectively to users array
-  [...sortedUsers].forEach(user => {
-    delete hydrappJSON.users[user.login];
-    hydrappJSON.users[user.login] = user;
-  });
-
-  exportJSON();
 }
 
 //#endregion
@@ -381,7 +390,6 @@ const getHtmlOfNewUser = (prop, maxLength) => {
         class="newUser__input newUser__input--js"
         type="text"
         maxlength="${maxLength}"
-        ${prop === 'login' ? 'autofocus' : ''}
       >
       <div class="newUser__alert newUser__alert--js">
         <p class="newUser__alertText"></p>
@@ -456,7 +464,7 @@ const getHtmlOfWaterContainer = (obj, isIntro) => {
   }
   const waterPositions = Object.keys(obj);
   let html = '';
-  [...waterPositions].forEach(position => {
+  waterPositions.forEach(position => {
     const intro = isIntro ? 'intro' : '';
     const { wavePeriodsTotal } = obj[position];
     html += `
@@ -491,7 +499,10 @@ const getHtmlOfCard = (card, userName, key) => {
         <header class="card__header card__header--${card} card__header---js-${card}">
           ${card !== 'settings'
           ? `
-          <button class="card__button card__button--prev card__button--js-prev">
+          <button
+            class="card__button card__button--prev card__button--js-prev"
+            tabIndex="-1"
+          >
             <svg class="card__svg" viewBox="0 0 512 512">
               <use href="assets/svg/icons.svg#left-arrow"></use>
             </svg>
@@ -502,7 +513,10 @@ const getHtmlOfCard = (card, userName, key) => {
           </h4>
           ${card !== 'settings'
           ? `
-          <button class="card__button card__button--next card__button--js-next">
+          <button
+            class="card__button card__button--next card__button--js-next"
+            tabIndex="-1"
+          >
             <svg class="card__svg" viewBox="0 0 512 512">
               <use href="assets/svg/icons.svg#right-arrow"></use>
             </svg>
@@ -518,19 +532,29 @@ const getHtmlOfCard = (card, userName, key) => {
 const getHtmlOfEdition = (tab, id) => {
   return `
     <div class="edition edition--${tab} edition--js">
-      <button class="edition__button edition__button--visible edition__button--edit edition__button--js-edit" ${id ? `id="${id}EditButton"` : ''}>
+      <button
+        class="edition__button edition__button--visible edition__button--edit edition__button--js-edit"
+        ${id ? `id="${id}EditButton"` : ''}
+        tabIndex="-1"
+      >
         <svg class="edition__svg edition__svg--edit">
           <use href="assets/svg/icons.svg#edit-mode"></use>
         </svg>
       </button>
       ${ tab === 'archive'
       ? `
-      <button class="edition__button edition__button--decrease edition__button--js-decrease">
+      <button
+        class="edition__button edition__button--decrease edition__button--js-decrease"
+        tabIndex="-1"
+      >
         <svg class="edition__svg edition__svg--decrease">
           <use href="assets/svg/icons.svg#down-arrow"></use>
         </svg>
       </button>
-      <button class="edition__button edition__button--increase edition__button--js-increase">
+      <button
+        class="edition__button edition__button--increase edition__button--js-increase"
+        tabIndex="-1"
+      >
         <svg class="edition__svg edition__svg--increase">
           <use href="assets/svg/icons.svg#up-arrow"></use>
         </svg>
@@ -538,12 +562,18 @@ const getHtmlOfEdition = (tab, id) => {
       `
       : ''
       }      
-      <button class="edition__button edition__button--cancel edition__button--js-cancel">
+      <button
+        class="edition__button edition__button--cancel edition__button--js-cancel"
+        tabIndex="-1"
+      >
         <svg class="edition__svg edition__svg--cancel">
           <use href="assets/svg/icons.svg#back-arrow"></use>
         </svg>
       </button>
-      <button class="edition__button edition__button--save edition__button--js-save">
+      <button
+        class="edition__button edition__button--save edition__button--js-save"
+        tabIndex="-1"
+      >
         <svg class="edition__svg edition__svg--save">
           <use href="assets/svg/icons.svg#save-icon"></use>
         </svg>
@@ -562,8 +592,8 @@ const getHtmlOfArchiveEntry = (index) => {
         <p class="entry__heading entry__heading--date entry__heading--js-date">${date}</p>
       </header>
       <span class="entry__value entry__value--js">${value}</span>
-      ${getHtmlOfEdition('archive')}
-      ${getHtmlOfEmoji(id)}
+      ${ index <= 4 ? getHtmlOfEdition('archive') : '' }
+      ${ getHtmlOfEmoji(id) }
     </li>
   `;
 }
@@ -573,7 +603,7 @@ const getHtmlOfUserStats = (user) => {
   const { statsProps } = userHelper;
   let html = '';
 
-  [...statsProps].forEach(prop => {
+  statsProps.forEach(prop => {
 
     const value = user[prop];
     const { label } = userHelper[prop];
@@ -594,14 +624,14 @@ const getHtmlOfUserStats = (user) => {
 
 const getHtmlOfUserRank = (user) => {
 
-  const { name, key, points, rank } = user;
+  const { name, id, points, rank } = user;
 
   return `
-    <li class="userProp userProp--rank userProp--js-${key}">
+    <li class="userProp userProp--rank userProp--js-${id}">
       <span class="userProp__rank userProp__rank--js">
         ${rank}
       </span>
-      <span class="userProp__label userProp__label--js">
+      <span class="userProp__label userProp__label--rank userProp__label--js">
         ${name}
         </span>
       <span class="userProp__value userProp__value--rank userProp__value--js">
@@ -616,7 +646,7 @@ const getHtmlOfUserSettings = () => {
   const { settingsProps } = userHelper;
   let html = '';
 
-  [...settingsProps].forEach(prop => {
+  settingsProps.forEach(prop => {
 
     const value = loggedUser[prop];
     const { label, maxLength } = userHelper[prop];
@@ -655,11 +685,13 @@ const getHtmlOfProfileButtons = () => {
       <div class="profile">
         <button
           class="profile__button profile__button--logOut profile__button--js-logOut"
+          tabIndex="-1"
         >
           Log Out
         </button>
         <button
           class="profile__button profile__button--remove profile__button--js-remove"
+          tabIndex="-1"
         >
           Remove User
         </button>
@@ -678,90 +710,250 @@ const initialUsers = [
     age: 29,
     weight: 58,
     height: 176,
-    dateCreated: 'February 01, 2020 23:30:05'
+    dateCreated: 'January 7, 2020 23:30:05'
   },
   {
     name: 'Agnieszka',
     age: 28,
-    weight: 75,
+    weight: 65,
     height: 165,
-    dateCreated: 'February 03, 2020 15:32:56'
+    dateCreated: 'February 21, 2020 15:32:56'
   },
   {
     name: 'Aleksander',
     age: 28,
     weight: 70,
     height: 174,
-    dateCreated: 'February 05, 2020 12:07:23'
+    dateCreated: 'February 14, 2020 12:07:23'
   },
   {
     name: 'Jakub',
     age: 32,
     weight: 67,
     height: 181,
-    dateCreated: 'February 06, 2020 14:45:13'
+    dateCreated: 'January 3, 2020 14:45:13'
   },
   {
-    name: 'Jakub C',
-    age: 32,
-    weight: 67,
+    name: 'John',
+    age: 24,
+    weight: 82,
+    height: 185,
+    dateCreated: 'March 3, 2020 13:29:54'
+  },
+  {
+    name: 'Jane',
+    age: 18,
+    weight: 62,
+    height: 162,
+    dateCreated: 'March 2, 2020 11:59:01'
+  },
+  {
+    name: 'Adam_26',
+    age: 26,
+    weight: 93,
+    height: 178,
+    dateCreated: 'February 1, 2020 18:13:15'
+  },
+  {
+    name: 'Steven',
+    age: 35,
+    weight: 81,
+    height: 183,
+    dateCreated: 'January 23, 2020 13:02:16'
+  },
+  {
+    name: 'Mary Ann',
+    age: 26,
+    weight: 63,
+    height: 155,
+    dateCreated: 'February 18, 2020 07:30:21'
+  },
+  {
+    name: 'Maciej C',
+    age: 34,
+    weight: 98,
+    height: 192,
+    dateCreated: 'January 18, 2020 08:30:01'
+  },
+  {
+    name: 'Ala',
+    age: 20,
+    weight: 75,
+    height: 170,
+    dateCreated: 'March 6, 2020 03:11:05'
+  },
+  {
+    name: 'Jack',
+    age: 25,
+    weight: 69,
+    height: 180,
+    dateCreated: 'February 2, 2020 09:41:32'
+  },
+  {
+    name: 'Angelica',
+    age: 33,
+    weight: 59,
+    height: 157,
+    dateCreated: 'February 27, 2020 17:21:57'
+  },
+  {
+    name: 'Jeff Adams',
+    age: 36,
+    weight: 105,
+    height: 186,
+    dateCreated: 'February 8, 2020 06:18:21'
+  },
+  {
+    name: 'Brian',
+    age: 33,
+    weight: 88,
+    height: 178,
+    dateCreated: 'January 30, 2020 22:45:46'
+  },
+  {
+    name: 'Angie24',
+    age: 24,
+    weight: 55,
+    height: 165,
+    dateCreated: 'February 3, 2020 10:32:54'
+  },
+  {
+    name: 'Tom',
+    age: 21,
+    weight: 87,
+    height: 174,
+    dateCreated: 'March 1, 2020 21:38:41'
+  },
+  {
+    name: 'Filip',
+    age: 19,
+    weight: 65,
+    height: 178,
+    dateCreated: 'February 26, 2020 11:12:11'
+  },
+  {
+    name: 'Marcin P',
+    age: 31,
+    weight: 76,
+    height: 184,
+    dateCreated: 'March 3, 2020 22:45:31'
+  },
+  {
+    name: 'Ola',
+    age: 26,
+    weight: 61,
+    height: 167,
+    dateCreated: 'February 17, 2020 12:11:34'
+  },
+  {
+    name: 'Andrew',
+    age: 23,
+    weight: 89,
     height: 181,
-    dateCreated: 'February 06, 2020 14:45:45'
+    dateCreated: 'January 8, 2020 13:08:54'
+  },
+  {
+    name: 'Stacy',
+    age: 39,
+    weight: 86,
+    height: 176,
+    dateCreated: 'February 9, 2020 14:21:56'
+  },
+  {
+    name: 'Gregory',
+    age: 42,
+    weight: 95,
+    height: 173,
+    dateCreated: 'March 06, 2020 16:07:51'
+  },
+  {
+    name: 'Peter J',
+    age: 38,
+    weight: 81,
+    height: 176,
+    dateCreated: 'February 22, 2020 20:24:56'
+  },
+  {
+    name: 'Paulina',
+    age: 29,
+    weight: 65,
+    height: 174,
+    dateCreated: 'January 13, 2020 18:21:34'
+  },
+  {
+    name: 'Tara',
+    age: 34,
+    weight: 72,
+    height: 169,
+    dateCreated: 'January 17, 2020 09:34:25'
+  },
+  {
+    name: 'Molly',
+    age: 44,
+    weight: 82,
+    height: 165,
+    dateCreated: 'March 7, 2020 23:21:38'
+  },
+  {
+    name: 'Amanda',
+    age: 30,
+    weight: 56,
+    height: 158,
+    dateCreated: 'February 15, 2020 19:23:54'
   }
-];
+]
 
 const addInitialUsers = () => {
-  hydrappJSON = {
-    loggedUser: '',
+  hydrapp = {
+    loggedUserId: 1578059113000,
     users: []
   };
 
-  [...initialUsers].forEach(user => {
+  initialUsers.forEach(user => {
     const {
       name,
-      login = getFormattedString(name),
       age,
       weight,
       height,
-      dateCreated } = user;
+      dateCreated
+    } = user;
 
-      // create today's date and id
-      const todaysDate = new Date();
-      const todaysDateId = getDateId(todaysDate);
+    // create today's date and id
+    const todaysDate = new Date();
+    const todaysDateId = getDateId(todaysDate);
 
-      // create date and id based on specific date
-      let date = new Date(dateCreated);
-      let dateId = getDateId(date);
+    // create date and id based on specific date
+    let date = new Date(dateCreated);
+    let dateId = getDateId(date);
 
-      // create new initial user and set props
-      const newUser = new User(date);
-      newUser.login = login;
-      newUser.name = name;
-      newUser.age = age;
-      newUser.weight = weight;
-      newUser.height = height;
-      
-      // create the oldest archive entry
-      const { waterMax } = newUser;
+    // create new initial user and set props
+    const newUser = new User(date);
+    newUser.name = name;
+    newUser.age = age;
+    newUser.weight = weight;
+    newUser.height = height;
+    
+    // create the oldest archive entry
+    const { waterMax, id } = newUser;
+    const newEntry = new Entry(getRandomFromRange(0, waterMax), date);
+    newUser.entries = [newEntry];      
+
+    // keep adding archive entries until today's date
+    while (dateId !== todaysDateId) {
+
+      // move date one day ahead
+      date = new Date(date.setDate(date.getDate() + 1));
+      dateId = getDateId(date);
+
+      // update entries array
       const newEntry = new Entry(getRandomFromRange(0, waterMax), date);
-      newUser.entries = [newEntry];      
-
-      // keep adding archive entries until today's date
-      while (dateId !== todaysDateId) {
-
-        // move date one day ahead
-        date = new Date(date.setDate(date.getDate() + 1));
-        dateId = getDateId(date);
-
-        // update entries array
-        const newEntry = new Entry(getRandomFromRange(0, waterMax), date);
-        const { entries } = newUser;
-        newUser.entries = [newEntry, ...entries];
-      }
+      const { entries } = newUser;
+      newUser.entries = [newEntry, ...entries];
+    }
     
     // add new user to hydrapp JSON object
-    const { users } = hydrappJSON;
-    hydrappJSON.users = { ...users, [login]: newUser };
+    const { users } = hydrapp;
+    hydrapp.users = { ...users, [id]: newUser };
   });
   exportJSON();
 }
@@ -770,24 +962,27 @@ const addInitialUsers = () => {
 //#region [ HorizonDark ] INTRO
 
 const setIntroWaves = () => {
-  if (intro.innerHTML === '') {
-    intro.innerHTML = getHtmlOfWaterContainer(introObj, true);
-    // add button event
-    const startButton = intro.querySelector('.intro__start--js');
-    startButton.addEventListener('click', quitIntro);
-  }
+  
+  intro.innerHTML = getHtmlOfWaterContainer(introObj, true);
+  const startButton = intro.querySelector('.intro__start--js');
+  startButton.addEventListener('click', quitIntro);
   setNodes(introObj, intro);
+
   // add fade in animation
-  const keys = Object.keys(introObj);
-  [...keys].forEach(key => introObj[key].water.classList.add('water--fadeIn'));
+  const waterWaves = Object.values(introObj);
+  waterWaves.forEach(wave => wave.water.classList.add('water--fadeIn'));
+  intro.classList.add('intro--visible');
+
   // calculate height of every wave
   handleWaterWaves(introObj);
+
   // show start button after some time
   const timeoutId = setTimeout(() => {
     const startButton = intro.querySelector('.intro__start--js');
     startButton.classList.add('intro__start--visible');
     clearTimeout(timeoutId);
   }, 3000);
+
   // add event listener
   const handleIntroResize = () => handleWaterWaves(introObj);
   window.addEventListener('resize', handleIntroResize);
@@ -795,12 +990,14 @@ const setIntroWaves = () => {
 
 const quitIntro = () => {
   const keys = Object.keys(introObj);
+
   [...keys].forEach(key => {
     const { water } = introObj[key];
     water.classList.remove('water--fadeIn');
     water.classList.add('water--fadeOut');
   });
   intro.classList.remove('intro--visible');
+  showLoginBox();
 
   const startButton = intro.querySelector('.intro__start--js');
   startButton.classList.remove('intro__start--visible');
@@ -816,33 +1013,31 @@ const quitIntro = () => {
 //#region [ HorizonDark ] LOG IN
 
 const showLoginBox = () => {
+  const { loggedUserId } = hydrapp;
 
-  loginInput.value = '';
+  loginInput.value = loggedUserId ? hydrapp.users[loggedUserId].name : '';
   loginBox.classList.add('loginBox--visible');
   appNewUser.classList.remove('app__newUser--visible');
+  loginInput.focus();
 }
 
-const isMatchingUser = (login) => Object
-.keys(hydrappJSON.users)
-.filter(key => key === login)
-.length > 0;
+const getUser = (login) => Object
+.values(hydrapp.users)
+.find(user => user.name === login);
 
 const handleLoginBox = (e) => {
-
   if (e.key && e.key !== 'Enter') return;
 
-  const login = getFormattedString(loginInput.value);
+  const login = loginInput.value;
+  const user = getUser(login);
 
   if (login === '') {
     handleInputAlert(loginAlert, 'login', 'empty');
 
-  } else if (isMatchingUser(login)) {
+  } else if (user) {
     handleInputAlert(loginAlert);
-
-    loggedUser = hydrappJSON.users[login];
-    hydrappJSON.loggedUser = login;
-    exportJSON();
-
+    hydrapp.loggedUserId = user.id;
+    loggedUser = user;
     loadApp();
     loginBox.classList.remove('loginBox--visible');
 
@@ -873,6 +1068,7 @@ const createNewUser = () => {
   // clear all inputs
   const newUserInputs = appNewUser.querySelectorAll('.newUser__input--js');
   [...newUserInputs].forEach(input => input.value = '');
+  newUserInputs[0].focus();
 }
 
 const setNewUserDOM = () => {
@@ -881,7 +1077,7 @@ const setNewUserDOM = () => {
 
     // add html code of each user question
     const { questionsProps } = userHelper;
-    [...questionsProps].forEach(prop => {
+    questionsProps.forEach(prop => {
       const { maxLength } = userHelper[prop];
       appNewUser.innerHTML += getHtmlOfNewUser(prop, maxLength);
     });
@@ -935,7 +1131,7 @@ const handleNewUser = (e) => {
     if (e.key !== 'Enter' && e.key !== 'Escape') return false;
     action = e.key === 'Escape' ? 'prev' : 'next';
     currentQuestion = [...newUserQuestions]
-    .filter(question => /visible/.test(question.className))[0];
+    .find(question => /visible/.test(question.className));
 
   // when button is pressed
   } else if (e.target) {
@@ -962,24 +1158,24 @@ const handleNewUser = (e) => {
   const slideQuestions = (newIndex, newQuestion, nextInput, offset) => {
     slideTimeoutId = setTimeout(() => {
       newQuestion.style = `
-        transform: translateX(0);
-        transition: opacity ${transitionTime}ms, transform ${transitionTime}ms;
+        left: 0;
+        transition: opacity ${transitionTime}ms, left ${transitionTime}ms;
       `;
       newQuestion.classList.add('newUser--visible');
       currentQuestion.style = `
         opacity: 0;
-        transform: translateX(${offset}px);
-        transition: opacity ${transitionTime}ms, transform ${transitionTime}ms;
+        left: ${offset}px;
+        transition: opacity ${transitionTime}ms, left ${transitionTime}ms;
       `;
       handleNewUserQuestion(newIndex, loggedUser.name);
-      nextInput.focus();
 
     }, delay);
   }
 
   // hide previous card and clear timeouts
-  const clearAfter = () => {
+  const clearAfter = (input) => {
     const slideSecondTimeout = setTimeout(() => {
+      input.focus();
       currentQuestion.classList.remove('newUser--visible');
       clearTimeout(slideTimeoutId);
       clearTimeout(slideSecondTimeout);
@@ -1030,9 +1226,10 @@ const handleNewUser = (e) => {
           loggedUser.age    = getInputValue(1);
           loggedUser.weight = getInputValue(2);
           loggedUser.height = getInputValue(3);
-          hydrappJSON.loggedUser = loggedUser.login;
-
-          updateJSON(loggedUser);
+          hydrapp.users = {
+            ...hydrapp.users,
+            [loggedUser.id]: loggedUser
+          };
           exportJSON();
           loadApp();
 
@@ -1044,14 +1241,11 @@ const handleNewUser = (e) => {
       } else if (isInputValid(currentInput, currentProp, currentAlert)) {
 
         // set name and login id of a new user
-        const inputValue = currentInput.value;
-        if (currentIndex === 0) {
-          loggedUser.name = inputValue;
-          loggedUser.login = getFormattedString(inputValue);
-        }
+        const { value } = currentInput;
+        if (currentIndex === 0) loggedUser.name = value;
 
         // show entered user name in the next questions
-        handleNewUserQuestion(currentIndex + 1, inputValue);
+        handleNewUserQuestion(currentIndex + 1, value);
       }
     }
 
@@ -1063,7 +1257,7 @@ const handleNewUser = (e) => {
     // set position of next question shortly before slide
     if (!willGoBackToLogin && !willCreateNewUser) {
       newQuestion.style = `
-        transform: translateX(${initialOffset}px);
+        left: ${initialOffset}px;
       `;
     }
 
@@ -1072,7 +1266,7 @@ const handleNewUser = (e) => {
       if (shouldQuestionSlide) {
         slidePromise
           .then(() => slideQuestions(newIndex, newQuestion, nextInput, finalOffset))
-          .then(clearAfter);
+          .then(() => clearAfter(nextInput));
           //catch(() => console.log('Something bad happened!'));
       }
     }
@@ -1116,12 +1310,12 @@ const setWaterWaves = () => {
 
 const handleWaterWaves = (obj) => {
   const waterPositions = Object.keys(obj);
-  [...waterPositions].forEach(position => {
+  waterPositions.forEach(position => {
     const { waves, wavePeriodsTotal } = obj[position];
     
     const height = window.innerWidth / wavePeriodsTotal / 10;
     waves.style.height = `${height}px`;
-    waves.style.top = `${-1 * (height - 2)}px`;
+    waves.style.top = `${-1 * (height - 1)}px`;
   });
 }
 
@@ -1203,7 +1397,6 @@ const handleWaterChange = (e) => {
   loggedUser.entries[0].value = value;
   firstEntryValue.textContent = value;
   updateUsersStats();
-  updateJSON(loggedUser);
   exportJSON()
 
   updateStats();
@@ -1219,7 +1412,7 @@ const handleWaterChange = (e) => {
 
 const handleWatersArray = (callback) => {
   const waterPositions = Object.keys(waterObj);
-  [...waterPositions].forEach(position => {
+  waterPositions.forEach(position => {
     const { water } = waterObj[position];
     callback(water, position);
   });
@@ -1473,18 +1666,6 @@ const toggleSidebar = (e) => {
     self.classList.toggle('button--active');
     appSidebar.classList.toggle('app__sidebar--visible');
     appLanding.classList.toggle('app__landing--onSide');
-    // update waves height and offset during css transition
-    clearInterval(wavesIntervalId);
-    clearTimeout(wavesTimeoutId);
-    if (window.innerWidth >= mediaMd) {
-      wavesIntervalId = setInterval(() => {
-        handleWaterWaves(waterObj);
-      }, 10);
-      wavesTimeoutId = setTimeout(() => {
-        clearInterval(wavesIntervalId);
-        clearTimeout(wavesTimeoutId);
-      }, 1000);
-    }
   }
 }
 
@@ -1501,9 +1682,9 @@ const toggleSidebarTabs = (e) => {
     const tabContainer = parentContainer.querySelector('.tab__container');
     const isActive = svgIcon.classList.contains('tab__svg--active');
     const weeks = archiveContainer.children;
-    const currentWeek = [...weeks].filter(week => week.classList.contains('card--visible'))[0];
+    const currentWeek = [...weeks].find(week => week.classList.contains('card--visible'));
     const rankingCards = rankingContainer.children;
-    const currentRankingCard = [...rankingCards].filter(card => card.classList.contains('card--visible'))[0];
+    const currentRankingCard = [...rankingCards].find(card => card.classList.contains('card--visible'));
     
     !isActive
     ? self === archiveTabButton
@@ -1513,6 +1694,7 @@ const toggleSidebarTabs = (e) => {
         : handleContainerHeight(tabContainer, tabContainer.firstElementChild)
     : tabContainer.style.height = 0;
     svgIcon.classList.toggle('tab__svg--active');
+    //toggleChildrenFocusability(tabContainer);
   }
 }
 
@@ -1699,8 +1881,10 @@ const addArchiveEntry = (index) => {
   lastWeekList.insertAdjacentHTML('beforeend', entryHtml);
   const lastEntry = lastWeekList.lastElementChild;
   const editButton = lastEntry.querySelector('.edition__button--js-edit');
-  editButton.index = index;
-  editButton.addEventListener('click', handleEntryEdit);
+  if (editButton) {
+    editButton.index = index;
+    editButton.addEventListener('click', handleEntryEdit);
+  }
   handleEmoji(id, value);
   
   // add 'add entry' button at the end
@@ -1723,7 +1907,7 @@ const handleWeekHeading = () => {
     .toString()
     .replace('dateId-', '');
 
-    return [...loggedUser.entries].filter(entry => entry.id === entryDateId)[0].date;
+    return loggedUser.entries.find(entry => entry.id === entryDateId).date;
   }
 
   for (let i = 0; i < weekLists.length; i++) {
@@ -1778,7 +1962,6 @@ const enterNewEntryValue = (e) => {
   
   const self = e.target;
   const { entries, waterMax } = loggedUser;
-  const lastWeek = archiveContainer.lastElementChild;
   
   // find date to display as new proposition
   const oldestEntryIndex = entries.length - 1;
@@ -1967,6 +2150,7 @@ const handleEntryEdit = (e) => {
     editSection.classList.toggle('edition--visible');
     entry.classList.toggle('entry--edit-mode');
     entryHeader.classList.toggle('entry__header--edit-mode');
+    entryValue.classList.toggle('entry__value--edit-mode');
 
     itemIndex === loggedUser.entries.length - 1
     ? removeEntryButton.classList.toggle('entry__remove--hidden')
@@ -2024,7 +2208,6 @@ const handleEntryEdit = (e) => {
         }
         loggedUser.entries[itemIndex].value = dayValue;
         updateUsersStats();
-        updateJSON(loggedUser);
         exportJSON();
 
         updateStats();
@@ -2046,20 +2229,20 @@ const handleEntryEdit = (e) => {
 const handleStatsDOM = (user) => {
 
   // get html codes of user card and user props
-  const { name, key } = user;
-  const statsCardHtml = getHtmlOfCard('stats', name, key);
+  const { name, id } = user;
+  const statsCardHtml = getHtmlOfCard('stats', name, id);
   const userHtml = getHtmlOfUserStats(user);
 
   // create DOM node of user card
   statsContainer.insertAdjacentHTML('beforeend', statsCardHtml);
-  const userCard = statsContainer.querySelector(`.card--js-${key}`);
+  const userCard = statsContainer.querySelector(`.card--js-${id}`);
 
   // create DOM nodes of user props
   const cardList = userCard.querySelector('.card__list--js-stats');
   cardList.insertAdjacentHTML('beforeend', userHtml);
 
   // set events for card navigation buttons
-  const usersTotal = Object.keys(hydrappJSON.users).length;
+  const usersTotal = Object.keys(hydrapp.users).length;
   const allButtons = statsContainer.querySelectorAll('[class*=card__button--js');
   if (usersTotal > 1) {
     [...allButtons].forEach(button => {
@@ -2070,14 +2253,13 @@ const handleStatsDOM = (user) => {
 
 const handleStats = () => {
 
-  const users = getArrayOfUsers();
-
   // create DOM structure
   statsContainer.innerHTML = '';
-  [...users].forEach(user => handleStatsDOM(user));
+  const sortedUsersIds = getSortedUsersIds();
+  sortedUsersIds.forEach(id => handleStatsDOM(hydrapp.users[id]));
 
   // make logged in user's card visible
-  const loggedUserCard = statsContainer.querySelector(`.card--js-${loggedUser.key}`);
+  const loggedUserCard = statsContainer.querySelector(`.card--js-${loggedUser.id}`);
   const cardIndex = [...loggedUserCard.parentNode.children].indexOf(loggedUserCard);
   loggedUserCard.classList.add('card--visible');
 
@@ -2087,18 +2269,17 @@ const handleStats = () => {
 
 const updateStats = () => {
   
-  const users = getArrayOfUsers();
+  const users = Object.values(hydrapp.users);
   const { statsProps } = userHelper;
 
-  [...users].forEach(user => {
+  users.forEach(user => {
 
-    const { key, login } = user;
-    const userCard = statsContainer.querySelector(`.card--js-${key}`);
+    const userCard = statsContainer.querySelector(`.card--js-${user.id}`);
 
-    [...statsProps].forEach(prop => {
+    statsProps.forEach(prop => {
 
       const node = userCard.querySelector(`.userProp__value--js-${prop}`);
-      const updatedStat = getSingularOrPlural(prop, hydrappJSON.users[login][prop]);
+      const updatedStat = getSingularOrPlural(prop, user[prop]);
       node.textContent = updatedStat;
     });
   });
@@ -2110,31 +2291,29 @@ const updateStats = () => {
 
 const handleRankingDOM = () => {
 
-  const users = getArrayOfUsers();
   const { rankingMaxUsersPerCard } = userHelper;
   let lastCard = rankingContainer.lastElementChild;
   rankingContainer.innerHTML = '';
 
-  for (let i = 0; i < users.length; i++) {
+  const sortedUsersIds = getSortedUsersIds();
+  sortedUsersIds.forEach((id, index) => {
     
-    const user = users[i];
-
-    // create card every 10th user
-    if (i % rankingMaxUsersPerCard === 0) {
+    const user = hydrapp.users[id];
+  
+    // create card every nth user
+    if (index % rankingMaxUsersPerCard === 0) {
       const rankingCardHtml = getHtmlOfCard('ranking');
       rankingContainer.insertAdjacentHTML('beforeend', rankingCardHtml);
     }
-
+  
     // create DOM nodes of every user rank
     lastCard = rankingContainer.lastElementChild;
     const cardList = lastCard.querySelector('.card__list--js-ranking');
     const userRankHtml = getHtmlOfUserRank(user);
     cardList.insertAdjacentHTML('beforeend', userRankHtml);
     
-    const { login } = user;
-    hydrappJSON.users[login].position = getPositionInCard(i);
-    exportJSON();
-  }
+    user.position = getPositionInCard(index);
+  });
 
   // set visibility and events for card navigation buttons
   const cardsTotal = rankingContainer.children.length;
@@ -2160,8 +2339,8 @@ const handleRankingHeadings = () => {
     const secondNum = previousPlaces + currentItemsTotal;
 
     const heading = currentItemsTotal <= 1
-    ? `Place [ ${firstNum} ]`
-    : `Places [ ${firstNum} - ${secondNum} ]`;
+    ? `Place ${firstNum}`
+    : `Places ${firstNum} - ${secondNum}`;
     cardHeading.textContent = heading;
   });
 }
@@ -2185,16 +2364,15 @@ const handleRanking = () => {
 
 const updateRanking = () => {
   
-  const users = getArrayOfUsers();
-
+  const users = Object.values(hydrapp.users);
   const userBadges = rankingContainer.querySelectorAll('[class*=userProp--js]');
 
   // sort array of users based on rank position
-  [...users]
+  users
   .sort((nextUser, user) => nextUser.rank - user.rank)
   .forEach((user, index) => {
 
-    const { key, login, rank, name, points } = user;
+    const { id, rank, name, points } = user;
     const rankingCards = rankingContainer.children;
     const visibleCard = rankingContainer.querySelector('.card--visible');
     const visibleCardIndex = [...rankingCards].indexOf(visibleCard);
@@ -2205,7 +2383,7 @@ const updateRanking = () => {
     const transitionTime = 300;
 
     // update user badge data
-    userBadge.className = `userProp userProp--rank userProp--js-${key}`;
+    userBadge.className = `userProp userProp--rank userProp--js-${id}`;
     rankNode.textContent = rank;
     labelNode.textContent = name;
     pointsNode.textContent = getSingularOrPlural('points', points);
@@ -2256,8 +2434,7 @@ const updateRanking = () => {
       }, 30);
     }
 
-    hydrappJSON.users[login].position = newPosition;
-    exportJSON();
+    user.position = newPosition;
   });
 }
 
@@ -2366,21 +2543,18 @@ const handleSettingsEdition = (e) => {
 
         if (value === newValue || isInputValid(input, prop, inputAlert)) {
 
-          // handle user name and login change
-          if (prop === 'name' && newValue !== value) {
-            const oldLogin = getFormattedString(value);
-            const newLogin = getFormattedString(newValue);
-
-            delete hydrappJSON.users[oldLogin];
-            loggedUser.name = newValue;
-            loggedUser.login = newLogin;
-            hydrappJSON.loggedUser = newLogin;
-            hydrappJSON.users[newLogin] = loggedUser;
-            settingsHeading.textContent = newValue;
-            
-          // handle numerical settings
-          } else if (newValue !== value) {
+          if (newValue !== value) {
             loggedUser[prop] = newValue;
+            prop === 'name' ? settingsHeading.textContent = newValue : false;
+
+            if (prop === 'waterMax') {
+              let value = loggedUser.entries[0].value;
+              
+              setWaterMeasureDOM();
+              handleWaterMeasure();
+              handleWaterLevel(value);
+              handleCounterMessage(value);
+            }
           }
 
           output.textContent = getSingularOrPlural(prop, newValue);
@@ -2410,7 +2584,7 @@ const quitLanding = () => {
 } 
 
 const handleUserLogOut = () => {
-  hydrappJSON.loggedUser = '';
+  hydrapp.loggedUserId = '';
   exportJSON();
   quitLanding();
 }
@@ -2438,9 +2612,9 @@ const toggleUserRemoveConfirmation = (e) => {
 }
 
 const handleUserRemove = () => {
-  const { loggedUser } = hydrappJSON;
-  delete hydrappJSON.users[loggedUser];
-  hydrappJSON.loggedUser = '';
+  const { id } = loggedUser;
+  delete hydrapp.users[id];
+  hydrapp.loggedUserId = '';
   exportJSON();
   quitLanding();
 }
@@ -2461,7 +2635,6 @@ class Counter {
 class User {
   constructor(date) {
     this.name = '';
-    this.login = '';
     this.age = 0;
     this.weight = 0;
     this.height = 0;
@@ -2470,7 +2643,7 @@ class User {
     this.waterAvg = 0;
     this.rank = 0;
     this._dateCreated = date;    
-    this._key = date;
+    this._id = date;
     this.entries = [];
   }
 
@@ -2487,11 +2660,11 @@ class User {
     const hourTime = getOffsetedDate(date).toISOString().slice(11,16);
     this.dateCreated = `${dateTime}, ${hourTime}`;
   }
-  get _key() {
-    return this.key;
+  get _id() {
+    return this.id;
   }
-  set _key(date) {
-    this.key = date.getTime();
+  set _id(date) {
+    this.id = date.getTime();
   }
 }
 
@@ -2739,8 +2912,6 @@ const emojiNewEntry = document.querySelector('.emoji--js-newEntry');
 
 //#endregion
 
-//#region [ HorizonDark ] APP LOADING
-
 const loadApp = () => {
   
   // json update
@@ -2770,6 +2941,7 @@ const loadApp = () => {
   handleWaterMeasure();
   // archive
   handleWeekHeading();
+  exportJSON();
 
   appLanding.classList.add('app__landing--visible');
   appUser.classList.remove('app__user--visible');
@@ -2783,31 +2955,16 @@ const loadApp = () => {
   isFirstAppLoad = false;
 }
 
-//#endregion
+// create object with initial users on first app load
+let hydrapp;
+let loggedUser;
 
-//#region [ HorizonDark ] FUNCTION CALLS
+hydrapp = fetchJSON();
 
-// create JSON object with initial users on first app load
-let hydrappJSON;
-fetchJSON();
-if (!hydrappJSON) {
+if (!hydrapp) {
   addInitialUsers();
-  fetchJSON();
+  hydrapp = fetchJSON();
 }
+//showLoginBox();
 
-// automatically log in unlogged user
-let { loggedUser } = hydrappJSON;
-
-if (loggedUser !== '') {
-  loggedUser = hydrappJSON.users[loggedUser];
-  loadApp() 
-} else {
-  showLoginBox();
-}
-//setIntroWaves();
-
-//#endregion
-
-
-
-toggleSidebar(burgerBtn);
+setIntroWaves();

@@ -13,15 +13,23 @@
 }
 
 @mixin primaryButton {
-  background-color: $blue-dark-3;
+  background-color: $blue;
   border-radius: $br-items;
   box-shadow: 0 2px 4px rgba($color: $blue-dark-4, $alpha: 0.5);
   color: $blue-light-3;
   font-weight: 700;
   padding: 0.8em 1em;
   transition: background-color $time-hover-effect;
-  
-  &:hover {
-    background-color: $blue;    
+
+  &:active {
+    background-color: $blue-dark-3;
+  }
+
+  @media only screen and (min-width: $media-md) {
+
+    &:focus,
+    &:hover {
+      background-color: $blue-dark-3;
+    }
   }
 }

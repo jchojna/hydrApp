@@ -41,7 +41,7 @@
     transition:
       opacity $time-edit-buttons,
       visibility 0s $time-edit-buttons,
-      fill $time-hover-effect;
+      fill 0.1s;
 
     &--visible {
       visibility: inherit;
@@ -49,7 +49,7 @@
       transition:
         opacity $time-edit-buttons,
         visibility 0s,
-        fill $time-hover-effect;
+        fill 0.1s;
     }
 
     &--edit {
@@ -57,7 +57,7 @@
     }
 
     &:hover {
-      fill: $blue;
+      fill: $blue-light-3;
     }
   }
 

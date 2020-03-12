@@ -3,8 +3,9 @@
 
 .logo {
   @include flex-center;
+  margin-bottom: 10px;
   position: relative;
-  width: 100%;
+  width: 80%;
 
   &--app {
     max-width: ($burgerBtn-size-xs - 10px) * $logo-aspect-ratio;
@@ -18,7 +19,7 @@
 
   &__svg {
     fill: $blue;
-    pointer-events: all;
+    pointer-events: none;
     width: 100%;
 
     &--color {

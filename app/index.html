@@ -25,10 +25,11 @@
   <meta property="og:title" content="hydrApp" />
   <meta property="og:description" content="With this simple app you can track how many glasses of water you drink per day" />
   <meta property="og:url" content="https://jchojna.github.io/hydrApp/" />
-  <meta property="og:image" content="https://jchojna.github.io/hydrApp/assets/img/cover.png" />
-  <meta property="og:image:width" content="600" />
-  <meta property="og:image:height" content="600" />
+  <meta property="og:image" content="https://jchojna.github.io/hydrApp/assets/img/cover.jpg" />
+  <meta property="og:image:width" content="1400" />
+  <meta property="og:image:height" content="800" />
   <!-- #endregion -->
+  <link href="https://fonts.googleapis.com/css?family=Comfortaa:400,500,600,700&display=swap" rel="stylesheet">
   <!-- build:css styles/main.css -->
   <link rel="stylesheet" href="styles/main.css">
   <!-- endbuild -->
@@ -171,6 +172,8 @@
 
     <section class="app__sidebar app__sidebar--js">
       <h2 class="app__heading visuallyhidden">App sidebar</h2>
+      <div class="app__container">
+        
       <!-- #region [ HorizonDark ] ARCHIVE TAB -->
       <section class="tab tab--archive tab--js-archive">
         <h3 class="tab__header">
@@ -242,6 +245,8 @@
         </div>
       </section>
       <!-- #endregion -->
+      
+      </div>
     </section>
     
     <!-- #region [ HorizonDark ] ADD NEW ARCHIVE ENTRY -->
@@ -273,13 +278,19 @@
       </div>
       <div class="controls controls--newEntry controls--top">
         <!-- CANCEL BUTTON -->
-        <button class="button button--newEntry button--cancel button--js-cancel">
+        <button
+          class="button button--newEntry button--cancel button--js-cancel"
+          tabIndex="-1"
+        >
           <svg class="button__svg button__svg--cancel" viewBox="0 0 512 512">
             <use href="assets/svg/icons.svg#back-arrow"></use>
           </svg>
         </button>
         <!-- SAVE BUTTON -->
-        <button class="button button--newEntry button--save button--js-save">
+        <button
+          class="button button--newEntry button--save button--js-save"
+          tabIndex="-1"
+        >
           <svg class="button__svg button__svg--save" viewBox="0 0 512 512">
             <use href="assets/svg/icons.svg#save-icon"></use>
           </svg>
@@ -287,13 +298,19 @@
       </div>
       <div class="controls controls--newEntry">
         <!-- INCREASE BUTTON -->
-        <button class="button button--newEntry button--increase button--js-increase">
+        <button
+          class="button button--newEntry button--increase button--js-increase"
+          tabIndex="-1"
+        >
           <svg class="button__svg button__svg--increase" viewBox="0 0 512 512">
             <use href="assets/svg/icons.svg#plus-circle"></use>
           </svg>
         </button>
         <!-- DECREASE BUTTON -->
-        <button class="button button--newEntry button--decrease button--js-decrease">
+        <button
+          class="button button--newEntry button--decrease button--js-decrease"
+          tabIndex="-1"
+        >
           <svg class="button__svg button__svg--decrease" viewBox="0 0 512 512">
             <use href="assets/svg/icons.svg#minus-circle"></use>
           </svg>

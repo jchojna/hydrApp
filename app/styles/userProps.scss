@@ -3,17 +3,18 @@
 
 .userProp {
   align-items: center;
-  display: grid;
   column-gap: 10px;
+  display: grid;
+  font-weight: 700;
   grid-template-columns: 40% 1fr auto;
   padding: $cardItem-padding;
 
   &:not(:last-child) {
-    border-bottom: 2px solid $blue-dark-3;
+    border-bottom: 2px solid $blue;
   }
 
   &--stats {
-    grid-template-columns: 60% 1fr;
+    grid-template-columns: 50% 1fr;
   }
 
   &--rank {
@@ -25,17 +26,29 @@
   }
 
   &--editMode {
-    background-color: $blue-dark-3;
+    background-color: $blue-dark-2;
+  }
+
+  &__rank {
+    color: $blue-light-2;
+
   }
 
   &__label {
+    color: $blue-light-2;
     display: flex;
     align-items: center;
     min-height: 40px;
     font-size: 0.9em;
 
+    &--rank {
+      font-size: 1em;
+      color: $blue-light-2;
+
+    }
+
     &--editMode {
-      color: $blue-dark-2;
+      color: $blue-light-2;
     }
   }
 
@@ -43,6 +56,7 @@
     font-weight: 700;
     position: relative;
     width: 100%;
+    text-align: right;
   }
 
   &__output {
@@ -72,7 +86,7 @@
     }
 
     &::placeholder {
-      color: $blue-dark-2;
+      color: $blue;
     }
   }
 

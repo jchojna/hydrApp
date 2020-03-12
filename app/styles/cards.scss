@@ -20,12 +20,12 @@
 
   &--visible {
     animation-fill-mode: forwards;
-    visibility: visible;
+    visibility: inherit;
   }
 
   &__header {
     align-items: center;
-    background-color: $blue;
+    background-color: $blue-light-1;
     border-radius: $br-items;
     display: grid;
     grid-gap: 5px;
@@ -52,7 +52,7 @@
   &__button {
     @include button;
     display: flex;
-    fill: $blue-light-2;
+    fill: $blue-light-3;
     max-width: 30px;
     padding: 0;
     transition: fill $time-hover-effect;
@@ -63,8 +63,16 @@
       visibility: inherit;
     }
 
-    &:hover {
+    &:active {
       fill: $blue-dark-2;
+    }
+
+    @media only screen and (min-width: $media-md) {
+
+      &:focus,
+      &:hover {
+        fill: $blue-dark-2;
+      }
     }
   }
 

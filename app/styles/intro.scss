@@ -16,6 +16,7 @@
 
   &--visible {
     opacity: 1;
+    transition: opacity 1.5s, visibility 0s;
     visibility: visible;
   }
 
