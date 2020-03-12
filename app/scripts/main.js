@@ -586,8 +586,8 @@ const getHtmlOfArchiveEntry = (index) => {
         <p class="entry__heading entry__heading--date entry__heading--js-date">${date}</p>
       </header>
       <span class="entry__value entry__value--js">${value}</span>
-      ${getHtmlOfEdition('archive')}
-      ${getHtmlOfEmoji(id)}
+      ${ index <= 4 ? getHtmlOfEdition('archive') : '' }
+      ${ getHtmlOfEmoji(id) }
     </li>
   `;
 }
@@ -956,24 +956,27 @@ const addInitialUsers = () => {
 //#region [ HorizonDark ] INTRO
 
 const setIntroWaves = () => {
-  if (intro.innerHTML === '') {
-    intro.innerHTML = getHtmlOfWaterContainer(introObj, true);
-    // add button event
-    const startButton = intro.querySelector('.intro__start--js');
-    startButton.addEventListener('click', quitIntro);
-  }
+  
+  intro.innerHTML = getHtmlOfWaterContainer(introObj, true);
+  const startButton = intro.querySelector('.intro__start--js');
+  startButton.addEventListener('click', quitIntro);
   setNodes(introObj, intro);
+
   // add fade in animation
-  const keys = Object.keys(introObj);
-  keys.forEach(key => introObj[key].water.classList.add('water--fadeIn'));
+  const waterWaves = Object.values(introObj);
+  waterWaves.forEach(wave => wave.water.classList.add('water--fadeIn'));
+  intro.classList.add('intro--visible');
+
   // calculate height of every wave
   handleWaterWaves(introObj);
+
   // show start button after some time
   const timeoutId = setTimeout(() => {
     const startButton = intro.querySelector('.intro__start--js');
     startButton.classList.add('intro__start--visible');
     clearTimeout(timeoutId);
   }, 3000);
+
   // add event listener
   const handleIntroResize = () => handleWaterWaves(introObj);
   window.addEventListener('resize', handleIntroResize);
@@ -981,12 +984,14 @@ const setIntroWaves = () => {
 
 const quitIntro = () => {
   const keys = Object.keys(introObj);
+
   [...keys].forEach(key => {
     const { water } = introObj[key];
     water.classList.remove('water--fadeIn');
     water.classList.add('water--fadeOut');
   });
   intro.classList.remove('intro--visible');
+  showLoginBox();
 
   const startButton = intro.querySelector('.intro__start--js');
   startButton.classList.remove('intro__start--visible');
@@ -1683,7 +1688,7 @@ const toggleSidebarTabs = (e) => {
         : handleContainerHeight(tabContainer, tabContainer.firstElementChild)
     : tabContainer.style.height = 0;
     svgIcon.classList.toggle('tab__svg--active');
-    toggleChildrenFocusability(tabContainer);
+    //toggleChildrenFocusability(tabContainer);
   }
 }
 
@@ -1870,8 +1875,10 @@ const addArchiveEntry = (index) => {
   lastWeekList.insertAdjacentHTML('beforeend', entryHtml);
   const lastEntry = lastWeekList.lastElementChild;
   const editButton = lastEntry.querySelector('.edition__button--js-edit');
-  editButton.index = index;
-  editButton.addEventListener('click', handleEntryEdit);
+  if (editButton) {
+    editButton.index = index;
+    editButton.addEventListener('click', handleEntryEdit);
+  }
   handleEmoji(id, value);
   
   // add 'add entry' button at the end
