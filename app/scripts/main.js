@@ -2965,7 +2965,6 @@ if (!hydrapp) {
   addInitialUsers();
   hydrapp = fetchJSON();
 }
-showLoginBox();
+//showLoginBox();
 
-
-//setIntroWaves();
+setIntroWaves();
