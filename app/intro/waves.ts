@@ -29,7 +29,7 @@ export class Waves {
     const amplitude = baseAmplitude * modulation
     const baseLine = height * 0.6 - wave.yOffset
     const frequency = (Math.PI * 2 * wave.periods) / width
-    const phase = t * wave.speed + wave.phaseOffset
+    const phase = t * wave.speed * 0.001 + wave.phaseOffset
 
     this.context.beginPath()
     this.context.moveTo(0, height)

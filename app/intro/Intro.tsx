@@ -1,9 +1,10 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-import { Waves } from "./waves"
 import { Pane } from "tweakpane"
-import { WAVES_DATA } from "./constants"
+
+import { Waves } from "./waves"
+import { addTweakpane } from "./utils/tweakpane"
 
 export const Intro = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -21,14 +22,7 @@ export const Intro = () => {
     wavesRef.current.start()
 
     const pane = new Pane()
-
-    pane.addBinding(WAVES_DATA[0], "amplitudeRatio", {
-      min: 0,
-      max: 1,
-      step: 0.1,
-    })
-    pane.addBinding(WAVES_DATA[1], "amplitudeRatio")
-    pane.addBinding(WAVES_DATA[2], "amplitudeRatio")
+    addTweakpane(pane)
 
     const resizeCanvas = wavesRef.current.resizeCanvas
     window.addEventListener("resize", resizeCanvas)

@@ -3,7 +3,7 @@ import type { WaveData } from "./types"
 export const WAVES_DATA: WaveData[] = [
   {
     amplitudeRatio: 0.4,
-    speed: 0.001,
+    speed: 1,
     phaseOffset: Math.PI / 2,
     periods: 6,
     color: "rgba(23, 86, 130, 0.85)",
@@ -11,7 +11,7 @@ export const WAVES_DATA: WaveData[] = [
   },
   {
     amplitudeRatio: 0.5,
-    speed: 0.0013,
+    speed: 1.3,
     phaseOffset: Math.PI / 3,
     periods: 3,
     color: "rgba(28, 102, 150, 0.9)",
@@ -19,7 +19,7 @@ export const WAVES_DATA: WaveData[] = [
   },
   {
     amplitudeRatio: 0.65,
-    speed: 0.0018,
+    speed: 1.8,
     phaseOffset: 0,
     periods: 2,
     color: "rgba(33, 121, 170, 0.95)",
