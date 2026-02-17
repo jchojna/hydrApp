@@ -1,47 +1,35 @@
-import { LOGO_COLOR_PATH, LOGO_VIEWBOX, LOGO_WHITE_PATH } from "./constants"
-import { WaveLayer, waveLayers } from "./Intro"
+import { WAVES_DATA } from "./constants"
+import { WaveData } from "./types"
 
 export class Waves {
   private context: CanvasRenderingContext2D
-  private logoPathWhite: Path2D
-  private logoPathColor: Path2D
+  // private logoPathWhite: Path2D
+  // private logoPathColor: Path2D
 
   constructor(private canvas: HTMLCanvasElement) {
     this.canvas = canvas
     this.context = canvas.getContext("2d") as CanvasRenderingContext2D
-    this.logoPathWhite = new Path2D(LOGO_WHITE_PATH)
-    this.logoPathColor = new Path2D(LOGO_COLOR_PATH)
+    // this.logoPathWhite = new Path2D(LOGO_WHITE_PATH)
+    // this.logoPathColor = new Path2D(LOGO_COLOR_PATH)
 
     if (!this.context) {
       throw new Error("Failed to get canvas context")
     }
   }
 
-  private resizeCanvas = () => {
-    const width = this.canvas.clientWidth || window.innerWidth
-    const height = this.canvas.clientHeight || window.innerHeight
-    const dpr = window.devicePixelRatio || 1
-
-    this.canvas.style.width = "100%"
-    this.canvas.style.height = "100%"
-    this.canvas.width = Math.max(1, Math.floor(width * dpr))
-    this.canvas.height = Math.max(1, Math.floor(height * dpr))
-    this.context.setTransform(dpr, 0, 0, dpr, 0, 0)
-  }
-
-  private drawWaveLayer = (
-    layer: WaveLayer,
+  private drawWaves = (
+    wave: WaveData,
     width: number,
     height: number,
     t: number,
   ) => {
-    const waveHeight = width / layer.periods / 10
-    const baseAmplitude = waveHeight * layer.amplitudeRatio
-    const modulation = 0.7 + 0.4 * Math.sin(t * 0.001 + layer.phaseOffset * 5)
+    const waveHeight = width / wave.periods / 10
+    const baseAmplitude = waveHeight * wave.amplitudeRatio
+    const modulation = 0.7 + 0.4 * Math.sin(t * 0.001 + wave.phaseOffset * 5)
     const amplitude = baseAmplitude * modulation
-    const baseLine = height * 0.6 - layer.yOffset
-    const frequency = (Math.PI * 2 * layer.periods) / width
-    const phase = t * layer.speed + layer.phaseOffset
+    const baseLine = height * 0.6 - wave.yOffset
+    const frequency = (Math.PI * 2 * wave.periods) / width
+    const phase = t * wave.speed + wave.phaseOffset
 
     this.context.beginPath()
     this.context.moveTo(0, height)
@@ -51,7 +39,7 @@ export class Waves {
     }
     this.context.lineTo(width, height)
     this.context.closePath()
-    this.context.fillStyle = layer.color
+    this.context.fillStyle = wave.color
     this.context.fill()
   }
 
@@ -77,18 +65,23 @@ export class Waves {
     const width = this.canvas.clientWidth
     const height = this.canvas.clientHeight
 
-    // if (!width || !height) {
-    //   animationFrameRef.current = requestAnimationFrame(drawFrame)
-    //   return
-    // }
-
     this.context.clearRect(0, 0, width, height)
-    this.drawWaveLayer(waveLayers[0], width, height, timestamp)
-    this.drawWaveLayer(waveLayers[1], width, height, timestamp)
+    this.drawWaves(WAVES_DATA[0], width, height, timestamp)
+    this.drawWaves(WAVES_DATA[1], width, height, timestamp)
     // drawLogo(width, height)
-    this.drawWaveLayer(waveLayers[2], width, height, timestamp)
+    this.drawWaves(WAVES_DATA[2], width, height, timestamp)
 
     requestAnimationFrame(this.drawFrame)
+  }
+
+  public resizeCanvas = () => {
+    const width = window.innerWidth
+    const height = window.innerHeight
+    const dpr = window.devicePixelRatio || 1
+
+    this.canvas.width = Math.max(1, Math.floor(width * dpr))
+    this.canvas.height = Math.max(1, Math.floor(height * dpr))
+    this.context.setTransform(dpr, 0, 0, dpr, 0, 0)
   }
 
   public start() {
