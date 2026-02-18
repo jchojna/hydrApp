@@ -1,6 +1,6 @@
 import { Pane } from "tweakpane"
 
-import { WAVES_DATA } from "../constants"
+import { WAVES_DATA, WAVES_PARAMS } from "../constants"
 
 export const addTweakpane = (pane: Pane) => {
   WAVES_DATA.forEach((wave, index) => {
@@ -23,15 +23,20 @@ export const addTweakpane = (pane: Pane) => {
       max: 5,
       step: 0.1,
     })
-    waveFolder.addBinding(wave, "yOffset", {
-      min: 0,
-      max: 200,
-      step: 1,
-    })
     waveFolder.addBinding(wave, "phaseOffset", {
       min: 0,
       max: Math.PI / 2,
       step: 0.01,
     })
+  })
+  pane.addBinding(WAVES_PARAMS, "rotation", {
+    min: 0,
+    max: 0.2,
+    step: 0.01,
+  })
+  pane.addBinding(WAVES_PARAMS, "gap", {
+    min: 0,
+    max: 200,
+    step: 1,
   })
 }

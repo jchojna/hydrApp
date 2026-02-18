@@ -1,9 +1,9 @@
-import { Intro } from "./intro/Intro"
+import Background from "./background"
 
 export default function Home() {
   return (
     <>
-      <Intro />
+      <Background />
     </>
   )
 }

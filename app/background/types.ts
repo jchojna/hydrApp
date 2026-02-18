@@ -4,5 +4,4 @@ export type WaveData = {
   phaseOffset: number
   periods: number
   color: string
-  yOffset: number
 }
