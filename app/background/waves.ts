@@ -9,7 +9,11 @@ export class Waves {
   private readonly swingStrength = 0.5
   private readonly minWaterLevelOffset = 0.8
   private readonly maxWaterLevelOffset = 0.05
+  private readonly waterLevelTransitionDurationMs = 400
   private waterLevel = this.minWaterLevelOffset
+  private renderedWaterLevel = this.minWaterLevelOffset
+  private waterLevelTransitionFrom = this.minWaterLevelOffset
+  private waterLevelTransitionStartedAt: number | null = null
   private waterLevelIncrement: number
   // private logoPathWhite: Path2D
   // private logoPathColor: Path2D
@@ -37,8 +41,7 @@ export class Waves {
     const width = this.canvas.clientWidth
     const height = this.canvas.clientHeight
     const offset = 100
-    const baseLine =
-      height * this.waterLevel + WAVES_PARAMS.gap * index * this.waterLevel
+    const baseLine = this.getWaveBaseLine(index, t)
     const pivotX = width / 2
     const pivotY = (baseLine + height) / 2
 
@@ -70,13 +73,16 @@ export class Waves {
   private getRotation = (timestamp: number, phaseOffset: number) => {
     if (this.swingStartedAt === null) return 0
 
-    const elapsed = timestamp - this.swingStartedAt
-    if (elapsed >= this.swingDurationMs) {
-      this.swingStartedAt = null
-      return 0
-    }
-
-    const progress = elapsed / this.swingDurationMs
+    const progress = this.getAnimatedTransitionValue({
+      timestamp,
+      from: 0,
+      to: 1,
+      startedAt: this.swingStartedAt,
+      durationMs: this.swingDurationMs,
+      onComplete: () => {
+        this.swingStartedAt = null
+      },
+    })
     const envelope = (1 - progress) * (1 - progress)
     const oscillation = Math.sin(progress * Math.PI * 6 + phaseOffset * 0.35)
     const maxRotation = 0.15
@@ -84,22 +90,83 @@ export class Waves {
     return oscillation * envelope * this.swingStrength * maxRotation
   }
 
+  private getWaveBaseLine = (index: number, timestamp: number) => {
+    const height = this.canvas.clientHeight
+    this.renderedWaterLevel = this.getAnimatedTransitionValue({
+      timestamp,
+      from: this.waterLevelTransitionFrom,
+      to: this.waterLevel,
+      startedAt: this.waterLevelTransitionStartedAt,
+      durationMs: this.waterLevelTransitionDurationMs,
+      easing: this.easeOutCubic,
+      onComplete: () => {
+        this.waterLevelTransitionStartedAt = null
+        this.waterLevelTransitionFrom = this.waterLevel
+      },
+    })
+
+    return (height + WAVES_PARAMS.gap * index) * this.renderedWaterLevel
+  }
+
+  private getAnimatedTransitionValue = ({
+    timestamp,
+    from,
+    to,
+    startedAt,
+    durationMs,
+    easing = (progress: number) => progress,
+    onComplete,
+  }: {
+    timestamp: number
+    from: number
+    to: number
+    startedAt: number | null
+    durationMs: number
+    easing?: (progress: number) => number
+    onComplete?: () => void
+  }) => {
+    if (startedAt === null || durationMs <= 0) return to
+
+    const elapsed = timestamp - startedAt
+    if (elapsed >= durationMs) {
+      onComplete?.()
+      return to
+    }
+
+    const progress = Math.max(0, Math.min(1, elapsed / durationMs))
+    const easedProgress = easing(progress)
+
+    return from + (to - from) * easedProgress
+  }
+
+  private easeOutCubic = (progress: number) => 1 - (1 - progress) ** 3
+
+  private setWaterLevel = (nextWaterLevel: number) => {
+    if (nextWaterLevel === this.waterLevel) return
+
+    this.waterLevelTransitionFrom = this.renderedWaterLevel
+    this.waterLevel = nextWaterLevel
+    this.waterLevelTransitionStartedAt = performance.now()
+  }
+
   public swingWaves = () => {
     this.swingStartedAt = performance.now()
   }
 
   public decreaseWaterLevel = () => {
-    this.waterLevel = Math.min(
+    const nextWaterLevel = Math.min(
       this.minWaterLevelOffset,
       this.waterLevel + this.waterLevelIncrement,
     )
+    this.setWaterLevel(nextWaterLevel)
   }
 
   public increaseWaterLevel = () => {
-    this.waterLevel = Math.max(
+    const nextWaterLevel = Math.max(
       this.maxWaterLevelOffset,
       this.waterLevel - this.waterLevelIncrement,
     )
+    this.setWaterLevel(nextWaterLevel)
   }
 
   // private drawLogo = (width: number, height: number) => {
