@@ -12,7 +12,7 @@ export class Waves {
   private readonly minWaterLevelOffset = 0.8
   private readonly maxWaterLevelOffset = 0.05
   private readonly waterLevelTransitionDurationMs = 1000
-  private waterLevel = 1.1
+  private waterLevel = 0.5
   private renderedWaterLevel = this.minWaterLevelOffset
   private waterLevelTransitionFrom = this.minWaterLevelOffset
   private waterLevelTransitionStartedAt: number | null = null

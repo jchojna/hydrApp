@@ -1,46 +1,36 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useEffect, useRef } from "react"
 import { Pane } from "tweakpane"
 
 import { Waves } from "./waves"
 import { addTweakpane } from "./utils/tweakpane"
 
+export let waves: Waves | null = null
+
 export default function Background() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
-  const containerRef = useRef<HTMLDivElement | null>(null)
-  const wavesRef = useRef<Waves | null>(null)
-  const [isIntro, setIsIntro] = useState(true)
 
   useEffect(() => {
     const canvas = canvasRef.current
-    const container = containerRef.current
-    if (!canvas || !container) return
+    if (!canvas) return
 
-    if (!wavesRef.current) {
-      wavesRef.current = new Waves(canvas)
-    }
-    wavesRef.current.start()
+    waves = new Waves(canvas)
+    waves.start()
 
     const pane = new Pane()
     addTweakpane(pane)
 
-    const resizeCanvas = wavesRef.current.resizeCanvas
+    const resizeCanvas = waves.resizeCanvas
     window.addEventListener("resize", resizeCanvas)
     return () => {
       window.removeEventListener("resize", resizeCanvas)
       pane.dispose()
     }
-  }, [])
-
-  const handleStart = useCallback(() => {
-    setIsIntro(false)
-    wavesRef.current?.logo.hideLogo()
-    wavesRef.current?.fadeOut()
-  }, [])
+  }, [canvasRef])
 
   return (
-    <div ref={containerRef} className="relative h-full min-h-screen w-full">
+    <div className="relative h-full min-h-screen w-full">
       <canvas
         ref={canvasRef}
         className="flex h-full w-full"
@@ -50,30 +40,21 @@ export default function Background() {
         <button
           type="button"
           className="cursor-pointer rounded-md bg-slate-900/75 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-900/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
-          onClick={() => wavesRef.current?.swingWaves()}
+          onClick={() => waves?.swingWaves()}
         >
           Spring Waves
         </button>
-        {isIntro && (
-          <button
-            type="button"
-            className="cursor-pointer rounded-md bg-slate-900/75 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-900/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
-            onClick={handleStart}
-          >
-            Start
-          </button>
-        )}
         <button
           type="button"
           className="cursor-pointer rounded-md bg-slate-900/75 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-900/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
-          onClick={() => wavesRef.current?.decreaseWaterLevel()}
+          onClick={() => waves?.decreaseWaterLevel()}
         >
           -
         </button>
         <button
           type="button"
           className="cursor-pointer rounded-md bg-slate-900/75 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-900/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
-          onClick={() => wavesRef.current?.increaseWaterLevel()}
+          onClick={() => waves?.increaseWaterLevel()}
         >
           +
         </button>
