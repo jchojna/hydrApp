@@ -1,4 +1,5 @@
-import { WAVES_DATA, WAVES_PARAMS } from "./constants"
+import { WAVES_DATA, WAVES_PARAMS } from "./utils/constants"
+import { LOGO_VIEWBOX, LOGO } from "./utils/logo"
 import { WaveData } from "./types"
 import { easeOutCubic, getAnimatedTransitionValue } from "./utils/animation"
 
@@ -16,8 +17,9 @@ export class Waves {
   private waterLevelTransitionFrom = this.minWaterLevelOffset
   private waterLevelTransitionStartedAt: number | null = null
   private waterLevelIncrement: number
-  // private logoPathWhite: Path2D
-  // private logoPathColor: Path2D
+  private logoPathA: Path2D
+  private logoPathB: Path2D
+  private isLogoVisible = true
 
   constructor(
     private canvas: HTMLCanvasElement,
@@ -30,8 +32,8 @@ export class Waves {
       (this.minWaterLevelOffset - this.maxWaterLevelOffset) /
       this.waterLevelsTotal
 
-    // this.logoPathWhite = new Path2D(LOGO_WHITE_PATH)
-    // this.logoPathColor = new Path2D(LOGO_COLOR_PATH)
+    this.logoPathA = new Path2D(LOGO.partA.path)
+    this.logoPathB = new Path2D(LOGO.partB.path)
 
     if (!this.context) {
       throw new Error("Failed to get canvas context")
@@ -137,23 +139,27 @@ export class Waves {
     this.setWaterLevel(nextWaterLevel)
   }
 
-  // private drawLogo = (width: number, height: number) => {
-  //   const targetWidth = Math.min(width * 0.6, 520)
-  //   const scale = targetWidth / LOGO_VIEWBOX.width
-  //   const logoWidth = LOGO_VIEWBOX.width * scale
-  //   const logoHeight = LOGO_VIEWBOX.height * scale
-  //   const x = (width - logoWidth) / 2
-  //   const y = Math.max(16, height * 0.55 - logoHeight / 2)
+  public hideLogo = () => {
+    this.isLogoVisible = false
+  }
 
-  //   this.context.save()
-  //   this.context.translate(x, y)
-  //   this.context.scale(scale, scale)
-  //   this.context.fillStyle = "#155e75"
-  //   this.context.fill(logoWhite)
-  //   this.context.fillStyle = "#a5f3fc"
-  //   this.context.fill(logoColor)
-  //   this.context.restore()
-  // }
+  private drawLogo = (width: number, height: number) => {
+    const targetWidth = Math.min(width * 0.6, 520)
+    const scale = targetWidth / LOGO_VIEWBOX.width
+    const logoWidth = LOGO_VIEWBOX.width * scale
+    const logoHeight = LOGO_VIEWBOX.height * scale
+    const x = (width - logoWidth) / 2
+    const y = Math.max(16, height * 0.55 - logoHeight / 2)
+
+    this.context.save()
+    this.context.translate(x, y)
+    this.context.scale(scale, scale)
+    this.context.fillStyle = LOGO.partA.color
+    this.context.fill(this.logoPathA)
+    this.context.fillStyle = LOGO.partB.color
+    this.context.fill(this.logoPathB)
+    this.context.restore()
+  }
 
   private drawFrame = (timestamp: number) => {
     this.context.clearRect(
@@ -164,7 +170,9 @@ export class Waves {
     )
     this.drawWaves(WAVES_DATA[0], 0, timestamp)
     this.drawWaves(WAVES_DATA[1], 1, timestamp)
-    // drawLogo(width, height)
+    if (this.isLogoVisible) {
+      this.drawLogo(this.canvas.clientWidth, this.canvas.clientHeight)
+    }
     this.drawWaves(WAVES_DATA[2], 2, timestamp)
 
     requestAnimationFrame(this.drawFrame)

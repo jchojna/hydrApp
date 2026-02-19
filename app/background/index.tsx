@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { Pane } from "tweakpane"
 
 import { Waves } from "./waves"
@@ -10,6 +10,7 @@ export default function Background() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const containerRef = useRef<HTMLDivElement | null>(null)
   const wavesRef = useRef<Waves | null>(null)
+  const [isIntro, setIsIntro] = useState(true)
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -32,6 +33,11 @@ export default function Background() {
     }
   }, [])
 
+  const handleStart = useCallback(() => {
+    setIsIntro(false)
+    wavesRef.current?.hideLogo()
+  }, [])
+
   return (
     <div ref={containerRef} className="relative h-full min-h-screen w-full">
       <canvas
@@ -47,6 +53,15 @@ export default function Background() {
         >
           Spring Waves
         </button>
+        {isIntro && (
+          <button
+            type="button"
+            className="cursor-pointer rounded-md bg-slate-900/75 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-900/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
+            onClick={handleStart}
+          >
+            Start
+          </button>
+        )}
         <button
           type="button"
           className="cursor-pointer rounded-md bg-slate-900/75 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-900/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"

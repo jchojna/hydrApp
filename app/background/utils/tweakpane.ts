@@ -1,6 +1,6 @@
 import { Pane } from "tweakpane"
 
-import { WAVES_DATA, WAVES_PARAMS } from "../constants"
+import { WAVES_DATA, WAVES_PARAMS } from "./constants"
 
 export const addTweakpane = (pane: Pane) => {
   WAVES_DATA.forEach((wave, index) => {
