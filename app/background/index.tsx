@@ -35,7 +35,8 @@ export default function Background() {
 
   const handleStart = useCallback(() => {
     setIsIntro(false)
-    wavesRef.current?.hideLogo()
+    wavesRef.current?.logo.hideLogo()
+    wavesRef.current?.fadeOut()
   }, [])
 
   return (

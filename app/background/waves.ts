@@ -1,7 +1,7 @@
 import { WAVES_DATA, WAVES_PARAMS } from "./utils/constants"
-import { LOGO_VIEWBOX, LOGO } from "./utils/logo"
 import { WaveData } from "./types"
 import { easeOutCubic, getAnimatedTransitionValue } from "./utils/animation"
+import { Logo } from "./logo"
 
 export class Waves {
   private context: CanvasRenderingContext2D
@@ -12,14 +12,12 @@ export class Waves {
   private readonly minWaterLevelOffset = 0.8
   private readonly maxWaterLevelOffset = 0.05
   private readonly waterLevelTransitionDurationMs = 1000
-  private waterLevel = this.minWaterLevelOffset
+  private waterLevel = 1.1
   private renderedWaterLevel = this.minWaterLevelOffset
   private waterLevelTransitionFrom = this.minWaterLevelOffset
   private waterLevelTransitionStartedAt: number | null = null
   private waterLevelIncrement: number
-  private logoPathA: Path2D
-  private logoPathB: Path2D
-  private isLogoVisible = true
+  public logo: Logo
 
   constructor(
     private canvas: HTMLCanvasElement,
@@ -31,9 +29,7 @@ export class Waves {
     this.waterLevelIncrement =
       (this.minWaterLevelOffset - this.maxWaterLevelOffset) /
       this.waterLevelsTotal
-
-    this.logoPathA = new Path2D(LOGO.partA.path)
-    this.logoPathB = new Path2D(LOGO.partB.path)
+    this.logo = new Logo(this.context)
 
     if (!this.context) {
       throw new Error("Failed to get canvas context")
@@ -93,7 +89,11 @@ export class Waves {
     return oscillation * envelope * this.swingStrength * maxRotation
   }
 
-  private getWaveBaseLine = (index: number, timestamp: number) => {
+  private getWaveBaseLine = (
+    index: number,
+    timestamp: number,
+    easing: (progress: number) => number = easeOutCubic,
+  ) => {
     const height = this.canvas.clientHeight
     this.renderedWaterLevel = getAnimatedTransitionValue({
       timestamp,
@@ -101,7 +101,8 @@ export class Waves {
       to: this.waterLevel,
       startedAt: this.waterLevelTransitionStartedAt,
       durationMs: this.waterLevelTransitionDurationMs,
-      easing: easeOutCubic,
+      delayMs: 100 * index,
+      easing,
       onComplete: () => {
         this.waterLevelTransitionStartedAt = null
         this.waterLevelTransitionFrom = this.waterLevel
@@ -139,26 +140,8 @@ export class Waves {
     this.setWaterLevel(nextWaterLevel)
   }
 
-  public hideLogo = () => {
-    this.isLogoVisible = false
-  }
-
-  private drawLogo = (width: number, height: number) => {
-    const targetWidth = Math.min(width * 0.6, 520)
-    const scale = targetWidth / LOGO_VIEWBOX.width
-    const logoWidth = LOGO_VIEWBOX.width * scale
-    const logoHeight = LOGO_VIEWBOX.height * scale
-    const x = (width - logoWidth) / 2
-    const y = Math.max(16, height * 0.55 - logoHeight / 2)
-
-    this.context.save()
-    this.context.translate(x, y)
-    this.context.scale(scale, scale)
-    this.context.fillStyle = LOGO.partA.color
-    this.context.fill(this.logoPathA)
-    this.context.fillStyle = LOGO.partB.color
-    this.context.fill(this.logoPathB)
-    this.context.restore()
+  public fadeOut = () => {
+    this.setWaterLevel(-0.2)
   }
 
   private drawFrame = (timestamp: number) => {
@@ -170,9 +153,7 @@ export class Waves {
     )
     this.drawWaves(WAVES_DATA[0], 0, timestamp)
     this.drawWaves(WAVES_DATA[1], 1, timestamp)
-    if (this.isLogoVisible) {
-      this.drawLogo(this.canvas.clientWidth, this.canvas.clientHeight)
-    }
+    this.logo.drawLogo(this.canvas.clientWidth, this.canvas.clientHeight)
     this.drawWaves(WAVES_DATA[2], 2, timestamp)
 
     requestAnimationFrame(this.drawFrame)

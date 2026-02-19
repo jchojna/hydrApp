@@ -6,6 +6,7 @@ export const getAnimatedTransitionValue = ({
   to,
   startedAt,
   durationMs,
+  delayMs = 0,
   easing = (progress: number) => progress,
   onComplete,
 }: {
@@ -14,6 +15,7 @@ export const getAnimatedTransitionValue = ({
   to: number
   startedAt: number | null
   durationMs: number
+  delayMs?: number
   easing?: (progress: number) => number
   onComplete?: () => void
 }) => {
@@ -25,7 +27,7 @@ export const getAnimatedTransitionValue = ({
     return to
   }
 
-  const progress = Math.max(0, Math.min(1, elapsed / durationMs))
+  const progress = Math.max(0, Math.min(1, (elapsed - delayMs) / durationMs))
   const easedProgress = easing(progress)
 
   return from + (to - from) * easedProgress
