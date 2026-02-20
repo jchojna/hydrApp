@@ -29,6 +29,22 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-blue-dark-5: var(--blue-dark-5);
+  --color-blue-dark-4: var(--blue-dark-4);
+  --color-blue-dark-3: var(--blue-dark-3);
+  --color-blue-dark-2: var(--blue-dark-2);
+  --color-blue-dark-1: var(--blue-dark-1);
+  --color-blue: var(--blue);
+  --color-blue-light-1: var(--blue-light-1);
+  --color-blue-light-2: var(--blue-light-2);
+  --color-blue-light-3: var(--blue-light-3);
+  --color-orange-dark-3: var(--orange-dark-3);
+  --color-orange-dark-2: var(--orange-dark-2);
+  --color-orange-dark-1: var(--orange-dark-1);
+  --color-orange: var(--orange);
+  --color-orange-light-1: var(--orange-light-1);
+  --color-orange-light-2: var(--orange-light-2);
+  --color-orange-light-3: var(--orange-light-3);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }

@@ -1,3 +1,9 @@
+import { Logo } from "@/components/Logo"
+
 export default function SignUp() {
-  return <div>signup</div>
+  return (
+    <div>
+      <Logo />
+    </div>
+  )
 }

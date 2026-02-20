@@ -1,0 +1,138 @@
+@import "variables.scss";
+@import "mixins.scss";
+
+.loginBox {
+  // align-content: center;
+  // display: grid;
+  // gap: 20px;
+  // grid-template-areas:
+  //   "logo   "
+  //   "label  "
+  //   "input  "
+  //   "alert  "
+  //   "logIn  "
+  //   "signUp ";
+  // height: 100%;
+  // opacity: 0;
+  // padding: 20px;
+  // transition: opacity $newUser-toggle, visibility 0s $newUser-toggle;
+  // visibility: hidden;
+  // width: 100%;
+
+  // &--visible {
+  //   opacity: 1;
+  //   visibility: inherit;
+  //   transition:
+  //     opacity $newUser-toggle,
+  //     visibility 0s;
+  // }
+
+  // @media only screen and (min-width: $media-md) {
+  //   & {
+  //     gap: 30px;
+  //     grid-template-areas:
+  //       "logo    logo   "
+  //       "label   label  "
+  //       "input   input  "
+  //       "alert   alert  "
+  //       "logIn   signUp ";
+  //     grid-template-columns: repeat(2, 1fr);
+  //     padding: 0;
+  //   }
+  // }
+
+  &__heading {
+    color: $blue-light-2;
+    font-size: 2.2em;
+    grid-area: heading;
+    margin: 0;
+    text-align: center;
+  }
+
+  // &__label {
+  //   color: $blue-dark-1;
+  //   font-size: 0.9em;
+  //   font-weight: 700;
+  //   grid-area: label;
+  //   text-align: center;
+
+  //   @media only screen and (min-width: $media-md) {
+  //     font-size: 1.1em;
+  //   }
+  // }
+
+  &__input {
+    background-color: transparent;
+    border: 2px solid $blue;
+    border-radius: 100px;
+    color: $blue-light-3;
+    font-size: 1.4em;
+    grid-area: input;
+    min-height: 50px;
+    min-width: 100px;
+    outline: none;
+    padding: 10px 20px;
+    text-align: center;
+
+    &:focus {
+      border-color: $blue-light-3;
+    }
+
+    @media only screen and (min-width: $media-md) {
+      min-height: 60px;
+    }
+  }
+
+  &__alert {
+    grid-area: alert;
+    height: 0;
+    overflow: hidden;
+    transition: height $time-alert;
+  }
+
+  &__alertText {
+    background-color: $blue-dark-5;
+    border-radius: 100px;
+    color: $blue;
+    font-size: 1em;
+    font-weight: 700;
+    line-height: 1.4;
+    margin: 0;
+    padding: 0.5em;
+    text-align: center;
+  }
+
+  // &__button {
+  // @include button;
+  // @include flex-center;
+  // background-color: $blue-dark-1;
+  // border-radius: 100px;
+  // color: $blue-dark-4;
+  // font-weight: 700;
+  // font-size: 1.3em;
+  // padding: 0.5em;
+  // transition:
+  //   background-color $time-hover-effect,
+  //   color $time-hover-effect;
+
+  // &:hover {
+  //   background-color: $blue-dark-5;
+  //   color: $blue-light-3;
+  // }
+
+  // &--logIn {
+  //   background-color: $blue;
+  //   grid-area: logIn;
+  // }
+
+  // &--signUp {
+  //   grid-area: signUp;
+  // }
+
+  // @media only screen and (min-width: $media-md) {
+  //   & {
+  //     font-size: 1.5em;
+  //   }
+  // }
+  // }
+}
