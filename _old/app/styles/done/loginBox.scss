@@ -41,13 +41,13 @@
   //   }
   // }
 
-  &__heading {
-    color: $blue-light-2;
-    font-size: 2.2em;
-    grid-area: heading;
-    margin: 0;
-    text-align: center;
-  }
+  // &__heading {
+  //   color: $blue-light-2;
+  //   font-size: 2.2em;
+  //   grid-area: heading;
+  //   margin: 0;
+  //   text-align: center;
+  // }
 
   // &__label {
   //   color: $blue-dark-1;
@@ -62,45 +62,45 @@
   // }
 
   &__input {
-    background-color: transparent;
-    border: 2px solid $blue;
-    border-radius: 100px;
-    color: $blue-light-3;
-    font-size: 1.4em;
-    grid-area: input;
-    min-height: 50px;
-    min-width: 100px;
-    outline: none;
-    padding: 10px 20px;
-    text-align: center;
+    // background-color: transparent;
+    // border: 2px solid $blue;
+    // border-radius: 100px;
+    // color: $blue-light-3;
+    // font-size: 1.4em;
+    // grid-area: input;
+    // min-height: 50px;
+    // min-width: 100px;
+    // outline: none;
+    // padding: 10px 20px;
+    // text-align: center;
 
-    &:focus {
-      border-color: $blue-light-3;
-    }
+    // &:focus {
+    //   border-color: $blue-light-3;
+    // }
 
-    @media only screen and (min-width: $media-md) {
-      min-height: 60px;
-    }
+    // @media only screen and (min-width: $media-md) {
+    //   min-height: 60px;
+    // }
   }
 
-  &__alert {
-    grid-area: alert;
-    height: 0;
-    overflow: hidden;
-    transition: height $time-alert;
-  }
+  // &__alert {
+  //   grid-area: alert;
+  //   height: 0;
+  //   overflow: hidden;
+  //   transition: height $time-alert;
+  // }
 
-  &__alertText {
-    background-color: $blue-dark-5;
-    border-radius: 100px;
-    color: $blue;
-    font-size: 1em;
-    font-weight: 700;
-    line-height: 1.4;
-    margin: 0;
-    padding: 0.5em;
-    text-align: center;
-  }
+  // &__alertText {
+  //   background-color: $blue-dark-5;
+  //   border-radius: 100px;
+  //   color: $blue;
+  //   font-size: 1em;
+  //   font-weight: 700;
+  //   line-height: 1.4;
+  //   margin: 0;
+  //   padding: 0.5em;
+  //   text-align: center;
+  // }
 
   // &__button {
   // @include button;
