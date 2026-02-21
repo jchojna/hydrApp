@@ -3,8 +3,10 @@
 import { useState } from "react"
 import Link from "next/link"
 
-import { Button } from "@/components/Button"
+import { Button } from "@/components/ui/button"
 import { Logo } from "@/components/Logo"
+import { Input } from "@/components/ui/input"
+import { FieldLabel } from "@/components/ui/field"
 
 export default function SignIn() {
   const [error, setError] = useState<string | null>(null) // TODO: add validation
@@ -12,24 +14,26 @@ export default function SignIn() {
   return (
     <div className="bg-blue-dark-3 flex flex-col items-center justify-center gap-5 rounded-2xl p-8">
       <Logo />
-
-      <label
-        htmlFor="userLogin"
-        className="text-blue-dark-1 text-center text-sm font-medium md:text-base"
-      >
-        Please, enter your login or sign up
-      </label>
-      <input
-        id="userLogin"
-        className="border-blue text-blue-light-3 focus:border-blue-light-3 min-h-[50px] w-full max-w-52 min-w-[100px] rounded-full border-2 bg-transparent p-2 px-6 text-sm transition-colors duration-200 outline-none md:text-base"
-        type="text"
-        maxLength={20}
-        autoFocus
-      />
-      {error && (
-        <p className="bg-blue-dark-5 text-blue rounded-full p-2 text-center text-sm font-medium md:text-base"></p>
-      )}
-      <Button className="w-full max-w-52">Sign In</Button>
+      {/* TODO: create component for input with label and error */}
+      <div className="flex w-full flex-col gap-2">
+        <FieldLabel htmlFor="username" className="text-blue-dark-1">
+          Username
+        </FieldLabel>
+        <Input id="username" name="username" />
+        {error && (
+          <p className="bg-blue-dark-5 text-blue rounded-full p-2 text-center text-sm font-medium md:text-base"></p>
+        )}
+      </div>
+      <div className="flex w-full flex-col gap-2">
+        <FieldLabel htmlFor="password" className="text-blue-dark-1">
+          Password
+        </FieldLabel>
+        <Input id="password" name="password" />
+        {error && (
+          <p className="bg-blue-dark-5 text-blue rounded-full p-2 text-center text-sm font-medium md:text-base"></p>
+        )}
+      </div>
+      <Button className="w-full">Sign In</Button>
       <div className="flex items-center gap-2">
         <span className="text-blue-dark-1 text-sm font-medium md:text-base">
           Don&apos;t have an account?

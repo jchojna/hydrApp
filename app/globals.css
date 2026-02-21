@@ -63,7 +63,7 @@
 }
 
 @theme inline {
-  --color-background: var(--background);
+  --color-background: var(--blue);
   --color-foreground: var(--foreground);
   --color-blue-dark-5: var(--blue-dark-5);
   --color-blue-dark-4: var(--blue-dark-4);
