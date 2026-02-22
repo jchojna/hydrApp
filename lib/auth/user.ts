@@ -6,12 +6,12 @@ export async function createUser(email: string, password: string) {
   const hashedPassword = await hashPassword(password)
 
   try {
-    await db.insert(usersTable).values({
+    const user = await db.insert(usersTable).values({
       email,
       password: hashedPassword,
     })
 
-    return { email }
+    return { id: user.id, email }
   } catch (error) {
     console.error("Error creating user:", error)
     return null
