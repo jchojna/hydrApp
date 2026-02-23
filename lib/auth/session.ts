@@ -12,7 +12,7 @@ export async function createSession(userId: string) {
     // Store JWT in a cookie
     const cookieStore = await cookies()
     cookieStore.set({
-      name: "auth_token",
+      name: "hydrapp_auth_token",
       value: token,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
