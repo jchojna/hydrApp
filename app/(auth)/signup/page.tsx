@@ -9,9 +9,12 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { signUpAction } from "@/actions/signUp"
 import { Logo } from "@/components/Logo"
 import { Button } from "@/components/ui/button"
-import { FieldLabel } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { signUpSchema, type SignUpInput } from "@/lib/validations/auth"
+import {
+  AuthFormField,
+  signUpSchema,
+  type SignUpInput,
+} from "@/lib/validations/auth"
+import { FormInput } from "@/components/FormInput"
 
 export default function SignUp() {
   const router = useRouter()
@@ -54,57 +57,27 @@ export default function SignUp() {
       className="bg-blue-dark-3 flex w-full max-w-[420px] flex-col items-center justify-center gap-5 rounded-2xl p-8"
     >
       <Logo />
-      <div className="flex w-full flex-col gap-2">
-        <FieldLabel htmlFor="email" className="text-blue-dark-1">
-          Email
-        </FieldLabel>
-        <Input
-          id="email"
-          type="email"
-          autoComplete="email"
-          aria-invalid={!!errors.email}
-          {...register("email")}
-        />
-        {errors.email?.message && (
-          <p className="text-sm font-medium text-red-300">
-            {errors.email.message}
-          </p>
-        )}
-      </div>
-      <div className="flex w-full flex-col gap-2">
-        <FieldLabel htmlFor="password" className="text-blue-dark-1">
-          Password
-        </FieldLabel>
-        <Input
-          id="password"
-          type="password"
-          autoComplete="new-password"
-          aria-invalid={!!errors.password}
-          {...register("password")}
-        />
-        {errors.password?.message && (
-          <p className="text-sm font-medium text-red-300">
-            {errors.password.message}
-          </p>
-        )}
-      </div>
-      <div className="flex w-full flex-col gap-2">
-        <FieldLabel htmlFor="confirmPassword" className="text-blue-dark-1">
-          Confirm Password
-        </FieldLabel>
-        <Input
-          id="confirmPassword"
-          type="password"
-          autoComplete="new-password"
-          aria-invalid={!!errors.confirmPassword}
-          {...register("confirmPassword")}
-        />
-        {errors.confirmPassword?.message && (
-          <p className="text-sm font-medium text-red-300">
-            {errors.confirmPassword.message}
-          </p>
-        )}
-      </div>
+      <FormInput
+        id={AuthFormField.email}
+        label="Email"
+        type="email"
+        errorMessage={errors.email?.message}
+        {...register(AuthFormField.email)}
+      />
+      <FormInput
+        id={AuthFormField.password}
+        label="Password"
+        type="password"
+        errorMessage={errors.password?.message}
+        {...register(AuthFormField.password)}
+      />
+      <FormInput
+        id={AuthFormField.confirmPassword}
+        label="Confirm Password"
+        type="password"
+        errorMessage={errors.confirmPassword?.message}
+        {...register(AuthFormField.confirmPassword)}
+      />
       {apiError && (
         <p className="w-full rounded-full bg-red-400/20 px-3 py-2 text-center text-sm font-medium text-red-200">
           {apiError}

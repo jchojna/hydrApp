@@ -9,9 +9,12 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { signInAction } from "@/actions/signIn"
 import { Button } from "@/components/ui/button"
 import { Logo } from "@/components/Logo"
-import { Input } from "@/components/ui/input"
-import { FieldLabel } from "@/components/ui/field"
-import { signInSchema, type SignInInput } from "@/lib/validations/auth"
+import {
+  AuthFormField,
+  signInSchema,
+  type SignInInput,
+} from "@/lib/validations/auth"
+import { FormInput } from "@/components/FormInput"
 
 export default function SignIn() {
   const router = useRouter()
@@ -54,40 +57,20 @@ export default function SignIn() {
       noValidate
     >
       <Logo />
-      <div className="flex w-full flex-col gap-2">
-        <FieldLabel htmlFor="email" className="text-blue-dark-1">
-          Email
-        </FieldLabel>
-        <Input
-          id="email" // TODO: use form field names
-          type="email"
-          autoComplete="email"
-          aria-invalid={!!errors.email}
-          {...register("email")}
-        />
-        {errors.email?.message && (
-          <p className="text-sm font-medium text-red-300">
-            {errors.email.message}
-          </p>
-        )}
-      </div>
-      <div className="flex w-full flex-col gap-2">
-        <FieldLabel htmlFor="password" className="text-blue-dark-1">
-          Password
-        </FieldLabel>
-        <Input
-          id="password"
-          type="password"
-          autoComplete="current-password"
-          aria-invalid={!!errors.password}
-          {...register("password")}
-        />
-        {errors.password?.message && (
-          <p className="text-sm font-medium text-red-300">
-            {errors.password.message}
-          </p>
-        )}
-      </div>
+      <FormInput
+        id={AuthFormField.email}
+        label="Email"
+        type="email"
+        errorMessage={errors.email?.message}
+        {...register(AuthFormField.email)}
+      />
+      <FormInput
+        id={AuthFormField.password}
+        label="Password"
+        type="password"
+        errorMessage={errors.password?.message}
+        {...register(AuthFormField.password)}
+      />
       {apiError && (
         <p className="w-full rounded-full bg-red-400/20 px-3 py-2 text-center text-sm font-medium text-red-200">
           {apiError}

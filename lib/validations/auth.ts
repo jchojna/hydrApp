@@ -1,5 +1,12 @@
 import { z } from "zod"
 
+export const AuthFormField = {
+  email: "email",
+  password: "password",
+  confirmPassword: "confirmPassword",
+} as const
+export type AuthFormField = (typeof AuthFormField)[keyof typeof AuthFormField]
+
 const emailSchema = z.email("Please enter a valid email address.").trim()
 
 const passwordSchema = z
