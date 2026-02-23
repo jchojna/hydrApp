@@ -3,6 +3,8 @@ import { cookies } from "next/headers"
 
 import { createAuthToken, verifyAuthToken } from "./jwt"
 
+const AUTH_COOKIE_NAME = "hydrapp_auth_token"
+
 // Create a session using JWT
 export async function createSession(userId: string) {
   try {
@@ -12,7 +14,7 @@ export async function createSession(userId: string) {
     // Store JWT in a cookie
     const cookieStore = await cookies()
     cookieStore.set({
-      name: "hydrapp_auth_token",
+      name: AUTH_COOKIE_NAME,
       value: token,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -32,7 +34,7 @@ export async function createSession(userId: string) {
 export const getSession = cache(async () => {
   try {
     const cookieStore = await cookies()
-    const token = cookieStore.get("auth_token")?.value
+    const token = cookieStore.get(AUTH_COOKIE_NAME)?.value
 
     if (!token) return null
     const payload = await verifyAuthToken(token)
@@ -58,5 +60,5 @@ export const getSession = cache(async () => {
 // Delete session by clearing the JWT cookie
 export async function deleteSession() {
   const cookieStore = await cookies()
-  cookieStore.delete("auth_token")
+  cookieStore.delete(AUTH_COOKIE_NAME)
 }
