@@ -1,9 +1,10 @@
 "use server"
 
-import { deleteSession } from "@/lib/auth/session"
 import { redirect } from "next/navigation"
 
-export async function signOut(): Promise<void> {
+import { deleteSession } from "@/lib/auth/session"
+
+export async function signOutAction(): Promise<void> {
   try {
     await deleteSession()
   } catch (error) {
