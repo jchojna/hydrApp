@@ -7,9 +7,12 @@ type LogoProps = {
 
 export const Logo = ({ className }: LogoProps) => {
   return (
-    <div
+    <a
+      href="https://github.com/jchojna/hydrApp"
+      target="_blank"
+      rel="noopener noreferrer"
       className={cn(
-        "relative z-20 flex items-center justify-center",
+        "relative z-20 flex cursor-pointer items-center justify-center",
         className,
       )}
     >
@@ -22,6 +25,6 @@ export const Logo = ({ className }: LogoProps) => {
       >
         <path d={LOGO.partB.path} fill="currentColor" />
       </svg>
-    </div>
+    </a>
   )
 }

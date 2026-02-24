@@ -1,16 +1,14 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useTransition } from "react"
 
 import { signOutAction } from "@/actions/signOut"
 import { Button } from "@/components/ui/button"
 import { Logo } from "@/components/Logo"
-import { IconButton } from "@/components/IconButton"
-import { BurgerButton } from "@/components/BurgerButton"
+import { Sidebar } from "@/components/Sidebar"
 
 export default function Dashboard() {
   const [isPending, startTransition] = useTransition()
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   const handleSignOut = () => {
     startTransition(async () => {
@@ -19,11 +17,11 @@ export default function Dashboard() {
   }
 
   return (
-    <div>
+    <div className="relative flex h-full w-full flex-col items-center justify-center">
       <header className="fixed top-0 left-0 flex w-full items-center justify-between p-8">
         <Logo className="w-[200px]" />
-        <BurgerButton onClick={() => setIsSidebarOpen((prev) => !prev)} />
       </header>
+      <Sidebar />
       <Button onClick={handleSignOut} disabled={isPending}>
         {isPending ? "Signing out..." : "Sign Out"}
       </Button>
