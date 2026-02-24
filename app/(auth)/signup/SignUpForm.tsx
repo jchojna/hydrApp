@@ -56,7 +56,7 @@ export default function SignUpForm() {
       onSubmit={onSubmit}
       className="bg-blue-dark-3 flex w-full max-w-[420px] flex-col items-center justify-center gap-5 rounded-2xl p-8"
     >
-      <Logo />
+      <Logo className="mb-2.5 w-4/5 max-w-[300px]" />
       <FormInput
         id={AuthFormField.email}
         label="Email"

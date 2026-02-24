@@ -7,7 +7,7 @@ export default async function SignIn() {
   const session = await getSession()
 
   if (session) {
-    redirect("/")
+    redirect("/dashboard")
   }
 
   return <SignInForm />
