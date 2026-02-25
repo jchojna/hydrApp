@@ -1,12 +1,14 @@
 "use client"
 
-import { Controls } from "@/components/Controls"
+import { Controls } from "./components/Controls"
 import { Logo } from "@/components/Logo"
 import { Sidebar } from "@/components/Sidebar"
 import { cn } from "@/lib/utils"
 import { useState } from "react"
+import { Output } from "./components/Output"
 
 export default function Dashboard() {
+  const [waterLevel, setWaterLevel] = useState(0)
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
 
   return (
@@ -20,8 +22,8 @@ export default function Dashboard() {
           isSidebarOpen && "w-2/3",
         )}
       >
-        <h1>Dashboard</h1>
-        <Controls />
+        <Output waterLevel={waterLevel} />
+        <Controls waterLevel={waterLevel} setWaterLevel={setWaterLevel} />
       </div>
       <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
     </div>
