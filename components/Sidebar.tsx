@@ -1,53 +1,45 @@
-import { BurgerButton } from "@/components/BurgerButton"
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer"
-import { Button } from "./ui/button"
-import { useState } from "react"
+import { useTransition } from "react"
+
 import { cn } from "@/lib/utils"
 
-export const Sidebar = () => {
-  const [isOpen, setIsOpen] = useState(false)
+import { signOutAction } from "@/actions/signOut"
+import { Button } from "@/components/ui/button"
+import { BurgerCircleIcon } from "@/assets/svg/icons/burger-circle"
+import { IconButton } from "./IconButton"
+
+interface SidebarProps {
+  isOpen: boolean
+  setIsOpen: (isOpen: boolean) => void
+}
+
+export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
+  const [isPending, startTransition] = useTransition()
+
+  const handleSignOut = () => {
+    startTransition(async () => {
+      await signOutAction()
+    })
+  }
+
   return (
-    <Drawer direction="right" onOpenChange={setIsOpen}>
-      <DrawerTrigger asChild>
-        <BurgerButton className={cn(isOpen && "rotate-180 transform")} />
-      </DrawerTrigger>
-      <DrawerContent>
-        <DrawerHeader>
-          <DrawerTitle>Move Goal</DrawerTitle>
-          <DrawerDescription>Set your daily activity goal.</DrawerDescription>
-        </DrawerHeader>
-        <div className="no-scrollbar overflow-y-auto px-4">
-          {Array.from({ length: 10 }).map((_, index) => (
-            <p
-              key={index}
-              className="style-lyra:mb-2 style-lyra:leading-relaxed mb-4 leading-normal"
-            >
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-              reprehenderit in voluptate velit esse cillum dolore eu fugiat
-              nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-              sunt in culpa qui officia deserunt mollit anim id est laborum.
-            </p>
-          ))}
-        </div>
-        <DrawerFooter>
-          <Button>Submit</Button>
-          <DrawerClose asChild>
-            <Button variant="outline">Cancel</Button>
-          </DrawerClose>
-        </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
+    <div className="absolute top-0 right-0">
+      <div className="relative z-50 p-8">
+        <IconButton
+          icon={<BurgerCircleIcon />}
+          className={cn(isOpen && "rotate-180 transform")}
+          onClick={() => setIsOpen(!isOpen)}
+        />
+      </div>
+      <div
+        className={cn(
+          "bg-blue-dark-4 fixed top-0 right-0 h-full w-1/3 translate-x-full transition-transform duration-300",
+          isOpen && "translate-x-0",
+        )}
+      >
+        <Button onClick={handleSignOut} disabled={isPending}>
+          {isPending ? "Signing out..." : "Sign Out"}
+        </Button>
+      </div>
+    </div>
   )
 }

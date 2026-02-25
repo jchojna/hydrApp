@@ -1,30 +1,29 @@
 "use client"
 
-import { useTransition } from "react"
-
-import { signOutAction } from "@/actions/signOut"
-import { Button } from "@/components/ui/button"
+import { Controls } from "@/components/Controls"
 import { Logo } from "@/components/Logo"
 import { Sidebar } from "@/components/Sidebar"
+import { cn } from "@/lib/utils"
+import { useState } from "react"
 
 export default function Dashboard() {
-  const [isPending, startTransition] = useTransition()
-
-  const handleSignOut = () => {
-    startTransition(async () => {
-      await signOutAction()
-    })
-  }
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
 
   return (
-    <div className="relative flex h-full w-full flex-col items-center justify-center">
+    <div className="relative flex h-full w-full flex-col justify-center">
       <header className="fixed top-0 left-0 flex w-full items-center justify-between p-8">
         <Logo className="w-[200px]" />
       </header>
-      <Sidebar />
-      <Button onClick={handleSignOut} disabled={isPending}>
-        {isPending ? "Signing out..." : "Sign Out"}
-      </Button>
+      <div
+        className={cn(
+          "relative flex h-full w-full items-center justify-center border border-red-500 transition-[width] duration-300",
+          isSidebarOpen && "w-2/3",
+        )}
+      >
+        <h1>Dashboard</h1>
+        <Controls />
+      </div>
+      <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
     </div>
   )
 }
