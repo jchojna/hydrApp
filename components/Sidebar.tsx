@@ -32,7 +32,7 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
       </div>
       <div
         className={cn(
-          "bg-blue-dark-4 fixed top-0 right-0 h-full w-1/3 translate-x-full transition-transform duration-300",
+          "bg-blue-dark-4 fixed top-0 right-0 flex h-full w-1/3 translate-x-full flex-col items-center justify-center p-8 transition-transform duration-300",
           isOpen && "translate-x-0",
         )}
       >
