@@ -10,16 +10,16 @@ import { Digit8 } from "@/assets/svg/digits/digit-8"
 import { Digit9 } from "@/assets/svg/digits/digit-9"
 
 const DIGITS = [
-  <Digit0 key="0" className="w-16" />,
-  <Digit1 key="1" className="w-16" />,
-  <Digit2 key="2" className="w-16" />,
-  <Digit3 key="3" className="w-16" />,
-  <Digit4 key="4" className="w-16" />,
-  <Digit5 key="5" className="w-16" />,
-  <Digit6 key="6" className="w-16" />,
-  <Digit7 key="7" className="w-16" />,
-  <Digit8 key="8" className="w-16" />,
-  <Digit9 key="9" className="w-16" />,
+  Digit0,
+  Digit1,
+  Digit2,
+  Digit3,
+  Digit4,
+  Digit5,
+  Digit6,
+  Digit7,
+  Digit8,
+  Digit9,
 ]
 
 interface OutputProps {
@@ -31,7 +31,10 @@ export const Output = ({ waterLevel }: OutputProps) => {
     .toString()
     .padStart(2, "0")
     .split("")
-    .map((digit) => DIGITS[parseInt(digit)])
+    .map((digit, index) => {
+      const Digit = DIGITS[parseInt(digit)]
+      return <Digit key={`${digit}${index}`} className="w-16" />
+    })
 
   return <div className="flex gap-2">{digits}</div>
 }

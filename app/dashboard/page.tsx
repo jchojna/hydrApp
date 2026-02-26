@@ -6,8 +6,7 @@ import { Sidebar } from "@/components/Sidebar"
 import { cn } from "@/lib/utils"
 import { useState } from "react"
 import { Output } from "./components/Output"
-
-const TOTAL_WATER_LEVELS = 20
+import { TOTAL_WATER_LEVELS } from "../background/waves"
 
 export default function Dashboard() {
   const [waterLevel, setWaterLevel] = useState(0)

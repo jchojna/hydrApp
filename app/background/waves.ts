@@ -3,6 +3,9 @@ import { WaveData } from "./types"
 import { easeOutCubic, getAnimatedTransitionValue } from "./utils/animation"
 import { Logo } from "./logo"
 
+export const TOTAL_WATER_LEVELS = 20
+
+// TODO: improve this class as in animated grid class
 export class Waves {
   private context: CanvasRenderingContext2D
   private swingStartedAt: number | null = null
@@ -21,7 +24,7 @@ export class Waves {
 
   constructor(
     private canvas: HTMLCanvasElement,
-    waterLevelsTotal: number = 10,
+    waterLevelsTotal: number = TOTAL_WATER_LEVELS,
   ) {
     this.canvas = canvas
     this.context = canvas.getContext("2d") as CanvasRenderingContext2D
@@ -101,7 +104,8 @@ export class Waves {
       to: this.waterLevel,
       startedAt: this.waterLevelTransitionStartedAt,
       durationMs: this.waterLevelTransitionDurationMs,
-      delayMs: 100 * index,
+      // delayMs: 100 * index, // TODO: fix issue when delay is applied
+      delayMs: 0,
       easing,
       onComplete: () => {
         this.waterLevelTransitionStartedAt = null
