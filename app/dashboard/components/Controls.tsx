@@ -4,28 +4,51 @@ import { MinusCircleIcon } from "@/assets/svg/icons/minus-circle"
 import { waves } from "@/app/background"
 
 import { Emoji1 } from "@/assets/svg/emojis/emoji-1"
-// import { Emoji2 } from "@/assets/svg/emojis/emoji-2"
-// import { Emoji3 } from "@/assets/svg/emojis/emoji-3"
-// import { Emoji4 } from "@/assets/svg/emojis/emoji-4"
-// import { Emoji5 } from "@/assets/svg/emojis/emoji-5"
-// import { Emoji6 } from "@/assets/svg/emojis/emoji-6"
-// import { Emoji7 } from "@/assets/svg/emojis/emoji-7"
-// import { Emoji8 } from "@/assets/svg/emojis/emoji-8"
+import { Emoji2 } from "@/assets/svg/emojis/emoji-2"
+import { Emoji3 } from "@/assets/svg/emojis/emoji-3"
+import { Emoji4 } from "@/assets/svg/emojis/emoji-4"
+import { Emoji5 } from "@/assets/svg/emojis/emoji-5"
+import { Emoji6 } from "@/assets/svg/emojis/emoji-6"
+import { Emoji7 } from "@/assets/svg/emojis/emoji-7"
+import { Emoji8 } from "@/assets/svg/emojis/emoji-8"
+import type { Dispatch, SetStateAction } from "react"
+
+const EMOJIS = [Emoji1, Emoji2, Emoji3, Emoji4, Emoji5, Emoji6, Emoji7, Emoji8]
+
+const getEmoji = (waterLevel: number, totalWaterLevels: number) => {
+  const emojiCount = EMOJIS.length
+  const safeTotalLevels = Math.max(totalWaterLevels, 1)
+  const clampedLevel = Math.min(Math.max(waterLevel, 0), safeTotalLevels)
+  const emojiIndex = Math.min(
+    emojiCount - 1,
+    Math.floor((clampedLevel * emojiCount) / safeTotalLevels),
+  )
+  const Emoji = EMOJIS[emojiIndex]
+
+  return <Emoji className="w-14" />
+}
 
 interface ControlsProps {
   waterLevel: number
-  setWaterLevel: (waterLevel: number) => void
+  totalWaterLevels: number
+  setWaterLevel: Dispatch<SetStateAction<number>>
 }
 
-export const Controls = ({ waterLevel, setWaterLevel }: ControlsProps) => {
+export const Controls = ({
+  waterLevel,
+  totalWaterLevels,
+  setWaterLevel,
+}: ControlsProps) => {
   const handleIncreaseWaterLevel = () => {
-    setWaterLevel(waterLevel + 1)
-    waves?.increaseWaterLevel()
+    setWaterLevel((prevWaterLevel) =>
+      Math.min(prevWaterLevel + 1, totalWaterLevels),
+    )
+    waves?.increaseWaterLevel() // TODO: change to set water level
   }
 
   const handleDecreaseWaterLevel = () => {
-    setWaterLevel(waterLevel - 1)
-    waves?.decreaseWaterLevel()
+    setWaterLevel((prevWaterLevel) => Math.max(prevWaterLevel - 1, 0))
+    waves?.decreaseWaterLevel() // TODO: change to set water level
   }
 
   return (
@@ -38,14 +61,7 @@ export const Controls = ({ waterLevel, setWaterLevel }: ControlsProps) => {
         icon={<MinusCircleIcon />}
         onClick={handleDecreaseWaterLevel}
       />
-      <Emoji1 className="w-14" />
-      {/* <Emoji2 /> */}
-      {/* <Emoji3 /> */}
-      {/* <Emoji4 /> */}
-      {/* <Emoji5 /> */}
-      {/* <Emoji6 /> */}
-      {/* <Emoji7 /> */}
-      {/* <Emoji8 /> */}
+      {getEmoji(waterLevel, totalWaterLevels)}
     </div>
   )
 }

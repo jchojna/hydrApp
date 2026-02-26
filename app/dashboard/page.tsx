@@ -7,6 +7,8 @@ import { cn } from "@/lib/utils"
 import { useState } from "react"
 import { Output } from "./components/Output"
 
+const TOTAL_WATER_LEVELS = 20
+
 export default function Dashboard() {
   const [waterLevel, setWaterLevel] = useState(0)
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
@@ -23,7 +25,11 @@ export default function Dashboard() {
         )}
       >
         <Output waterLevel={waterLevel} />
-        <Controls waterLevel={waterLevel} setWaterLevel={setWaterLevel} />
+        <Controls
+          waterLevel={waterLevel}
+          totalWaterLevels={TOTAL_WATER_LEVELS}
+          setWaterLevel={setWaterLevel}
+        />
       </div>
       <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
     </div>
