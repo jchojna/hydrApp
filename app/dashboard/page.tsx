@@ -10,7 +10,7 @@ import { TOTAL_WATER_LEVELS } from "../background/waves"
 
 export default function Dashboard() {
   const [waterLevel, setWaterLevel] = useState(0)
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
 
   return (
     <div className="relative flex h-full w-full flex-col justify-center">
@@ -19,7 +19,7 @@ export default function Dashboard() {
       </header>
       <div
         className={cn(
-          "relative flex h-full w-full items-center justify-center border border-red-500 transition-[width] duration-300",
+          "relative flex h-full w-full items-center justify-center transition-[width] duration-300",
           isSidebarOpen && "w-2/3",
         )}
       >

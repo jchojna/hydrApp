@@ -6,6 +6,12 @@ import { signOutAction } from "@/actions/signOut"
 import { Button } from "@/components/ui/button"
 import { BurgerCircleIcon } from "@/assets/svg/icons/burger-circle"
 import { IconButton } from "./IconButton"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "./ui/accordion"
 
 interface SidebarProps {
   isOpen: boolean
@@ -36,9 +42,32 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
           isOpen && "translate-x-0",
         )}
       >
-        <Button onClick={handleSignOut} disabled={isPending}>
-          {isPending ? "Signing out..." : "Sign Out"}
-        </Button>
+        <Accordion
+          type="multiple"
+          className="w-full max-w-lg"
+          defaultValue={["notifications"]}
+        >
+          <AccordionItem value="archive">
+            <AccordionTrigger>Archive</AccordionTrigger>
+            <AccordionContent>Archive content.</AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="stats">
+            <AccordionTrigger>Stats</AccordionTrigger>
+            <AccordionContent>Stats content.</AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="ranking">
+            <AccordionTrigger>Ranking</AccordionTrigger>
+            <AccordionContent>Ranking content.</AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="settings">
+            <AccordionTrigger>Settings</AccordionTrigger>
+            <AccordionContent>
+              <Button onClick={handleSignOut} disabled={isPending}>
+                {isPending ? "Signing out..." : "Sign Out"}
+              </Button>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </div>
     </div>
   )
