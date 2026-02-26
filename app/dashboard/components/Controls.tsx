@@ -1,4 +1,4 @@
-import type { Dispatch, SetStateAction } from "react"
+import { useMemo, type Dispatch, type SetStateAction } from "react"
 
 import { PlusCircleIcon } from "@/assets/svg/icons/plus-circle"
 import { IconButton } from "@/components/IconButton"
@@ -29,6 +29,11 @@ export const Controls = ({
     waves?.decreaseWaterLevel() // TODO: change to set water level
   }
 
+  const emoji = useMemo(
+    () => getEmoji(waterLevel, totalWaterLevels),
+    [waterLevel, totalWaterLevels],
+  )
+
   return (
     <div className="absolute right-0 bottom-0 flex flex-col gap-4 p-8">
       <IconButton
@@ -39,7 +44,7 @@ export const Controls = ({
         icon={<MinusCircleIcon />}
         onClick={handleDecreaseWaterLevel}
       />
-      {getEmoji(waterLevel, totalWaterLevels)}
+      {emoji}
     </div>
   )
 }
