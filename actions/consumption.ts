@@ -5,13 +5,15 @@ import { ActionResponse } from "./types"
 
 type SaveConsumptionInput = {
   amount: number
-  date: Date
+  date: string
 }
 
 export async function saveConsumptionAction(
   input: SaveConsumptionInput,
 ): Promise<ActionResponse> {
   try {
+    await new Promise((resolve) => setTimeout(resolve, 300)) // TODO: remove this
+
     const user = await getCurrentUser()
     if (!user) {
       return {

@@ -1,10 +1,17 @@
-import { useMemo, type Dispatch, type SetStateAction } from "react"
+import {
+  useMemo,
+  useTransition,
+  type Dispatch,
+  type SetStateAction,
+} from "react"
 
 import { PlusCircleIcon } from "@/assets/svg/icons/plus-circle"
 import { IconButton } from "@/components/IconButton"
 import { MinusCircleIcon } from "@/assets/svg/icons/minus-circle"
 import { waves } from "@/app/background"
 import { getEmoji } from "../utils/getEmoji"
+import { formatDate } from "../utils/formatDate"
+import { saveConsumptionAction } from "@/actions/consumption"
 
 interface ControlsProps {
   waterLevel: number
@@ -17,16 +24,32 @@ export const Controls = ({
   totalWaterLevels,
   setWaterLevel,
 }: ControlsProps) => {
-  const handleIncreaseWaterLevel = () => {
+  const [isPending, startTransition] = useTransition()
+
+  const handleIncreaseWaterLevel = async () => {
     setWaterLevel((prevWaterLevel) =>
       Math.min(prevWaterLevel + 1, totalWaterLevels),
     )
     waves?.increaseWaterLevel() // TODO: change to set water level
+
+    startTransition(async () => {
+      await saveConsumptionAction({
+        amount: waterLevel + 1,
+        date: formatDate(new Date()),
+      })
+    })
   }
 
   const handleDecreaseWaterLevel = () => {
     setWaterLevel((prevWaterLevel) => Math.max(prevWaterLevel - 1, 0))
     waves?.decreaseWaterLevel() // TODO: change to set water level
+
+    startTransition(async () => {
+      await saveConsumptionAction({
+        amount: waterLevel - 1,
+        date: formatDate(new Date()),
+      })
+    })
   }
 
   const emoji = useMemo(
@@ -39,10 +62,12 @@ export const Controls = ({
       <IconButton
         icon={<PlusCircleIcon />}
         onClick={handleIncreaseWaterLevel}
+        disabled={isPending}
       />
       <IconButton
         icon={<MinusCircleIcon />}
         onClick={handleDecreaseWaterLevel}
+        disabled={isPending}
       />
       {emoji}
     </div>

@@ -1,10 +1,4 @@
-import {
-  numeric,
-  pgTable,
-  timestamp,
-  uniqueIndex,
-  uuid,
-} from "drizzle-orm/pg-core"
+import { date, numeric, pgTable, uniqueIndex, uuid } from "drizzle-orm/pg-core"
 import {
   createInsertSchema,
   createSelectSchema,
@@ -22,7 +16,7 @@ export const consumptionTable = pgTable(
       .notNull()
       .references(() => usersTable.id, { onDelete: "cascade" }),
     amount: numeric("amount").default("0").notNull(),
-    date: timestamp("date", { withTimezone: true }).defaultNow().notNull(),
+    date: date("date", { mode: "string" }).notNull(),
     ...timestamps,
   },
   (table) => [

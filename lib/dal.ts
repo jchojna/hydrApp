@@ -46,7 +46,7 @@ export const getUserByEmail = cache(async (email: string) => {
   }
 })
 
-export async function getConsumptionAmount(userId: string, date: Date) {
+export async function getConsumptionAmount(userId: string, date: string) {
   try {
     const result = await db
       .select({ amount: consumptionTable.amount })
@@ -69,7 +69,7 @@ export async function getConsumptionAmount(userId: string, date: Date) {
 export async function upsertConsumptionRecord(
   userId: string,
   amount: number,
-  date: Date,
+  date: string,
 ) {
   try {
     const result = await db

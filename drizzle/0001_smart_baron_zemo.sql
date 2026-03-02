@@ -2,7 +2,7 @@ CREATE TABLE "consumption" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"user_id" uuid NOT NULL,
 	"amount" numeric DEFAULT '0' NOT NULL,
-	"date" timestamp with time zone DEFAULT now() NOT NULL,
+	"date" date NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"deleted_at" timestamp with time zone

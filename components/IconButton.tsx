@@ -13,6 +13,7 @@ export const IconButton = ({
       className={cn(
         className,
         "text-blue-light-1 hover:text-blue-light-3 transition-colors-transform w-14 cursor-pointer duration-300",
+        "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
       )}
       onClick={onClick}
       {...props}
