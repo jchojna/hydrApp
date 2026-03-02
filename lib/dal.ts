@@ -4,8 +4,8 @@ import { and, eq } from "drizzle-orm"
 import { db } from "@/db"
 import { getSession } from "@/lib/auth/session"
 // import { issues, users } from "@/db/schema"
-// import { unstable_cacheTag as cacheTag } from "next/cache"
 import { consumptionTable, usersTable } from "@/db/schema"
+import { updateTag } from "next/cache"
 
 export const getCurrentUser = cache(async () => {
   const session = await getSession()
@@ -80,6 +80,8 @@ export async function upsertConsumptionRecord(
         set: { amount: amount.toString(), updated_at: new Date() },
       })
       .returning()
+
+    updateTag("dashboardPage")
 
     return result[0] || null
   } catch (error) {

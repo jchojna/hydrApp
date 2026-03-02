@@ -1,6 +1,10 @@
 "use server"
 
-import { getCurrentUser, upsertConsumptionRecord } from "@/lib/dal"
+import {
+  getConsumptionAmount,
+  getCurrentUser,
+  upsertConsumptionRecord,
+} from "@/lib/dal"
 import { ActionResponse } from "./types"
 
 type SaveConsumptionInput = {
@@ -12,7 +16,7 @@ export async function saveConsumptionAction(
   input: SaveConsumptionInput,
 ): Promise<ActionResponse> {
   try {
-    await new Promise((resolve) => setTimeout(resolve, 300)) // TODO: remove this
+    await new Promise((resolve) => setTimeout(resolve, 200)) // TODO: remove this
 
     const user = await getCurrentUser()
     if (!user) {
@@ -33,6 +37,33 @@ export async function saveConsumptionAction(
     return {
       success: false,
       message: "An error occurred while saving consumption",
+    }
+  }
+}
+
+export async function getConsumptionAmountAction(
+  date: string,
+): Promise<ActionResponse<string>> {
+  try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return {
+        success: false,
+        message: "You need to be signed in",
+      }
+    }
+
+    const amount = await getConsumptionAmount(user.id, date)
+    return {
+      success: true,
+      message: "Consumption amount retrieved successfully",
+      data: amount || "0",
+    }
+  } catch (error) {
+    console.error("Get consumption amount error:", error)
+    return {
+      success: false,
+      message: "An error occurred while getting consumption amount",
     }
   }
 }

@@ -1,9 +1,4 @@
-import {
-  useMemo,
-  useTransition,
-  type Dispatch,
-  type SetStateAction,
-} from "react"
+import { useMemo, useTransition } from "react"
 
 import { PlusCircleIcon } from "@/assets/svg/icons/plus-circle"
 import { IconButton } from "@/components/IconButton"
@@ -16,20 +11,12 @@ import { saveConsumptionAction } from "@/actions/consumption"
 interface ControlsProps {
   waterLevel: number
   totalWaterLevels: number
-  setWaterLevel: Dispatch<SetStateAction<number>>
 }
 
-export const Controls = ({
-  waterLevel,
-  totalWaterLevels,
-  setWaterLevel,
-}: ControlsProps) => {
+export const Controls = ({ waterLevel, totalWaterLevels }: ControlsProps) => {
   const [isPending, startTransition] = useTransition()
 
   const handleIncreaseWaterLevel = async () => {
-    setWaterLevel((prevWaterLevel) =>
-      Math.min(prevWaterLevel + 1, totalWaterLevels),
-    )
     waves?.increaseWaterLevel() // TODO: change to set water level
 
     startTransition(async () => {
@@ -41,7 +28,6 @@ export const Controls = ({
   }
 
   const handleDecreaseWaterLevel = () => {
-    setWaterLevel((prevWaterLevel) => Math.max(prevWaterLevel - 1, 0))
     waves?.decreaseWaterLevel() // TODO: change to set water level
 
     startTransition(async () => {
