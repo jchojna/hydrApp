@@ -1,11 +1,11 @@
 import { cache } from "react"
-import { eq } from "drizzle-orm"
+import { and, eq } from "drizzle-orm"
 
 import { db } from "@/db"
 import { getSession } from "@/lib/auth/session"
 // import { issues, users } from "@/db/schema"
 // import { unstable_cacheTag as cacheTag } from "next/cache"
-import { usersTable } from "@/db/schema"
+import { consumptionTable, usersTable } from "@/db/schema"
 
 export const getCurrentUser = cache(async () => {
   const session = await getSession()
@@ -45,6 +45,48 @@ export const getUserByEmail = cache(async (email: string) => {
     return null
   }
 })
+
+export async function getConsumptionAmount(userId: string, date: Date) {
+  try {
+    const result = await db
+      .select({ amount: consumptionTable.amount })
+      .from(consumptionTable)
+      .where(
+        and(
+          eq(consumptionTable.user_id, userId),
+          eq(consumptionTable.date, date),
+        ),
+      )
+      .limit(1)
+
+    return result[0]?.amount || null
+  } catch (error) {
+    console.error("Error getting consumption amount:", error)
+    throw new Error("Failed to get consumption amount")
+  }
+}
+
+export async function upsertConsumptionRecord(
+  userId: string,
+  amount: number,
+  date: Date,
+) {
+  try {
+    const result = await db
+      .insert(consumptionTable)
+      .values({ user_id: userId, amount: amount.toString(), date })
+      .onConflictDoUpdate({
+        target: [consumptionTable.user_id, consumptionTable.date],
+        set: { amount: amount.toString(), updated_at: new Date() },
+      })
+      .returning()
+
+    return result[0] || null
+  } catch (error) {
+    console.error("Error upserting consumption record:", error)
+    throw new Error("Failed to upsert consumption record")
+  }
+}
 
 // // Fetcher functions for React Query
 // export async function getIssue(id: number) {

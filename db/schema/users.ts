@@ -1,10 +1,11 @@
 import { pgTable, text, uniqueIndex, varchar } from "drizzle-orm/pg-core"
-import { timestamps, uuidPrimaryKey } from "./utils"
 import {
   createInsertSchema,
   createSelectSchema,
   createUpdateSchema,
 } from "drizzle-zod"
+
+import { timestamps, uuidPrimaryKey } from "./utils"
 
 export const usersTable = pgTable(
   "users",
