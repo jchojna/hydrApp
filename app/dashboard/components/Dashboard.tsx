@@ -1,13 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 import { Controls } from "./Controls"
 import { Logo } from "@/components/Logo"
 import { Sidebar } from "@/components/Sidebar"
 import { cn } from "@/lib/utils"
 import { Output } from "./Output"
-import { TOTAL_WATER_LEVELS } from "@/app/background/waves"
+import { waves } from "@/app/background"
 
 type DashboardProps = {
   waterLevel: number
@@ -15,6 +15,10 @@ type DashboardProps = {
 
 export default function Dashboard({ waterLevel }: DashboardProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+
+  useEffect(() => {
+    waves?.setWaterLevel(waterLevel)
+  }, [waterLevel])
 
   return (
     <div className="relative flex h-full w-full flex-col justify-center">
@@ -28,10 +32,7 @@ export default function Dashboard({ waterLevel }: DashboardProps) {
         )}
       >
         <Output waterLevel={waterLevel} />
-        <Controls
-          waterLevel={waterLevel}
-          totalWaterLevels={TOTAL_WATER_LEVELS}
-        />
+        <Controls waterLevel={waterLevel} />
       </div>
       <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
     </div>

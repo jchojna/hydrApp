@@ -41,3 +41,6 @@ export const SCORE_LEVELS = [
     emoji: Emoji8,
   },
 ]
+
+export const GLASS_VOLUME = 0.25 // in litres
+export const MAX_WATER_PER_DAY = 3 // 3 litres

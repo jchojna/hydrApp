@@ -2,7 +2,7 @@ import { useMemo } from "react"
 
 import { getDigits } from "../utils/getDigits"
 import { Today } from "./Today"
-import { TOTAL_WATER_LEVELS } from "@/app/background/waves"
+import { MAX_WATER_PER_DAY } from "../utils/constants"
 import { getScoreLevel } from "../utils/getScoreLevel"
 
 interface OutputProps {
@@ -12,7 +12,7 @@ interface OutputProps {
 export const Output = ({ waterLevel }: OutputProps) => {
   const digits = useMemo(() => getDigits(waterLevel), [waterLevel])
   const scoreLevel = useMemo(
-    () => getScoreLevel(waterLevel, TOTAL_WATER_LEVELS),
+    () => getScoreLevel(waterLevel, MAX_WATER_PER_DAY),
     [waterLevel],
   )
 

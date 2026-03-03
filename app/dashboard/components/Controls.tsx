@@ -7,40 +7,47 @@ import { waves } from "@/app/background"
 import { getEmoji } from "../utils/getEmoji"
 import { formatDate } from "../utils/formatDate"
 import { saveConsumptionAction } from "@/actions/consumption"
+import { GLASS_VOLUME, MAX_WATER_PER_DAY } from "../utils/constants"
+import { clampWaterLevel } from "../utils/clampWaterLevel"
 
 interface ControlsProps {
   waterLevel: number
-  totalWaterLevels: number
 }
 
-export const Controls = ({ waterLevel, totalWaterLevels }: ControlsProps) => {
+export const Controls = ({ waterLevel }: ControlsProps) => {
   const [isPending, startTransition] = useTransition()
 
   const handleIncreaseWaterLevel = async () => {
-    waves?.increaseWaterLevel() // TODO: change to set water level
+    const newWaterLevel = clampWaterLevel(waterLevel + GLASS_VOLUME)
+    if (newWaterLevel === waterLevel) return
+
+    waves?.setWaterLevel(newWaterLevel)
 
     startTransition(async () => {
       await saveConsumptionAction({
-        amount: waterLevel + 1,
+        amount: newWaterLevel,
         date: formatDate(new Date()),
       })
     })
   }
 
   const handleDecreaseWaterLevel = () => {
-    waves?.decreaseWaterLevel() // TODO: change to set water level
+    const newWaterLevel = clampWaterLevel(waterLevel - GLASS_VOLUME)
+    if (newWaterLevel === waterLevel) return
+
+    waves?.setWaterLevel(newWaterLevel)
 
     startTransition(async () => {
       await saveConsumptionAction({
-        amount: waterLevel - 1,
+        amount: newWaterLevel,
         date: formatDate(new Date()),
       })
     })
   }
 
   const emoji = useMemo(
-    () => getEmoji(waterLevel, totalWaterLevels),
-    [waterLevel, totalWaterLevels],
+    () => getEmoji(waterLevel, MAX_WATER_PER_DAY),
+    [waterLevel],
   )
 
   return (
@@ -48,12 +55,12 @@ export const Controls = ({ waterLevel, totalWaterLevels }: ControlsProps) => {
       <IconButton
         icon={<PlusCircleIcon />}
         onClick={handleIncreaseWaterLevel}
-        disabled={isPending}
+        disabled={isPending || waterLevel >= MAX_WATER_PER_DAY}
       />
       <IconButton
         icon={<MinusCircleIcon />}
         onClick={handleDecreaseWaterLevel}
-        disabled={isPending}
+        disabled={isPending || waterLevel <= 0}
       />
       {emoji}
     </div>

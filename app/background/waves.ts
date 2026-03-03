@@ -2,36 +2,31 @@ import { WAVES_DATA, WAVES_PARAMS } from "./utils/constants"
 import { WaveData } from "./types"
 import { easeOutCubic, getAnimatedTransitionValue } from "./utils/animation"
 import { Logo } from "./logo"
-
-export const TOTAL_WATER_LEVELS = 20
+import { MAX_WATER_PER_DAY } from "../dashboard/utils/constants"
 
 // TODO: improve this class as in animated grid class
 export class Waves {
   private context: CanvasRenderingContext2D
   private swingStartedAt: number | null = null
-  private waterLevelsTotal: number
+  private maxWaterPerDay: number
   private readonly swingDurationMs = 2000
   private readonly swingStrength = 0.5
-  private readonly minWaterLevelOffset = 0.8
+  private readonly minWaterLevelOffset = 0.2
   private readonly maxWaterLevelOffset = 0.05
   private readonly waterLevelTransitionDurationMs = 1000
-  private waterLevel = this.minWaterLevelOffset
-  private renderedWaterLevel = this.minWaterLevelOffset
-  private waterLevelTransitionFrom = this.minWaterLevelOffset
+  private waterLevel = 1 - this.minWaterLevelOffset
+  private renderedWaterLevel = 1 - this.minWaterLevelOffset
+  private waterLevelTransitionFrom = 1 - this.minWaterLevelOffset
   private waterLevelTransitionStartedAt: number | null = null
-  private waterLevelIncrement: number
   public logo: Logo
 
   constructor(
     private canvas: HTMLCanvasElement,
-    waterLevelsTotal: number = TOTAL_WATER_LEVELS,
+    maxWaterPerDay: number = MAX_WATER_PER_DAY,
   ) {
     this.canvas = canvas
     this.context = canvas.getContext("2d") as CanvasRenderingContext2D
-    this.waterLevelsTotal = waterLevelsTotal
-    this.waterLevelIncrement =
-      (this.minWaterLevelOffset - this.maxWaterLevelOffset) /
-      this.waterLevelsTotal
+    this.maxWaterPerDay = maxWaterPerDay
     this.logo = new Logo(this.context)
 
     if (!this.context) {
@@ -116,32 +111,25 @@ export class Waves {
     return (height + WAVES_PARAMS.gap * index) * this.renderedWaterLevel
   }
 
-  private setWaterLevel = (nextWaterLevel: number) => {
+  private normalizeWaterLevel = (waterLevel: number) => {
+    const range = 1 - this.minWaterLevelOffset - this.maxWaterLevelOffset
+    const normalizedWaterLevel =
+      (waterLevel / this.maxWaterPerDay) * range + this.minWaterLevelOffset
+
+    return 1 - normalizedWaterLevel
+  }
+
+  public setWaterLevel = (nextWaterLevel: number) => {
     if (nextWaterLevel === this.waterLevel) return
+    const normalizedWaterLevel = this.normalizeWaterLevel(nextWaterLevel)
 
     this.waterLevelTransitionFrom = this.renderedWaterLevel
-    this.waterLevel = nextWaterLevel
+    this.waterLevel = normalizedWaterLevel
     this.waterLevelTransitionStartedAt = performance.now()
   }
 
   public swingWaves = () => {
     this.swingStartedAt = performance.now()
-  }
-
-  public decreaseWaterLevel = () => {
-    const nextWaterLevel = Math.min(
-      this.minWaterLevelOffset,
-      this.waterLevel + this.waterLevelIncrement,
-    )
-    this.setWaterLevel(nextWaterLevel)
-  }
-
-  public increaseWaterLevel = () => {
-    const nextWaterLevel = Math.max(
-      this.maxWaterLevelOffset,
-      this.waterLevel - this.waterLevelIncrement,
-    )
-    this.setWaterLevel(nextWaterLevel)
   }
 
   public fadeOut = () => {
