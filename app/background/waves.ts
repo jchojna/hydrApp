@@ -11,7 +11,7 @@ export class Waves {
   private maxWaterPerDay: number
   private readonly swingDurationMs = 2000
   private readonly swingStrength = 0.5
-  private readonly minWaterLevelOffset = 0.2
+  private readonly minWaterLevelOffset = 0.1
   private readonly maxWaterLevelOffset = 0.05
   private readonly waterLevelTransitionDurationMs = 1000
   private waterLevel = 1 - this.minWaterLevelOffset
@@ -44,8 +44,8 @@ export class Waves {
 
     const waveHeight = (width / wave.periods) * 0.1
     const baseAmplitude = waveHeight * wave.amplitudeRatio
-    const modulation = 0.7 + 0.4 * Math.sin(t * 0.001 + wave.phaseOffset * 5)
-    const amplitude = baseAmplitude * modulation
+    // const modulation = 0.7 + 0.4 * Math.sin(t * 0.001 + wave.phaseOffset * 5)
+    const amplitude = baseAmplitude
     const frequency = (Math.PI * 2 * wave.periods) / width
     const phase = t * wave.speed * 0.001 + wave.phaseOffset
     const rotation = this.getRotation(t, wave.phaseOffset)
@@ -56,7 +56,7 @@ export class Waves {
     this.context.translate(-pivotX, -pivotY)
     this.context.beginPath()
     this.context.moveTo(0, height + offset)
-    for (let x = -offset; x <= width + offset; x += 8) {
+    for (let x = -offset; x <= width + offset; x += 1) {
       const y = baseLine + Math.sin(frequency * x + phase) * amplitude
       this.context.lineTo(x, y)
     }
@@ -108,7 +108,7 @@ export class Waves {
       },
     })
 
-    return (height + WAVES_PARAMS.gap * index) * this.renderedWaterLevel
+    return (height - WAVES_PARAMS.gap * index) * this.renderedWaterLevel
   }
 
   private normalizeWaterLevel = (waterLevel: number) => {
@@ -143,10 +143,10 @@ export class Waves {
       this.canvas.clientWidth,
       this.canvas.clientHeight,
     )
-    this.drawWaves(WAVES_DATA[0], 0, timestamp)
+    this.drawWaves(WAVES_DATA[0], 2, timestamp)
     this.drawWaves(WAVES_DATA[1], 1, timestamp)
     this.logo.drawLogo(this.canvas.clientWidth, this.canvas.clientHeight)
-    this.drawWaves(WAVES_DATA[2], 2, timestamp)
+    this.drawWaves(WAVES_DATA[2], 0, timestamp)
 
     requestAnimationFrame(this.drawFrame)
   }
