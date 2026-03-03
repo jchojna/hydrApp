@@ -8,6 +8,7 @@ import { Sidebar } from "@/components/Sidebar"
 import { cn } from "@/lib/utils"
 import { Output } from "./Output"
 import { waves } from "@/app/background"
+import { Ruler } from "./Ruler"
 
 type DashboardProps = {
   waterLevel: number
@@ -25,6 +26,7 @@ export default function Dashboard({ waterLevel }: DashboardProps) {
       <header className="fixed top-0 left-0 flex w-full items-center justify-between p-8">
         <Logo className="w-[200px]" />
       </header>
+      <Ruler waterLevel={waterLevel} />
       <div
         className={cn(
           "relative flex h-full w-full items-center justify-center transition-[width] duration-300",
