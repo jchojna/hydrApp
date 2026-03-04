@@ -13,6 +13,7 @@ import {
   AccordionTrigger,
 } from "./ui/accordion"
 import { ArchiveEntry } from "@/lib/types"
+import Archive from "@/app/archive"
 
 interface SidebarProps {
   isOpen: boolean
@@ -56,21 +57,7 @@ export const Sidebar = ({
           <AccordionItem value="archive">
             <AccordionTrigger>Archive</AccordionTrigger>
             <AccordionContent>
-              {archiveEntries.length ? (
-                <div className="flex flex-col gap-2 text-sm">
-                  {archiveEntries.map((entry) => (
-                    <div
-                      key={entry.date}
-                      className="text-blue-light-1 flex items-center justify-between"
-                    >
-                      <span>{entry.date}</span>
-                      <span>{entry.amount}</span>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                "No archive entries."
-              )}
+              <Archive archiveEntries={archiveEntries} />
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="stats">
