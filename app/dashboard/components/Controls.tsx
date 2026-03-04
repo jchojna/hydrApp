@@ -1,4 +1,4 @@
-import { useMemo, useTransition } from "react"
+import { useCallback, useMemo, useTransition } from "react"
 
 import { PlusCircleIcon } from "@/assets/svg/icons/plus-circle"
 import { IconButton } from "@/components/IconButton"
@@ -12,37 +12,45 @@ import { clampWaterLevel } from "../utils/clampWaterLevel"
 
 interface ControlsProps {
   waterLevel: number
+  onWaterLevelChange: (waterLevel: number) => void
 }
 
-export const Controls = ({ waterLevel }: ControlsProps) => {
+export const Controls = ({ waterLevel, onWaterLevelChange }: ControlsProps) => {
   const [isPending, startTransition] = useTransition()
+  const previousWaterLevel = waterLevel
 
-  const handleIncreaseWaterLevel = async () => {
+  const handleWaterLevelChange = useCallback(
+    (newWaterLevel: number) => {
+      onWaterLevelChange(newWaterLevel)
+      waves?.setWaterLevel(newWaterLevel)
+
+      startTransition(async () => {
+        const response = await saveConsumptionAction({
+          amount: newWaterLevel,
+          date: formatDate(new Date()),
+        })
+
+        if (!response.success) {
+          onWaterLevelChange(previousWaterLevel)
+          waves?.setWaterLevel(previousWaterLevel)
+        }
+      })
+    },
+    [onWaterLevelChange, previousWaterLevel],
+  )
+
+  const handleIncreaseWaterLevel = () => {
     const newWaterLevel = clampWaterLevel(waterLevel + GLASS_VOLUME)
     if (newWaterLevel === waterLevel) return
 
-    waves?.setWaterLevel(newWaterLevel)
-
-    startTransition(async () => {
-      await saveConsumptionAction({
-        amount: newWaterLevel,
-        date: formatDate(new Date()),
-      })
-    })
+    handleWaterLevelChange(newWaterLevel)
   }
 
   const handleDecreaseWaterLevel = () => {
     const newWaterLevel = clampWaterLevel(waterLevel - GLASS_VOLUME)
     if (newWaterLevel === waterLevel) return
 
-    waves?.setWaterLevel(newWaterLevel)
-
-    startTransition(async () => {
-      await saveConsumptionAction({
-        amount: newWaterLevel,
-        date: formatDate(new Date()),
-      })
-    })
+    handleWaterLevelChange(newWaterLevel)
   }
 
   const emoji = useMemo(
