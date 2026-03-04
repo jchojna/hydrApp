@@ -28,7 +28,12 @@ export default function Dashboard({ waterLevel }: DashboardProps) {
 
   return (
     <div className="relative flex h-full w-full flex-col justify-center">
-      <header className="fixed top-0 left-0 flex w-full items-center justify-between p-8">
+      <header
+        className={cn(
+          "fixed top-0 left-0 flex w-full items-center justify-center p-8 transition-[width] duration-300",
+          isSidebarOpen && "w-2/3",
+        )}
+      >
         <Logo className="w-[200px]" />
       </header>
       <Ruler waterLevel={optimisticWaterLevel} />
