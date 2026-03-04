@@ -44,3 +44,6 @@ export const SCORE_LEVELS = [
 
 export const GLASS_VOLUME = 0.25 // in litres
 export const MAX_WATER_PER_DAY = 3 // 3 litres
+
+export const RULER_TICK_HEIGHT = 6
+export const RULER_TICK_WIDTH = 15

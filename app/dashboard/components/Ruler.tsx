@@ -1,5 +1,9 @@
-import { cn } from "@/lib/utils"
-import { GLASS_VOLUME, MAX_WATER_PER_DAY } from "../utils/constants"
+import {
+  GLASS_VOLUME,
+  MAX_WATER_PER_DAY,
+  RULER_TICK_HEIGHT,
+} from "../utils/constants"
+import { RulerTick } from "./RulerTick"
 
 type RulerProps = {
   waterLevel: number
@@ -7,36 +11,8 @@ type RulerProps = {
   bottomOffset?: number
 }
 
-const TICK_HEIGHT = 6
-const TICK_WIDTH = 15
-
 const getRulerOffset = (offset: number) => {
-  return `calc(${offset * 100}% - ${TICK_HEIGHT / 2}px)`
-}
-
-type RulerTickProps = {
-  index: number
-  waterLevel: number
-}
-
-const RulerTick = ({ index, waterLevel }: RulerTickProps) => {
-  return (
-    <div className="relative">
-      <div
-        className={cn(
-          "bg-blue-light-1 rounded-r-[10px]",
-          waterLevel / GLASS_VOLUME === index && "bg-amber-600",
-        )}
-        style={{ height: `${TICK_HEIGHT}px`, width: `${TICK_WIDTH}px` }}
-      />
-      <span
-        className="text-blue-light-1 absolute top-0 translate-y-[-40%] text-base"
-        style={{ left: `${TICK_WIDTH + 10}px` }}
-      >
-        {index}
-      </span>
-    </div>
-  )
+  return `calc(${offset * 100}% - ${RULER_TICK_HEIGHT / 2}px)`
 }
 
 export const Ruler = ({
