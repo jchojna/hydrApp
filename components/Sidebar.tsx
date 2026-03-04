@@ -12,13 +12,19 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "./ui/accordion"
+import { ArchiveEntry } from "@/lib/types"
 
 interface SidebarProps {
   isOpen: boolean
   setIsOpen: (isOpen: boolean) => void
+  archiveEntries: ArchiveEntry[]
 }
 
-export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
+export const Sidebar = ({
+  isOpen,
+  setIsOpen,
+  archiveEntries,
+}: SidebarProps) => {
   const [isPending, startTransition] = useTransition()
 
   const handleSignOut = () => {
@@ -38,18 +44,34 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
       </div>
       <div
         className={cn(
-          "bg-blue-dark-4 fixed top-0 right-0 flex h-full w-1/3 translate-x-full flex-col items-center justify-center p-8 transition-transform duration-300",
+          "bg-blue-dark-4 fixed top-0 right-0 flex h-full w-1/3 translate-x-full flex-col items-center justify-center transition-transform duration-300",
           isOpen && "translate-x-0",
         )}
       >
         <Accordion
           type="multiple"
-          className="w-full max-w-lg"
+          className="w-full"
           defaultValue={["notifications"]}
         >
           <AccordionItem value="archive">
             <AccordionTrigger>Archive</AccordionTrigger>
-            <AccordionContent>Archive content.</AccordionContent>
+            <AccordionContent>
+              {archiveEntries.length ? (
+                <div className="flex flex-col gap-2 text-sm">
+                  {archiveEntries.map((entry) => (
+                    <div
+                      key={entry.date}
+                      className="text-blue-light-1 flex items-center justify-between"
+                    >
+                      <span>{entry.date}</span>
+                      <span>{entry.amount}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                "No archive entries."
+              )}
+            </AccordionContent>
           </AccordionItem>
           <AccordionItem value="stats">
             <AccordionTrigger>Stats</AccordionTrigger>

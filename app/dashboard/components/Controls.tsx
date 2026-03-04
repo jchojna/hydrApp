@@ -21,13 +21,14 @@ export const Controls = ({ waterLevel, onWaterLevelChange }: ControlsProps) => {
 
   const handleWaterLevelChange = useCallback(
     (newWaterLevel: number) => {
+      const todayDate = formatDate(new Date())
       onWaterLevelChange(newWaterLevel)
       waves?.setWaterLevel(newWaterLevel)
 
       startTransition(async () => {
         const response = await saveConsumptionAction({
           amount: newWaterLevel,
-          date: formatDate(new Date()),
+          date: todayDate,
         })
 
         if (!response.success) {

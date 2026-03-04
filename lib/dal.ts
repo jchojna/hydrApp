@@ -1,11 +1,11 @@
 import { cache } from "react"
-import { and, eq } from "drizzle-orm"
+import { and, desc, eq } from "drizzle-orm"
+import { updateTag } from "next/cache"
 
 import { db } from "@/db"
 import { getSession } from "@/lib/auth/session"
-// import { issues, users } from "@/db/schema"
 import { consumptionTable, usersTable } from "@/db/schema"
-import { updateTag } from "next/cache"
+import { ArchiveEntry } from "./types"
 
 export const getCurrentUser = cache(async () => {
   const session = await getSession()
@@ -90,35 +90,26 @@ export async function upsertConsumptionRecord(
   }
 }
 
-// // Fetcher functions for React Query
-// export async function getIssue(id: number) {
-//   try {
-//     const result = await db.query.issues.findFirst({
-//       where: eq(issues.id, id),
-//       with: {
-//         user: true,
-//       },
-//     })
-//     return result
-//   } catch (error) {
-//     console.error(`Error fetching issue ${id}:`, error)
-//     throw new Error("Failed to fetch issue")
-//   }
-// }
+export async function getPaginatedArchiveEntries(
+  userId: string,
+  limit: number,
+  offset: number,
+): Promise<ArchiveEntry[]> {
+  try {
+    const result = await db
+      .select()
+      .from(consumptionTable)
+      .where(eq(consumptionTable.user_id, userId))
+      .limit(limit)
+      .offset(offset)
+      .orderBy(desc(consumptionTable.date))
 
-// export async function getIssues() {
-//   "use cache"
-//   cacheTag("issues")
-//   try {
-//     const result = await db.query.issues.findMany({
-//       with: {
-//         user: true,
-//       },
-//       orderBy: (issues, { desc }) => [desc(issues.createdAt)],
-//     })
-//     return result
-//   } catch (error) {
-//     console.error("Error fetching issues:", error)
-//     throw new Error("Failed to fetch issues")
-//   }
-// }
+    return result.map((entry) => ({
+      date: entry.date,
+      amount: entry.amount,
+    }))
+  } catch (error) {
+    console.error("Error getting paginated archive entries:", error)
+    throw new Error("Failed to get paginated archive entries")
+  }
+}

@@ -1,0 +1,36 @@
+"use server"
+
+import { getCurrentUser, getPaginatedArchiveEntries } from "@/lib/dal"
+
+export const getPaginatedArchiveEntriesAction = async (
+  limit: number,
+  offset: number,
+) => {
+  try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return {
+        success: false,
+        message: "You need to be signed in",
+      }
+    }
+
+    const archiveEntries = await getPaginatedArchiveEntries(
+      user.id,
+      limit,
+      offset,
+    )
+
+    return {
+      success: true,
+      message: "Paginated archive entries retrieved successfully",
+      data: archiveEntries,
+    }
+  } catch (error) {
+    console.error("Get paginated archive entries error:", error)
+    return {
+      success: false,
+      message: "An error occurred while getting paginated archive entries",
+    }
+  }
+}
