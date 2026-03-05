@@ -6,6 +6,7 @@ import { Emoji5 } from "@/assets/svg/emojis/emoji-5"
 import { Emoji6 } from "@/assets/svg/emojis/emoji-6"
 import { Emoji7 } from "@/assets/svg/emojis/emoji-7"
 import { Emoji8 } from "@/assets/svg/emojis/emoji-8"
+import { ArchivePageInfo } from "@/lib/types"
 
 export const SCORE_LEVELS = [
   {
@@ -47,3 +48,14 @@ export const MAX_WATER_PER_DAY = 3 // 3 litres
 
 export const RULER_TICK_HEIGHT = 6
 export const RULER_TICK_WIDTH = 15
+
+export const ARCHIVE_LIMIT = 7
+
+export const DEFAULT_ARCHIVE_PAGE_INFO: ArchivePageInfo = {
+  limit: ARCHIVE_LIMIT,
+  offset: 0,
+  hasPreviousPage: false,
+  hasNextPage: false,
+  previousOffset: 0,
+  nextOffset: null,
+}

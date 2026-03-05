@@ -9,16 +9,18 @@ import { cn } from "@/lib/utils"
 import { Output } from "./Output"
 import { waves } from "@/app/background"
 import { Ruler } from "./Ruler"
-import { ArchiveEntry } from "@/lib/types"
+import { ArchiveEntry, ArchivePageInfo } from "@/lib/types"
 
 type DashboardProps = {
   waterLevel: number
   archiveEntries: ArchiveEntry[]
+  archivePageInfo: ArchivePageInfo
 }
 
 export default function Dashboard({
   waterLevel,
   archiveEntries,
+  archivePageInfo,
 }: DashboardProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const [optimisticWaterLevel, setOptimisticWaterLevel] = useState(waterLevel)
@@ -58,6 +60,7 @@ export default function Dashboard({
         isOpen={isSidebarOpen}
         setIsOpen={setIsSidebarOpen}
         archiveEntries={archiveEntries}
+        archivePageInfo={archivePageInfo}
       />
     </div>
   )

@@ -1,4 +1,5 @@
 import { useTransition } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 
 import { cn } from "@/lib/utils"
 
@@ -12,24 +13,51 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "./ui/accordion"
-import { ArchiveEntry } from "@/lib/types"
+import { ArchiveEntry, ArchivePageInfo } from "@/lib/types"
 import Archive from "@/app/archive"
 
 interface SidebarProps {
   isOpen: boolean
   setIsOpen: (isOpen: boolean) => void
   archiveEntries: ArchiveEntry[]
+  archivePageInfo: ArchivePageInfo
 }
 
 export const Sidebar = ({
   isOpen,
   setIsOpen,
   archiveEntries,
+  archivePageInfo,
 }: SidebarProps) => {
-  const [isPending, startTransition] = useTransition()
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const [isSigningOut, startSignOutTransition] = useTransition()
+
+  const navigateToArchiveOffset = (offset: number) => {
+    const params = new URLSearchParams(searchParams.toString())
+    if (offset <= 0) {
+      params.delete("archiveOffset")
+    } else {
+      params.set("archiveOffset", offset.toString())
+    }
+    const query = params.toString()
+    router.push(query ? `/dashboard?${query}` : "/dashboard")
+  }
+
+  const handleNextArchivePage = () => {
+    if (!archivePageInfo.hasNextPage) return
+    navigateToArchiveOffset(archivePageInfo.offset + archivePageInfo.limit)
+  }
+
+  const handlePreviousArchivePage = () => {
+    if (archivePageInfo.offset <= 0) return
+    navigateToArchiveOffset(
+      Math.max(0, archivePageInfo.offset - archivePageInfo.limit),
+    )
+  }
 
   const handleSignOut = () => {
-    startTransition(async () => {
+    startSignOutTransition(async () => {
       await signOutAction()
     })
   }
@@ -57,7 +85,13 @@ export const Sidebar = ({
           <AccordionItem value="archive">
             <AccordionTrigger>Archive</AccordionTrigger>
             <AccordionContent>
-              <Archive archiveEntries={archiveEntries} />
+              <Archive
+                archiveEntries={archiveEntries}
+                onNext={handleNextArchivePage}
+                onPrevious={handlePreviousArchivePage}
+                disableNext={!archivePageInfo.hasNextPage}
+                disablePrevious={archivePageInfo.offset <= 0}
+              />
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="stats">
@@ -71,8 +105,8 @@ export const Sidebar = ({
           <AccordionItem value="settings">
             <AccordionTrigger>Settings</AccordionTrigger>
             <AccordionContent>
-              <Button onClick={handleSignOut} disabled={isPending}>
-                {isPending ? "Signing out..." : "Sign Out"}
+              <Button onClick={handleSignOut} disabled={isSigningOut}>
+                {isSigningOut ? "Signing out..." : "Sign Out"}
               </Button>
             </AccordionContent>
           </AccordionItem>

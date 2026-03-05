@@ -94,20 +94,43 @@ export async function getPaginatedArchiveEntries(
   userId: string,
   limit: number,
   offset: number,
-): Promise<ArchiveEntry[]> {
+): Promise<{
+  entries: ArchiveEntry[]
+  pageInfo: {
+    limit: number
+    offset: number
+    hasPreviousPage: boolean
+    hasNextPage: boolean
+    previousOffset: number
+    nextOffset: number | null
+  }
+}> {
   try {
     const result = await db
       .select()
       .from(consumptionTable)
       .where(eq(consumptionTable.user_id, userId))
-      .limit(limit)
+      .limit(limit + 1)
       .offset(offset)
       .orderBy(desc(consumptionTable.date))
 
-    return result.map((entry) => ({
+    const hasNextPage = result.length > limit
+    const entries = result.slice(0, limit).map((entry) => ({
       date: entry.date,
       amount: entry.amount,
     }))
+
+    return {
+      entries,
+      pageInfo: {
+        limit,
+        offset,
+        hasPreviousPage: offset > 0,
+        hasNextPage,
+        previousOffset: Math.max(0, offset - limit),
+        nextOffset: hasNextPage ? offset + limit : null,
+      },
+    }
   } catch (error) {
     console.error("Error getting paginated archive entries:", error)
     throw new Error("Failed to get paginated archive entries")

@@ -1,11 +1,13 @@
 "use server"
 
 import { getCurrentUser, getPaginatedArchiveEntries } from "@/lib/dal"
+import { ActionResponse } from "./types"
+import { type PaginatedArchiveEntries } from "@/lib/types"
 
 export const getPaginatedArchiveEntriesAction = async (
   limit: number,
   offset: number,
-) => {
+): Promise<ActionResponse<PaginatedArchiveEntries>> => {
   try {
     const user = await getCurrentUser()
     if (!user) {
