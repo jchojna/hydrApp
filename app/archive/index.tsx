@@ -2,25 +2,25 @@ import { ArchiveEntry } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 
 interface ArchiveProps {
-  archiveEntries: ArchiveEntry[]
-  onNext?: () => void
-  onPrevious?: () => void
-  disableNext?: boolean
-  disablePrevious?: boolean
+  entries: ArchiveEntry[]
+  onPrevious: () => void
+  onNext: () => void
+  disablePrevious: boolean
+  disableNext: boolean
 }
 
 export default function Archive({
-  archiveEntries,
-  onNext,
+  entries,
   onPrevious,
-  disableNext = false,
-  disablePrevious = false,
+  onNext,
+  disablePrevious,
+  disableNext,
 }: ArchiveProps) {
   return (
     <div className="flex flex-col gap-4">
-      {archiveEntries.length ? (
+      {entries.length ? (
         <div className="flex flex-col gap-2 text-sm">
-          {archiveEntries.map((entry) => (
+          {entries.map((entry) => (
             <div
               key={entry.date}
               className="text-blue-light-1 flex items-center justify-between"

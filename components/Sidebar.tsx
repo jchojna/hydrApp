@@ -1,5 +1,4 @@
 import { useTransition } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
 
 import { cn } from "@/lib/utils"
 
@@ -15,6 +14,7 @@ import {
 } from "./ui/accordion"
 import { ArchiveEntry, ArchivePageInfo } from "@/lib/types"
 import Archive from "@/app/archive"
+import useTablePagination from "@/hooks/useTablePagination"
 
 interface SidebarProps {
   isOpen: boolean
@@ -29,32 +29,13 @@ export const Sidebar = ({
   archiveEntries,
   archivePageInfo,
 }: SidebarProps) => {
-  const router = useRouter()
-  const searchParams = useSearchParams()
   const [isSigningOut, startSignOutTransition] = useTransition()
-
-  const navigateToArchiveOffset = (offset: number) => {
-    const params = new URLSearchParams(searchParams.toString())
-    if (offset <= 0) {
-      params.delete("archiveOffset")
-    } else {
-      params.set("archiveOffset", offset.toString())
-    }
-    const query = params.toString()
-    router.push(query ? `/dashboard?${query}` : "/dashboard")
-  }
-
-  const handleNextArchivePage = () => {
-    if (!archivePageInfo.hasNextPage) return
-    navigateToArchiveOffset(archivePageInfo.offset + archivePageInfo.limit)
-  }
-
-  const handlePreviousArchivePage = () => {
-    if (archivePageInfo.offset <= 0) return
-    navigateToArchiveOffset(
-      Math.max(0, archivePageInfo.offset - archivePageInfo.limit),
-    )
-  }
+  const {
+    handleNextArchivePage,
+    handlePreviousArchivePage,
+    disableNext,
+    disablePrevious,
+  } = useTablePagination(archivePageInfo)
 
   const handleSignOut = () => {
     startSignOutTransition(async () => {
@@ -86,11 +67,11 @@ export const Sidebar = ({
             <AccordionTrigger>Archive</AccordionTrigger>
             <AccordionContent>
               <Archive
-                archiveEntries={archiveEntries}
+                entries={archiveEntries}
                 onNext={handleNextArchivePage}
                 onPrevious={handlePreviousArchivePage}
-                disableNext={!archivePageInfo.hasNextPage}
-                disablePrevious={archivePageInfo.offset <= 0}
+                disableNext={disableNext}
+                disablePrevious={disablePrevious}
               />
             </AccordionContent>
           </AccordionItem>
