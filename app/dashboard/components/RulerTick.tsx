@@ -14,7 +14,7 @@ export const RulerTick = ({ index, waterLevel }: RulerTickProps) => {
   const isActive = waterLevel / GLASS_VOLUME === index
 
   return (
-    <div className="relative">
+    <div className="relative z-10">
       <div
         className={cn(
           "bg-blue-light-1 rounded-r-[10px] transition-colors",

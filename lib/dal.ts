@@ -1,12 +1,12 @@
 import { cache } from "react"
-import { and, desc, eq, gte, lte, lt } from "drizzle-orm"
+import { and, asc, desc, eq, gte, lte, lt, sql } from "drizzle-orm"
 import { updateTag } from "next/cache"
 
 import { db } from "@/db"
 import { getSession } from "@/lib/auth/session"
 import { consumptionTable, usersTable } from "@/db/schema"
 import { ArchiveEntry, ArchivePageInfo } from "./types"
-import { formatDate, shiftDate } from "./utils"
+import { formatDate, parseDate, shiftDate } from "./utils"
 
 export const getCurrentUser = cache(async () => {
   const session = await getSession()
@@ -64,6 +64,43 @@ export async function getConsumptionAmount(userId: string, date: string) {
   } catch (error) {
     console.error("Error getting consumption amount:", error)
     throw new Error("Failed to get consumption amount")
+  }
+}
+
+export async function getAverageConsumptionAmountSinceFirstRecord(
+  userId: string,
+) {
+  try {
+    const firstEntry = await db
+      .select({ date: consumptionTable.date })
+      .from(consumptionTable)
+      .where(eq(consumptionTable.user_id, userId))
+      .orderBy(asc(consumptionTable.date))
+      .limit(1)
+
+    if (!firstEntry[0]?.date) return null
+
+    const totalAmountResult = await db
+      .select({
+        totalAmount: sql<string>`coalesce(sum(${consumptionTable.amount}), 0)`,
+      })
+      .from(consumptionTable)
+      .where(eq(consumptionTable.user_id, userId))
+
+    const totalAmount = Number(totalAmountResult[0]?.totalAmount ?? "0")
+    const firstRecordedDate = parseDate(firstEntry[0].date)
+    const today = parseDate(formatDate(new Date()))
+    const daysSinceFirstRecord =
+      Math.floor(
+        (today.getTime() - firstRecordedDate.getTime()) / (24 * 60 * 60 * 1000),
+      ) + 1
+
+    if (daysSinceFirstRecord <= 0) return 0
+
+    return totalAmount / daysSinceFirstRecord
+  } catch (error) {
+    console.error("Error getting average consumption amount:", error)
+    throw new Error("Failed to get average consumption amount")
   }
 }
 

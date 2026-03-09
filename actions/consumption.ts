@@ -1,6 +1,7 @@
 "use server"
 
 import {
+  getAverageConsumptionAmountSinceFirstRecord,
   getConsumptionAmount,
   getCurrentUser,
   upsertConsumptionRecord,
@@ -64,6 +65,35 @@ export async function getConsumptionAmountAction(
     return {
       success: false,
       message: "An error occurred while getting consumption amount",
+    }
+  }
+}
+
+export async function getAverageConsumptionAmountAction(): Promise<
+  ActionResponse<number | null>
+> {
+  try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return {
+        success: false,
+        message: "You need to be signed in",
+      }
+    }
+
+    const averageAmount = await getAverageConsumptionAmountSinceFirstRecord(
+      user.id,
+    )
+    return {
+      success: true,
+      message: "Average consumption amount retrieved successfully",
+      data: averageAmount,
+    }
+  } catch (error) {
+    console.error("Get average consumption amount error:", error)
+    return {
+      success: false,
+      message: "An error occurred while getting average consumption amount",
     }
   }
 }

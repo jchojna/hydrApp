@@ -13,12 +13,14 @@ import { ArchiveEntry, ArchivePageInfo } from "@/lib/types"
 
 type DashboardProps = {
   waterLevel: number
+  averageWaterLevel: number | null
   archiveEntries: ArchiveEntry[]
   archivePageInfo: ArchivePageInfo
 }
 
 export default function Dashboard({
   waterLevel,
+  averageWaterLevel,
   archiveEntries,
   archivePageInfo,
 }: DashboardProps) {
@@ -43,7 +45,10 @@ export default function Dashboard({
       >
         <Logo className="w-[200px]" />
       </header>
-      <Ruler waterLevel={optimisticWaterLevel} />
+      <Ruler
+        waterLevel={optimisticWaterLevel}
+        averageWaterLevel={averageWaterLevel}
+      />
       <div
         className={cn(
           "relative flex h-full w-full items-center justify-center transition-[width] duration-300",

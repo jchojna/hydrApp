@@ -1,4 +1,7 @@
-import { getConsumptionAmountAction } from "@/actions/consumption"
+import {
+  getAverageConsumptionAmountAction,
+  getConsumptionAmountAction,
+} from "@/actions/consumption"
 import Dashboard from "./components/Dashboard"
 import { formatDate } from "@/lib/utils"
 import { getPaginatedArchiveEntriesAction } from "@/actions/archive"
@@ -20,14 +23,16 @@ export default async function DashboardPage({
     ARCHIVE_LIMIT,
   )
 
-  const [waterLevel, paginatedArchiveEntries] = await Promise.all([
+  const [waterLevel, averageWaterLevel, paginatedArchiveEntries] =
+    await Promise.all([
     getConsumptionAmountAction(formatDate(new Date())),
+    getAverageConsumptionAmountAction(),
     getPaginatedArchiveEntriesAction(
       ARCHIVE_LIMIT,
       archiveDateRange.startDate,
       archiveDateRange.endDate,
     ),
-  ])
+    ])
 
   if (!waterLevel.success) {
     return <div>Error: {waterLevel.message}</div>
@@ -37,9 +42,14 @@ export default async function DashboardPage({
     return <div>Error: {paginatedArchiveEntries.message}</div>
   }
 
+  if (!averageWaterLevel.success) {
+    return <div>Error: {averageWaterLevel.message}</div>
+  }
+
   return (
     <Dashboard
       waterLevel={Number(waterLevel.data)}
+      averageWaterLevel={averageWaterLevel.data ?? null}
       archiveEntries={paginatedArchiveEntries.data?.entries || []}
       archivePageInfo={
         paginatedArchiveEntries.data?.pageInfo || DEFAULT_ARCHIVE_PAGE_INFO
