@@ -1,11 +1,11 @@
 import { getConsumptionAmountAction } from "@/actions/consumption"
 import Dashboard from "./components/Dashboard"
-import { formatDate } from "./utils/formatDate"
+import { formatDate } from "@/lib/utils"
 import { getPaginatedArchiveEntriesAction } from "@/actions/archive"
 import {
-  getPaginationOffsetFromSearchParams,
+  getArchiveDateRangeFromSearchParams,
   type SearchParams,
-} from "./utils/getPaginationOffsetFromSearchParams"
+} from "./utils/getArchiveDateRangeFromSearchParams"
 import { ARCHIVE_LIMIT, DEFAULT_ARCHIVE_PAGE_INFO } from "./utils/constants"
 
 type DashboardPageProps = {
@@ -15,14 +15,18 @@ type DashboardPageProps = {
 export default async function DashboardPage({
   searchParams,
 }: DashboardPageProps) {
-  const archiveOffset = await getPaginationOffsetFromSearchParams(
+  const archiveDateRange = await getArchiveDateRangeFromSearchParams(
     searchParams,
-    "archiveOffset",
+    ARCHIVE_LIMIT,
   )
 
   const [waterLevel, paginatedArchiveEntries] = await Promise.all([
     getConsumptionAmountAction(formatDate(new Date())),
-    getPaginatedArchiveEntriesAction(ARCHIVE_LIMIT, archiveOffset),
+    getPaginatedArchiveEntriesAction(
+      ARCHIVE_LIMIT,
+      archiveDateRange.startDate,
+      archiveDateRange.endDate,
+    ),
   ])
 
   if (!waterLevel.success) {

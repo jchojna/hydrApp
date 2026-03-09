@@ -6,7 +6,8 @@ import { type PaginatedArchiveEntries } from "@/lib/types"
 
 export const getPaginatedArchiveEntriesAction = async (
   limit: number,
-  offset: number,
+  startDate: string,
+  endDate: string,
 ): Promise<ActionResponse<PaginatedArchiveEntries>> => {
   try {
     const user = await getCurrentUser()
@@ -20,7 +21,8 @@ export const getPaginatedArchiveEntriesAction = async (
     const archiveEntries = await getPaginatedArchiveEntries(
       user.id,
       limit,
-      offset,
+      startDate,
+      endDate,
     )
 
     return {

@@ -5,11 +5,14 @@ export type ArchiveEntry = {
 
 export type ArchivePageInfo = {
   limit: number
-  offset: number
+  startDate: string
+  endDate: string
   hasPreviousPage: boolean
   hasNextPage: boolean
-  previousOffset: number
-  nextOffset: number | null
+  previousStartDate: string | null
+  previousEndDate: string | null
+  nextStartDate: string | null
+  nextEndDate: string | null
 }
 
 export type PaginatedArchiveEntries = {

@@ -5,29 +5,42 @@ export default function useTablePagination(pageInfo: ArchivePageInfo) {
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  const navigateToArchiveOffset = (offset: number) => {
+  const navigateToArchiveDateRange = (startDate: string, endDate: string) => {
     const params = new URLSearchParams(searchParams.toString())
-    if (offset <= 0) {
-      params.delete("archiveOffset")
-    } else {
-      params.set("archiveOffset", offset.toString())
-    }
+    params.set("archiveStartDate", startDate)
+    params.set("archiveEndDate", endDate)
+
     const query = params.toString()
     router.push(query ? `/dashboard?${query}` : "/dashboard")
   }
 
   const handleNextArchivePage = () => {
-    if (!pageInfo.hasNextPage) return
-    navigateToArchiveOffset(pageInfo.offset + pageInfo.limit)
+    if (
+      !pageInfo.hasNextPage ||
+      !pageInfo.nextStartDate ||
+      !pageInfo.nextEndDate
+    ) {
+      return
+    }
+    navigateToArchiveDateRange(pageInfo.nextStartDate, pageInfo.nextEndDate)
   }
 
   const handlePreviousArchivePage = () => {
-    if (pageInfo.offset <= 0) return
-    navigateToArchiveOffset(Math.max(0, pageInfo.offset - pageInfo.limit))
+    if (
+      !pageInfo.hasPreviousPage ||
+      !pageInfo.previousStartDate ||
+      !pageInfo.previousEndDate
+    ) {
+      return
+    }
+    navigateToArchiveDateRange(
+      pageInfo.previousStartDate,
+      pageInfo.previousEndDate,
+    )
   }
 
   const disableNext = !pageInfo.hasNextPage
-  const disablePrevious = pageInfo.offset <= 0
+  const disablePrevious = !pageInfo.hasPreviousPage
 
   return {
     handleNextArchivePage,

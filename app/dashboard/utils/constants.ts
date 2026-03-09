@@ -53,9 +53,12 @@ export const ARCHIVE_LIMIT = 7
 
 export const DEFAULT_ARCHIVE_PAGE_INFO: ArchivePageInfo = {
   limit: ARCHIVE_LIMIT,
-  offset: 0,
+  startDate: "",
+  endDate: "",
   hasPreviousPage: false,
   hasNextPage: false,
-  previousOffset: 0,
-  nextOffset: null,
+  previousStartDate: null,
+  previousEndDate: null,
+  nextStartDate: null,
+  nextEndDate: null,
 }
