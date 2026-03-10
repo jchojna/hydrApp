@@ -8,7 +8,7 @@ import { Sidebar } from "@/components/Sidebar"
 import { cn } from "@/lib/utils"
 import { Output } from "./Output"
 import { waves } from "@/app/background"
-import { Ruler } from "./Ruler"
+import { Ruler } from "@/app/dashboard/components/ruler"
 import { ArchiveEntry, ArchivePageInfo } from "@/lib/types"
 
 type DashboardProps = {
