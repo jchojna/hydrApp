@@ -2,7 +2,7 @@ import { WAVES_DATA, WAVES_PARAMS } from "./utils/constants"
 import { WaveData } from "./types"
 import { easeOutCubic, getAnimatedTransitionValue } from "./utils/animation"
 import { Logo } from "./logo"
-import { MAX_WATER_PER_DAY } from "../dashboard/utils/constants"
+import { MAX_WATER_PER_DAY } from "@/lib/constants"
 
 // TODO: improve this class as in animated grid class
 export class Waves {

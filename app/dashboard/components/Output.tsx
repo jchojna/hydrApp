@@ -2,7 +2,7 @@ import { useMemo } from "react"
 
 import { getDigits } from "../utils/getDigits"
 import { Today } from "./Today"
-import { MAX_WATER_PER_DAY } from "../utils/constants"
+import { MAX_WATER_PER_DAY } from "@/lib/constants"
 import { getScoreLevel } from "../utils/getScoreLevel"
 
 interface OutputProps {

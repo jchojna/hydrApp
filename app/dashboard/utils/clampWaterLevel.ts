@@ -1,4 +1,4 @@
-import { MAX_WATER_PER_DAY } from "./constants"
+import { MAX_WATER_PER_DAY } from "@/lib/constants"
 
 export const clampWaterLevel = (
   waterLevel: number,

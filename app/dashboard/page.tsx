@@ -9,7 +9,7 @@ import {
   getArchiveDateRangeFromSearchParams,
   type SearchParams,
 } from "./utils/getArchiveDateRangeFromSearchParams"
-import { ARCHIVE_LIMIT, DEFAULT_ARCHIVE_PAGE_INFO } from "./utils/constants"
+import { ARCHIVE_LIMIT, DEFAULT_ARCHIVE_PAGE_INFO } from "@/lib/constants"
 
 type DashboardPageProps = {
   searchParams: Promise<SearchParams>
@@ -25,13 +25,13 @@ export default async function DashboardPage({
 
   const [waterLevel, averageWaterLevel, paginatedArchiveEntries] =
     await Promise.all([
-    getConsumptionAmountAction(formatDate(new Date())),
-    getAverageConsumptionAmountAction(),
-    getPaginatedArchiveEntriesAction(
-      ARCHIVE_LIMIT,
-      archiveDateRange.startDate,
-      archiveDateRange.endDate,
-    ),
+      getConsumptionAmountAction(formatDate(new Date())),
+      getAverageConsumptionAmountAction(),
+      getPaginatedArchiveEntriesAction(
+        ARCHIVE_LIMIT,
+        archiveDateRange.startDate,
+        archiveDateRange.endDate,
+      ),
     ])
 
   if (!waterLevel.success) {

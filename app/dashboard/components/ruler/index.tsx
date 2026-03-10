@@ -2,7 +2,7 @@ import {
   GLASS_VOLUME,
   MAX_WATER_PER_DAY,
   RULER_TICK_HEIGHT,
-} from "../../utils/constants"
+} from "@/lib/constants"
 import { AvgTick } from "./components/AvgTick"
 import { RulerTick } from "./components/RulerTick"
 

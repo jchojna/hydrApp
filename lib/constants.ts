@@ -62,3 +62,6 @@ export const DEFAULT_ARCHIVE_PAGE_INFO: ArchivePageInfo = {
   nextStartDate: null,
   nextEndDate: null,
 }
+
+export const EMOJI_RED_COLOR = "#C43823"
+export const EMOJI_GREEN_COLOR = "#1BC264"

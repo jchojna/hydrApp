@@ -1,4 +1,4 @@
-import { SCORE_LEVELS } from "./constants"
+import { SCORE_LEVELS } from "@/lib/constants"
 
 export const getScoreLevelIndex = (
   waterLevel: number,

@@ -3,7 +3,7 @@ import {
   GLASS_VOLUME,
   RULER_TICK_HEIGHT,
   RULER_TICK_WIDTH,
-} from "../../../utils/constants"
+} from "@/lib/constants"
 
 type RulerTickProps = {
   index: number

@@ -1,13 +1,13 @@
-import { useCallback, useMemo, useTransition } from "react"
+import { useCallback, useTransition } from "react"
 
 import { PlusCircleIcon } from "@/assets/svg/icons/plus-circle"
 import { IconButton } from "@/components/IconButton"
 import { MinusCircleIcon } from "@/assets/svg/icons/minus-circle"
 import { waves } from "@/app/background"
-import { getEmoji } from "../utils/getEmoji"
+import { EmojiIcon } from "@/components/EmojiIcon"
 import { formatDate } from "@/lib/utils"
 import { saveConsumptionAction } from "@/actions/consumption"
-import { GLASS_VOLUME, MAX_WATER_PER_DAY } from "../utils/constants"
+import { GLASS_VOLUME, MAX_WATER_PER_DAY } from "@/lib/constants"
 import { clampWaterLevel } from "../utils/clampWaterLevel"
 
 interface ControlsProps {
@@ -54,11 +54,6 @@ export const Controls = ({ waterLevel, onWaterLevelChange }: ControlsProps) => {
     handleWaterLevelChange(newWaterLevel)
   }
 
-  const emoji = useMemo(
-    () => getEmoji(waterLevel, MAX_WATER_PER_DAY),
-    [waterLevel],
-  )
-
   return (
     <div className="absolute right-0 bottom-0 flex flex-col gap-4 p-8">
       <IconButton
@@ -71,7 +66,7 @@ export const Controls = ({ waterLevel, onWaterLevelChange }: ControlsProps) => {
         onClick={handleDecreaseWaterLevel}
         disabled={isPending || waterLevel <= 0}
       />
-      {emoji}
+      <EmojiIcon waterLevel={waterLevel} maxWaterPerDay={MAX_WATER_PER_DAY} />
     </div>
   )
 }

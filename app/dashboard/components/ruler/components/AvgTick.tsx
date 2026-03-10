@@ -2,7 +2,7 @@ import {
   GLASS_VOLUME,
   MAX_WATER_PER_DAY,
   RULER_TICK_HEIGHT,
-} from "@/app/dashboard/utils/constants"
+} from "@/lib/constants"
 
 type AvgTickProps = {
   averageWaterLevel: number | null
