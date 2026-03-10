@@ -15,12 +15,22 @@ import {
 import { ArchiveEntry, ArchivePageInfo } from "@/lib/types"
 import Archive from "@/app/archive"
 import useTablePagination from "@/hooks/useTablePagination"
+import { PlusCrossIcon } from "@/assets/svg/icons/plus-cross"
 
 interface SidebarProps {
   isOpen: boolean
   setIsOpen: (isOpen: boolean) => void
   archiveEntries: ArchiveEntry[]
   archivePageInfo: ArchivePageInfo
+}
+
+const AccordionHeader = ({ title }: { title: string }) => {
+  return (
+    <AccordionTrigger className="text-blue-light-2">
+      <div className="font-mnedium w-full text-center text-4xl">{title}</div>
+      <PlusCrossIcon className="pointer-events-none size-10 shrink-0 translate-y-0.5 text-inherit transition-transform duration-200" />
+    </AccordionTrigger>
+  )
 }
 
 export const Sidebar = ({
@@ -54,7 +64,7 @@ export const Sidebar = ({
       </div>
       <div
         className={cn(
-          "bg-blue-dark-4 fixed top-0 right-0 flex h-full w-1/3 translate-x-full flex-col items-center justify-center transition-transform duration-300",
+          "bg-blue-dark-4 fixed top-0 right-0 flex h-full w-1/3 translate-x-full flex-col items-center justify-center overflow-auto transition-transform duration-300",
           isOpen && "translate-x-0",
         )}
       >
@@ -64,7 +74,7 @@ export const Sidebar = ({
           defaultValue={["notifications"]}
         >
           <AccordionItem value="archive">
-            <AccordionTrigger>Archive</AccordionTrigger>
+            <AccordionHeader title="Archive" />
             <AccordionContent>
               <Archive
                 entries={archiveEntries}
@@ -76,15 +86,15 @@ export const Sidebar = ({
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="stats">
-            <AccordionTrigger>Stats</AccordionTrigger>
+            <AccordionHeader title="Stats" />
             <AccordionContent>Stats content.</AccordionContent>
           </AccordionItem>
           <AccordionItem value="ranking">
-            <AccordionTrigger>Ranking</AccordionTrigger>
+            <AccordionHeader title="Ranking" />
             <AccordionContent>Ranking content.</AccordionContent>
           </AccordionItem>
           <AccordionItem value="settings">
-            <AccordionTrigger>Settings</AccordionTrigger>
+            <AccordionHeader title="Settings" />
             <AccordionContent>
               <Button onClick={handleSignOut} disabled={isSigningOut}>
                 {isSigningOut ? "Signing out..." : "Sign Out"}
