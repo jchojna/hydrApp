@@ -40,12 +40,6 @@ export const Sidebar = ({
   archivePageInfo,
 }: SidebarProps) => {
   const [isSigningOut, startSignOutTransition] = useTransition()
-  const {
-    handleNextArchivePage,
-    handlePreviousArchivePage,
-    disableNext,
-    disablePrevious,
-  } = useTablePagination(archivePageInfo)
 
   const handleSignOut = () => {
     startSignOutTransition(async () => {
@@ -76,13 +70,7 @@ export const Sidebar = ({
           <AccordionItem value="archive">
             <AccordionHeader title="Archive" />
             <AccordionContent>
-              <Archive
-                entries={archiveEntries}
-                onNext={handleNextArchivePage}
-                onPrevious={handlePreviousArchivePage}
-                disableNext={disableNext}
-                disablePrevious={disablePrevious}
-              />
+              <Archive entries={archiveEntries} pageInfo={archivePageInfo} />
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="stats">

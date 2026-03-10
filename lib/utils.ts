@@ -22,3 +22,33 @@ export const shiftDate = (date: string, days: number) => {
   parsedDate.setUTCDate(parsedDate.getUTCDate() + days)
   return formatDate(parsedDate)
 }
+
+export const formatDatesRange = (startDate: string, endDate: string) => {
+  const start = parseDate(startDate)
+  const end = parseDate(endDate)
+
+  const monthFormatter = new Intl.DateTimeFormat("en-US", {
+    month: "long",
+    timeZone: "UTC",
+  })
+
+  const startYear = start.getUTCFullYear()
+  const endYear = end.getUTCFullYear()
+  const startMonth = start.getUTCMonth()
+  const endMonth = end.getUTCMonth()
+  const startDay = start.getUTCDate()
+  const endDay = end.getUTCDate()
+
+  const startMonthName = monthFormatter.format(start)
+  const endMonthName = monthFormatter.format(end)
+
+  if (startYear === endYear && startMonth === endMonth) {
+    return `${startMonthName} ${startDay} - ${endDay}, ${startYear}`
+  }
+
+  if (startYear === endYear) {
+    return `${startMonthName} ${startDay} - ${endMonthName} ${endDay}, ${startYear}`
+  }
+
+  return `${startMonthName} ${startDay}, ${startYear} - ${endMonthName} ${endDay}, ${endYear}`
+}
