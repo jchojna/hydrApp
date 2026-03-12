@@ -1,16 +1,32 @@
 import { ArchiveEntry, ArchivePageInfo } from "@/lib/types"
 import { PaginationHeader } from "@/components/PaginationHeader"
 import { Entry } from "./components/Entry"
+import useTablePagination from "@/hooks/useTablePagination"
+import { formatDatesRange } from "@/lib/utils"
 
 interface ArchiveProps {
   entries: ArchiveEntry[]
   pageInfo: ArchivePageInfo
 }
 
+// TODO: cache archive entries
 export default function Archive({ entries, pageInfo }: ArchiveProps) {
+  const {
+    handleNextArchivePage,
+    handlePreviousArchivePage,
+    disableNext,
+    disablePrevious,
+  } = useTablePagination(pageInfo)
+
   return (
     <div className="flex w-full max-w-[400px] flex-col gap-4">
-      <PaginationHeader pageInfo={pageInfo} />
+      <PaginationHeader
+        title={formatDatesRange(pageInfo.startDate, pageInfo.endDate)}
+        onNextPage={handleNextArchivePage}
+        onPreviousPage={handlePreviousArchivePage}
+        isNextPageDisabled={disableNext}
+        isPreviousPageDisabled={disablePrevious}
+      />
       <div className="flex flex-col gap-2 text-sm">
         {entries.length ? (
           entries.map((entry) => <Entry key={entry.date} entry={entry} />)

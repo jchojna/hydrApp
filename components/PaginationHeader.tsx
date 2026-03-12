@@ -1,9 +1,6 @@
-import { ArchivePageInfo } from "@/lib/types"
-import useTablePagination from "@/hooks/useTablePagination"
 import { Button } from "@/components/ui/button"
 import { ArrowLeftIcon } from "@/assets/svg/icons/arrow-left"
 import { ArrowRightIcon } from "@/assets/svg/icons/arrow-right"
-import { formatDatesRange } from "@/lib/utils"
 
 type ArrowButtonProps = {
   onClick: () => void
@@ -26,32 +23,37 @@ const ArrowButton = ({ onClick, disabled, icon }: ArrowButtonProps) => {
 }
 
 interface PaginationHeaderProps {
-  pageInfo: ArchivePageInfo
+  title: string
+  onNextPage?: () => void
+  onPreviousPage?: () => void
+  isNextPageDisabled?: boolean
+  isPreviousPageDisabled?: boolean
 }
 
-export const PaginationHeader = ({ pageInfo }: PaginationHeaderProps) => {
-  const {
-    handleNextArchivePage,
-    handlePreviousArchivePage,
-    disableNext,
-    disablePrevious,
-  } = useTablePagination(pageInfo)
-
+export const PaginationHeader = ({
+  title,
+  onNextPage,
+  onPreviousPage,
+  isNextPageDisabled,
+  isPreviousPageDisabled,
+}: PaginationHeaderProps) => {
   return (
-    <div className="bg-blue-dark-3 flex items-center justify-between gap-2 rounded-full p-1">
-      <ArrowButton
-        onClick={handlePreviousArchivePage}
-        disabled={disablePrevious || !handlePreviousArchivePage}
-        icon={<ArrowLeftIcon />}
-      />
-      <span className="text-blue-light-3">
-        {formatDatesRange(pageInfo.startDate, pageInfo.endDate)}
-      </span>
-      <ArrowButton
-        onClick={handleNextArchivePage}
-        disabled={disableNext || !handleNextArchivePage}
-        icon={<ArrowRightIcon />}
-      />
+    <div className="bg-blue-dark-3 flex items-center justify-center gap-2 rounded-full p-1">
+      {onPreviousPage && (
+        <ArrowButton
+          onClick={onPreviousPage}
+          disabled={!!isPreviousPageDisabled}
+          icon={<ArrowLeftIcon />}
+        />
+      )}
+      <span className="text-blue-light-3 flex-1 text-center">{title}</span>
+      {onNextPage && (
+        <ArrowButton
+          onClick={onNextPage}
+          disabled={!!isNextPageDisabled}
+          icon={<ArrowRightIcon />}
+        />
+      )}
     </div>
   )
 }

@@ -58,7 +58,7 @@ export const Entry = ({ entry }: EntryProps) => {
         date: entry.date,
       })
 
-      if (!response.success) return
+      if (!response.success) return // TODO: show error message
 
       setIsEditing(false)
     })

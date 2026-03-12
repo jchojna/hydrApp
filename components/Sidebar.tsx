@@ -15,6 +15,7 @@ import {
 import { ArchiveEntry, ArchivePageInfo } from "@/lib/types"
 import Archive from "@/app/archive"
 import { PlusCrossIcon } from "@/assets/svg/icons/plus-cross"
+import Stats from "@/app/stats"
 
 interface SidebarProps {
   isOpen: boolean
@@ -74,7 +75,9 @@ export const Sidebar = ({
           </AccordionItem>
           <AccordionItem value="stats">
             <AccordionHeader title="Stats" />
-            <AccordionContent>Stats content.</AccordionContent>
+            <AccordionContent>
+              <Stats />
+            </AccordionContent>
           </AccordionItem>
           <AccordionItem value="ranking">
             <AccordionHeader title="Ranking" />
