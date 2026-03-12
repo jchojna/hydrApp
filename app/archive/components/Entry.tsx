@@ -1,7 +1,7 @@
-import { useState } from "react"
+import { useEffect, useState, useTransition } from "react"
 
 import { EmojiIcon } from "@/components/EmojiIcon"
-import { MAX_WATER_PER_DAY } from "@/lib/constants"
+import { GLASS_VOLUME, MAX_WATER_PER_DAY } from "@/lib/constants"
 import { ArchiveEntry } from "@/lib/types"
 import { EditIcon } from "@/assets/svg/icons/edit"
 import { IconButton } from "@/components/IconButton"
@@ -10,8 +10,10 @@ import { ArrowUpIcon } from "@/assets/svg/icons/arrow-up"
 import { ArrowBackIcon } from "@/assets/svg/icons/arrow-back"
 import { SaveIcon } from "@/assets/svg/icons/save"
 import { cn } from "@/lib/utils"
+import { saveConsumptionAction } from "@/actions/consumption"
 import { EntryDate } from "./EntryDate"
 import { EntryAmount } from "./EntryAmount"
+import { clampWaterLevel } from "@/app/dashboard/utils/clampWaterLevel"
 
 type EntryProps = {
   entry: ArchiveEntry
@@ -19,7 +21,48 @@ type EntryProps = {
 
 export const Entry = ({ entry }: EntryProps) => {
   const [isEditing, setIsEditing] = useState(false)
-  const waterLevel = Number(entry.amount)
+  const waterLevelFromDb = Number(entry.amount)
+  const [isSaving, startSaveTransition] = useTransition()
+  const [editedWaterLevel, setEditedWaterLevel] = useState(waterLevelFromDb)
+
+  useEffect(() => {
+    setEditedWaterLevel(waterLevelFromDb)
+  }, [waterLevelFromDb])
+
+  const handleDecreaseWaterLevel = () => {
+    setEditedWaterLevel((currentValue) =>
+      clampWaterLevel(currentValue - GLASS_VOLUME),
+    )
+  }
+
+  const handleIncreaseWaterLevel = () => {
+    setEditedWaterLevel((currentValue) =>
+      clampWaterLevel(currentValue + GLASS_VOLUME),
+    )
+  }
+
+  const handleCancelEditing = () => {
+    setEditedWaterLevel(waterLevelFromDb)
+    setIsEditing(false)
+  }
+
+  const handleSave = () => {
+    if (editedWaterLevel === waterLevelFromDb) {
+      setIsEditing(false)
+      return
+    }
+
+    startSaveTransition(async () => {
+      const response = await saveConsumptionAction({
+        amount: editedWaterLevel,
+        date: entry.date,
+      })
+
+      if (!response.success) return
+
+      setIsEditing(false)
+    })
+  }
 
   return (
     <div
@@ -30,42 +73,49 @@ export const Entry = ({ entry }: EntryProps) => {
       )}
     >
       <EntryDate date={entry.date} />
-      <EntryAmount amount={waterLevel} />
+      <EntryAmount amount={editedWaterLevel} />
       <div className="flex items-center gap-1">
         {isEditing ? (
           <>
             <IconButton
               className="h-6 w-6"
               icon={<ArrowDownIcon />}
-              onClick={() => {}}
+              onClick={handleDecreaseWaterLevel}
+              disabled={isSaving || editedWaterLevel <= 0}
             />
             <IconButton
               className="h-6 w-6"
               icon={<ArrowUpIcon />}
-              onClick={() => {}}
+              onClick={handleIncreaseWaterLevel}
+              disabled={isSaving || editedWaterLevel >= MAX_WATER_PER_DAY}
             />
             <IconButton
               className="h-6 w-6"
               icon={<ArrowBackIcon />}
-              onClick={() => {}}
+              onClick={handleCancelEditing}
+              disabled={isSaving}
             />
             <IconButton
               className="h-6 w-6"
               icon={<SaveIcon />}
-              onClick={() => {}}
+              onClick={handleSave}
+              disabled={isSaving}
             />
           </>
         ) : (
           <IconButton
             className="h-6 w-6"
             icon={<EditIcon />}
-            onClick={() => setIsEditing(true)}
+            onClick={() => {
+              setEditedWaterLevel(waterLevelFromDb)
+              setIsEditing(true)
+            }}
           />
         )}
       </div>
       <EmojiIcon
         className="w-6"
-        waterLevel={waterLevel}
+        waterLevel={editedWaterLevel}
         maxWaterPerDay={MAX_WATER_PER_DAY}
       />
     </div>
