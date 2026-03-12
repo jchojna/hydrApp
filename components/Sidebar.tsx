@@ -14,7 +14,6 @@ import {
 } from "./ui/accordion"
 import { ArchiveEntry, ArchivePageInfo } from "@/lib/types"
 import Archive from "@/app/archive"
-import useTablePagination from "@/hooks/useTablePagination"
 import { PlusCrossIcon } from "@/assets/svg/icons/plus-cross"
 
 interface SidebarProps {

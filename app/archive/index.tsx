@@ -9,7 +9,7 @@ interface ArchiveProps {
 
 export default function Archive({ entries, pageInfo }: ArchiveProps) {
   return (
-    <div className="flex w-full max-w-[320px] flex-col gap-4">
+    <div className="flex w-full max-w-[400px] flex-col gap-4">
       <PaginationHeader pageInfo={pageInfo} />
       <div className="flex flex-col gap-2 text-sm">
         {entries.length ? (

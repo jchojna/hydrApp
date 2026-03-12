@@ -14,7 +14,7 @@ type ArrowButtonProps = {
 const ArrowButton = ({ onClick, disabled, icon }: ArrowButtonProps) => {
   return (
     <Button
-      className="text-blue-light-1 hover:bg-blue-dark-2 hover:text-blue-light-3 rounded-full"
+      className="text-blue-light-1 hover:bg-blue-dark-2 hover:text-blue-light-3 flex h-8 w-8 items-center justify-center rounded-full"
       variant="ghost"
       size="sm"
       onClick={onClick}
@@ -38,7 +38,7 @@ export const PaginationHeader = ({ pageInfo }: PaginationHeaderProps) => {
   } = useTablePagination(pageInfo)
 
   return (
-    <div className="bg-blue-dark-3 flex items-center justify-between gap-2 rounded-2xl p-1">
+    <div className="bg-blue-dark-3 flex items-center justify-between gap-2 rounded-full p-1">
       <ArrowButton
         onClick={handlePreviousArchivePage}
         disabled={disablePrevious || !handlePreviousArchivePage}
