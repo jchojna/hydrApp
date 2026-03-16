@@ -58,7 +58,7 @@ export async function getConsumptionAmountAction(
     return {
       success: true,
       message: "Consumption amount retrieved successfully",
-      data: amount || "0",
+      data: amount,
     }
   } catch (error) {
     console.error("Get consumption amount error:", error)

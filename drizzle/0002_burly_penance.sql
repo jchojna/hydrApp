@@ -1,0 +1,1 @@
+ALTER TABLE "consumption" ADD COLUMN "points" numeric DEFAULT '0' NOT NULL;

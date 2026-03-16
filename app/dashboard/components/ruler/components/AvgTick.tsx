@@ -19,7 +19,7 @@ export const AvgTick = ({ averageWaterLevel }: AvgTickProps) => {
 
   return (
     <div
-      className="pointer-events-none absolute left-0 z-10"
+      className="pointer-events-none absolute left-0 z-10 transition-[top] duration-300"
       style={{ top: averageMarkerTopOffset }}
     >
       <div

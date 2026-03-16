@@ -16,6 +16,7 @@ export const consumptionTable = pgTable(
       .notNull()
       .references(() => usersTable.id, { onDelete: "cascade" }),
     amount: numeric("amount").default("0").notNull(),
+    points: numeric("points").default("0").notNull(),
     date: date("date", { mode: "string" }).notNull(),
     ...timestamps,
   },

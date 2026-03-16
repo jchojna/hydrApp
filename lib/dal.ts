@@ -7,6 +7,7 @@ import { getSession } from "@/lib/auth/session"
 import { consumptionTable, usersTable } from "@/db/schema"
 import { ArchiveEntry, ArchivePageInfo } from "./types"
 import { formatDate, parseDate, shiftDate } from "./utils"
+import { MAX_WATER_PER_DAY } from "@/lib/constants"
 
 export const getCurrentUser = cache(async () => {
   const session = await getSession()
@@ -60,7 +61,7 @@ export async function getConsumptionAmount(userId: string, date: string) {
       )
       .limit(1)
 
-    return result[0]?.amount || null
+    return result[0]?.amount ?? "0"
   } catch (error) {
     console.error("Error getting consumption amount:", error)
     throw new Error("Failed to get consumption amount")
@@ -69,7 +70,7 @@ export async function getConsumptionAmount(userId: string, date: string) {
 
 export async function getAverageConsumptionAmountSinceFirstRecord(
   userId: string,
-) {
+): Promise<number> {
   try {
     const firstEntry = await db
       .select({ date: consumptionTable.date })
@@ -110,12 +111,19 @@ export async function upsertConsumptionRecord(
   date: string,
 ) {
   try {
+    const points = (amount / MAX_WATER_PER_DAY).toFixed(2)
+
     const result = await db
       .insert(consumptionTable)
-      .values({ user_id: userId, amount: amount.toString(), date })
+      .values({
+        user_id: userId,
+        amount: amount.toString(),
+        points,
+        date,
+      })
       .onConflictDoUpdate({
         target: [consumptionTable.user_id, consumptionTable.date],
-        set: { amount: amount.toString(), updated_at: new Date() },
+        set: { amount: amount.toString(), points, updated_at: new Date() },
       })
       .returning()
 

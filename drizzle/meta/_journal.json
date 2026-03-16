@@ -15,6 +15,13 @@
       "when": 1772489279877,
       "tag": "0001_smart_baron_zemo",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1773694945664,
+      "tag": "0002_burly_penance",
+      "breakpoints": true
     }
   ]
 }
