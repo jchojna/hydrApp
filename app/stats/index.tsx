@@ -11,7 +11,7 @@ import { StatsItem } from "./components/StatsItem"
 import { GLASS_VOLUME } from "@/lib/constants"
 
 type StatsProps = {
-  averageWaterLevel: number | null
+  averageWaterLevel: number
 }
 
 export default function Stats({ averageWaterLevel }: StatsProps) {
@@ -62,23 +62,25 @@ export default function Stats({ averageWaterLevel }: StatsProps) {
 
   if (!stats) return null
 
-  const averageLitresValue = averageWaterLevel
-    ? `${averageWaterLevel.toFixed(2)} L`
-    : null
-  const averageGlassesValue = averageWaterLevel
-    ? `${(averageWaterLevel / GLASS_VOLUME).toFixed(1)} glass${
-        averageWaterLevel / GLASS_VOLUME === 1 ? "" : "es"
-      }`
-    : null
+  const averageLitresValue = `${averageWaterLevel.toFixed(2)} L`
+  const averageGlassesValue = `${(averageWaterLevel / GLASS_VOLUME).toFixed(1)} glass${
+    averageWaterLevel / GLASS_VOLUME === 1 ? "" : "es"
+  }`
 
-  const longestRangeLabel = stats?.lastLongestStreakRange
+  const currentRangeLabel = stats.currentStreakRange
+    ? formatDatesRange(
+        stats.currentStreakRange.startDate,
+        stats.currentStreakRange.endDate,
+      )
+    : "-"
+  const longestRangeLabel = stats.lastLongestStreakRange
     ? formatDatesRange(
         stats.lastLongestStreakRange.startDate,
         stats.lastLongestStreakRange.endDate,
       )
     : "-"
-  const pointsLabel = stats === null ? "-" : `${stats.points.toFixed(2)} points`
-  const rankLabel = !!stats?.rank ? `#${stats.rank}` : "-"
+  const pointsLabel = `${stats.points.toFixed(2)} points`
+  const rankLabel = !!stats.rank ? `#${stats.rank} position` : "-"
 
   return (
     <div className="flex w-full max-w-[400px] flex-col gap-4">
@@ -98,18 +100,19 @@ export default function Stats({ averageWaterLevel }: StatsProps) {
           />
           <StatsItem
             label="Current streak"
-            mainValue={formatDays(stats?.currentStreak ?? 0)}
+            mainValue={formatDays(stats.currentStreak)}
+            secondaryValue={currentRangeLabel}
           />
           <StatsItem
             label="Longest streak"
-            mainValue={formatDays(stats?.longestStreak ?? 0)}
+            mainValue={formatDays(stats.longestStreak)}
+            secondaryValue={longestRangeLabel}
           />
           <StatsItem
-            label="Last longest streak"
-            mainValue={longestRangeLabel}
+            label="Total points"
+            mainValue={pointsLabel}
+            secondaryValue={rankLabel}
           />
-          <StatsItem label="Total points" mainValue={pointsLabel} />
-          <StatsItem label="Ranking position" mainValue={rankLabel} />
         </div>
       ) : null}
     </div>

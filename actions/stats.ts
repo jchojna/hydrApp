@@ -28,7 +28,12 @@ export async function getUserStatsAction(): Promise<ActionResponse<UserStats>> {
     ])
 
     const todayDate = formatDate(new Date())
-    const streaks = getStreaks(records, todayDate)
+    const {
+      currentStreak,
+      longestStreak,
+      currentStreakRange,
+      lastLongestStreakRange,
+    } = getStreaks(records, todayDate)
 
     const totalPoints = records.reduce((sum, record) => {
       return sum + clampWaterLevel(Number(record.amount)) / MAX_WATER_PER_DAY
@@ -52,9 +57,10 @@ export async function getUserStatsAction(): Promise<ActionResponse<UserStats>> {
       success: true,
       message: "User stats retrieved successfully",
       data: {
-        currentStreak: streaks.currentStreak,
-        longestStreak: streaks.longestStreak,
-        lastLongestStreakRange: streaks.lastLongestStreakRange,
+        currentStreak,
+        longestStreak,
+        currentStreakRange,
+        lastLongestStreakRange,
         points: totalPoints,
         rank: rankIndex >= 0 ? rankIndex + 1 : null,
       },

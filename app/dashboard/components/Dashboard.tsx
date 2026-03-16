@@ -13,7 +13,7 @@ import { ArchiveEntry, ArchivePageInfo } from "@/lib/types"
 
 type DashboardProps = {
   waterLevel: number
-  averageWaterLevel: number | null
+  averageWaterLevel: number
   archiveEntries: ArchiveEntry[]
   archivePageInfo: ArchivePageInfo
 }

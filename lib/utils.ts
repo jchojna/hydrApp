@@ -52,3 +52,7 @@ export const formatDatesRange = (startDate: string, endDate: string) => {
 
   return `${startMonthName} ${startDay}, ${startYear} - ${endMonthName} ${endDay}, ${endYear}`
 }
+
+export const formatDays = (days: number) => {
+  return `${days} day${days === 1 ? "" : "s"}`
+}
