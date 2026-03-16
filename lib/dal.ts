@@ -61,7 +61,7 @@ export async function getConsumptionAmount(userId: string, date: string) {
       )
       .limit(1)
 
-    return result[0]?.amount ?? "0"
+    return Number(result[0]?.amount) ?? 0
   } catch (error) {
     console.error("Error getting consumption amount:", error)
     throw new Error("Failed to get consumption amount")
@@ -79,7 +79,7 @@ export async function getAverageConsumptionAmountSinceFirstRecord(
       .orderBy(asc(consumptionTable.date))
       .limit(1)
 
-    if (!firstEntry[0]?.date) return null
+    if (!firstEntry[0]?.date) return 0
 
     const totalAmountResult = await db
       .select({

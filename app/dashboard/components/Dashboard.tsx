@@ -66,6 +66,7 @@ export default function Dashboard({
         setIsOpen={setIsSidebarOpen}
         archiveEntries={archiveEntries}
         archivePageInfo={archivePageInfo}
+        averageWaterLevel={averageWaterLevel}
       />
     </div>
   )

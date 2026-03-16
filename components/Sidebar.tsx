@@ -22,6 +22,7 @@ interface SidebarProps {
   setIsOpen: (isOpen: boolean) => void
   archiveEntries: ArchiveEntry[]
   archivePageInfo: ArchivePageInfo
+  averageWaterLevel: number | null
 }
 
 const AccordionHeader = ({ title }: { title: string }) => {
@@ -38,6 +39,7 @@ export const Sidebar = ({
   setIsOpen,
   archiveEntries,
   archivePageInfo,
+  averageWaterLevel,
 }: SidebarProps) => {
   const [isSigningOut, startSignOutTransition] = useTransition()
 
@@ -76,7 +78,7 @@ export const Sidebar = ({
           <AccordionItem value="stats">
             <AccordionHeader title="Stats" />
             <AccordionContent>
-              <Stats />
+              <Stats averageWaterLevel={averageWaterLevel} />
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="ranking">

@@ -8,7 +8,7 @@ import { RulerTick } from "./components/RulerTick"
 
 type RulerProps = {
   waterLevel: number
-  averageWaterLevel: number | null
+  averageWaterLevel: number
   topOffset?: number
   bottomOffset?: number
 }

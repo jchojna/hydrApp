@@ -44,7 +44,7 @@ export async function saveConsumptionAction(
 
 export async function getConsumptionAmountAction(
   date: string,
-): Promise<ActionResponse<string>> {
+): Promise<ActionResponse<number>> {
   try {
     const user = await getCurrentUser()
     if (!user) {
@@ -70,7 +70,7 @@ export async function getConsumptionAmountAction(
 }
 
 export async function getAverageConsumptionAmountAction(): Promise<
-  ActionResponse<number | null>
+  ActionResponse<number>
 > {
   try {
     const user = await getCurrentUser()

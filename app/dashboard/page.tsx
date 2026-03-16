@@ -48,8 +48,8 @@ export default async function DashboardPage({
 
   return (
     <Dashboard
-      waterLevel={Number(waterLevel.data)}
-      averageWaterLevel={averageWaterLevel.data ?? null}
+      waterLevel={waterLevel.data}
+      averageWaterLevel={averageWaterLevel.data}
       archiveEntries={paginatedArchiveEntries.data?.entries || []}
       archivePageInfo={
         paginatedArchiveEntries.data?.pageInfo || DEFAULT_ARCHIVE_PAGE_INFO
