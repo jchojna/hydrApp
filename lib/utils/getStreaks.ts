@@ -7,15 +7,15 @@ type ConsumptionRecord = {
 }
 
 export const getStreaks = (
-  records: ConsumptionRecord[],
   todayDate: string,
+  records?: ConsumptionRecord[],
 ): {
   currentStreak: number
   longestStreak: number
   currentStreakRange: DateRange | null
   lastLongestStreakRange: DateRange | null
 } => {
-  if (records.length === 0) {
+  if (!records || records.length === 0) {
     return {
       currentStreak: 0,
       longestStreak: 0,

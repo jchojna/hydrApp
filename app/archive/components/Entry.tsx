@@ -14,6 +14,7 @@ import { saveConsumptionAction } from "@/actions/consumption"
 import { EntryDate } from "./EntryDate"
 import { EntryAmount } from "./EntryAmount"
 import { clampWaterLevel } from "@/app/dashboard/utils/clampWaterLevel"
+import { useQueryClient } from "@tanstack/react-query"
 
 type EntryProps = {
   entry: ArchiveEntry
@@ -24,6 +25,7 @@ export const Entry = ({ entry }: EntryProps) => {
   const waterLevelFromDb = Number(entry.amount)
   const [isSaving, startSaveTransition] = useTransition()
   const [editedWaterLevel, setEditedWaterLevel] = useState(waterLevelFromDb)
+  const queryClient = useQueryClient()
 
   useEffect(() => {
     setEditedWaterLevel(waterLevelFromDb)
@@ -59,6 +61,7 @@ export const Entry = ({ entry }: EntryProps) => {
       })
 
       if (!response.success) return // TODO: show error message
+      queryClient.invalidateQueries({ queryKey: ["stats"] })
 
       setIsEditing(false)
     })

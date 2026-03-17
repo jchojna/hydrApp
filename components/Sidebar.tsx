@@ -49,7 +49,7 @@ export const Sidebar = ({
   const [openItems, setOpenItems] = useState<string[]>([])
 
   const isStatsOpen = openItems.includes("stats")
-  const statsQuery = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ["stats"],
     enabled: isStatsOpen,
     queryFn: async () => {
@@ -97,22 +97,13 @@ export const Sidebar = ({
           <AccordionItem value="stats">
             <AccordionHeader title="Stats" />
             <AccordionContent>
-              {statsQuery.isLoading && <div>Loading stats...</div>}
-              {statsQuery.isError && (
-                <div className="text-red-200">
-                  Error:{" "}
-                  {statsQuery.error instanceof Error
-                    ? statsQuery.error.message
-                    : "Failed to load stats"}
-                </div>
-              )}
-              {statsQuery.isSuccess && (
-                <Stats
-                  averageWaterLevel={averageWaterLevel}
-                  records={statsQuery.data.records}
-                  totals={statsQuery.data.totals}
-                />
-              )}
+              <Stats
+                averageWaterLevel={averageWaterLevel}
+                records={data?.records}
+                totals={data?.totals}
+                isLoading={isLoading}
+                error={error}
+              />
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="ranking">

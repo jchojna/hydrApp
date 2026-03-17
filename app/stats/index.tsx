@@ -11,14 +11,18 @@ import { clampWaterLevel } from "../dashboard/utils/clampWaterLevel"
 
 type StatsProps = {
   averageWaterLevel: number
-  records: ConsumptionRecord[]
-  totals: UserTotalConsumptionAmount[]
+  records?: ConsumptionRecord[]
+  totals?: UserTotalConsumptionAmount[]
+  isLoading: boolean
+  error: Error | null
 }
 
 export default function Stats({
   averageWaterLevel,
   records,
   totals,
+  isLoading,
+  error,
 }: StatsProps) {
   const { user } = useAuth()
 
@@ -28,21 +32,22 @@ export default function Stats({
     longestStreak,
     currentStreakRange,
     lastLongestStreakRange,
-  } = getStreaks(records, todayDate)
+  } = getStreaks(todayDate, records)
 
-  const totalPoints = records.reduce((sum, record) => {
-    return sum + clampWaterLevel(Number(record.amount)) / MAX_WATER_PER_DAY
-  }, 0)
+  const totalPoints =
+    records?.reduce((sum, record) => {
+      return sum + clampWaterLevel(Number(record.amount)) / MAX_WATER_PER_DAY
+    }, 0) ?? 0
 
-  const userPointsRanking = totals
-    .map((entry) => ({
+  const userPointsRanking = (
+    totals?.map((entry) => ({
       userId: entry.userId,
       points: Number(entry.totalAmount) / MAX_WATER_PER_DAY,
-    }))
-    .sort((a, b) => {
-      if (b.points !== a.points) return b.points - a.points
-      return a.userId.localeCompare(b.userId)
-    })
+    })) ?? []
+  ).sort((a, b) => {
+    if (b.points !== a.points) return b.points - a.points
+    return a.userId.localeCompare(b.userId)
+  })
 
   const rankIndex = userPointsRanking.findIndex(
     (entry) => entry.userId === user?.id,
@@ -68,6 +73,7 @@ export default function Stats({
   return (
     <div className="flex w-full max-w-[400px] flex-col gap-4">
       <PaginationHeader title={user?.email ?? "User"} />
+      {error && <div className="text-red-200">Error: {error.message}</div>}
       <div className="flex flex-col gap-2">
         <StatsItem
           label="Average per day"
@@ -78,16 +84,19 @@ export default function Stats({
           label="Current streak"
           mainValue={formatDays(currentStreak)}
           secondaryValue={currentRangeLabel}
+          isLoading={isLoading}
         />
         <StatsItem
           label="Longest streak"
           mainValue={formatDays(longestStreak)}
           secondaryValue={longestRangeLabel}
+          isLoading={isLoading}
         />
         <StatsItem
           label="Total points"
           mainValue={pointsLabel}
           secondaryValue={rankLabel}
+          isLoading={isLoading}
         />
       </div>
     </div>
