@@ -10,6 +10,11 @@ import {
   type SearchParams,
 } from "./utils/getArchiveDateRangeFromSearchParams"
 import { ARCHIVE_LIMIT, DEFAULT_ARCHIVE_PAGE_INFO } from "@/lib/constants"
+import {
+  getCurrentUser,
+  getUserAllConsumptionRecords,
+  getUsersTotalConsumptionAmounts,
+} from "@/lib/dal"
 
 type DashboardPageProps = {
   searchParams: Promise<SearchParams>
@@ -18,21 +23,36 @@ type DashboardPageProps = {
 export default async function DashboardPage({
   searchParams,
 }: DashboardPageProps) {
+  const user = await getCurrentUser()
+  if (!user) {
+    return {
+      success: false,
+      message: "You need to be signed in",
+    }
+  }
+
   const archiveDateRange = await getArchiveDateRangeFromSearchParams(
     searchParams,
     ARCHIVE_LIMIT,
   )
 
-  const [waterLevel, averageWaterLevel, paginatedArchiveEntries] =
-    await Promise.all([
-      getConsumptionAmountAction(formatDate(new Date())),
-      getAverageConsumptionAmountAction(),
-      getPaginatedArchiveEntriesAction(
-        ARCHIVE_LIMIT,
-        archiveDateRange.startDate,
-        archiveDateRange.endDate,
-      ),
-    ])
+  const [
+    waterLevel,
+    averageWaterLevel,
+    paginatedArchiveEntries,
+    records,
+    totals,
+  ] = await Promise.all([
+    getConsumptionAmountAction(formatDate(new Date())),
+    getAverageConsumptionAmountAction(),
+    getPaginatedArchiveEntriesAction(
+      ARCHIVE_LIMIT,
+      archiveDateRange.startDate,
+      archiveDateRange.endDate,
+    ),
+    getUserAllConsumptionRecords(user.id),
+    getUsersTotalConsumptionAmounts(),
+  ])
 
   if (!waterLevel.success) {
     return <div>Error: {waterLevel.message}</div>
@@ -54,6 +74,8 @@ export default async function DashboardPage({
       archivePageInfo={
         paginatedArchiveEntries.data?.pageInfo || DEFAULT_ARCHIVE_PAGE_INFO
       }
+      records={records}
+      totals={totals}
     />
   )
 }

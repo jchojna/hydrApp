@@ -1,120 +1,95 @@
 "use client"
 
-import { useEffect, useState } from "react"
-
 import { PaginationHeader } from "@/components/PaginationHeader"
 import { useAuth } from "@/contexts/AuthContext"
-import { getUserStatsAction } from "@/actions/stats"
-import { formatDatesRange, formatDays } from "@/lib/utils"
-import { UserStats } from "@/lib/types"
+import { formatDate, formatDatesRange, formatDays } from "@/lib/utils"
+import { ConsumptionRecord, UserTotalConsumptionAmount } from "@/lib/types"
 import { StatsItem } from "./components/StatsItem"
-import { GLASS_VOLUME } from "@/lib/constants"
+import { GLASS_VOLUME, MAX_WATER_PER_DAY } from "@/lib/constants"
+import { getStreaks } from "@/lib/utils/getStreaks"
+import { clampWaterLevel } from "../dashboard/utils/clampWaterLevel"
 
 type StatsProps = {
   averageWaterLevel: number
+  records: ConsumptionRecord[]
+  totals: UserTotalConsumptionAmount[]
 }
 
-export default function Stats({ averageWaterLevel }: StatsProps) {
+export default function Stats({
+  averageWaterLevel,
+  records,
+  totals,
+}: StatsProps) {
   const { user } = useAuth()
-  const [stats, setStats] = useState<UserStats | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    let isActive = true
+  const todayDate = formatDate(new Date())
+  const {
+    currentStreak,
+    longestStreak,
+    currentStreakRange,
+    lastLongestStreakRange,
+  } = getStreaks(records, todayDate)
 
-    if (!user) {
-      setStats(null)
-      setError(null)
-      setIsLoading(false)
-      return
-    }
+  const totalPoints = records.reduce((sum, record) => {
+    return sum + clampWaterLevel(Number(record.amount)) / MAX_WATER_PER_DAY
+  }, 0)
 
-    setIsLoading(true)
-    setError(null)
+  const userPointsRanking = totals
+    .map((entry) => ({
+      userId: entry.userId,
+      points: Number(entry.totalAmount) / MAX_WATER_PER_DAY,
+    }))
+    .sort((a, b) => {
+      if (b.points !== a.points) return b.points - a.points
+      return a.userId.localeCompare(b.userId)
+    })
 
-    getUserStatsAction()
-      .then((response) => {
-        if (!isActive) return
-
-        if (!response.success) {
-          setStats(null)
-          setError(response.message)
-          return
-        }
-
-        setStats(response.data ?? null)
-      })
-      .catch(() => {
-        if (!isActive) return
-        setStats(null)
-        setError("Failed to load stats")
-      })
-      .finally(() => {
-        if (!isActive) return
-        setIsLoading(false)
-      })
-
-    return () => {
-      isActive = false
-    }
-  }, [user?.id])
-
-  if (!stats) return null
+  const rankIndex = userPointsRanking.findIndex(
+    (entry) => entry.userId === user?.id,
+  )
 
   const averageLitresValue = `${averageWaterLevel.toFixed(2)} L`
   const averageGlassesValue = `${(averageWaterLevel / GLASS_VOLUME).toFixed(1)} glass${
     averageWaterLevel / GLASS_VOLUME === 1 ? "" : "es"
   }`
 
-  const currentRangeLabel = stats.currentStreakRange
+  const currentRangeLabel = currentStreakRange
+    ? formatDatesRange(currentStreakRange.startDate, currentStreakRange.endDate)
+    : "-"
+  const longestRangeLabel = lastLongestStreakRange
     ? formatDatesRange(
-        stats.currentStreakRange.startDate,
-        stats.currentStreakRange.endDate,
+        lastLongestStreakRange.startDate,
+        lastLongestStreakRange.endDate,
       )
     : "-"
-  const longestRangeLabel = stats.lastLongestStreakRange
-    ? formatDatesRange(
-        stats.lastLongestStreakRange.startDate,
-        stats.lastLongestStreakRange.endDate,
-      )
-    : "-"
-  const pointsLabel = `${stats.points.toFixed(2)} points`
-  const rankLabel = !!stats.rank ? `#${stats.rank} position` : "-"
+  const pointsLabel = `${totalPoints.toFixed(2)} points`
+  const rankLabel = !!rankIndex ? `#${rankIndex} position` : "-"
 
   return (
     <div className="flex w-full max-w-[400px] flex-col gap-4">
       <PaginationHeader title={user?.email ?? "User"} />
-      {isLoading ? (
-        <span className="text-blue-light-3 text-sm">Loading stats...</span>
-      ) : null}
-      {!isLoading && error ? (
-        <span className="text-blue-light-3 text-sm">{error}</span>
-      ) : null}
-      {!isLoading && !error ? (
-        <div className="flex flex-col gap-2">
-          <StatsItem
-            label="Average per day"
-            mainValue={averageLitresValue}
-            secondaryValue={averageGlassesValue}
-          />
-          <StatsItem
-            label="Current streak"
-            mainValue={formatDays(stats.currentStreak)}
-            secondaryValue={currentRangeLabel}
-          />
-          <StatsItem
-            label="Longest streak"
-            mainValue={formatDays(stats.longestStreak)}
-            secondaryValue={longestRangeLabel}
-          />
-          <StatsItem
-            label="Total points"
-            mainValue={pointsLabel}
-            secondaryValue={rankLabel}
-          />
-        </div>
-      ) : null}
+      <div className="flex flex-col gap-2">
+        <StatsItem
+          label="Average per day"
+          mainValue={averageLitresValue}
+          secondaryValue={averageGlassesValue}
+        />
+        <StatsItem
+          label="Current streak"
+          mainValue={formatDays(currentStreak)}
+          secondaryValue={currentRangeLabel}
+        />
+        <StatsItem
+          label="Longest streak"
+          mainValue={formatDays(longestStreak)}
+          secondaryValue={longestRangeLabel}
+        />
+        <StatsItem
+          label="Total points"
+          mainValue={pointsLabel}
+          secondaryValue={rankLabel}
+        />
+      </div>
     </div>
   )
 }

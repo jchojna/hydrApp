@@ -19,3 +19,27 @@ export type PaginatedArchiveEntries = {
   entries: ArchiveEntry[]
   pageInfo: ArchivePageInfo
 }
+
+export type DateRange = {
+  startDate: string
+  endDate: string
+}
+
+export type UserStats = {
+  currentStreak: number
+  longestStreak: number
+  currentStreakRange: DateRange | null
+  lastLongestStreakRange: DateRange | null
+  points: number
+  rank: number | null
+}
+
+export type ConsumptionRecord = {
+  date: string
+  amount: string
+}
+
+export type UserTotalConsumptionAmount = {
+  userId: string
+  totalAmount: string
+}

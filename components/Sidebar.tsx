@@ -12,7 +12,12 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "./ui/accordion"
-import { ArchiveEntry, ArchivePageInfo } from "@/lib/types"
+import {
+  ArchiveEntry,
+  ArchivePageInfo,
+  ConsumptionRecord,
+  UserTotalConsumptionAmount,
+} from "@/lib/types"
 import Archive from "@/app/archive"
 import { PlusCrossIcon } from "@/assets/svg/icons/plus-cross"
 import Stats from "@/app/stats"
@@ -22,7 +27,9 @@ interface SidebarProps {
   setIsOpen: (isOpen: boolean) => void
   archiveEntries: ArchiveEntry[]
   archivePageInfo: ArchivePageInfo
-  averageWaterLevel: number | null
+  averageWaterLevel: number
+  records: ConsumptionRecord[]
+  totals: UserTotalConsumptionAmount[]
 }
 
 const AccordionHeader = ({ title }: { title: string }) => {
@@ -40,6 +47,8 @@ export const Sidebar = ({
   archiveEntries,
   archivePageInfo,
   averageWaterLevel,
+  records,
+  totals,
 }: SidebarProps) => {
   const [isSigningOut, startSignOutTransition] = useTransition()
 
@@ -78,7 +87,11 @@ export const Sidebar = ({
           <AccordionItem value="stats">
             <AccordionHeader title="Stats" />
             <AccordionContent>
-              <Stats averageWaterLevel={averageWaterLevel} />
+              <Stats
+                averageWaterLevel={averageWaterLevel}
+                records={records}
+                totals={totals}
+              />
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="ranking">
