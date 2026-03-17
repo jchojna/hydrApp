@@ -5,7 +5,12 @@ import { updateTag } from "next/cache"
 import { db } from "@/db"
 import { getSession } from "@/lib/auth/session"
 import { consumptionTable, usersTable } from "@/db/schema"
-import { ArchiveEntry, ArchivePageInfo } from "./types"
+import {
+  ArchiveEntry,
+  ArchivePageInfo,
+  ConsumptionRecord,
+  UserTotalConsumptionAmount,
+} from "./types"
 import { formatDate, parseDate, shiftDate } from "./utils"
 import { MAX_WATER_PER_DAY } from "@/lib/constants"
 
@@ -61,10 +66,25 @@ export async function getConsumptionAmount(userId: string, date: string) {
       )
       .limit(1)
 
-    return Number(result[0]?.amount) ?? 0
+    return Number(result[0]?.amount ?? "0")
   } catch (error) {
     console.error("Error getting consumption amount:", error)
     throw new Error("Failed to get consumption amount")
+  }
+}
+
+export async function getUserAllConsumptionRecords(
+  userId: string,
+): Promise<ConsumptionRecord[]> {
+  try {
+    return await db
+      .select({ date: consumptionTable.date, amount: consumptionTable.amount })
+      .from(consumptionTable)
+      .where(eq(consumptionTable.user_id, userId))
+      .orderBy(asc(consumptionTable.date))
+  } catch (error) {
+    console.error("Error getting consumption records:", error)
+    throw new Error("Failed to get consumption records")
   }
 }
 
@@ -102,6 +122,24 @@ export async function getAverageConsumptionAmountSinceFirstRecord(
   } catch (error) {
     console.error("Error getting average consumption amount:", error)
     throw new Error("Failed to get average consumption amount")
+  }
+}
+
+export async function getUsersTotalConsumptionAmounts(): Promise<
+  UserTotalConsumptionAmount[]
+> {
+  try {
+    return await db
+      .select({
+        userId: usersTable.id,
+        totalAmount: sql<string>`coalesce(sum(least(${consumptionTable.amount}, ${MAX_WATER_PER_DAY})), 0)`,
+      })
+      .from(usersTable)
+      .leftJoin(consumptionTable, eq(consumptionTable.user_id, usersTable.id))
+      .groupBy(usersTable.id)
+  } catch (error) {
+    console.error("Error getting users total consumption amounts:", error)
+    throw new Error("Failed to get users total consumption amounts")
   }
 }
 

@@ -1,8 +1,12 @@
-import { useTransition } from "react"
+"use client"
+
+import { useState, useTransition } from "react"
+import { useQuery } from "@tanstack/react-query"
 
 import { cn } from "@/lib/utils"
 
 import { signOutAction } from "@/actions/signOut"
+import { getStatsDataAction } from "@/actions/stats"
 import { Button } from "@/components/ui/button"
 import { BurgerCircleIcon } from "@/assets/svg/icons/burger-circle"
 import { IconButton } from "./IconButton"
@@ -12,12 +16,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "./ui/accordion"
-import {
-  ArchiveEntry,
-  ArchivePageInfo,
-  ConsumptionRecord,
-  UserTotalConsumptionAmount,
-} from "@/lib/types"
+import { ArchiveEntry, ArchivePageInfo } from "@/lib/types"
 import Archive from "@/app/archive"
 import { PlusCrossIcon } from "@/assets/svg/icons/plus-cross"
 import Stats from "@/app/stats"
@@ -28,8 +27,6 @@ interface SidebarProps {
   archiveEntries: ArchiveEntry[]
   archivePageInfo: ArchivePageInfo
   averageWaterLevel: number
-  records: ConsumptionRecord[]
-  totals: UserTotalConsumptionAmount[]
 }
 
 const AccordionHeader = ({ title }: { title: string }) => {
@@ -47,10 +44,22 @@ export const Sidebar = ({
   archiveEntries,
   archivePageInfo,
   averageWaterLevel,
-  records,
-  totals,
 }: SidebarProps) => {
   const [isSigningOut, startSignOutTransition] = useTransition()
+  const [openItems, setOpenItems] = useState<string[]>([])
+
+  const isStatsOpen = openItems.includes("stats")
+  const statsQuery = useQuery({
+    queryKey: ["stats"],
+    enabled: isStatsOpen,
+    queryFn: async () => {
+      const response = await getStatsDataAction()
+      if (!response.success) {
+        throw new Error(response.message)
+      }
+      return response.data
+    },
+  })
 
   const handleSignOut = () => {
     startSignOutTransition(async () => {
@@ -76,7 +85,8 @@ export const Sidebar = ({
         <Accordion
           type="multiple"
           className="w-full"
-          defaultValue={["notifications"]}
+          value={openItems}
+          onValueChange={setOpenItems}
         >
           <AccordionItem value="archive">
             <AccordionHeader title="Archive" />
@@ -87,11 +97,22 @@ export const Sidebar = ({
           <AccordionItem value="stats">
             <AccordionHeader title="Stats" />
             <AccordionContent>
-              <Stats
-                averageWaterLevel={averageWaterLevel}
-                records={records}
-                totals={totals}
-              />
+              {statsQuery.isLoading && <div>Loading stats...</div>}
+              {statsQuery.isError && (
+                <div className="text-red-200">
+                  Error:{" "}
+                  {statsQuery.error instanceof Error
+                    ? statsQuery.error.message
+                    : "Failed to load stats"}
+                </div>
+              )}
+              {statsQuery.isSuccess && (
+                <Stats
+                  averageWaterLevel={averageWaterLevel}
+                  records={statsQuery.data.records}
+                  totals={statsQuery.data.totals}
+                />
+              )}
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="ranking">

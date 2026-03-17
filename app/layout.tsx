@@ -5,6 +5,7 @@ import "./globals.css"
 import Background from "./background"
 import { getCurrentUser } from "@/lib/dal"
 import { AuthProvider } from "@/contexts/AuthContext"
+import { ReactQueryProvider } from "@/components/ReactQueryProvider"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,9 +43,11 @@ export default async function RootLayout({
       >
         <Background />
         <AuthProvider user={authUser}>
-          <div className="absolute top-0 right-0 bottom-0 left-0 z-10 flex h-screen w-full items-center justify-center">
-            {children}
-          </div>
+          <ReactQueryProvider>
+            <div className="absolute top-0 right-0 bottom-0 left-0 z-10 flex h-screen w-full items-center justify-center">
+              {children}
+            </div>
+          </ReactQueryProvider>
         </AuthProvider>
       </body>
     </html>

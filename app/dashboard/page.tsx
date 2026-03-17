@@ -10,11 +10,7 @@ import {
   type SearchParams,
 } from "./utils/getArchiveDateRangeFromSearchParams"
 import { ARCHIVE_LIMIT, DEFAULT_ARCHIVE_PAGE_INFO } from "@/lib/constants"
-import {
-  getCurrentUser,
-  getUserAllConsumptionRecords,
-  getUsersTotalConsumptionAmounts,
-} from "@/lib/dal"
+import { getCurrentUser } from "@/lib/dal"
 
 type DashboardPageProps = {
   searchParams: Promise<SearchParams>
@@ -40,8 +36,6 @@ export default async function DashboardPage({
     waterLevel,
     averageWaterLevel,
     paginatedArchiveEntries,
-    records,
-    totals,
   ] = await Promise.all([
     getConsumptionAmountAction(formatDate(new Date())),
     getAverageConsumptionAmountAction(),
@@ -50,8 +44,6 @@ export default async function DashboardPage({
       archiveDateRange.startDate,
       archiveDateRange.endDate,
     ),
-    getUserAllConsumptionRecords(user.id),
-    getUsersTotalConsumptionAmounts(),
   ])
 
   if (!waterLevel.success) {
@@ -74,8 +66,6 @@ export default async function DashboardPage({
       archivePageInfo={
         paginatedArchiveEntries.data?.pageInfo || DEFAULT_ARCHIVE_PAGE_INFO
       }
-      records={records}
-      totals={totals}
     />
   )
 }

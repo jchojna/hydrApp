@@ -1,4 +1,5 @@
 import { useCallback, useTransition } from "react"
+import { useQueryClient } from "@tanstack/react-query"
 
 import { PlusCircleIcon } from "@/assets/svg/icons/plus-circle"
 import { IconButton } from "@/components/IconButton"
@@ -18,6 +19,7 @@ interface ControlsProps {
 export const Controls = ({ waterLevel, onWaterLevelChange }: ControlsProps) => {
   const [isPending, startTransition] = useTransition()
   const previousWaterLevel = waterLevel
+  const queryClient = useQueryClient()
 
   const handleWaterLevelChange = useCallback(
     (newWaterLevel: number) => {
@@ -34,10 +36,12 @@ export const Controls = ({ waterLevel, onWaterLevelChange }: ControlsProps) => {
         if (!response.success) {
           onWaterLevelChange(previousWaterLevel)
           waves?.setWaterLevel(previousWaterLevel)
+          return
         }
+        queryClient.invalidateQueries({ queryKey: ["stats"] })
       })
     },
-    [onWaterLevelChange, previousWaterLevel],
+    [onWaterLevelChange, previousWaterLevel, queryClient],
   )
 
   const handleIncreaseWaterLevel = () => {

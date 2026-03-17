@@ -9,20 +9,13 @@ import { cn } from "@/lib/utils"
 import { Output } from "./Output"
 import { waves } from "@/app/background"
 import { Ruler } from "@/app/dashboard/components/ruler"
-import {
-  ArchiveEntry,
-  ArchivePageInfo,
-  ConsumptionRecord,
-  UserTotalConsumptionAmount,
-} from "@/lib/types"
+import { ArchiveEntry, ArchivePageInfo } from "@/lib/types"
 
 type DashboardProps = {
   waterLevel: number
   averageWaterLevel: number
   archiveEntries: ArchiveEntry[]
   archivePageInfo: ArchivePageInfo
-  records: ConsumptionRecord[]
-  totals: UserTotalConsumptionAmount[]
 }
 
 export default function Dashboard({
@@ -30,8 +23,6 @@ export default function Dashboard({
   averageWaterLevel,
   archiveEntries,
   archivePageInfo,
-  records,
-  totals,
 }: DashboardProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const [optimisticWaterLevel, setOptimisticWaterLevel] = useState(waterLevel)
@@ -76,8 +67,6 @@ export default function Dashboard({
         archiveEntries={archiveEntries}
         archivePageInfo={archivePageInfo}
         averageWaterLevel={averageWaterLevel}
-        records={records}
-        totals={totals}
       />
     </div>
   )
