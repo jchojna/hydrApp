@@ -20,6 +20,8 @@ import { ArchiveEntry, ArchivePageInfo } from "@/lib/types"
 import Archive from "@/app/archive"
 import { PlusCrossIcon } from "@/assets/svg/icons/plus-cross"
 import Stats from "@/app/stats"
+import Ranking from "@/app/ranking"
+import { MAX_WATER_PER_DAY } from "@/lib/constants"
 
 interface SidebarProps {
   isOpen: boolean
@@ -49,9 +51,11 @@ export const Sidebar = ({
   const [openItems, setOpenItems] = useState<string[]>([])
 
   const isStatsOpen = openItems.includes("stats")
+  const isRankingOpen = openItems.includes("ranking")
+
   const { data, isLoading, error } = useQuery({
     queryKey: ["stats"],
-    enabled: isStatsOpen,
+    enabled: isStatsOpen || isRankingOpen,
     queryFn: async () => {
       const response = await getStatsDataAction()
       if (!response.success) {
@@ -67,6 +71,16 @@ export const Sidebar = ({
     })
   }
 
+  const userPointsRanking = (
+    data?.totals?.map((entry) => ({
+      userId: entry.userId,
+      points: Number(entry.totalAmount) / MAX_WATER_PER_DAY,
+    })) ?? []
+  ).sort((a, b) => {
+    if (b.points !== a.points) return b.points - a.points
+    return a.userId.localeCompare(b.userId)
+  })
+
   return (
     <div className="absolute top-0 right-0">
       <div className="relative z-50 p-8">
@@ -78,7 +92,7 @@ export const Sidebar = ({
       </div>
       <div
         className={cn(
-          "bg-blue-dark-4 fixed top-0 right-0 flex h-full w-1/3 translate-x-full flex-col items-center justify-center overflow-auto transition-transform duration-300",
+          "bg-blue-dark-4 fixed top-0 right-0 flex h-full w-1/3 translate-x-full flex-col items-center overflow-auto py-[calc((100vh-400px)/2)] transition-transform duration-300",
           isOpen && "translate-x-0",
         )}
       >
@@ -100,7 +114,7 @@ export const Sidebar = ({
               <Stats
                 averageWaterLevel={averageWaterLevel}
                 records={data?.records}
-                totals={data?.totals}
+                ranking={userPointsRanking}
                 isLoading={isLoading}
                 error={error}
               />
@@ -108,7 +122,13 @@ export const Sidebar = ({
           </AccordionItem>
           <AccordionItem value="ranking">
             <AccordionHeader title="Ranking" />
-            <AccordionContent>Ranking content.</AccordionContent>
+            <AccordionContent>
+              <Ranking
+                ranking={userPointsRanking}
+                isLoading={isLoading}
+                error={error}
+              />
+            </AccordionContent>
           </AccordionItem>
           <AccordionItem value="settings">
             <AccordionHeader title="Settings" />

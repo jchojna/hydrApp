@@ -3,7 +3,7 @@
 import { PaginationHeader } from "@/components/PaginationHeader"
 import { useAuth } from "@/contexts/AuthContext"
 import { formatDate, formatDatesRange, formatDays } from "@/lib/utils"
-import { ConsumptionRecord, UserTotalConsumptionAmount } from "@/lib/types"
+import { ConsumptionRecord } from "@/lib/types"
 import { StatsItem } from "./components/StatsItem"
 import { GLASS_VOLUME, MAX_WATER_PER_DAY } from "@/lib/constants"
 import { getStreaks } from "@/lib/utils/getStreaks"
@@ -12,7 +12,7 @@ import { clampWaterLevel } from "../dashboard/utils/clampWaterLevel"
 type StatsProps = {
   averageWaterLevel: number
   records?: ConsumptionRecord[]
-  totals?: UserTotalConsumptionAmount[]
+  ranking: { userId: string; points: number }[]
   isLoading: boolean
   error: Error | null
 }
@@ -20,7 +20,7 @@ type StatsProps = {
 export default function Stats({
   averageWaterLevel,
   records,
-  totals,
+  ranking,
   isLoading,
   error,
 }: StatsProps) {
@@ -39,19 +39,7 @@ export default function Stats({
       return sum + clampWaterLevel(Number(record.amount)) / MAX_WATER_PER_DAY
     }, 0) ?? 0
 
-  const userPointsRanking = (
-    totals?.map((entry) => ({
-      userId: entry.userId,
-      points: Number(entry.totalAmount) / MAX_WATER_PER_DAY,
-    })) ?? []
-  ).sort((a, b) => {
-    if (b.points !== a.points) return b.points - a.points
-    return a.userId.localeCompare(b.userId)
-  })
-
-  const rankIndex = userPointsRanking.findIndex(
-    (entry) => entry.userId === user?.id,
-  )
+  const rankIndex = ranking.findIndex((entry) => entry.userId === user?.id)
 
   const averageLitresValue = `${averageWaterLevel.toFixed(2)} L`
   const averageGlassesValue = `${(averageWaterLevel / GLASS_VOLUME).toFixed(1)} glass${
