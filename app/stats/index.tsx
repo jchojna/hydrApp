@@ -8,11 +8,12 @@ import { StatsItem } from "./components/StatsItem"
 import { GLASS_VOLUME, MAX_WATER_PER_DAY } from "@/lib/constants"
 import { getStreaks } from "@/lib/utils/getStreaks"
 import { clampWaterLevel } from "../dashboard/utils/clampWaterLevel"
+import { RankingType } from "@/lib/utils/getRanking"
 
 type StatsProps = {
   averageWaterLevel: number
   records?: ConsumptionRecord[]
-  ranking: { userId: string; points: number }[]
+  ranking: RankingType
   isLoading: boolean
   error: Error | null
 }

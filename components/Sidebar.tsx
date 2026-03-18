@@ -1,13 +1,11 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 
 import { cn } from "@/lib/utils"
 
-import { signOutAction } from "@/actions/signOut"
 import { getStatsDataAction } from "@/actions/stats"
-import { Button } from "@/components/ui/button"
 import { BurgerCircleIcon } from "@/assets/svg/icons/burger-circle"
 import { IconButton } from "./IconButton"
 import {
@@ -17,11 +15,12 @@ import {
   AccordionTrigger,
 } from "./ui/accordion"
 import { ArchiveEntry, ArchivePageInfo } from "@/lib/types"
-import Archive from "@/app/archive"
 import { PlusCrossIcon } from "@/assets/svg/icons/plus-cross"
+import Archive from "@/app/archive"
 import Stats from "@/app/stats"
 import Ranking from "@/app/ranking"
-import { MAX_WATER_PER_DAY } from "@/lib/constants"
+import Settings from "@/app/settings"
+import { getRanking } from "@/lib/utils/getRanking"
 
 interface SidebarProps {
   isOpen: boolean
@@ -47,7 +46,6 @@ export const Sidebar = ({
   archivePageInfo,
   averageWaterLevel,
 }: SidebarProps) => {
-  const [isSigningOut, startSignOutTransition] = useTransition()
   const [openItems, setOpenItems] = useState<string[]>([])
 
   const isStatsOpen = openItems.includes("stats")
@@ -65,21 +63,7 @@ export const Sidebar = ({
     },
   })
 
-  const handleSignOut = () => {
-    startSignOutTransition(async () => {
-      await signOutAction()
-    })
-  }
-
-  const userPointsRanking = (
-    data?.totals?.map((entry) => ({
-      userId: entry.userId,
-      points: Number(entry.totalAmount) / MAX_WATER_PER_DAY,
-    })) ?? []
-  ).sort((a, b) => {
-    if (b.points !== a.points) return b.points - a.points
-    return a.userId.localeCompare(b.userId)
-  })
+  const ranking = getRanking(data?.totals)
 
   return (
     <div className="absolute top-0 right-0">
@@ -114,7 +98,7 @@ export const Sidebar = ({
               <Stats
                 averageWaterLevel={averageWaterLevel}
                 records={data?.records}
-                ranking={userPointsRanking}
+                ranking={ranking}
                 isLoading={isLoading}
                 error={error}
               />
@@ -123,19 +107,13 @@ export const Sidebar = ({
           <AccordionItem value="ranking">
             <AccordionHeader title="Ranking" />
             <AccordionContent>
-              <Ranking
-                ranking={userPointsRanking}
-                isLoading={isLoading}
-                error={error}
-              />
+              <Ranking ranking={ranking} isLoading={isLoading} error={error} />
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="settings">
             <AccordionHeader title="Settings" />
             <AccordionContent>
-              <Button onClick={handleSignOut} disabled={isSigningOut}>
-                {isSigningOut ? "Signing out..." : "Sign Out"}
-              </Button>
+              <Settings />
             </AccordionContent>
           </AccordionItem>
         </Accordion>
