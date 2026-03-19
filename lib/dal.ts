@@ -9,6 +9,7 @@ import {
   ArchiveEntry,
   ArchivePageInfo,
   ConsumptionRecord,
+  UserSettings,
   UserTotalConsumptionAmount,
 } from "./types"
 import { formatDate, parseDate, shiftDate } from "./utils"
@@ -52,6 +53,76 @@ export const getUserByEmail = cache(async (email: string) => {
     return null
   }
 })
+
+export async function getUserSettings(userId: string): Promise<UserSettings> {
+  try {
+    const result = await db
+      .select({
+        username: usersTable.username,
+        age: usersTable.age,
+        sex: usersTable.sex,
+        maxWaterPerDay: usersTable.max_water_per_day,
+        glassVolume: usersTable.glass_volume,
+      })
+      .from(usersTable)
+      .where(eq(usersTable.id, userId))
+      .limit(1)
+
+    return result[0]
+  } catch (error) {
+    console.error("Error getting user settings:", error)
+    throw new Error("Failed to get user settings")
+  }
+}
+
+export async function updateUserSettings(
+  userId: string,
+  settings: Partial<UserSettings>,
+) {
+  try {
+    const values: Partial<typeof usersTable.$inferInsert> = {}
+
+    if (typeof settings.username === "string") {
+      values.username = settings.username
+    }
+
+    if (typeof settings.age === "number") {
+      values.age = settings.age
+    }
+
+    if (
+      settings.sex === "male" ||
+      settings.sex === "female" ||
+      settings.sex === "other"
+    ) {
+      values.sex = settings.sex
+    }
+
+    if (typeof settings.maxWaterPerDay === "number") {
+      values.max_water_per_day = settings.maxWaterPerDay
+    }
+
+    if (typeof settings.glassVolume === "number") {
+      values.glass_volume = settings.glassVolume
+    }
+
+    if (!Object.keys(values).length) return null
+
+    const result = await db
+      .update(usersTable)
+      .set({
+        ...values,
+        updated_at: new Date(),
+      })
+      .where(eq(usersTable.id, userId))
+      .returning()
+
+    return result[0] || null
+  } catch (error) {
+    console.error("Error updating user settings:", error)
+    throw new Error("Failed to update user settings")
+  }
+}
 
 export async function getConsumptionAmount(userId: string, date: string) {
   try {
