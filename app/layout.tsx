@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google"
 
 import "./globals.css"
 import Background from "./background"
-import { getCurrentUser } from "@/lib/dal"
+import { getCurrentUser } from "@/lib/dal/user"
 import { AuthProvider } from "@/contexts/AuthContext"
 import { ReactQueryProvider } from "@/components/ReactQueryProvider"
 

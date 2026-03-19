@@ -2,7 +2,8 @@
 
 import { SelectUser } from "@/db/schema"
 import { ActionResponse } from "./types"
-import { getCurrentUser, getUserSettings, updateUserSettings } from "@/lib/dal"
+import { getCurrentUser } from "@/lib/dal/user"
+import { getUserSettings, updateUserSettings } from "@/lib/dal/settings"
 import { UserSettings } from "@/lib/types"
 import { unauthorizedActionResponse } from "@/lib/errors"
 

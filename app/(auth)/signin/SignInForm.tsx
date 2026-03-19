@@ -13,7 +13,7 @@ import {
   AuthFormField,
   signInSchema,
   type SignInInput,
-} from "@/lib/validations/auth"
+} from "@/lib/auth/validation"
 import { FormInput } from "@/components/FormInput"
 
 // TODO: Add auth form reusable component?

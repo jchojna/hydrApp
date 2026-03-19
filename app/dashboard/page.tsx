@@ -10,7 +10,7 @@ import {
   type SearchParams,
 } from "./utils/getArchiveDateRangeFromSearchParams"
 import { ARCHIVE_LIMIT, DEFAULT_ARCHIVE_PAGE_INFO } from "@/lib/constants"
-import { getCurrentUser } from "@/lib/dal"
+import { getCurrentUser } from "@/lib/dal/user"
 import { unauthorizedActionResponse } from "@/lib/errors"
 
 type DashboardPageProps = {

@@ -13,7 +13,7 @@ import {
   AuthFormField,
   signUpSchema,
   type SignUpInput,
-} from "@/lib/validations/auth"
+} from "@/lib/auth/validation"
 import { FormInput } from "@/components/FormInput"
 
 export default function SignUpForm() {

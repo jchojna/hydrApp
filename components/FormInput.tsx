@@ -2,7 +2,7 @@ import { HTMLInputTypeAttribute } from "react"
 
 import { Input } from "@/components/ui/input"
 import { FieldLabel } from "@/components/ui/field"
-import { AuthFormField } from "@/lib/validations/auth"
+import { AuthFormField } from "@/lib/auth/validation"
 
 type FormInputProps = {
   id: AuthFormField

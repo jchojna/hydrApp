@@ -2,9 +2,9 @@
 
 import { createSession } from "@/lib/auth/session"
 import { createUser } from "@/lib/auth/user"
-import { getUserByEmail } from "@/lib/dal"
+import { getUserByEmail } from "@/lib/dal/user"
 import { ActionResponse } from "./types"
-import { SignUpInput } from "@/lib/validations/auth"
+import { SignUpInput } from "@/lib/auth/validation"
 import { unauthorizedActionResponse } from "@/lib/errors"
 
 export async function signUpAction(

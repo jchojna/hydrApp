@@ -3,9 +3,9 @@
 import {
   getAverageConsumptionAmountSinceFirstRecord,
   getConsumptionAmount,
-  getCurrentUser,
   upsertConsumptionRecord,
-} from "@/lib/dal"
+} from "@/lib/dal/consumption"
+import { getCurrentUser } from "@/lib/dal/user"
 import { ActionResponse } from "./types"
 import { unauthorizedActionResponse } from "@/lib/errors"
 

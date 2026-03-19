@@ -1,10 +1,10 @@
 "use server"
 
 import {
-  getCurrentUser,
   getUserAllConsumptionRecords,
   getUsersTotalConsumptionAmounts,
-} from "@/lib/dal"
+} from "@/lib/dal/consumption"
+import { getCurrentUser } from "@/lib/dal/user"
 import { ActionResponse } from "./types"
 import { ConsumptionRecord, UserTotalConsumptionAmount } from "@/lib/types"
 import { unauthorizedActionResponse } from "@/lib/errors"
