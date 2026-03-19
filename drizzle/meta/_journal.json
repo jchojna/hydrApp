@@ -22,6 +22,13 @@
       "when": 1773694945664,
       "tag": "0002_burly_penance",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1773953295521,
+      "tag": "0003_concerned_cyclops",
+      "breakpoints": true
     }
   ]
 }

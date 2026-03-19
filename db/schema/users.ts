@@ -1,4 +1,11 @@
-import { pgTable, text, uniqueIndex, varchar } from "drizzle-orm/pg-core"
+import {
+  integer,
+  numeric,
+  pgTable,
+  text,
+  uniqueIndex,
+  varchar,
+} from "drizzle-orm/pg-core"
 import {
   createInsertSchema,
   createSelectSchema,
@@ -13,6 +20,11 @@ export const usersTable = pgTable(
     id: uuidPrimaryKey,
     email: varchar("email", { length: 255 }).notNull(),
     password: text("password").notNull(),
+    username: varchar("username", { length: 255 }).notNull().default(""),
+    age: integer("age").notNull().default(18),
+    sex: varchar("sex", { length: 20 }).notNull().default("male"),
+    max_water_per_day: numeric("max_water_per_day").notNull().default("3"),
+    glass_volume: numeric("glass_volume").notNull().default("0.25"),
     ...timestamps,
   },
   (table) => [uniqueIndex().on(table.email)],
