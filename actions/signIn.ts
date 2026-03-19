@@ -5,18 +5,14 @@ import { createSession } from "@/lib/auth/session"
 import { getUserByEmail } from "@/lib/dal"
 import { ActionResponse } from "./types"
 import { SignInInput } from "@/lib/validations/auth"
+import { unauthorizedActionResponse } from "@/lib/errors"
 
 export async function signInAction(
   input: SignInInput,
 ): Promise<ActionResponse> {
   try {
     const user = await getUserByEmail(input.email)
-    if (!user) {
-      return {
-        success: false,
-        message: "Invalid email or password",
-      }
-    }
+    if (!user) return unauthorizedActionResponse
 
     const isPasswordValid = await verifyPassword(input.password, user.password)
     if (!isPasswordValid) {
@@ -31,6 +27,7 @@ export async function signInAction(
     return {
       success: true,
       message: "Signed in successfully",
+      data: null,
     }
   } catch (error) {
     console.error("Sign in error:", error)

@@ -5,6 +5,7 @@ import { createUser } from "@/lib/auth/user"
 import { getUserByEmail } from "@/lib/dal"
 import { ActionResponse } from "./types"
 import { SignUpInput } from "@/lib/validations/auth"
+import { unauthorizedActionResponse } from "@/lib/errors"
 
 export async function signUpAction(
   input: SignUpInput,
@@ -19,18 +20,14 @@ export async function signUpAction(
     }
 
     const user = await createUser(input.email, input.password)
-    if (!user) {
-      return {
-        success: false,
-        message: "Failed to create user",
-      }
-    }
+    if (!user) return unauthorizedActionResponse
 
     await createSession(user.id)
 
     return {
       success: true,
       message: "Account created successfully",
+      data: null,
     }
   } catch (error) {
     console.error("Sign up error:", error)

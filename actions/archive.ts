@@ -3,6 +3,7 @@
 import { getCurrentUser, getPaginatedArchiveEntries } from "@/lib/dal"
 import { ActionResponse } from "./types"
 import { type PaginatedArchiveEntries } from "@/lib/types"
+import { unauthorizedActionResponse } from "@/lib/errors"
 
 export const getPaginatedArchiveEntriesAction = async (
   limit: number,
@@ -11,12 +12,7 @@ export const getPaginatedArchiveEntriesAction = async (
 ): Promise<ActionResponse<PaginatedArchiveEntries>> => {
   try {
     const user = await getCurrentUser()
-    if (!user) {
-      return {
-        success: false,
-        message: "You need to be signed in",
-      }
-    }
+    if (!user) return unauthorizedActionResponse
 
     const archiveEntries = await getPaginatedArchiveEntries(
       user.id,

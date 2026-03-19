@@ -7,6 +7,7 @@ import {
   upsertConsumptionRecord,
 } from "@/lib/dal"
 import { ActionResponse } from "./types"
+import { unauthorizedActionResponse } from "@/lib/errors"
 
 type SaveConsumptionInput = {
   amount: number
@@ -20,18 +21,14 @@ export async function saveConsumptionAction(
     await new Promise((resolve) => setTimeout(resolve, 200)) // TODO: remove this
 
     const user = await getCurrentUser()
-    if (!user) {
-      return {
-        success: false,
-        message: "You need to be signed in",
-      }
-    }
+    if (!user) return unauthorizedActionResponse
 
     await upsertConsumptionRecord(user.id, input.amount, input.date)
 
     return {
       success: true,
       message: "Consumption saved successfully",
+      data: null,
     }
   } catch (error) {
     console.error("Save consumption error:", error)
@@ -47,12 +44,7 @@ export async function getConsumptionAmountAction(
 ): Promise<ActionResponse<number>> {
   try {
     const user = await getCurrentUser()
-    if (!user) {
-      return {
-        success: false,
-        message: "You need to be signed in",
-      }
-    }
+    if (!user) return unauthorizedActionResponse
 
     const amount = await getConsumptionAmount(user.id, date)
     return {
@@ -74,12 +66,7 @@ export async function getAverageConsumptionAmountAction(): Promise<
 > {
   try {
     const user = await getCurrentUser()
-    if (!user) {
-      return {
-        success: false,
-        message: "You need to be signed in",
-      }
-    }
+    if (!user) return unauthorizedActionResponse
 
     const averageAmount = await getAverageConsumptionAmountSinceFirstRecord(
       user.id,

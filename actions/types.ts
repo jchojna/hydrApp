@@ -1,4 +1,4 @@
-export type ActionResponse<T = unknown> =
+export type ActionResponse<T = null> =
   | {
       success: true
       message: string

@@ -7,6 +7,7 @@ import {
 } from "@/lib/dal"
 import { ActionResponse } from "./types"
 import { ConsumptionRecord, UserTotalConsumptionAmount } from "@/lib/types"
+import { unauthorizedActionResponse } from "@/lib/errors"
 
 type StatsData = {
   records: ConsumptionRecord[]
@@ -16,12 +17,7 @@ type StatsData = {
 export async function getStatsDataAction(): Promise<ActionResponse<StatsData>> {
   try {
     const user = await getCurrentUser()
-    if (!user) {
-      return {
-        success: false,
-        message: "You need to be signed in",
-      }
-    }
+    if (!user) return unauthorizedActionResponse
 
     const [records, totals] = await Promise.all([
       getUserAllConsumptionRecords(user.id),

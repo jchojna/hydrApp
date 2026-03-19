@@ -4,6 +4,7 @@ import { SelectUser } from "@/db/schema"
 import { ActionResponse } from "./types"
 import { getCurrentUser, getUserSettings, updateUserSettings } from "@/lib/dal"
 import { UserSettings } from "@/lib/types"
+import { unauthorizedActionResponse } from "@/lib/errors"
 
 type SaveUserSettingInput =
   | { key: "username"; value: string }
@@ -67,12 +68,7 @@ export async function getUserSettingsAction(): Promise<
 > {
   try {
     const user = await getCurrentUser()
-    if (!user) {
-      return {
-        success: false,
-        message: "You need to be signed in",
-      }
-    }
+    if (!user) return unauthorizedActionResponse
 
     const settings = await getUserSettings(user.id)
 
@@ -95,12 +91,7 @@ export async function saveUserSettingAction(
 ): Promise<ActionResponse<UserSettings>> {
   try {
     const user = await getCurrentUser()
-    if (!user) {
-      return {
-        success: false,
-        message: "You need to be signed in",
-      }
-    }
+    if (!user) return unauthorizedActionResponse
 
     const normalizedInput = normalizeUserSetting(input)
 
