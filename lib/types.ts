@@ -46,10 +46,12 @@ export type UserTotalConsumptionAmount = {
   totalAmount: string
 }
 
+export type UserSex = SelectUser["sex"]
+
 export type UserSettings = {
-  username: SelectUser["username"]
-  age: SelectUser["age"]
-  sex: SelectUser["sex"]
-  maxWaterPerDay: SelectUser["max_water_per_day"]
-  glassVolume: SelectUser["glass_volume"]
+  username: string
+  age: number
+  sex: UserSex
+  maxWaterPerDay: number
+  glassVolume: number
 }

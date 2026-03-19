@@ -56,7 +56,7 @@ export const getUserByEmail = cache(async (email: string) => {
 
 export async function getUserSettings(userId: string): Promise<UserSettings> {
   try {
-    const result = await db
+    const [result] = await db
       .select({
         username: usersTable.username,
         age: usersTable.age,
@@ -68,7 +68,13 @@ export async function getUserSettings(userId: string): Promise<UserSettings> {
       .where(eq(usersTable.id, userId))
       .limit(1)
 
-    return result[0]
+    return {
+      username: result.username,
+      age: result.age,
+      sex: result.sex,
+      maxWaterPerDay: Number(result.maxWaterPerDay),
+      glassVolume: Number(result.glassVolume),
+    }
   } catch (error) {
     console.error("Error getting user settings:", error)
     throw new Error("Failed to get user settings")
@@ -99,11 +105,11 @@ export async function updateUserSettings(
     }
 
     if (typeof settings.maxWaterPerDay === "number") {
-      values.max_water_per_day = settings.maxWaterPerDay
+      values.max_water_per_day = settings.maxWaterPerDay.toString()
     }
 
     if (typeof settings.glassVolume === "number") {
-      values.glass_volume = settings.glassVolume
+      values.glass_volume = settings.glassVolume.toString()
     }
 
     if (!Object.keys(values).length) return null
