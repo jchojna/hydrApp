@@ -1,3 +1,5 @@
+import { SelectUser } from "@/db/schema"
+
 export type ArchiveEntry = {
   date: string
   amount: string
@@ -42,4 +44,12 @@ export type ConsumptionRecord = {
 export type UserTotalConsumptionAmount = {
   userId: string
   totalAmount: string
+}
+
+export type UserSettings = {
+  username: SelectUser["username"]
+  age: SelectUser["age"]
+  sex: SelectUser["sex"]
+  maxWaterPerDay: SelectUser["max_water_per_day"]
+  glassVolume: SelectUser["glass_volume"]
 }

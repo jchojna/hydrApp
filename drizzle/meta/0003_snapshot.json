@@ -1,5 +1,5 @@
 {
-  "id": "76c4d9ad-4567-42e4-90ff-fa6b5c45d9a0",
+  "id": "e7171241-b824-40fe-95c5-c53e4a87af05",
   "prevId": "8fa0c8c3-c162-45f6-a2d2-cbcf26661e8c",
   "version": "7",
   "dialect": "postgresql",
@@ -145,7 +145,8 @@
         },
         "sex": {
           "name": "sex",
-          "type": "varchar(20)",
+          "type": "user_sex",
+          "typeSchema": "public",
           "primaryKey": false,
           "notNull": true,
           "default": "'male'"
@@ -210,7 +211,17 @@
       "isRLSEnabled": false
     }
   },
-  "enums": {},
+  "enums": {
+    "public.user_sex": {
+      "name": "user_sex",
+      "schema": "public",
+      "values": [
+        "male",
+        "female",
+        "other"
+      ]
+    }
+  },
   "schemas": {},
   "sequences": {},
   "roles": {},

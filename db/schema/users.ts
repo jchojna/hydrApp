@@ -1,6 +1,7 @@
 import {
   integer,
   numeric,
+  pgEnum,
   pgTable,
   text,
   uniqueIndex,
@@ -14,6 +15,8 @@ import {
 
 import { timestamps, uuidPrimaryKey } from "./utils"
 
+export const userSexEnum = pgEnum("user_sex", ["male", "female", "other"])
+
 export const usersTable = pgTable(
   "users",
   {
@@ -22,7 +25,7 @@ export const usersTable = pgTable(
     password: text("password").notNull(),
     username: varchar("username", { length: 255 }).notNull().default(""),
     age: integer("age").notNull().default(18),
-    sex: varchar("sex", { length: 20 }).notNull().default("male"),
+    sex: userSexEnum("sex").notNull().default("male"),
     max_water_per_day: numeric("max_water_per_day").notNull().default("3"),
     glass_volume: numeric("glass_volume").notNull().default("0.25"),
     ...timestamps,
