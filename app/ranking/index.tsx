@@ -10,8 +10,9 @@ type RankingProps = {
   error: Error | null
 }
 
+// TODO: use isLoading to show loading state
 export default function Ranking({ ranking, isLoading, error }: RankingProps) {
-  const ITEMS_PER_PAGE = 3
+  const ITEMS_PER_PAGE = 3 // TODO: move to constants
 
   const {
     totalPages,
@@ -31,7 +32,9 @@ export default function Ranking({ ranking, isLoading, error }: RankingProps) {
         isNextPageDisabled={disableNext}
         isPreviousPageDisabled={disablePrevious}
       />
-      {error && <div className="text-red-200">Error: {error.message}</div>}
+
+      {error && <div className="text-red-300">Error: {error.message}</div>}
+
       <div className="flex flex-col gap-2">
         {paginatedItems.length ? (
           paginatedItems.map((item) => (
@@ -39,7 +42,7 @@ export default function Ranking({ ranking, isLoading, error }: RankingProps) {
               key={item.userId}
               className="bg-blue-dark-1/50 flex items-center justify-between gap-2 rounded-xl p-4"
             >
-              <div>{item.userId}</div>
+              <div>{item.username}</div>
               <div>{item.points} points</div>
             </div>
           ))

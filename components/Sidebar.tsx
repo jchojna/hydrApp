@@ -86,12 +86,14 @@ export const Sidebar = ({
           value={openItems}
           onValueChange={setOpenItems}
         >
+          {/* Archive */}
           <AccordionItem value="archive">
             <AccordionHeader title="Archive" />
             <AccordionContent>
               <Archive entries={archiveEntries} pageInfo={archivePageInfo} />
             </AccordionContent>
           </AccordionItem>
+          {/* Stats */}
           <AccordionItem value="stats">
             <AccordionHeader title="Stats" />
             <AccordionContent>
@@ -104,12 +106,14 @@ export const Sidebar = ({
               />
             </AccordionContent>
           </AccordionItem>
+          {/* Ranking */}
           <AccordionItem value="ranking">
             <AccordionHeader title="Ranking" />
             <AccordionContent>
               <Ranking ranking={ranking} isLoading={isLoading} error={error} />
             </AccordionContent>
           </AccordionItem>
+          {/* Settings */}
           <AccordionItem value="settings">
             <AccordionHeader title="Settings" />
             <AccordionContent>

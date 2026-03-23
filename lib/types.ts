@@ -43,6 +43,8 @@ export type ConsumptionRecord = {
 
 export type UserTotalConsumptionAmount = {
   userId: string
+  username: string
+  email: string
   totalAmount: string
 }
 

@@ -86,6 +86,8 @@ export async function getUsersTotalConsumptionAmounts(): Promise<
     return await db
       .select({
         userId: usersTable.id,
+        username: usersTable.username,
+        email: usersTable.email,
         totalAmount: sql<string>`coalesce(sum(least(${consumptionTable.amount}, ${MAX_WATER_PER_DAY})), 0)`,
       })
       .from(usersTable)

@@ -5,6 +5,20 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export const obscureEmail = (email: string) => {
+  const trimmedEmail = email.trim()
+  const atIndex = trimmedEmail.indexOf("@")
+
+  if (atIndex === -1) {
+    return email
+  }
+
+  const localPart = trimmedEmail.slice(0, atIndex)
+  const domainPart = trimmedEmail.slice(atIndex)
+
+  return `${localPart}***${domainPart}`
+}
+
 export const parseDate = (date: string) => {
   const [year, month, day] = date.split("-").map(Number)
   return new Date(Date.UTC(year, month - 1, day))
