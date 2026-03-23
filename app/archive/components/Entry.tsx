@@ -68,8 +68,7 @@ export const Entry = ({ entry }: EntryProps) => {
   }
 
   return (
-    <div
-      key={entry.date}
+    <li
       className={cn(
         "text-blue-light-1 bg-blue-dark-1/50 flex items-center gap-2 rounded-full px-3 py-1",
         isEditing && "bg-blue-dark-1",
@@ -121,6 +120,6 @@ export const Entry = ({ entry }: EntryProps) => {
         waterLevel={editedWaterLevel}
         maxWaterPerDay={MAX_WATER_PER_DAY}
       />
-    </div>
+    </li>
   )
 }

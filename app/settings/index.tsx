@@ -130,7 +130,7 @@ export default function Settings() {
     <div className="flex w-full max-w-[400px] flex-col gap-4">
       <PaginationHeader title="Settings" />
 
-      <div className="flex flex-col gap-2 text-sm">
+      <ul className="flex flex-col gap-2 text-sm">
         <Setting
           label="Username"
           value={settings.username}
@@ -306,11 +306,11 @@ export default function Settings() {
         />
 
         {isLoadingSettings ? (
-          <span className="text-blue-light-2 text-center">
+          <li className="text-blue-light-2 text-center">
             Loading settings...
-          </span>
+          </li>
         ) : null}
-      </div>
+      </ul>
 
       <div className="flex w-full items-center gap-2">
         <Button

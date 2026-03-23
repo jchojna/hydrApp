@@ -53,7 +53,7 @@ export const Setting = <T,>({
   }
 
   return (
-    <div
+    <li
       className={cn(
         "text-blue-light-1 bg-blue-dark-1/50 flex items-center gap-2 rounded-full px-3 py-1",
         isEditing && "bg-blue-dark-1",
@@ -96,6 +96,6 @@ export const Setting = <T,>({
           />
         )}
       </div>
-    </div>
+    </li>
   )
 }

@@ -15,6 +15,7 @@ export default function Ranking({ ranking, isLoading, error }: RankingProps) {
   const ITEMS_PER_PAGE = 3 // TODO: move to constants
 
   const {
+    page,
     totalPages,
     paginatedItems,
     handleNextPage,
@@ -35,21 +36,30 @@ export default function Ranking({ ranking, isLoading, error }: RankingProps) {
 
       {error && <div className="text-red-300">Error: {error.message}</div>}
 
-      <div className="flex flex-col gap-2">
+      <ol className="flex list-none flex-col gap-2">
         {paginatedItems.length ? (
-          paginatedItems.map((item) => (
-            <div
+          paginatedItems.map((item, index) => {
+            const rank = (page - 1) * ITEMS_PER_PAGE + index + 1
+
+            return (
+            <li
               key={item.userId}
               className="bg-blue-dark-1/50 flex items-center justify-between gap-2 rounded-xl p-4"
             >
-              <div>{item.username}</div>
+              <div className="flex items-center gap-3">
+                <span className="bg-blue-300/20 text-blue-100 inline-flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold">
+                  {rank}
+                </span>
+                <span>{item.username}</span>
+              </div>
               <div>{item.points} points</div>
-            </div>
-          ))
+            </li>
+            )
+          })
         ) : (
-          <span>No ranking entries yet.</span>
+          <li>No ranking entries yet.</li>
         )}
-      </div>
+      </ol>
     </div>
   )
 }
