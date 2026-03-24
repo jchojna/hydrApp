@@ -5,7 +5,6 @@ import { db } from "@/db"
 import { consumptionTable, usersTable } from "@/db/schema"
 import { ConsumptionRecord, UserTotalConsumptionAmount } from "../types"
 import { formatDate, parseDate } from "../utils"
-import { MAX_WATER_PER_DAY } from "@/lib/constants"
 
 export async function getConsumptionAmount(userId: string, date: string) {
   try {
@@ -88,7 +87,7 @@ export async function getUsersTotalConsumptionAmounts(): Promise<
         userId: usersTable.id,
         username: usersTable.username,
         email: usersTable.email,
-        totalAmount: sql<string>`coalesce(sum(least(${consumptionTable.amount}, ${MAX_WATER_PER_DAY})), 0)`,
+        totalAmount: sql<string>`coalesce(sum(least(${consumptionTable.amount}, ${usersTable.max_water_per_day})), 0)`,
       })
       .from(usersTable)
       .leftJoin(consumptionTable, eq(consumptionTable.user_id, usersTable.id))
@@ -99,13 +98,29 @@ export async function getUsersTotalConsumptionAmounts(): Promise<
   }
 }
 
+async function getMaxWaterPerDay(userId: string): Promise<number> {
+  try {
+    const result = await db
+      .select({ maxWaterPerDay: usersTable.max_water_per_day })
+      .from(usersTable)
+      .where(eq(usersTable.id, userId))
+      .limit(1)
+
+    return Number(result[0]?.maxWaterPerDay ?? "0")
+  } catch (error) {
+    console.error("Error getting max water per day:", error)
+    throw new Error("Failed to get max water per day")
+  }
+}
+
 export async function upsertConsumptionRecord(
   userId: string,
   amount: number,
   date: string,
 ) {
   try {
-    const points = (amount / MAX_WATER_PER_DAY).toFixed(2)
+    const maxWaterPerDay = await getMaxWaterPerDay(userId)
+    const points = (amount / maxWaterPerDay).toFixed(2)
 
     const result = await db
       .insert(consumptionTable)

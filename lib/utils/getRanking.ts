@@ -1,15 +1,17 @@
-import { MAX_WATER_PER_DAY } from "../constants"
 import { UserTotalConsumptionAmount } from "../types"
 import { obscureEmail } from "../utils"
 
 export type RankingType = ReturnType<typeof getRanking>
 
-export const getRanking = (totals: UserTotalConsumptionAmount[] | undefined) =>
+export const getRanking = (
+  totals: UserTotalConsumptionAmount[] | undefined,
+  maxWaterPerDay: number,
+) =>
   (
     totals?.map((entry) => ({
       userId: entry.userId,
       username: entry.username || obscureEmail(entry.email),
-      points: Number(entry.totalAmount) / MAX_WATER_PER_DAY,
+      points: Number(entry.totalAmount) / maxWaterPerDay,
     })) ?? []
   )
     .sort((a, b) => {

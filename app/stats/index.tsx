@@ -8,6 +8,7 @@ import { StatsItem } from "./components/StatsItem"
 import { getStreaks } from "@/lib/utils/getStreaks"
 import { clampWaterLevel } from "../dashboard/utils/clampWaterLevel"
 import { RankingType } from "@/lib/utils/getRanking"
+import { useSettings } from "@/contexts/SettingsContext"
 
 type StatsProps = {
   averageWaterLevel: number
@@ -15,8 +16,6 @@ type StatsProps = {
   ranking: RankingType
   isLoading: boolean
   error: Error | null
-  glassVolume: number
-  maxWaterPerDay: number
 }
 
 export default function Stats({
@@ -25,10 +24,11 @@ export default function Stats({
   ranking,
   isLoading,
   error,
-  glassVolume,
-  maxWaterPerDay,
 }: StatsProps) {
   const { user } = useAuth()
+  const {
+    settings: { glassVolume, maxWaterPerDay },
+  } = useSettings()
 
   const todayDate = formatDate(new Date())
   const {

@@ -3,21 +3,18 @@ import { PaginationHeader } from "@/components/PaginationHeader"
 import { Entry } from "./components/Entry"
 import useTablePagination from "@/hooks/useTablePagination"
 import { formatDatesRange } from "@/lib/utils"
+import { useSettings } from "@/contexts/SettingsContext"
 
 interface ArchiveProps {
   entries: ArchiveEntry[]
   pageInfo: ArchivePageInfo
-  glassVolume: number
-  maxWaterPerDay: number
 }
 
 // TODO: cache archive entries
-export default function Archive({
-  entries,
-  pageInfo,
-  glassVolume,
-  maxWaterPerDay,
-}: ArchiveProps) {
+export default function Archive({ entries, pageInfo }: ArchiveProps) {
+  const {
+    settings: { glassVolume, maxWaterPerDay },
+  } = useSettings()
   const {
     handleNextArchivePage,
     handlePreviousArchivePage,

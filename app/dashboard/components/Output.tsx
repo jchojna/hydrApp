@@ -3,18 +3,16 @@ import { useMemo } from "react"
 import { getDigits } from "../utils/getDigits"
 import { Today } from "./Today"
 import { getScoreLevel } from "../utils/getScoreLevel"
+import { useSettings } from "@/contexts/SettingsContext"
 
 interface OutputProps {
   waterLevel: number
-  glassVolume: number
-  maxWaterPerDay: number
 }
 
-export const Output = ({
-  waterLevel,
-  glassVolume,
-  maxWaterPerDay,
-}: OutputProps) => {
+export const Output = ({ waterLevel }: OutputProps) => {
+  const {
+    settings: { glassVolume, maxWaterPerDay },
+  } = useSettings()
   const digits = useMemo(
     () => getDigits(waterLevel, glassVolume),
     [glassVolume, waterLevel],

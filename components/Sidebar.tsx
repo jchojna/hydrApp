@@ -14,13 +14,14 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "./ui/accordion"
-import { ArchiveEntry, ArchivePageInfo, UserSettings } from "@/lib/types"
+import { ArchiveEntry, ArchivePageInfo } from "@/lib/types"
 import { PlusCrossIcon } from "@/assets/svg/icons/plus-cross"
 import Archive from "@/app/archive"
 import Stats from "@/app/stats"
 import Ranking from "@/app/ranking"
 import Settings from "@/app/settings"
 import { getRanking } from "@/lib/utils/getRanking"
+import { useSettings } from "@/contexts/SettingsContext"
 
 interface SidebarProps {
   isOpen: boolean
@@ -28,7 +29,6 @@ interface SidebarProps {
   archiveEntries: ArchiveEntry[]
   archivePageInfo: ArchivePageInfo
   averageWaterLevel: number
-  userSettings: UserSettings
 }
 
 const AccordionHeader = ({ title }: { title: string }) => {
@@ -46,9 +46,11 @@ export const Sidebar = ({
   archiveEntries,
   archivePageInfo,
   averageWaterLevel,
-  userSettings,
 }: SidebarProps) => {
   const [openItems, setOpenItems] = useState<string[]>([])
+  const {
+    settings: { maxWaterPerDay },
+  } = useSettings()
 
   const isStatsOpen = openItems.includes("stats")
   const isRankingOpen = openItems.includes("ranking")
@@ -65,7 +67,7 @@ export const Sidebar = ({
     },
   })
 
-  const ranking = getRanking(data?.totals)
+  const ranking = getRanking(data?.totals, maxWaterPerDay)
 
   return (
     <div className="absolute top-0 right-0">
@@ -92,12 +94,7 @@ export const Sidebar = ({
           <AccordionItem value="archive">
             <AccordionHeader title="Archive" />
             <AccordionContent>
-              <Archive
-                entries={archiveEntries}
-                pageInfo={archivePageInfo}
-                glassVolume={userSettings.glassVolume}
-                maxWaterPerDay={userSettings.maxWaterPerDay}
-              />
+              <Archive entries={archiveEntries} pageInfo={archivePageInfo} />
             </AccordionContent>
           </AccordionItem>
           {/* Stats */}
@@ -110,8 +107,6 @@ export const Sidebar = ({
                 ranking={ranking}
                 isLoading={isLoading}
                 error={error}
-                glassVolume={userSettings.glassVolume}
-                maxWaterPerDay={userSettings.maxWaterPerDay}
               />
             </AccordionContent>
           </AccordionItem>
@@ -126,7 +121,7 @@ export const Sidebar = ({
           <AccordionItem value="settings">
             <AccordionHeader title="Settings" />
             <AccordionContent>
-              <Settings userSettings={userSettings} />
+              <Settings />
             </AccordionContent>
           </AccordionItem>
         </Accordion>

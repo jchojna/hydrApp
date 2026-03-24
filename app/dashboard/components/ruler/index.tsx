@@ -1,12 +1,11 @@
 import { RULER_TICK_HEIGHT } from "@/lib/constants"
 import { AvgTick } from "./components/AvgTick"
 import { RulerTick } from "./components/RulerTick"
+import { useSettings } from "@/contexts/SettingsContext"
 
 type RulerProps = {
   waterLevel: number
   averageWaterLevel: number
-  glassVolume: number
-  maxWaterPerDay: number
   topOffset?: number
   bottomOffset?: number
 }
@@ -18,11 +17,12 @@ const getRulerOffset = (offset: number) => {
 export const Ruler = ({
   waterLevel,
   averageWaterLevel,
-  glassVolume,
-  maxWaterPerDay,
   topOffset = 0.05,
   bottomOffset = 0.1,
 }: RulerProps) => {
+  const {
+    settings: { glassVolume, maxWaterPerDay },
+  } = useSettings()
   const ticks = Math.floor(maxWaterPerDay / glassVolume) + 1
 
   return (

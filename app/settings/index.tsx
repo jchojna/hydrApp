@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Slider } from "@/components/ui/slider"
-import { UserSettings } from "@/lib/types"
+import { useSettings } from "@/contexts/SettingsContext"
 import { Setting } from "./components/Setting"
 
 const clamp = (value: number, min: number, max: number) =>
@@ -74,11 +74,8 @@ const NumberEditor = ({
   )
 }
 
-type SettingsProps = {
-  userSettings: UserSettings
-}
-
-export default function Settings({ userSettings }: SettingsProps) {
+export default function Settings() {
+  const { settings, setSettings } = useSettings()
   const [isSigningOut, startSignOutTransition] = useTransition()
   const [isDeletingAccount, startDeleteAccountTransition] = useTransition()
 
@@ -101,7 +98,7 @@ export default function Settings({ userSettings }: SettingsProps) {
       <ul className="flex flex-col gap-2 text-sm">
         <Setting
           label="Username"
-          value={userSettings.username}
+          value={settings.username}
           renderValue={(value) => (
             <div className="text-blue-light-2 truncate text-right">{value}</div>
           )}
@@ -120,6 +117,7 @@ export default function Settings({ userSettings }: SettingsProps) {
             })
 
             if (!response.success) return false
+            setSettings(response.data)
 
             return true
           }}
@@ -127,7 +125,7 @@ export default function Settings({ userSettings }: SettingsProps) {
 
         <Setting
           label="Age"
-          value={userSettings.age}
+          value={settings.age}
           renderValue={(value) => (
             <div className="text-blue-light-2 text-right">{value}</div>
           )}
@@ -148,6 +146,7 @@ export default function Settings({ userSettings }: SettingsProps) {
             })
 
             if (!response.success) return false
+            setSettings(response.data)
 
             return true
           }}
@@ -155,7 +154,7 @@ export default function Settings({ userSettings }: SettingsProps) {
 
         <Setting
           label="Sex"
-          value={userSettings.sex}
+          value={settings.sex}
           renderValue={(value) => (
             <div className="text-blue-light-2 text-right capitalize">
               {value}
@@ -192,6 +191,7 @@ export default function Settings({ userSettings }: SettingsProps) {
             })
 
             if (!response.success) return false
+            setSettings(response.data)
 
             return true
           }}
@@ -199,7 +199,7 @@ export default function Settings({ userSettings }: SettingsProps) {
 
         <Setting
           label="Max Water / Day"
-          value={userSettings.maxWaterPerDay}
+          value={settings.maxWaterPerDay}
           isDisabled
           renderValue={(value) => (
             <div className="text-blue-light-2 text-right">
@@ -223,6 +223,7 @@ export default function Settings({ userSettings }: SettingsProps) {
             })
 
             if (!response.success) return false
+            setSettings(response.data)
 
             return true
           }}
@@ -230,7 +231,7 @@ export default function Settings({ userSettings }: SettingsProps) {
 
         <Setting
           label="Glass Volume"
-          value={userSettings.glassVolume}
+          value={settings.glassVolume}
           isDisabled
           renderValue={(value) => (
             <div className="text-blue-light-2 text-right">
@@ -263,6 +264,7 @@ export default function Settings({ userSettings }: SettingsProps) {
             })
 
             if (!response.success) return false
+            setSettings(response.data)
 
             return true
           }}

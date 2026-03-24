@@ -1,16 +1,15 @@
 "use server"
 
-import { SelectUser } from "@/db/schema"
 import { ActionResponse } from "./types"
 import { getCurrentUser } from "@/lib/dal/user"
 import { getUserSettings, updateUserSettings } from "@/lib/dal/settings"
-import { UserSettings } from "@/lib/types"
+import { UserSettings, UserSex } from "@/lib/types"
 import { unauthorizedActionResponse } from "@/lib/errors"
 
 type SaveUserSettingInput =
   | { key: "username"; value: string }
   | { key: "age"; value: number }
-  | { key: "sex"; value: SelectUser["sex"] } // TODO: reuse type?
+  | { key: "sex"; value: UserSex }
   | { key: "maxWaterPerDay"; value: number }
   | { key: "glassVolume"; value: number }
 
