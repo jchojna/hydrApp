@@ -8,7 +8,6 @@ import { Digit6 } from "@/assets/svg/digits/digit-6"
 import { Digit7 } from "@/assets/svg/digits/digit-7"
 import { Digit8 } from "@/assets/svg/digits/digit-8"
 import { Digit9 } from "@/assets/svg/digits/digit-9"
-import { GLASS_VOLUME } from "@/lib/constants"
 
 const DIGITS = [
   Digit0,
@@ -23,8 +22,8 @@ const DIGITS = [
   Digit9,
 ]
 
-export const getDigits = (waterLevel: number) => {
-  return (waterLevel / GLASS_VOLUME)
+export const getDigits = (waterLevel: number, glassVolume: number) => {
+  return (waterLevel / glassVolume)
     .toString()
     .padStart(2, "0")
     .split("")

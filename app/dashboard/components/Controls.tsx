@@ -8,15 +8,21 @@ import { waves } from "@/app/background"
 import { EmojiIcon } from "@/components/EmojiIcon"
 import { formatDate } from "@/lib/utils"
 import { saveConsumptionAction } from "@/actions/consumption"
-import { GLASS_VOLUME, MAX_WATER_PER_DAY } from "@/lib/constants"
 import { clampWaterLevel } from "../utils/clampWaterLevel"
 
 interface ControlsProps {
   waterLevel: number
   onWaterLevelChange: (waterLevel: number) => void
+  glassVolume: number
+  maxWaterPerDay: number
 }
 
-export const Controls = ({ waterLevel, onWaterLevelChange }: ControlsProps) => {
+export const Controls = ({
+  waterLevel,
+  onWaterLevelChange,
+  glassVolume,
+  maxWaterPerDay,
+}: ControlsProps) => {
   const [isPending, startTransition] = useTransition()
   const previousWaterLevel = waterLevel
   const queryClient = useQueryClient()
@@ -45,14 +51,20 @@ export const Controls = ({ waterLevel, onWaterLevelChange }: ControlsProps) => {
   )
 
   const handleIncreaseWaterLevel = () => {
-    const newWaterLevel = clampWaterLevel(waterLevel + GLASS_VOLUME)
+    const newWaterLevel = clampWaterLevel(
+      waterLevel + glassVolume,
+      maxWaterPerDay,
+    )
     if (newWaterLevel === waterLevel) return
 
     handleWaterLevelChange(newWaterLevel)
   }
 
   const handleDecreaseWaterLevel = () => {
-    const newWaterLevel = clampWaterLevel(waterLevel - GLASS_VOLUME)
+    const newWaterLevel = clampWaterLevel(
+      waterLevel - glassVolume,
+      maxWaterPerDay,
+    )
     if (newWaterLevel === waterLevel) return
 
     handleWaterLevelChange(newWaterLevel)
@@ -63,14 +75,14 @@ export const Controls = ({ waterLevel, onWaterLevelChange }: ControlsProps) => {
       <IconButton
         icon={<PlusCircleIcon />}
         onClick={handleIncreaseWaterLevel}
-        disabled={isPending || waterLevel >= MAX_WATER_PER_DAY}
+        disabled={isPending || waterLevel >= maxWaterPerDay}
       />
       <IconButton
         icon={<MinusCircleIcon />}
         onClick={handleDecreaseWaterLevel}
         disabled={isPending || waterLevel <= 0}
       />
-      <EmojiIcon waterLevel={waterLevel} maxWaterPerDay={MAX_WATER_PER_DAY} />
+      <EmojiIcon waterLevel={waterLevel} maxWaterPerDay={maxWaterPerDay} />
     </div>
   )
 }

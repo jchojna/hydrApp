@@ -1,12 +1,9 @@
 "use client"
 
-import { useEffect, useState, useTransition } from "react"
+import { useTransition } from "react"
 
 import { signOutAction } from "@/actions/signOut"
-import {
-  getUserSettingsAction,
-  saveUserSettingAction,
-} from "@/actions/settings"
+import { saveUserSettingAction } from "@/actions/settings"
 import { ArrowDownIcon } from "@/assets/svg/icons/arrow-down"
 import { ArrowUpIcon } from "@/assets/svg/icons/arrow-up"
 import { IconButton } from "@/components/IconButton"
@@ -21,22 +18,13 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Slider } from "@/components/ui/slider"
-import { GLASS_VOLUME, MAX_WATER_PER_DAY } from "@/lib/constants"
 import { UserSettings } from "@/lib/types"
 import { Setting } from "./components/Setting"
-
-const DEFAULT_USER_SETTINGS: UserSettings = {
-  username: "",
-  age: 18,
-  sex: "male",
-  maxWaterPerDay: MAX_WATER_PER_DAY,
-  glassVolume: GLASS_VOLUME,
-}
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max)
 
-const formatLitres = (value: string) => `${value} L`
+const formatLitres = (value: string | number) => `${value} L`
 
 const NumberEditor = ({
   value,
@@ -86,33 +74,13 @@ const NumberEditor = ({
   )
 }
 
-export default function Settings() {
+type SettingsProps = {
+  userSettings: UserSettings
+}
+
+export default function Settings({ userSettings }: SettingsProps) {
   const [isSigningOut, startSignOutTransition] = useTransition()
   const [isDeletingAccount, startDeleteAccountTransition] = useTransition()
-  const [settings, setSettings] = useState<UserSettings>(DEFAULT_USER_SETTINGS)
-  const [isLoadingSettings, setIsLoadingSettings] = useState(true)
-
-  useEffect(() => {
-    let isCancelled = false
-
-    const loadSettings = async () => {
-      const response = await getUserSettingsAction()
-
-      if (!isCancelled && response.success) {
-        setSettings(response.data)
-      }
-
-      if (!isCancelled) {
-        setIsLoadingSettings(false)
-      }
-    }
-
-    loadSettings()
-
-    return () => {
-      isCancelled = true
-    }
-  }, [])
 
   const handleSignOut = () => {
     startSignOutTransition(async () => {
@@ -133,11 +101,9 @@ export default function Settings() {
       <ul className="flex flex-col gap-2 text-sm">
         <Setting
           label="Username"
-          value={settings.username}
+          value={userSettings.username}
           renderValue={(value) => (
-            <div className="text-blue-light-2 truncate text-right">
-              {value || "Not set"}
-            </div>
+            <div className="text-blue-light-2 truncate text-right">{value}</div>
           )}
           renderEditor={({ value, setValue, isSaving }) => (
             <Input
@@ -155,14 +121,13 @@ export default function Settings() {
 
             if (!response.success) return false
 
-            setSettings(response.data)
             return true
           }}
         />
 
         <Setting
           label="Age"
-          value={settings.age}
+          value={userSettings.age}
           renderValue={(value) => (
             <div className="text-blue-light-2 text-right">{value}</div>
           )}
@@ -184,14 +149,13 @@ export default function Settings() {
 
             if (!response.success) return false
 
-            setSettings(response.data)
             return true
           }}
         />
 
         <Setting
           label="Sex"
-          value={settings.sex}
+          value={userSettings.sex}
           renderValue={(value) => (
             <div className="text-blue-light-2 text-right capitalize">
               {value}
@@ -229,14 +193,14 @@ export default function Settings() {
 
             if (!response.success) return false
 
-            setSettings(response.data)
             return true
           }}
         />
 
         <Setting
           label="Max Water / Day"
-          value={settings.maxWaterPerDay}
+          value={userSettings.maxWaterPerDay}
+          isDisabled
           renderValue={(value) => (
             <div className="text-blue-light-2 text-right">
               {formatLitres(value)}
@@ -260,14 +224,14 @@ export default function Settings() {
 
             if (!response.success) return false
 
-            setSettings(response.data)
             return true
           }}
         />
 
         <Setting
           label="Glass Volume"
-          value={settings.glassVolume}
+          value={userSettings.glassVolume}
+          isDisabled
           renderValue={(value) => (
             <div className="text-blue-light-2 text-right">
               {formatLitres(value)}
@@ -300,16 +264,9 @@ export default function Settings() {
 
             if (!response.success) return false
 
-            setSettings(response.data)
             return true
           }}
         />
-
-        {isLoadingSettings ? (
-          <li className="text-blue-light-2 text-center">
-            Loading settings...
-          </li>
-        ) : null}
       </ul>
 
       <div className="flex w-full items-center gap-2">

@@ -1,7 +1,6 @@
 import { useEffect, useState, useTransition } from "react"
 
 import { EmojiIcon } from "@/components/EmojiIcon"
-import { GLASS_VOLUME, MAX_WATER_PER_DAY } from "@/lib/constants"
 import { ArchiveEntry } from "@/lib/types"
 import { EditIcon } from "@/assets/svg/icons/edit"
 import { IconButton } from "@/components/IconButton"
@@ -18,9 +17,11 @@ import { useQueryClient } from "@tanstack/react-query"
 
 type EntryProps = {
   entry: ArchiveEntry
+  glassVolume: number
+  maxWaterPerDay: number
 }
 
-export const Entry = ({ entry }: EntryProps) => {
+export const Entry = ({ entry, glassVolume, maxWaterPerDay }: EntryProps) => {
   const [isEditing, setIsEditing] = useState(false)
   const waterLevelFromDb = Number(entry.amount)
   const [isSaving, startSaveTransition] = useTransition()
@@ -33,13 +34,13 @@ export const Entry = ({ entry }: EntryProps) => {
 
   const handleDecreaseWaterLevel = () => {
     setEditedWaterLevel((currentValue) =>
-      clampWaterLevel(currentValue - GLASS_VOLUME),
+      clampWaterLevel(currentValue - glassVolume, maxWaterPerDay),
     )
   }
 
   const handleIncreaseWaterLevel = () => {
     setEditedWaterLevel((currentValue) =>
-      clampWaterLevel(currentValue + GLASS_VOLUME),
+      clampWaterLevel(currentValue + glassVolume, maxWaterPerDay),
     )
   }
 
@@ -75,7 +76,7 @@ export const Entry = ({ entry }: EntryProps) => {
       )}
     >
       <EntryDate date={entry.date} />
-      <EntryAmount amount={editedWaterLevel} />
+      <EntryAmount amount={editedWaterLevel} glassVolume={glassVolume} />
       <div className="flex items-center gap-1">
         {isEditing ? (
           <>
@@ -89,7 +90,7 @@ export const Entry = ({ entry }: EntryProps) => {
               className="h-6 w-6"
               icon={<ArrowUpIcon />}
               onClick={handleIncreaseWaterLevel}
-              disabled={isSaving || editedWaterLevel >= MAX_WATER_PER_DAY}
+              disabled={isSaving || editedWaterLevel >= maxWaterPerDay}
             />
             <IconButton
               className="h-6 w-6"
@@ -118,7 +119,7 @@ export const Entry = ({ entry }: EntryProps) => {
       <EmojiIcon
         className="w-6"
         waterLevel={editedWaterLevel}
-        maxWaterPerDay={MAX_WATER_PER_DAY}
+        maxWaterPerDay={maxWaterPerDay}
       />
     </li>
   )

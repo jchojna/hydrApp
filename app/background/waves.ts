@@ -2,7 +2,6 @@ import { WAVES_DATA, WAVES_PARAMS } from "./utils/constants"
 import { WaveData } from "./types"
 import { easeOutCubic, getAnimatedTransitionValue } from "./utils/animation"
 import { Logo } from "./logo"
-import { MAX_WATER_PER_DAY } from "@/lib/constants"
 
 // TODO: improve this class as in animated grid class
 export class Waves {
@@ -22,7 +21,7 @@ export class Waves {
 
   constructor(
     private canvas: HTMLCanvasElement,
-    maxWaterPerDay: number = MAX_WATER_PER_DAY,
+    maxWaterPerDay: number = 3,
   ) {
     this.canvas = canvas
     this.context = canvas.getContext("2d") as CanvasRenderingContext2D
@@ -126,6 +125,10 @@ export class Waves {
     this.waterLevelTransitionFrom = this.renderedWaterLevel
     this.waterLevel = normalizedWaterLevel
     this.waterLevelTransitionStartedAt = performance.now()
+  }
+
+  public setMaxWaterPerDay = (maxWaterPerDay: number) => {
+    this.maxWaterPerDay = maxWaterPerDay
   }
 
   public swingWaves = () => {

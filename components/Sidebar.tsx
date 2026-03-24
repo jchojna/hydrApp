@@ -14,7 +14,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "./ui/accordion"
-import { ArchiveEntry, ArchivePageInfo } from "@/lib/types"
+import { ArchiveEntry, ArchivePageInfo, UserSettings } from "@/lib/types"
 import { PlusCrossIcon } from "@/assets/svg/icons/plus-cross"
 import Archive from "@/app/archive"
 import Stats from "@/app/stats"
@@ -28,6 +28,7 @@ interface SidebarProps {
   archiveEntries: ArchiveEntry[]
   archivePageInfo: ArchivePageInfo
   averageWaterLevel: number
+  userSettings: UserSettings
 }
 
 const AccordionHeader = ({ title }: { title: string }) => {
@@ -45,6 +46,7 @@ export const Sidebar = ({
   archiveEntries,
   archivePageInfo,
   averageWaterLevel,
+  userSettings,
 }: SidebarProps) => {
   const [openItems, setOpenItems] = useState<string[]>([])
 
@@ -90,7 +92,12 @@ export const Sidebar = ({
           <AccordionItem value="archive">
             <AccordionHeader title="Archive" />
             <AccordionContent>
-              <Archive entries={archiveEntries} pageInfo={archivePageInfo} />
+              <Archive
+                entries={archiveEntries}
+                pageInfo={archivePageInfo}
+                glassVolume={userSettings.glassVolume}
+                maxWaterPerDay={userSettings.maxWaterPerDay}
+              />
             </AccordionContent>
           </AccordionItem>
           {/* Stats */}
@@ -103,6 +110,8 @@ export const Sidebar = ({
                 ranking={ranking}
                 isLoading={isLoading}
                 error={error}
+                glassVolume={userSettings.glassVolume}
+                maxWaterPerDay={userSettings.maxWaterPerDay}
               />
             </AccordionContent>
           </AccordionItem>
@@ -117,7 +126,7 @@ export const Sidebar = ({
           <AccordionItem value="settings">
             <AccordionHeader title="Settings" />
             <AccordionContent>
-              <Settings />
+              <Settings userSettings={userSettings} />
             </AccordionContent>
           </AccordionItem>
         </Accordion>

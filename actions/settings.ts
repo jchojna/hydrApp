@@ -10,10 +10,11 @@ import { unauthorizedActionResponse } from "@/lib/errors"
 type SaveUserSettingInput =
   | { key: "username"; value: string }
   | { key: "age"; value: number }
-  | { key: "sex"; value: SelectUser["sex"] }
+  | { key: "sex"; value: SelectUser["sex"] } // TODO: reuse type?
   | { key: "maxWaterPerDay"; value: number }
   | { key: "glassVolume"; value: number }
 
+// TODO: move to constants?
 const MAX_AGE = 100
 const MAX_WATER_LIMIT = 5
 const MAX_GLASS_VOLUME = 1

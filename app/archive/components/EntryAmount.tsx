@@ -1,11 +1,10 @@
-import { GLASS_VOLUME } from "@/lib/constants"
-
 type EntryAmountProps = {
   amount: number
+  glassVolume: number
 }
 
-export const EntryAmount = ({ amount }: EntryAmountProps) => {
-  const waterInGlasses = amount / GLASS_VOLUME
+export const EntryAmount = ({ amount, glassVolume }: EntryAmountProps) => {
+  const waterInGlasses = amount / glassVolume
 
   return (
     <div className="flex flex-col">

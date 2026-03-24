@@ -1,14 +1,12 @@
-import {
-  GLASS_VOLUME,
-  MAX_WATER_PER_DAY,
-  RULER_TICK_HEIGHT,
-} from "@/lib/constants"
+import { RULER_TICK_HEIGHT } from "@/lib/constants"
 import { AvgTick } from "./components/AvgTick"
 import { RulerTick } from "./components/RulerTick"
 
 type RulerProps = {
   waterLevel: number
   averageWaterLevel: number
+  glassVolume: number
+  maxWaterPerDay: number
   topOffset?: number
   bottomOffset?: number
 }
@@ -20,10 +18,12 @@ const getRulerOffset = (offset: number) => {
 export const Ruler = ({
   waterLevel,
   averageWaterLevel,
+  glassVolume,
+  maxWaterPerDay,
   topOffset = 0.05,
   bottomOffset = 0.1,
 }: RulerProps) => {
-  const ticks = MAX_WATER_PER_DAY / GLASS_VOLUME + 1
+  const ticks = Math.floor(maxWaterPerDay / glassVolume) + 1
 
   return (
     <div
@@ -33,9 +33,18 @@ export const Ruler = ({
         bottom: getRulerOffset(bottomOffset),
       }}
     >
-      <AvgTick averageWaterLevel={averageWaterLevel} />
+      <AvgTick
+        averageWaterLevel={averageWaterLevel}
+        glassVolume={glassVolume}
+        maxWaterPerDay={maxWaterPerDay}
+      />
       {Array.from({ length: ticks }).map((_, index) => (
-        <RulerTick key={index} index={index} waterLevel={waterLevel} />
+        <RulerTick
+          key={index}
+          index={index}
+          waterLevel={waterLevel}
+          glassVolume={glassVolume}
+        />
       ))}
     </div>
   )

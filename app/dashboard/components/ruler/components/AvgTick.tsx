@@ -1,19 +1,21 @@
-import {
-  GLASS_VOLUME,
-  MAX_WATER_PER_DAY,
-  RULER_TICK_HEIGHT,
-} from "@/lib/constants"
+import { RULER_TICK_HEIGHT } from "@/lib/constants"
 
 type AvgTickProps = {
   averageWaterLevel: number | null
+  glassVolume: number
+  maxWaterPerDay: number
 }
 
-export const AvgTick = ({ averageWaterLevel }: AvgTickProps) => {
+export const AvgTick = ({
+  averageWaterLevel,
+  glassVolume,
+  maxWaterPerDay,
+}: AvgTickProps) => {
   if (averageWaterLevel === null) return null
 
-  const avgInGlasses = (averageWaterLevel / GLASS_VOLUME).toFixed(1)
+  const avgInGlasses = (averageWaterLevel / glassVolume).toFixed(1)
 
-  const averageMarkerTopOffset = `calc(${(1 - averageWaterLevel / MAX_WATER_PER_DAY) * 100}% - ${
+  const averageMarkerTopOffset = `calc(${(1 - averageWaterLevel / maxWaterPerDay) * 100}% - ${
     RULER_TICK_HEIGHT / 2
   }px)`
 

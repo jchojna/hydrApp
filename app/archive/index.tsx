@@ -7,10 +7,17 @@ import { formatDatesRange } from "@/lib/utils"
 interface ArchiveProps {
   entries: ArchiveEntry[]
   pageInfo: ArchivePageInfo
+  glassVolume: number
+  maxWaterPerDay: number
 }
 
 // TODO: cache archive entries
-export default function Archive({ entries, pageInfo }: ArchiveProps) {
+export default function Archive({
+  entries,
+  pageInfo,
+  glassVolume,
+  maxWaterPerDay,
+}: ArchiveProps) {
   const {
     handleNextArchivePage,
     handlePreviousArchivePage,
@@ -29,7 +36,14 @@ export default function Archive({ entries, pageInfo }: ArchiveProps) {
       />
       <ul className="flex flex-col gap-2 text-sm">
         {entries.length ? (
-          entries.map((entry) => <Entry key={entry.date} entry={entry} />)
+          entries.map((entry) => (
+            <Entry
+              key={entry.date}
+              entry={entry}
+              glassVolume={glassVolume}
+              maxWaterPerDay={maxWaterPerDay}
+            />
+          ))
         ) : (
           <li>No archive entries for this date range.</li>
         )}

@@ -1,17 +1,18 @@
 import { cn } from "@/lib/utils"
-import {
-  GLASS_VOLUME,
-  RULER_TICK_HEIGHT,
-  RULER_TICK_WIDTH,
-} from "@/lib/constants"
+import { RULER_TICK_HEIGHT, RULER_TICK_WIDTH } from "@/lib/constants"
 
 type RulerTickProps = {
   index: number
   waterLevel: number
+  glassVolume: number
 }
 
-export const RulerTick = ({ index, waterLevel }: RulerTickProps) => {
-  const isActive = waterLevel / GLASS_VOLUME === index
+export const RulerTick = ({
+  index,
+  waterLevel,
+  glassVolume,
+}: RulerTickProps) => {
+  const isActive = Math.floor(waterLevel / glassVolume) === index
 
   return (
     <div className="relative z-10">

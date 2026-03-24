@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils"
 type SettingProps<T> = {
   label: string
   value: T
+  isDisabled?: boolean
   renderValue: (value: T) => ReactNode
   renderEditor: (params: {
     value: T
@@ -21,6 +22,7 @@ type SettingProps<T> = {
 export const Setting = <T,>({
   label,
   value,
+  isDisabled,
   renderValue,
   renderEditor,
   onSave,
@@ -87,9 +89,14 @@ export const Setting = <T,>({
           </>
         ) : (
           <IconButton
-            className="h-6 w-6"
+            className={cn(
+              "h-6 w-6",
+              isDisabled &&
+                "hover:text-blue-light-1 cursor-not-allowed opacity-50",
+            )}
             icon={<EditIcon />}
             onClick={() => {
+              if (isDisabled) return
               setDraftValue(value)
               setIsEditing(true)
             }}

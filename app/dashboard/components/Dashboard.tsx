@@ -9,13 +9,14 @@ import { cn } from "@/lib/utils"
 import { Output } from "./Output"
 import { waves } from "@/app/background"
 import { Ruler } from "@/app/dashboard/components/ruler"
-import { ArchiveEntry, ArchivePageInfo } from "@/lib/types"
+import { ArchiveEntry, ArchivePageInfo, UserSettings } from "@/lib/types"
 
 type DashboardProps = {
   waterLevel: number
   averageWaterLevel: number
   archiveEntries: ArchiveEntry[]
   archivePageInfo: ArchivePageInfo
+  userSettings: UserSettings
 }
 
 export default function Dashboard({
@@ -23,13 +24,21 @@ export default function Dashboard({
   averageWaterLevel,
   archiveEntries,
   archivePageInfo,
+  userSettings,
 }: DashboardProps) {
+  // TODO: use context for storing user settings
+  const glassVolume = userSettings.glassVolume
+  const maxWaterPerDay = userSettings.maxWaterPerDay
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const [optimisticWaterLevel, setOptimisticWaterLevel] = useState(waterLevel)
 
   useEffect(() => {
     setOptimisticWaterLevel(waterLevel)
   }, [waterLevel])
+
+  useEffect(() => {
+    waves?.setMaxWaterPerDay(maxWaterPerDay)
+  }, [maxWaterPerDay])
 
   useEffect(() => {
     waves?.setWaterLevel(optimisticWaterLevel)
@@ -48,6 +57,8 @@ export default function Dashboard({
       <Ruler
         waterLevel={optimisticWaterLevel}
         averageWaterLevel={averageWaterLevel}
+        glassVolume={glassVolume}
+        maxWaterPerDay={maxWaterPerDay}
       />
       <div
         className={cn(
@@ -55,10 +66,16 @@ export default function Dashboard({
           isSidebarOpen && "w-2/3",
         )}
       >
-        <Output waterLevel={optimisticWaterLevel} />
+        <Output
+          waterLevel={optimisticWaterLevel}
+          glassVolume={glassVolume}
+          maxWaterPerDay={maxWaterPerDay}
+        />
         <Controls
           waterLevel={optimisticWaterLevel}
           onWaterLevelChange={setOptimisticWaterLevel}
+          glassVolume={glassVolume}
+          maxWaterPerDay={maxWaterPerDay}
         />
       </div>
       <Sidebar
@@ -67,6 +84,7 @@ export default function Dashboard({
         archiveEntries={archiveEntries}
         archivePageInfo={archivePageInfo}
         averageWaterLevel={averageWaterLevel}
+        userSettings={userSettings}
       />
     </div>
   )

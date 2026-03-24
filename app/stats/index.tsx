@@ -5,7 +5,6 @@ import { useAuth } from "@/contexts/AuthContext"
 import { formatDate, formatDatesRange, formatDays } from "@/lib/utils"
 import { ConsumptionRecord } from "@/lib/types"
 import { StatsItem } from "./components/StatsItem"
-import { GLASS_VOLUME, MAX_WATER_PER_DAY } from "@/lib/constants"
 import { getStreaks } from "@/lib/utils/getStreaks"
 import { clampWaterLevel } from "../dashboard/utils/clampWaterLevel"
 import { RankingType } from "@/lib/utils/getRanking"
@@ -16,6 +15,8 @@ type StatsProps = {
   ranking: RankingType
   isLoading: boolean
   error: Error | null
+  glassVolume: number
+  maxWaterPerDay: number
 }
 
 export default function Stats({
@@ -24,6 +25,8 @@ export default function Stats({
   ranking,
   isLoading,
   error,
+  glassVolume,
+  maxWaterPerDay,
 }: StatsProps) {
   const { user } = useAuth()
 
@@ -37,14 +40,17 @@ export default function Stats({
 
   const totalPoints =
     records?.reduce((sum, record) => {
-      return sum + clampWaterLevel(Number(record.amount)) / MAX_WATER_PER_DAY
+      return (
+        sum +
+        clampWaterLevel(Number(record.amount), maxWaterPerDay) / maxWaterPerDay
+      )
     }, 0) ?? 0
 
   const rankIndex = ranking.findIndex((entry) => entry.userId === user?.id)
 
   const averageLitresValue = `${averageWaterLevel.toFixed(2)} L`
-  const averageGlassesValue = `${(averageWaterLevel / GLASS_VOLUME).toFixed(1)} glass${
-    averageWaterLevel / GLASS_VOLUME === 1 ? "" : "es"
+  const averageGlassesValue = `${(averageWaterLevel / glassVolume).toFixed(1)} glass${
+    averageWaterLevel / glassVolume === 1 ? "" : "es"
   }`
 
   const currentRangeLabel = currentStreakRange
