@@ -1,3 +1,5 @@
+import { clamp } from "@/lib/utils/clamp"
+
 export const clampWaterLevel = (waterLevel: number, maxWaterPerDay: number) => {
-  return Math.min(Math.max(waterLevel, 0), maxWaterPerDay)
+  return clamp(waterLevel, 0, maxWaterPerDay)
 }

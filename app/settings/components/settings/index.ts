@@ -1,0 +1,5 @@
+export { AgeSetting } from "./AgeSetting"
+export { GlassVolumeSetting } from "./GlassVolumeSetting"
+export { MaxWaterPerDaySetting } from "./MaxWaterPerDaySetting"
+export { SexSetting } from "./SexSetting"
+export { UsernameSetting } from "./UsernameSetting"

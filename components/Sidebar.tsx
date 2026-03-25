@@ -15,13 +15,13 @@ import {
   AccordionTrigger,
 } from "./ui/accordion"
 import { ArchiveEntry, ArchivePageInfo } from "@/lib/types"
-import { PlusCrossIcon } from "@/assets/svg/icons/plus-cross"
 import Archive from "@/app/archive"
 import Stats from "@/app/stats"
 import Ranking from "@/app/ranking"
 import Settings from "@/app/settings"
 import { getRanking } from "@/lib/utils/getRanking"
 import { useSettings } from "@/contexts/SettingsContext"
+import { ChevronDown } from "lucide-react"
 
 interface SidebarProps {
   isOpen: boolean
@@ -34,8 +34,8 @@ interface SidebarProps {
 const AccordionHeader = ({ title }: { title: string }) => {
   return (
     <AccordionTrigger className="text-blue-light-2">
-      <div className="font-mnedium w-full text-center text-4xl">{title}</div>
-      <PlusCrossIcon className="pointer-events-none size-10 shrink-0 translate-y-0.5 text-inherit transition-transform duration-200" />
+      <ChevronDown className="pointer-events-none size-10 shrink-0 translate-y-0.5 text-inherit transition-transform duration-200" />
+      <div className="font-mnedium w-full text-4xl">{title}</div>
     </AccordionTrigger>
   )
 }

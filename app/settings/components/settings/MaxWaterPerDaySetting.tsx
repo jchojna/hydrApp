@@ -1,0 +1,48 @@
+"use client"
+
+import { saveUserSettingAction } from "@/actions/settings"
+import { useSettings } from "@/contexts/SettingsContext"
+import { NumberEditor } from "../NumberEditor"
+import { Setting } from "../Setting"
+import { formatLitres } from "../../../../lib/utils/formatLitres"
+
+export const MaxWaterPerDaySetting = () => {
+  const {
+    settings: { maxWaterPerDay },
+    setSettings,
+  } = useSettings()
+
+  return (
+    <Setting
+      label="Max Water / Day"
+      value={maxWaterPerDay}
+      isDisabled
+      renderValue={(nextValue) => (
+        <div className="text-blue-light-2 text-right">
+          {formatLitres(nextValue)}
+        </div>
+      )}
+      renderEditor={({ value: draftValue, setValue, isSaving }) => (
+        <NumberEditor
+          value={draftValue}
+          onChange={setValue}
+          min={0}
+          max={10}
+          step={0.25}
+          isSaving={isSaving}
+        />
+      )}
+      onSave={async (nextValue) => {
+        const response = await saveUserSettingAction({
+          key: "maxWaterPerDay",
+          value: nextValue,
+        })
+
+        if (!response.success) return false
+        setSettings(response.data)
+
+        return true
+      }}
+    />
+  )
+}

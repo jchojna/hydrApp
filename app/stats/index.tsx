@@ -1,6 +1,5 @@
 "use client"
 
-import { PaginationHeader } from "@/components/PaginationHeader"
 import { useAuth } from "@/contexts/AuthContext"
 import { formatDate, formatDatesRange, formatDays } from "@/lib/utils"
 import { ConsumptionRecord } from "@/lib/types"
@@ -67,7 +66,6 @@ export default function Stats({
 
   return (
     <div className="flex w-full max-w-[400px] flex-col gap-4">
-      <PaginationHeader title={user?.email ?? "User"} />
       {error && <div className="text-red-200">Error: {error.message}</div>}
       <div className="flex flex-col gap-2">
         <StatsItem
