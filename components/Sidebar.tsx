@@ -70,7 +70,7 @@ export const Sidebar = ({
   const ranking = getRanking(data?.totals, maxWaterPerDay)
 
   return (
-    <div className="absolute top-0 right-0">
+    <div className="absolute top-0 right-0 z-10">
       <div className="relative z-50 p-8">
         <IconButton
           icon={<BurgerCircleIcon />}
@@ -80,7 +80,7 @@ export const Sidebar = ({
       </div>
       <div
         className={cn(
-          "bg-blue-dark-4 fixed top-0 right-0 flex h-full w-1/3 translate-x-full flex-col items-center overflow-auto py-[calc((100vh-400px)/2)] transition-transform duration-300",
+          "bg-blue-dark-4 fixed top-0 right-0 flex h-full w-full translate-x-full flex-col items-center overflow-auto py-[calc((100vh-400px)/2)] transition-transform duration-300 md:max-w-[400px] lg:max-w-[500px]",
           isOpen && "translate-x-0",
         )}
       >

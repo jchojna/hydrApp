@@ -66,32 +66,36 @@ function DashboardContent({
   }, [optimisticWaterLevel])
 
   return (
-    <div className="relative flex h-full w-full flex-col justify-center">
-      <header
-        className={cn(
-          "fixed top-0 left-0 flex w-full items-center justify-center p-8 transition-[width] duration-300",
-          isSidebarOpen && "w-2/3",
-        )}
-      >
-        <Logo className="w-[200px]" />
-      </header>
-      <Ruler
-        waterLevel={optimisticWaterLevel}
-        averageWaterLevel={averageWaterLevel}
-      />
+    <div className="flex h-full w-full flex-col justify-center">
       <div
         className={cn(
-          "relative flex h-full w-full items-center justify-center transition-[width] duration-300",
-          isSidebarOpen && "w-2/3",
+          "relative h-full w-full overflow-hidden transition-[width] duration-300",
+          isSidebarOpen &&
+            "w-0 md:w-[calc(100%-400px)] lg:w-[calc(100%-500px)]",
         )}
       >
-        <Output
+        <header
+          className={cn(
+            "absolute top-0 left-0 flex w-full items-center justify-center p-8",
+          )}
+        >
+          <Logo className="w-[200px]" />
+        </header>
+        <Ruler
           waterLevel={optimisticWaterLevel}
+          averageWaterLevel={averageWaterLevel}
         />
-        <Controls
-          waterLevel={optimisticWaterLevel}
-          onWaterLevelChange={setOptimisticWaterLevel}
-        />
+        <div
+          className={cn(
+            "relative flex h-full w-full items-center justify-center",
+          )}
+        >
+          <Output waterLevel={optimisticWaterLevel} />
+          <Controls
+            waterLevel={optimisticWaterLevel}
+            onWaterLevelChange={setOptimisticWaterLevel}
+          />
+        </div>
       </div>
       <Sidebar
         isOpen={isSidebarOpen}
