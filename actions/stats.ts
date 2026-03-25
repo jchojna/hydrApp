@@ -5,14 +5,9 @@ import {
   getUsersTotalConsumptionAmounts,
 } from "@/lib/dal/consumption"
 import { getCurrentUser } from "@/lib/dal/user"
-import { ActionResponse } from "./types"
-import { ConsumptionRecord, UserTotalConsumptionAmount } from "@/lib/types"
+import { ActionResponse } from "@/lib/types"
+import { StatsData } from "@/lib/types"
 import { unauthorizedActionResponse } from "@/lib/errors"
-
-type StatsData = {
-  records: ConsumptionRecord[]
-  totals: UserTotalConsumptionAmount[]
-}
 
 export async function getStatsDataAction(): Promise<ActionResponse<StatsData>> {
   try {

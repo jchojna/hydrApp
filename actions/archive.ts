@@ -2,7 +2,7 @@
 
 import { getPaginatedArchiveEntries } from "@/lib/dal/archive"
 import { getCurrentUser } from "@/lib/dal/user"
-import { ActionResponse } from "./types"
+import { ActionResponse } from "@/lib/types"
 import { type PaginatedArchiveEntries } from "@/lib/types"
 import { unauthorizedActionResponse } from "@/lib/errors"
 

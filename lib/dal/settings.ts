@@ -38,6 +38,7 @@ export async function updateUserSettings(
   try {
     const values: Partial<typeof usersTable.$inferInsert> = {}
 
+    // TODO: add zod validation
     if (typeof settings.username === "string") {
       values.username = settings.username
     }
@@ -73,7 +74,7 @@ export async function updateUserSettings(
       .where(eq(usersTable.id, userId))
       .returning()
 
-    return result[0] || null
+    return result[0]
   } catch (error) {
     console.error("Error updating user settings:", error)
     throw new Error("Failed to update user settings")

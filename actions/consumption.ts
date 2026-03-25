@@ -6,7 +6,7 @@ import {
   upsertConsumptionRecord,
 } from "@/lib/dal/consumption"
 import { getCurrentUser } from "@/lib/dal/user"
-import { ActionResponse } from "./types"
+import { ActionResponse } from "@/lib/types"
 import { unauthorizedActionResponse } from "@/lib/errors"
 
 type SaveConsumptionInput = {
@@ -18,8 +18,6 @@ export async function saveConsumptionAction(
   input: SaveConsumptionInput,
 ): Promise<ActionResponse> {
   try {
-    await new Promise((resolve) => setTimeout(resolve, 200)) // TODO: remove this
-
     const user = await getCurrentUser()
     if (!user) return unauthorizedActionResponse
 

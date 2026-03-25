@@ -2,7 +2,7 @@ import { and, desc, eq, gte, lte, lt } from "drizzle-orm"
 
 import { db } from "@/db"
 import { consumptionTable } from "@/db/schema"
-import { ArchiveEntry, ArchivePageInfo } from "../types"
+import { ArchiveEntry, PaginatedArchiveEntries } from "../types"
 import { formatDate, shiftDate } from "../utils"
 
 export async function getPaginatedArchiveEntries(
@@ -10,10 +10,7 @@ export async function getPaginatedArchiveEntries(
   limit: number,
   startDate: string,
   endDate: string,
-): Promise<{
-  entries: ArchiveEntry[]
-  pageInfo: ArchivePageInfo
-}> {
+): Promise<PaginatedArchiveEntries> {
   try {
     const result = await db
       .select()

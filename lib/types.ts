@@ -1,5 +1,16 @@
 import { SelectUser } from "@/db/schema"
 
+export type ActionResponse<T = null> =
+  | {
+      success: true
+      message: string
+      data: T
+    }
+  | {
+      success: false
+      message: string
+    }
+
 export type ArchiveEntry = {
   date: string
   amount: string
@@ -48,6 +59,11 @@ export type UserTotalConsumptionAmount = {
   totalAmount: string
 }
 
+export type StatsData = {
+  records: ConsumptionRecord[]
+  totals: UserTotalConsumptionAmount[]
+}
+
 export type UserSex = SelectUser["sex"]
 
 export type UserSettings = {
@@ -57,3 +73,10 @@ export type UserSettings = {
   maxWaterPerDay: number
   glassVolume: number
 }
+
+export type UserSettingInput = {
+  [Key in keyof UserSettings]: {
+    key: Key
+    value: UserSettings[Key]
+  }
+}[keyof UserSettings]

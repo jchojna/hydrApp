@@ -62,3 +62,7 @@ export const DEFAULT_ARCHIVE_PAGE_INFO: ArchivePageInfo = {
 
 export const EMOJI_RED_COLOR = "#C43823"
 export const EMOJI_GREEN_COLOR = "#1BC264"
+
+export const MAX_USER_AGE = 100
+export const MAX_WATER_LIMIT = 5 // liters
+export const MAX_GLASS_VOLUME = 1 // liters

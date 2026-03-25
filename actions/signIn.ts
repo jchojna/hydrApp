@@ -3,7 +3,7 @@
 import { verifyPassword } from "@/lib/auth/password"
 import { createSession } from "@/lib/auth/session"
 import { getUserByEmail } from "@/lib/dal/user"
-import { ActionResponse } from "./types"
+import { ActionResponse } from "@/lib/types"
 import { SignInInput } from "@/lib/auth/validation"
 import { unauthorizedActionResponse } from "@/lib/errors"
 

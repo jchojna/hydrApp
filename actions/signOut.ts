@@ -3,8 +3,14 @@
 import { redirect } from "next/navigation"
 
 import { deleteSession } from "@/lib/auth/session"
+import { getCurrentUser } from "@/lib/dal/user"
+import { unauthorizedActionResponse } from "@/lib/errors"
+import { ActionResponse } from "@/lib/types"
 
-export async function signOutAction(): Promise<void> {
+export async function signOutAction(): Promise<ActionResponse> {
+  const user = await getCurrentUser()
+  if (!user) return unauthorizedActionResponse
+
   try {
     await deleteSession()
   } catch (error) {

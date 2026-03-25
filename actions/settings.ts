@@ -1,68 +1,11 @@
 "use server"
 
-import { ActionResponse } from "./types"
+import { ActionResponse } from "@/lib/types"
 import { getCurrentUser } from "@/lib/dal/user"
 import { getUserSettings, updateUserSettings } from "@/lib/dal/settings"
-import { UserSettings, UserSex } from "@/lib/types"
+import { UserSettingInput, UserSettings } from "@/lib/types"
 import { unauthorizedActionResponse } from "@/lib/errors"
-
-type SaveUserSettingInput =
-  | { key: "username"; value: string }
-  | { key: "age"; value: number }
-  | { key: "sex"; value: UserSex }
-  | { key: "maxWaterPerDay"; value: number }
-  | { key: "glassVolume"; value: number }
-
-// TODO: move to constants?
-const MAX_AGE = 100
-const MAX_WATER_LIMIT = 5
-const MAX_GLASS_VOLUME = 1
-
-const normalizeUserSetting = (
-  input: SaveUserSettingInput,
-): SaveUserSettingInput => {
-  switch (input.key) {
-    case "username": {
-      return {
-        key: input.key,
-        value: input.value.trim().slice(0, 255),
-      }
-    }
-    case "age": {
-      return {
-        key: input.key,
-        value: Math.max(0, Math.min(MAX_AGE, Math.round(input.value))),
-      }
-    }
-    case "sex": {
-      if (
-        input.value !== "male" &&
-        input.value !== "female" &&
-        input.value !== "other"
-      ) {
-        return { key: input.key, value: "other" }
-      }
-
-      return input
-    }
-    case "maxWaterPerDay": {
-      const clampedValue = Math.max(0, Math.min(MAX_WATER_LIMIT, input.value))
-
-      return {
-        key: input.key,
-        value: Number(clampedValue.toFixed(2)),
-      }
-    }
-    case "glassVolume": {
-      const clampedValue = Math.max(0, Math.min(MAX_GLASS_VOLUME, input.value))
-
-      return {
-        key: input.key,
-        value: Number(clampedValue.toFixed(2)),
-      }
-    }
-  }
-}
+import { normalizeUserSetting } from "@/lib/utils/normalizeUserSetting"
 
 export async function getUserSettingsAction(): Promise<
   ActionResponse<UserSettings>
@@ -88,7 +31,7 @@ export async function getUserSettingsAction(): Promise<
 }
 
 export async function saveUserSettingAction(
-  input: SaveUserSettingInput,
+  input: UserSettingInput,
 ): Promise<ActionResponse<UserSettings>> {
   try {
     const user = await getCurrentUser()
