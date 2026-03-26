@@ -1,6 +1,7 @@
 "use client"
 
 import { PaginationHeader } from "@/components/PaginationHeader"
+import { SidebarSection } from "@/components/SidebarSection"
 import usePagination from "@/hooks/usePagination"
 import { RankingType } from "@/lib/utils/getRanking"
 
@@ -25,7 +26,7 @@ export default function Ranking({ ranking, isLoading, error }: RankingProps) {
   } = usePagination(ranking, ITEMS_PER_PAGE)
 
   return (
-    <div className="flex w-full max-w-[400px] flex-col gap-4">
+    <SidebarSection>
       <PaginationHeader
         title="Ranking"
         onNextPage={totalPages > 1 ? handleNextPage : undefined}
@@ -42,24 +43,24 @@ export default function Ranking({ ranking, isLoading, error }: RankingProps) {
             const rank = (page - 1) * ITEMS_PER_PAGE + index + 1
 
             return (
-            <li
-              key={item.userId}
-              className="bg-blue-dark-1/50 flex items-center justify-between gap-2 rounded-xl p-4"
-            >
-              <div className="flex items-center gap-3">
-                <span className="bg-blue-300/20 text-blue-100 inline-flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold">
-                  {rank}
-                </span>
-                <span>{item.username}</span>
-              </div>
-              <div>{item.points} points</div>
-            </li>
+              <li
+                key={item.userId}
+                className="bg-blue-dark-1/50 flex items-center justify-between gap-2 rounded-xl p-4"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-blue-300/20 text-sm font-semibold text-blue-100">
+                    {rank}
+                  </span>
+                  <span>{item.username}</span>
+                </div>
+                <div>{item.points} points</div>
+              </li>
             )
           })
         ) : (
           <li>No ranking entries yet.</li>
         )}
       </ol>
-    </div>
+    </SidebarSection>
   )
 }

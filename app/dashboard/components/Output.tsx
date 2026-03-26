@@ -3,7 +3,7 @@ import { useMemo } from "react"
 import { getDigits } from "../utils/getDigits"
 import { Today } from "./Today"
 import { getScoreLevel } from "../utils/getScoreLevel"
-import { useSettings } from "@/contexts/SettingsContext"
+import { useSettings } from "@/providers/SettingsContext"
 
 interface OutputProps {
   waterLevel: number

@@ -1,17 +1,15 @@
-import { ArchiveEntry, ArchivePageInfo } from "@/lib/types"
+import { PaginatedArchiveEntries } from "@/lib/types"
 import { PaginationHeader } from "@/components/PaginationHeader"
 import { Entry } from "./components/Entry"
 import useTablePagination from "@/hooks/useTablePagination"
 import { formatDatesRange } from "@/lib/utils"
-import { useSettings } from "@/contexts/SettingsContext"
+import { useSettings } from "@/providers/SettingsContext"
+import { SidebarSection } from "@/components/SidebarSection"
 
-interface ArchiveProps {
-  entries: ArchiveEntry[]
-  pageInfo: ArchivePageInfo
-}
-
-// TODO: cache archive entries
-export default function Archive({ entries, pageInfo }: ArchiveProps) {
+export default function Archive({
+  entries,
+  pageInfo,
+}: PaginatedArchiveEntries) {
   const {
     settings: { glassVolume, maxWaterPerDay },
   } = useSettings()
@@ -23,7 +21,7 @@ export default function Archive({ entries, pageInfo }: ArchiveProps) {
   } = useTablePagination(pageInfo)
 
   return (
-    <div className="flex w-full max-w-[400px] flex-col gap-4">
+    <SidebarSection>
       <PaginationHeader
         title={formatDatesRange(pageInfo.startDate, pageInfo.endDate)}
         onNextPage={handleNextArchivePage}
@@ -45,6 +43,6 @@ export default function Archive({ entries, pageInfo }: ArchiveProps) {
           <li>No archive entries for this date range.</li>
         )}
       </ul>
-    </div>
+    </SidebarSection>
   )
 }

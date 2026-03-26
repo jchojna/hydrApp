@@ -11,6 +11,7 @@ import {
   SexSetting,
   UsernameSetting,
 } from "./components/settings"
+import { SidebarSection } from "@/components/SidebarSection"
 
 export default function Settings() {
   const [isSigningOut, startSignOutTransition] = useTransition()
@@ -29,7 +30,7 @@ export default function Settings() {
   }
 
   return (
-    <div className="flex w-full max-w-[400px] flex-col gap-4">
+    <SidebarSection>
       <ul className="flex flex-col gap-2 text-sm">
         <UsernameSetting />
         <AgeSetting />
@@ -54,6 +55,6 @@ export default function Settings() {
           {isDeletingAccount ? "Deleting..." : "Delete Account"}
         </Button>
       </div>
-    </div>
+    </SidebarSection>
   )
 }

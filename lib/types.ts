@@ -13,7 +13,7 @@ export type ActionResponse<T = null> =
 
 export type ArchiveEntry = {
   date: string
-  amount: string
+  amount: number
 }
 
 export type ArchivePageInfo = {

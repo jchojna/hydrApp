@@ -1,4 +1,5 @@
 import { useEffect, useState, useTransition } from "react"
+import { useQueryClient } from "@tanstack/react-query"
 
 import { EmojiIcon } from "@/components/EmojiIcon"
 import { ArchiveEntry } from "@/lib/types"
@@ -13,7 +14,6 @@ import { saveConsumptionAction } from "@/actions/consumption"
 import { EntryDate } from "./EntryDate"
 import { EntryAmount } from "./EntryAmount"
 import { clampWaterLevel } from "@/app/dashboard/utils/clampWaterLevel"
-import { useQueryClient } from "@tanstack/react-query"
 
 type EntryProps = {
   entry: ArchiveEntry
@@ -23,14 +23,13 @@ type EntryProps = {
 
 export const Entry = ({ entry, glassVolume, maxWaterPerDay }: EntryProps) => {
   const [isEditing, setIsEditing] = useState(false)
-  const waterLevelFromDb = Number(entry.amount)
   const [isSaving, startSaveTransition] = useTransition()
-  const [editedWaterLevel, setEditedWaterLevel] = useState(waterLevelFromDb)
+  const [editedWaterLevel, setEditedWaterLevel] = useState(entry.amount)
   const queryClient = useQueryClient()
 
   useEffect(() => {
-    setEditedWaterLevel(waterLevelFromDb)
-  }, [waterLevelFromDb])
+    setEditedWaterLevel(entry.amount)
+  }, [entry])
 
   const handleDecreaseWaterLevel = () => {
     setEditedWaterLevel((currentValue) =>
@@ -45,12 +44,12 @@ export const Entry = ({ entry, glassVolume, maxWaterPerDay }: EntryProps) => {
   }
 
   const handleCancelEditing = () => {
-    setEditedWaterLevel(waterLevelFromDb)
+    setEditedWaterLevel(entry.amount)
     setIsEditing(false)
   }
 
   const handleSave = () => {
-    if (editedWaterLevel === waterLevelFromDb) {
+    if (editedWaterLevel === entry.amount) {
       setIsEditing(false)
       return
     }
@@ -61,7 +60,7 @@ export const Entry = ({ entry, glassVolume, maxWaterPerDay }: EntryProps) => {
         date: entry.date,
       })
 
-      if (!response.success) return // TODO: show error message
+      if (!response.success) return
       queryClient.invalidateQueries({ queryKey: ["stats"] })
 
       setIsEditing(false)
@@ -110,7 +109,7 @@ export const Entry = ({ entry, glassVolume, maxWaterPerDay }: EntryProps) => {
             className="h-6 w-6"
             icon={<EditIcon />}
             onClick={() => {
-              setEditedWaterLevel(waterLevelFromDb)
+              setEditedWaterLevel(entry.amount)
               setIsEditing(true)
             }}
           />

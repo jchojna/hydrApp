@@ -2,7 +2,7 @@
 
 import { saveUserSettingAction } from "@/actions/settings"
 import { Slider } from "@/components/ui/slider"
-import { useSettings } from "@/contexts/SettingsContext"
+import { useSettings } from "@/providers/SettingsContext"
 import { clamp } from "@/lib/utils/clamp"
 import { Setting } from "../Setting"
 import { formatLitres } from "../../../../lib/utils/formatLitres"

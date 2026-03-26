@@ -1,13 +1,14 @@
 "use client"
 
-import { useAuth } from "@/contexts/AuthContext"
+import { useAuth } from "@/providers/AuthContext"
 import { formatDate, formatDatesRange, formatDays } from "@/lib/utils"
 import { ConsumptionRecord } from "@/lib/types"
 import { StatsItem } from "./components/StatsItem"
 import { getStreaks } from "@/lib/utils/getStreaks"
 import { clampWaterLevel } from "../dashboard/utils/clampWaterLevel"
 import { RankingType } from "@/lib/utils/getRanking"
-import { useSettings } from "@/contexts/SettingsContext"
+import { useSettings } from "@/providers/SettingsContext"
+import { SidebarSection } from "@/components/SidebarSection"
 
 type StatsProps = {
   averageWaterLevel: number
@@ -65,7 +66,7 @@ export default function Stats({
   const rankLabel = !!rankIndex ? `#${rankIndex} position` : "-"
 
   return (
-    <div className="flex w-full max-w-[400px] flex-col gap-4">
+    <SidebarSection>
       {error && <div className="text-red-200">Error: {error.message}</div>}
       <div className="flex flex-col gap-2">
         <StatsItem
@@ -92,6 +93,6 @@ export default function Stats({
           isLoading={isLoading}
         />
       </div>
-    </div>
+    </SidebarSection>
   )
 }

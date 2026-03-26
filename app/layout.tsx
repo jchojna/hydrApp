@@ -4,8 +4,8 @@ import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
 import Background from "./background"
 import { getCurrentUser } from "@/lib/dal/user"
-import { AuthProvider } from "@/contexts/AuthContext"
-import { ReactQueryProvider } from "@/components/ReactQueryProvider"
+import { AuthProvider } from "@/providers/AuthContext"
+import { ReactQueryProvider } from "@/providers/ReactQueryProvider"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

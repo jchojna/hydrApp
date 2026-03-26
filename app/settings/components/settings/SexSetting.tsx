@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useSettings } from "@/contexts/SettingsContext"
+import { useSettings } from "@/providers/SettingsContext"
 import { Setting } from "../Setting"
 
 export const SexSetting = () => {
@@ -22,7 +22,9 @@ export const SexSetting = () => {
       label="Sex"
       value={sex}
       renderValue={(nextValue) => (
-        <div className="text-blue-light-2 text-right capitalize">{nextValue}</div>
+        <div className="text-blue-light-2 text-right capitalize">
+          {nextValue}
+        </div>
       )}
       renderEditor={({ value: draftValue, setValue, isSaving }) => (
         <Select value={draftValue} onValueChange={setValue} disabled={isSaving}>

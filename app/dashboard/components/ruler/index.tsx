@@ -1,7 +1,7 @@
 import { RULER_TICK_HEIGHT } from "@/lib/constants"
 import { AvgTick } from "./components/AvgTick"
 import { RulerTick } from "./components/RulerTick"
-import { useSettings } from "@/contexts/SettingsContext"
+import { useSettings } from "@/providers/SettingsContext"
 
 type RulerProps = {
   waterLevel: number

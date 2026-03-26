@@ -20,7 +20,7 @@ import Stats from "@/app/stats"
 import Ranking from "@/app/ranking"
 import Settings from "@/app/settings"
 import { getRanking } from "@/lib/utils/getRanking"
-import { useSettings } from "@/contexts/SettingsContext"
+import { useSettings } from "@/providers/SettingsContext"
 import { ChevronDown } from "lucide-react"
 
 interface SidebarProps {

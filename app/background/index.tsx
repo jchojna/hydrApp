@@ -1,10 +1,10 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-import { Pane } from "tweakpane"
+// import { Pane } from "tweakpane"
 
 import { Waves } from "./waves"
-import { addTweakpane } from "./utils/tweakpane"
+// import { addTweakpane } from "./utils/tweakpane"
 
 export let waves: Waves | null = null
 
@@ -18,14 +18,14 @@ export default function Background() {
     waves = new Waves(canvas)
     waves.start()
 
-    const pane = new Pane()
-    addTweakpane(pane)
+    // const pane = new Pane()
+    // addTweakpane(pane)
 
     const resizeCanvas = waves.resizeCanvas
     window.addEventListener("resize", resizeCanvas)
     return () => {
       window.removeEventListener("resize", resizeCanvas)
-      pane.dispose()
+      // pane.dispose()
     }
   }, [canvasRef])
 

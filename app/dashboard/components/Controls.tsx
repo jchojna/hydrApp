@@ -9,17 +9,14 @@ import { EmojiIcon } from "@/components/EmojiIcon"
 import { formatDate } from "@/lib/utils"
 import { saveConsumptionAction } from "@/actions/consumption"
 import { clampWaterLevel } from "../utils/clampWaterLevel"
-import { useSettings } from "@/contexts/SettingsContext"
+import { useSettings } from "@/providers/SettingsContext"
 
 interface ControlsProps {
   waterLevel: number
   onWaterLevelChange: (waterLevel: number) => void
 }
 
-export const Controls = ({
-  waterLevel,
-  onWaterLevelChange,
-}: ControlsProps) => {
+export const Controls = ({ waterLevel, onWaterLevelChange }: ControlsProps) => {
   const {
     settings: { glassVolume, maxWaterPerDay },
   } = useSettings()

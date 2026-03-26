@@ -1,7 +1,7 @@
 "use client"
 
 import { saveUserSettingAction } from "@/actions/settings"
-import { useSettings } from "@/contexts/SettingsContext"
+import { useSettings } from "@/providers/SettingsContext"
 import { NumberEditor } from "../NumberEditor"
 import { Setting } from "../Setting"
 

@@ -10,7 +10,7 @@ import { Output } from "./Output"
 import { waves } from "@/app/background"
 import { Ruler } from "@/app/dashboard/components/ruler"
 import { ArchiveEntry, ArchivePageInfo, UserSettings } from "@/lib/types"
-import { SettingsProvider, useSettings } from "@/contexts/SettingsContext"
+import { SettingsProvider, useSettings } from "@/providers/SettingsContext"
 
 type DashboardProps = {
   waterLevel: number

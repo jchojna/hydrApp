@@ -2,7 +2,7 @@
 
 import { saveUserSettingAction } from "@/actions/settings"
 import { Input } from "@/components/ui/input"
-import { useSettings } from "@/contexts/SettingsContext"
+import { useSettings } from "@/providers/SettingsContext"
 import { Setting } from "../Setting"
 
 export const UsernameSetting = () => {

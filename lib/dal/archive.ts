@@ -40,7 +40,7 @@ export async function getPaginatedArchiveEntries(
         entry.date,
         {
           date: entry.date,
-          amount: entry.amount,
+          amount: Number(entry.amount),
         } satisfies ArchiveEntry,
       ]),
     )
@@ -58,7 +58,7 @@ export async function getPaginatedArchiveEntries(
         const date = shiftDate(endDate, -index)
         return (entriesByDate.get(date) ?? {
           date,
-          amount: "0",
+          amount: 0,
         }) satisfies ArchiveEntry
       },
     ).filter((entry) => {
