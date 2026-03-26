@@ -1,8 +1,9 @@
 import { HTMLInputTypeAttribute } from "react"
 
 import { Input } from "@/components/ui/input"
-import { FieldLabel } from "@/components/ui/field"
+import { FieldGroup, FieldLabel } from "@/components/ui/field"
 import { AuthFormField } from "@/lib/auth/validation"
+import { ErrorMessage } from "./ErrorMessage"
 
 type FormInputProps = {
   id: AuthFormField
@@ -18,16 +19,13 @@ export const FormInput = ({
   errorMessage,
   ...props
 }: FormInputProps) => {
-  // TODO:  Add form groups
   return (
-    <div className="flex w-full flex-col gap-2">
+    <FieldGroup className="flex w-full flex-col gap-2">
       <FieldLabel htmlFor="email" className="text-blue-dark-1">
         {label}
       </FieldLabel>
       <Input id={id} type={type} aria-invalid={!!errorMessage} {...props} />
-      {errorMessage && (
-        <p className="text-sm font-medium text-red-300">{errorMessage}</p>
-      )}
-    </div>
+      {errorMessage && <ErrorMessage message={errorMessage} />}
+    </FieldGroup>
   )
 }

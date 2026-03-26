@@ -1,12 +1,12 @@
 import { redirect } from "next/navigation"
 
-import { getSession } from "@/lib/auth/session"
 import SignInForm from "./SignInForm"
+import { getCurrentUser } from "@/lib/dal/user"
 
 export default async function SignIn() {
-  const session = await getSession()
+  const currentUser = await getCurrentUser()
 
-  if (session) {
+  if (currentUser) {
     redirect("/dashboard")
   }
 
