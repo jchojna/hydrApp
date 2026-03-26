@@ -48,18 +48,6 @@ export const RULER_TICK_WIDTH = 15
 
 export const ARCHIVE_LIMIT = 7
 
-export const DEFAULT_ARCHIVE_PAGE_INFO: ArchivePageInfo = {
-  limit: ARCHIVE_LIMIT,
-  startDate: "",
-  endDate: "",
-  hasPreviousPage: false,
-  hasNextPage: false,
-  previousStartDate: null,
-  previousEndDate: null,
-  nextStartDate: null,
-  nextEndDate: null,
-}
-
 export const EMOJI_RED_COLOR = "#C43823"
 export const EMOJI_GREEN_COLOR = "#1BC264"
 

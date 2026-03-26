@@ -2,9 +2,11 @@ import { eq } from "drizzle-orm"
 
 import { db } from "@/db"
 import { usersTable } from "@/db/schema"
-import { UserSettings } from "../types"
+import { ActionResponse, UserSettings } from "../types"
 
-export async function getUserSettings(userId: string): Promise<UserSettings> {
+export async function getUserSettings(
+  userId: string,
+): Promise<ActionResponse<UserSettings>> {
   try {
     const [result] = await db
       .select({
@@ -19,15 +21,22 @@ export async function getUserSettings(userId: string): Promise<UserSettings> {
       .limit(1)
 
     return {
-      username: result.username,
-      age: result.age,
-      sex: result.sex,
-      maxWaterPerDay: Number(result.maxWaterPerDay),
-      glassVolume: Number(result.glassVolume),
+      success: true,
+      message: "User settings retrieved successfully",
+      data: {
+        username: result.username,
+        age: result.age,
+        sex: result.sex,
+        maxWaterPerDay: Number(result.maxWaterPerDay),
+        glassVolume: Number(result.glassVolume),
+      },
     }
   } catch (error) {
     console.error("Error getting user settings:", error)
-    throw new Error("Failed to get user settings")
+    return {
+      success: false,
+      message: "An error occurred while getting user settings",
+    }
   }
 }
 
