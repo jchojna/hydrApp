@@ -6,7 +6,13 @@ import { Emoji5 } from "@/assets/svg/emojis/emoji-5"
 import { Emoji6 } from "@/assets/svg/emojis/emoji-6"
 import { Emoji7 } from "@/assets/svg/emojis/emoji-7"
 import { Emoji8 } from "@/assets/svg/emojis/emoji-8"
-import { ArchivePageInfo } from "@/lib/types"
+import { UserSex } from "./types"
+
+export const USER_SEX_OPTIONS = [
+  { value: "male", label: "Male" },
+  { value: "female", label: "Female" },
+  { value: "other", label: "Other" },
+] satisfies Array<{ value: UserSex; label: string }>
 
 export const SCORE_LEVELS = [
   {
@@ -47,6 +53,7 @@ export const RULER_TICK_HEIGHT = 6
 export const RULER_TICK_WIDTH = 15
 
 export const ARCHIVE_LIMIT = 7
+export const RANKING_ITEMS_PER_PAGE = 3
 
 export const EMOJI_RED_COLOR = "#C43823"
 export const EMOJI_GREEN_COLOR = "#1BC264"

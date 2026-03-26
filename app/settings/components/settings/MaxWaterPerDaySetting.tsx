@@ -5,6 +5,7 @@ import { useSettings } from "@/providers/SettingsContext"
 import { NumberEditor } from "../NumberEditor"
 import { Setting } from "../Setting"
 import { formatLitres } from "../../../../lib/utils/formatLitres"
+import { MAX_WATER_LIMIT } from "@/lib/constants"
 
 export const MaxWaterPerDaySetting = () => {
   const {
@@ -27,7 +28,7 @@ export const MaxWaterPerDaySetting = () => {
           value={draftValue}
           onChange={setValue}
           min={0}
-          max={10}
+          max={MAX_WATER_LIMIT}
           step={0.25}
           isSaving={isSaving}
         />

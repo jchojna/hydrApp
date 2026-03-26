@@ -1,8 +1,10 @@
 "use client"
 
+import { ErrorMessage } from "@/components/ErrorMessage"
 import { PaginationHeader } from "@/components/PaginationHeader"
 import { SidebarSection } from "@/components/SidebarSection"
 import usePagination from "@/hooks/usePagination"
+import { RANKING_ITEMS_PER_PAGE } from "@/lib/constants"
 import { RankingType } from "@/lib/utils/getRanking"
 
 type RankingProps = {
@@ -13,8 +15,6 @@ type RankingProps = {
 
 // TODO: use isLoading to show loading state
 export default function Ranking({ ranking, isLoading, error }: RankingProps) {
-  const ITEMS_PER_PAGE = 3 // TODO: move to constants
-
   const {
     page,
     totalPages,
@@ -23,24 +23,24 @@ export default function Ranking({ ranking, isLoading, error }: RankingProps) {
     handlePreviousPage,
     disableNext,
     disablePrevious,
-  } = usePagination(ranking, ITEMS_PER_PAGE)
+  } = usePagination(ranking, RANKING_ITEMS_PER_PAGE)
 
   return (
     <SidebarSection>
       <PaginationHeader
-        title="Ranking"
+        title={`Ranking${totalPages > 1 ? ` (${page}/${totalPages})` : ""}`}
         onNextPage={totalPages > 1 ? handleNextPage : undefined}
         onPreviousPage={totalPages > 1 ? handlePreviousPage : undefined}
         isNextPageDisabled={disableNext}
         isPreviousPageDisabled={disablePrevious}
       />
 
-      {error && <div className="text-red-300">Error: {error.message}</div>}
+      {error && <ErrorMessage message={error.message} />}
 
       <ol className="flex list-none flex-col gap-2">
         {paginatedItems.length ? (
           paginatedItems.map((item, index) => {
-            const rank = (page - 1) * ITEMS_PER_PAGE + index + 1
+            const rank = (page - 1) * RANKING_ITEMS_PER_PAGE + index + 1
 
             return (
               <li
@@ -51,9 +51,9 @@ export default function Ranking({ ranking, isLoading, error }: RankingProps) {
                   <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-blue-300/20 text-sm font-semibold text-blue-100">
                     {rank}
                   </span>
-                  <span>{item.username}</span>
+                  <span className="text-blue-light-3">{item.username}</span>
                 </div>
-                <div>{item.points} points</div>
+                <div className="text-blue-light-1">{item.points} points</div>
               </li>
             )
           })

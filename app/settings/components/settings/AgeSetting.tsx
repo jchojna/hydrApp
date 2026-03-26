@@ -4,6 +4,7 @@ import { saveUserSettingAction } from "@/actions/settings"
 import { useSettings } from "@/providers/SettingsContext"
 import { NumberEditor } from "../NumberEditor"
 import { Setting } from "../Setting"
+import { MAX_USER_AGE } from "@/lib/constants"
 
 export const AgeSetting = () => {
   const {
@@ -23,7 +24,7 @@ export const AgeSetting = () => {
           value={draftValue}
           onChange={setValue}
           min={0}
-          max={130}
+          max={MAX_USER_AGE}
           step={1}
           isSaving={isSaving}
         />

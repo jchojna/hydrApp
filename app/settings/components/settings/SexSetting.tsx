@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/select"
 import { useSettings } from "@/providers/SettingsContext"
 import { Setting } from "../Setting"
+import { USER_SEX_OPTIONS } from "@/lib/constants"
 
 export const SexSetting = () => {
   const {
@@ -32,9 +33,11 @@ export const SexSetting = () => {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="male">Male</SelectItem>
-            <SelectItem value="female">Female</SelectItem>
-            <SelectItem value="other">Other</SelectItem>
+            {USER_SEX_OPTIONS.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       )}

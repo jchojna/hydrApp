@@ -6,6 +6,7 @@ import { useSettings } from "@/providers/SettingsContext"
 import { clamp } from "@/lib/utils/clamp"
 import { Setting } from "../Setting"
 import { formatLitres } from "../../../../lib/utils/formatLitres"
+import { MAX_GLASS_VOLUME } from "@/lib/constants"
 
 export const GlassVolumeSetting = () => {
   const {
@@ -30,14 +31,14 @@ export const GlassVolumeSetting = () => {
           </span>
           <Slider
             min={0}
-            max={2}
+            max={MAX_GLASS_VOLUME}
             step={0.05}
             value={[draftValue]}
             disabled={isSaving}
             onValueChange={(nextValues) => {
               if (!nextValues.length) return
 
-              setValue(clamp(nextValues[0], 0, 2))
+              setValue(clamp(nextValues[0], 0, MAX_GLASS_VOLUME))
             }}
           />
         </div>

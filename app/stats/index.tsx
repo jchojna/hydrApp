@@ -9,6 +9,8 @@ import { clampWaterLevel } from "../dashboard/utils/clampWaterLevel"
 import { RankingType } from "@/lib/utils/getRanking"
 import { useSettings } from "@/providers/SettingsContext"
 import { SidebarSection } from "@/components/SidebarSection"
+import { ErrorMessage } from "@/components/ErrorMessage"
+import { formatLitres } from "@/lib/utils/formatLitres"
 
 type StatsProps = {
   averageWaterLevel: number
@@ -48,7 +50,8 @@ export default function Stats({
 
   const rankIndex = ranking.findIndex((entry) => entry.userId === user?.id)
 
-  const averageLitresValue = `${averageWaterLevel.toFixed(2)} L`
+  const averageLitresValue = `${formatLitres(averageWaterLevel)}`
+  // TODO: use i18n pluralization
   const averageGlassesValue = `${(averageWaterLevel / glassVolume).toFixed(1)} glass${
     averageWaterLevel / glassVolume === 1 ? "" : "es"
   }`
@@ -67,7 +70,7 @@ export default function Stats({
 
   return (
     <SidebarSection>
-      {error && <div className="text-red-200">Error: {error.message}</div>}
+      {error && <ErrorMessage message={error.message} />}
       <div className="flex flex-col gap-2">
         <StatsItem
           label="Average per day"
