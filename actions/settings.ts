@@ -1,10 +1,16 @@
 "use server"
 
+import { eq } from "drizzle-orm"
+import { redirect } from "next/navigation"
+
+import { db } from "@/db"
+import { usersTable } from "@/db/schema"
 import { ActionResponse } from "@/lib/types"
 import { getCurrentUser } from "@/lib/dal/user"
 import { getUserSettings, updateUserSettings } from "@/lib/dal/settings"
 import { UserSettingInput, UserSettings } from "@/lib/types"
 import { unauthorizedActionResponse } from "@/lib/errors"
+import { deleteSession } from "@/lib/auth/session"
 import { normalizeUserSetting } from "@/lib/utils/normalizeUserSetting"
 
 export async function saveUserSettingAction(
@@ -39,4 +45,22 @@ export async function saveUserSettingAction(
       message: "An error occurred while saving user setting",
     }
   }
+}
+
+export async function deleteAccountAction(): Promise<ActionResponse> {
+  const user = await getCurrentUser()
+  if (!user) return unauthorizedActionResponse
+
+  try {
+    await db.delete(usersTable).where(eq(usersTable.id, user.id))
+    await deleteSession()
+  } catch (error) {
+    console.error("Delete account error:", error)
+    return {
+      success: false,
+      message: "An error occurred while deleting your account",
+    }
+  }
+
+  redirect("/signin")
 }
