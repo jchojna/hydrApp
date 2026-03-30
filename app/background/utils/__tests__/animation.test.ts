@@ -52,6 +52,19 @@ describe("getAnimatedTransitionValue", () => {
     expect(result).toBeCloseTo(6.25)
   })
 
+  it("uses linear easing by default when easing is not provided", () => {
+    const result = getAnimatedTransitionValue({
+      timestamp: 1200,
+      from: 0,
+      to: 100,
+      startedAt: 1000,
+      durationMs: 400,
+      delayMs: 100,
+    })
+
+    expect(result).toBe(25)
+  })
+
   it("calls onComplete and returns target after duration", () => {
     const onComplete = vi.fn()
 
