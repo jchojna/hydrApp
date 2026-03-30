@@ -71,7 +71,7 @@ export async function getAverageConsumptionAmountSinceFirstRecord(
 
     if (daysSinceFirstRecord <= 0) return 0
 
-    return totalAmount / daysSinceFirstRecord
+    return Number((totalAmount / daysSinceFirstRecord).toFixed(2))
   } catch (error) {
     console.error("Error getting average consumption amount:", error)
     throw new Error("Failed to get average consumption amount")

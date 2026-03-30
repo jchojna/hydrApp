@@ -48,7 +48,7 @@ export default function Stats({
       )
     }, 0) ?? 0
 
-  const rankIndex = ranking.findIndex((entry) => entry.userId === user?.id)
+  const rankNumber = ranking.findIndex((entry) => entry.userId === user?.id) + 1
 
   const averageLitresValue = `${formatLitres(averageWaterLevel)}`
   // TODO: use i18n pluralization
@@ -66,7 +66,7 @@ export default function Stats({
       )
     : "-"
   const pointsLabel = `${totalPoints.toFixed(2)} points`
-  const rankLabel = !!rankIndex ? `#${rankIndex} position` : "-"
+  const rankLabel = !!rankNumber ? `#${rankNumber} position` : "-"
 
   return (
     <SidebarSection>
