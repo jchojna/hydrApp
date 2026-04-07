@@ -45,15 +45,15 @@ export default function Ranking({ ranking, isLoading, error }: RankingProps) {
             return (
               <li
                 key={item.userId}
-                className="bg-blue-dark-1/50 flex items-center justify-between gap-2 rounded-xl p-4"
+                className="flex items-center justify-between gap-2 rounded-xl bg-blue-500/50 p-4"
               >
                 <div className="flex items-center gap-3">
                   <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-blue-300/20 text-sm font-semibold text-blue-100">
                     {rank}
                   </span>
-                  <span className="text-blue-light-3">{item.username}</span>
+                  <span className="text-blue-100">{item.username}</span>
                 </div>
-                <div className="text-blue-light-1">{item.points} points</div>
+                <div className="text-blue-300">{item.points} points</div>
               </li>
             )
           })

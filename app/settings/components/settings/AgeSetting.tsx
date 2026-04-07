@@ -17,7 +17,7 @@ export const AgeSetting = () => {
       label="Age"
       value={age}
       renderValue={(nextValue) => (
-        <div className="text-blue-light-2 text-right">{nextValue}</div>
+        <div className="text-right text-blue-200">{nextValue}</div>
       )}
       renderEditor={({ value: draftValue, setValue, isSaving }) => (
         <NumberEditor

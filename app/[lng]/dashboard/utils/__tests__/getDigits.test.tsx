@@ -12,7 +12,7 @@ describe("getDigits", () => {
     expect(digits).toHaveLength(2)
     expect(digits[0].type).toBe(Digit0)
     expect(digits[1].type).toBe(Digit2)
-    expect(digits[0].props.className).toBe("text-blue-light-1 w-36 rounded-xl")
+    expect(digits[0].props.className).toBe("w-36 rounded-xl text-blue-300")
   })
 
   it("returns both digits for double-digit glass counts", () => {

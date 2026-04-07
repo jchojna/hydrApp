@@ -19,7 +19,7 @@ export const MaxWaterPerDaySetting = () => {
       value={maxWaterPerDay}
       isDisabled
       renderValue={(nextValue) => (
-        <div className="text-blue-light-2 text-right">
+        <div className="text-right text-blue-200">
           {formatLitres(nextValue)}
         </div>
       )}

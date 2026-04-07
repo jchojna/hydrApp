@@ -33,7 +33,7 @@ interface SidebarProps {
 
 const AccordionHeader = ({ title }: { title: string }) => {
   return (
-    <AccordionTrigger className="text-blue-light-2">
+    <AccordionTrigger className="text-blue-200">
       <ChevronDown className="pointer-events-none size-10 shrink-0 translate-y-0.5 text-inherit transition-transform duration-200" />
       <div className="font-mnedium w-full text-4xl">{title}</div>
     </AccordionTrigger>
@@ -80,7 +80,7 @@ export const Sidebar = ({
       </div>
       <div
         className={cn(
-          "bg-blue-dark-4 fixed top-0 right-0 flex h-full w-full translate-x-full flex-col items-center overflow-auto py-[calc((100vh-400px)/2)] transition-transform duration-300 md:max-w-[400px] lg:max-w-[500px]",
+          "fixed top-0 right-0 flex h-full w-full translate-x-full flex-col items-center overflow-auto bg-blue-800 py-[calc((100vh-400px)/2)] transition-transform duration-300 md:max-w-[400px] lg:max-w-[500px]",
           isOpen && "translate-x-0",
         )}
       >

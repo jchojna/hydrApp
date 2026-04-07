@@ -33,7 +33,7 @@ export const AuthForm = ({
   return (
     <form
       onSubmit={onSubmit}
-      className="bg-blue-dark-3 flex w-full max-w-[420px] flex-col items-center justify-center gap-5 rounded-2xl p-8"
+      className="flex w-full max-w-[420px] flex-col items-center justify-center gap-5 rounded-2xl bg-blue-700 p-8"
       noValidate
     >
       <Logo className="mb-2.5 w-4/5 max-w-[200px]" />
@@ -43,12 +43,12 @@ export const AuthForm = ({
         {isSubmitting ? submittingLabel : submitLabel}
       </Button>
       <div className="flex items-center gap-2">
-        <span className="text-blue-dark-1 text-sm font-medium md:text-base">
+        <span className="text-sm font-medium text-blue-500 md:text-base">
           {alternatePrompt}
         </span>
         <Link
           href={alternateHref}
-          className="text-blue-light-3 text-sm font-medium underline md:text-base"
+          className="text-sm font-medium text-blue-100 underline md:text-base"
         >
           {alternateLabel}
         </Link>

@@ -23,9 +23,7 @@ export const SexSetting = () => {
       label="Sex"
       value={sex}
       renderValue={(nextValue) => (
-        <div className="text-blue-light-2 text-right capitalize">
-          {nextValue}
-        </div>
+        <div className="text-right text-blue-200 capitalize">{nextValue}</div>
       )}
       renderEditor={({ value: draftValue, setValue, isSaving }) => (
         <Select value={draftValue} onValueChange={setValue} disabled={isSaving}>

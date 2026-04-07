@@ -25,10 +25,10 @@ export const AvgTick = ({
       style={{ top: averageMarkerTopOffset }}
     >
       <div
-        className="bg-blue-dark-2 rounded-r-[10px]"
+        className="rounded-r-[10px] bg-blue-600"
         style={{ height: `${RULER_TICK_HEIGHT}px`, width: "50px" }}
       />
-      <span className="text-blue-light-3 absolute top-1/2 left-[55px] z-0 -translate-y-1/2 text-xs font-bold text-nowrap uppercase">
+      <span className="absolute top-1/2 left-[55px] z-0 -translate-y-1/2 text-xs font-bold text-nowrap text-blue-100 uppercase">
         Avg {avgInGlasses} ({averageWaterLevel.toFixed(2)} L)
       </span>
     </div>

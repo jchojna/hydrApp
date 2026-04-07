@@ -26,7 +26,7 @@ export const Output = ({ waterLevel }: OutputProps) => {
     <div className="flex flex-col items-center gap-4">
       <Today />
       <div className="flex gap-3">{digits}</div>
-      <div className="text-blue-light-1 text-sm">{scoreLevel.message}</div>
+      <div className="text-sm text-blue-300">{scoreLevel.message}</div>
     </div>
   )
 }

@@ -107,7 +107,10 @@ export class Waves {
       },
     })
 
-    return (height - WAVES_PARAMS.gap * index) * this.renderedWaterLevel
+    return (
+      (height - (WAVES_PARAMS.gap * index * (8 - index)) / 8) *
+      this.renderedWaterLevel
+    )
   }
 
   private normalizeWaterLevel = (waterLevel: number) => {
@@ -146,10 +149,11 @@ export class Waves {
       this.canvas.clientWidth,
       this.canvas.clientHeight,
     )
-    this.drawWaves(WAVES_DATA[0], 2, timestamp)
-    this.drawWaves(WAVES_DATA[1], 1, timestamp)
+    this.drawWaves(WAVES_DATA[0], 3, timestamp)
+    this.drawWaves(WAVES_DATA[1], 2, timestamp)
     this.logo.drawLogo(this.canvas.clientWidth, this.canvas.clientHeight)
-    this.drawWaves(WAVES_DATA[2], 0, timestamp)
+    this.drawWaves(WAVES_DATA[2], 1, timestamp)
+    this.drawWaves(WAVES_DATA[3], 0, timestamp)
 
     requestAnimationFrame(this.drawFrame)
   }

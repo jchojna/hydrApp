@@ -20,13 +20,13 @@ export const GlassVolumeSetting = () => {
       value={glassVolume}
       isDisabled
       renderValue={(nextValue) => (
-        <div className="text-blue-light-2 text-right">
+        <div className="text-right text-blue-200">
           {formatLitres(nextValue)}
         </div>
       )}
       renderEditor={({ value: draftValue, setValue, isSaving }) => (
         <div className="flex min-w-0 flex-col gap-1">
-          <span className="text-blue-light-2 text-right text-xs">
+          <span className="text-right text-xs text-blue-200">
             {formatLitres(draftValue)}
           </span>
           <Slider

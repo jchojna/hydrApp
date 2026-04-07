@@ -21,7 +21,7 @@ export const FormInput = ({
 }: FormInputProps) => {
   return (
     <FieldGroup className="flex w-full flex-col gap-2">
-      <FieldLabel htmlFor="email" className="text-blue-dark-1">
+      <FieldLabel htmlFor="email" className="text-blue-500">
         {label}
       </FieldLabel>
       <Input id={id} type={type} aria-invalid={!!errorMessage} {...props} />

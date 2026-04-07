@@ -11,7 +11,7 @@ export const IconButton = ({
   return (
     <button
       className={cn(
-        "text-blue-light-1 hover:text-blue-light-3 transition-colors-transform w-14 cursor-pointer duration-300",
+        "transition-colors-transform w-14 cursor-pointer text-blue-300 duration-300 hover:text-blue-100",
         "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
         className,
       )}

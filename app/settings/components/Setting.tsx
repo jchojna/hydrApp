@@ -57,8 +57,8 @@ export const Setting = <T,>({
   return (
     <li
       className={cn(
-        "text-blue-light-1 bg-blue-dark-1/50 flex items-center gap-2 rounded-full px-3 py-1",
-        isEditing && "bg-blue-dark-1",
+        "flex items-center gap-2 rounded-full bg-blue-500/50 px-3 py-1 text-blue-300",
+        isEditing && "bg-blue-500",
       )}
     >
       <span className="min-w-0 flex-1 truncate">{label}</span>
@@ -91,8 +91,7 @@ export const Setting = <T,>({
           <IconButton
             className={cn(
               "h-6 w-6",
-              isDisabled &&
-                "hover:text-blue-light-1 cursor-not-allowed opacity-50",
+              isDisabled && "cursor-not-allowed opacity-50 hover:text-blue-300",
             )}
             icon={<EditIcon />}
             onClick={() => {

@@ -1,5 +1,5 @@
 {
-  "common.fallback.notAvailable": "-",
+  "app.unavailable": "-",
   "app.layout.metadata.title": "Hydrapp",
   "app.layout.metadata.description": "Hydrapp is a web app that helps you track your water consumption.",
   "app.home.startButton": "Start",

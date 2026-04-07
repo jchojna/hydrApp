@@ -13,8 +13,10 @@ import {
 } from "@/lib/auth/validation"
 import { AuthForm } from "@/app/[lng]/(auth)/components/AuthForm"
 import { FormInput } from "@/components/FormInput"
+import { useT } from "next-i18next/client"
 
 export default function SignInForm() {
+  const { t } = useT("ui")
   const router = useRouter()
   const [apiError, setApiError] = useState<string | null>(null)
 
@@ -53,23 +55,23 @@ export default function SignInForm() {
       onSubmit={onSubmit}
       apiError={apiError}
       isSubmitting={isSubmitting}
-      submitLabel="Sign In"
-      submittingLabel="Signing In..."
-      alternatePrompt="Don't have an account?"
+      submitLabel={t("app.auth.signIn.submitLabel")}
+      submittingLabel={t("app.auth.signIn.submittingLabel")}
+      alternatePrompt={t("app.auth.signIn.alternatePrompt")}
       alternateHref="/signup"
-      alternateLabel="Sign Up"
+      alternateLabel={t("app.auth.signIn.alternateLabel")}
       renderInputs={() => (
         <>
           <FormInput
             id={AuthFormField.email}
-            label="Email"
+            label={t("app.auth.fields.email")}
             type="email"
             errorMessage={errors.email?.message}
             {...register(AuthFormField.email)}
           />
           <FormInput
             id={AuthFormField.password}
-            label="Password"
+            label={t("app.auth.fields.password")}
             type="password"
             errorMessage={errors.password?.message}
             {...register(AuthFormField.password)}

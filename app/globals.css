@@ -9,15 +9,17 @@
 :root {
   /* Colors */
   /* Blue */
-  --blue-dark-5: #071d2c;
-  --blue-dark-4: #102a3d;
-  --blue-dark-3: #12344c;
-  --blue-dark-2: #164d6b;
-  --blue-dark-1: #2e6484;
-  --blue: #3f7ea0;
-  --blue-light-1: #549dc4;
-  --blue-light-2: #75b3d4;
-  --blue-light-3: #d3f3ff;
+  --blue-50: #eaf6fb;
+  --blue-100: #d3f3ff;
+  --blue-200: #75b3d4;
+  --blue-300: #549dc4;
+  --blue-400: #3f7ea0;
+  --blue-500: #2e6484;
+  --blue-600: #164d6b;
+  --blue-700: #12344c;
+  --blue-800: #102a3d;
+  --blue-900: #071d2c;
+  --blue-950: #03131e;
   /* Orange */
   --orange-dark-3: #5e2325;
   --orange-dark-2: #aa494c;
@@ -63,15 +65,18 @@
 @theme inline {
   --color-background: var(--blue);
   --color-foreground: var(--foreground);
-  --color-blue-dark-5: var(--blue-dark-5);
-  --color-blue-dark-4: var(--blue-dark-4);
-  --color-blue-dark-3: var(--blue-dark-3);
-  --color-blue-dark-2: var(--blue-dark-2);
-  --color-blue-dark-1: var(--blue-dark-1);
-  --color-blue: var(--blue);
-  --color-blue-light-1: var(--blue-light-1);
-  --color-blue-light-2: var(--blue-light-2);
-  --color-blue-light-3: var(--blue-light-3);
+  /* Blue */
+  --color-blue-50: var(--blue-50);
+  --color-blue-100: var(--blue-100);
+  --color-blue-200: var(--blue-200);
+  --color-blue-300: var(--blue-300);
+  --color-blue-400: var(--blue-400);
+  --color-blue-500: var(--blue-500);
+  --color-blue-600: var(--blue-600);
+  --color-blue-700: var(--blue-700);
+  --color-blue-800: var(--blue-800);
+  --color-blue-900: var(--blue-900);
+  --color-blue-950: var(--blue-950);
   --color-orange-dark-3: var(--orange-dark-3);
   --color-orange-dark-2: var(--orange-dark-2);
   --color-orange-dark-1: var(--orange-dark-1);
@@ -158,6 +163,6 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground bg-blue-300;
   }
 }

@@ -14,15 +14,13 @@ export const StatsItem = ({
   isLoading,
 }: StatsItemProps) => {
   return (
-    <div className="bg-blue-dark-1/50 flex items-center justify-between gap-3 rounded-xl px-4 py-3">
-      <span className="text-blue-light-3 text-sm">{label}</span>
+    <div className="flex items-center justify-between gap-3 rounded-xl bg-blue-500/50 px-4 py-3">
+      <span className="text-sm text-blue-100">{label}</span>
       {isLoading ? (
         <StatsItemValuesPlaceholder />
       ) : (
         <div className="text-right">
-          <div className="text-blue-light-1 text-sm font-semibold">
-            {mainValue}
-          </div>
+          <div className="text-sm font-semibold text-blue-300">{mainValue}</div>
           {secondaryValue ? (
             <div className="text-blue-light-4 text-xs">{secondaryValue}</div>
           ) : null}

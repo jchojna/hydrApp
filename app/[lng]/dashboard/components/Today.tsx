@@ -10,8 +10,8 @@ export const Today = () => {
 
   return (
     <div className="flex flex-col items-center gap-2 font-bold">
-      <div className="text-blue-light-3 text-4xl">{weekday}</div>
-      <div className="text-blue-dark-3 text-2xl">{date}</div>
+      <div className="text-4xl text-blue-100">{weekday}</div>
+      <div className="text-2xl text-blue-700">{date}</div>
     </div>
   )
 }

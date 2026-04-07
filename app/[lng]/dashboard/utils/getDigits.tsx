@@ -32,7 +32,7 @@ export const getDigits = (waterLevel: number, glassVolume: number) => {
       return (
         <Digit
           key={`${digit}${index}`}
-          className="text-blue-light-1 w-36 rounded-xl"
+          className="w-36 rounded-xl text-blue-300"
         />
       )
     })

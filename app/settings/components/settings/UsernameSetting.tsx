@@ -16,7 +16,7 @@ export const UsernameSetting = () => {
       label="Username"
       value={username}
       renderValue={(nextValue) => (
-        <div className="text-blue-light-2 truncate text-right">{nextValue}</div>
+        <div className="truncate text-right text-blue-200">{nextValue}</div>
       )}
       renderEditor={({ value: draftValue, setValue, isSaving }) => (
         <Input
