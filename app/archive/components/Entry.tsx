@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils"
 import { saveConsumptionAction } from "@/actions/consumption"
 import { EntryDate } from "./EntryDate"
 import { EntryAmount } from "./EntryAmount"
-import { clampWaterLevel } from "@/app/dashboard/utils/clampWaterLevel"
+import { clampWaterLevel } from "@/app/[lng]/dashboard/utils/clampWaterLevel"
 
 type EntryProps = {
   entry: ArchiveEntry

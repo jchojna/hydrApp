@@ -5,16 +5,16 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 
-import { signUpAction } from "@/actions/signUp"
+import { signInAction } from "@/actions/signIn"
 import {
   AuthFormField,
-  signUpSchema,
-  type SignUpInput,
+  signInSchema,
+  type SignInInput,
 } from "@/lib/auth/validation"
-import { AuthForm } from "@/app/(auth)/components/AuthForm"
+import { AuthForm } from "@/app/[lng]/(auth)/components/AuthForm"
 import { FormInput } from "@/components/FormInput"
 
-export default function SignUpForm() {
+export default function SignInForm() {
   const router = useRouter()
   const [apiError, setApiError] = useState<string | null>(null)
 
@@ -22,20 +22,19 @@ export default function SignUpForm() {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<SignUpInput>({
-    resolver: zodResolver(signUpSchema),
+  } = useForm<SignInInput>({
+    resolver: zodResolver(signInSchema),
     defaultValues: {
       email: "",
       password: "",
-      confirmPassword: "",
     },
   })
 
   const onSubmit = handleSubmit(async (values) => {
-    const defaultErrorMessage = "Sign up failed."
+    const defaultErrorMessage = "Sign in failed."
 
     try {
-      const result = await signUpAction(values)
+      const result = await signInAction(values)
 
       if (!result.success) {
         setApiError(result.message ?? defaultErrorMessage)
@@ -54,11 +53,11 @@ export default function SignUpForm() {
       onSubmit={onSubmit}
       apiError={apiError}
       isSubmitting={isSubmitting}
-      submitLabel="Sign Up"
-      submittingLabel="Signing Up..."
-      alternatePrompt="Already have an account?"
-      alternateHref="/signin"
-      alternateLabel="Sign In"
+      submitLabel="Sign In"
+      submittingLabel="Signing In..."
+      alternatePrompt="Don't have an account?"
+      alternateHref="/signup"
+      alternateLabel="Sign Up"
       renderInputs={() => (
         <>
           <FormInput
@@ -74,13 +73,6 @@ export default function SignUpForm() {
             type="password"
             errorMessage={errors.password?.message}
             {...register(AuthFormField.password)}
-          />
-          <FormInput
-            id={AuthFormField.confirmPassword}
-            label="Confirm Password"
-            type="password"
-            errorMessage={errors.confirmPassword?.message}
-            {...register(AuthFormField.confirmPassword)}
           />
         </>
       )}

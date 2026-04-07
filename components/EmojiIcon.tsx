@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils"
-import { getColorFromRange } from "../app/dashboard/utils/getColorFromRange"
-import { getScoreLevel } from "../app/dashboard/utils/getScoreLevel"
+import { getColorFromRange } from "../app/[lng]/dashboard/utils/getColorFromRange"
+import { getScoreLevel } from "../app/[lng]/dashboard/utils/getScoreLevel"
 import { EMOJI_GREEN_COLOR, EMOJI_RED_COLOR } from "@/lib/constants"
 
 interface EmojiIconProps {
