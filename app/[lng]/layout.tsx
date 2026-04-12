@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
+import { Quicksand } from "next/font/google"
 import {
   initServerI18next,
   getT,
@@ -21,13 +21,7 @@ export async function generateStaticParams() {
   return generateI18nStaticParams()
 }
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-})
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const quicksand = Quicksand({
   subsets: ["latin"],
 })
 
@@ -60,9 +54,7 @@ export default async function RootLayout({
 
   return (
     <html lang={lng}>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${quicksand.className} font-bold antialiased`}>
         <I18nProvider language={lng} resources={resources}>
           <Background />
           <AuthProvider user={authUser}>

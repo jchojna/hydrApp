@@ -3,7 +3,6 @@
   "app.layout.metadata.title": "Hydrapp",
   "app.layout.metadata.description": "Hydrapp is a web app that helps you track your water consumption.",
   "app.home.startButton": "Start",
-  "app.background.springWavesButton": "Spring Waves",
   "app.dashboard.errorToasts.summary": "Could not load dashboard data.",
   "app.dashboard.ruler.avgTick.label": "Avg {{glasses}} ({{litres}})",
   "app.sidebar.sections.archive": "Archive",

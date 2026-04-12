@@ -9,17 +9,17 @@
 :root {
   /* Colors */
   /* Blue */
-  --blue-50: #eaf6fb;
-  --blue-100: #d3f3ff;
-  --blue-200: #75b3d4;
-  --blue-300: #549dc4;
-  --blue-400: #3f7ea0;
-  --blue-500: #2e6484;
-  --blue-600: #164d6b;
-  --blue-700: #12344c;
-  --blue-800: #102a3d;
-  --blue-900: #071d2c;
-  --blue-950: #03131e;
+  --blue-50: #e4f2f8;
+  --blue-100: #caecf8;
+  --blue-200: #6db1d6;
+  --blue-300: #4d9bc6;
+  --blue-400: #2475a0;
+  --blue-500: #1b6189;
+  --blue-600: #064668;
+  --blue-700: #0b334f;
+  --blue-800: #082841;
+  --blue-900: #042034;
+  --blue-950: #01111c;
   /* Orange */
   --orange-dark-3: #5e2325;
   --orange-dark-2: #aa494c;
@@ -86,6 +86,7 @@
   --color-orange-light-3: var(--orange-light-3);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-comfortaa: var(--font-comfortaa);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
