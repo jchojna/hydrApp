@@ -1,10 +1,9 @@
 import { useMemo } from "react"
 
-import { getDigits } from "../utils/getDigits"
 import { Today } from "./Today"
-import { FlipCounter } from "./FlipCounter"
 import { getScoreLevel } from "../utils/getScoreLevel"
 import { useSettings } from "@/providers/SettingsContext"
+import { Counter } from "./counter"
 
 interface OutputProps {
   waterLevel: number
@@ -14,10 +13,7 @@ export const Output = ({ waterLevel }: OutputProps) => {
   const {
     settings: { glassVolume, maxWaterPerDay },
   } = useSettings()
-  const digits = useMemo(
-    () => getDigits(waterLevel, glassVolume),
-    [glassVolume, waterLevel],
-  )
+
   const scoreLevel = useMemo(
     () => getScoreLevel(waterLevel, maxWaterPerDay),
     [maxWaterPerDay, waterLevel],
@@ -26,7 +22,7 @@ export const Output = ({ waterLevel }: OutputProps) => {
   return (
     <div className="flex flex-col items-center gap-4">
       <Today />
-      <FlipCounter digits={digits} />
+      <Counter value={waterLevel / glassVolume} />
       <div className="text-sm text-blue-300">{scoreLevel.message}</div>
     </div>
   )
