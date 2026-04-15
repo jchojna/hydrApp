@@ -21,5 +21,5 @@ export const EmojiIcon = ({
     EMOJI_GREEN_COLOR,
   )
 
-  return <Emoji className={cn("w-14", className)} color={color} />
+  return <Emoji className={cn("w-10", className)} color={color} />
 }

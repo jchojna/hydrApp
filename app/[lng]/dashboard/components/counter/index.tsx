@@ -13,7 +13,7 @@ export const Counter = ({ value }: CounterProps) => {
   }, [value])
 
   return (
-    <div className="flex gap-3">
+    <div className="flex gap-2">
       {digits.map((digit, index) => (
         <CounterDigits key={`digit-${index}`} digit={digit} />
       ))}

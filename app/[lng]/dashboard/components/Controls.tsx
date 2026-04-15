@@ -5,7 +5,6 @@ import { PlusCircleIcon } from "@/assets/svg/icons/plus-circle"
 import { IconButton } from "@/components/IconButton"
 import { MinusCircleIcon } from "@/assets/svg/icons/minus-circle"
 import { waves } from "@/app/background"
-import { EmojiIcon } from "@/components/EmojiIcon"
 import { formatDate } from "@/lib/utils"
 import { saveConsumptionAction } from "@/actions/consumption"
 import { clampWaterLevel } from "../utils/clampWaterLevel"
@@ -68,18 +67,17 @@ export const Controls = ({ waterLevel, onWaterLevelChange }: ControlsProps) => {
   }
 
   return (
-    <div className="absolute right-0 bottom-0 flex flex-col gap-4 p-8">
-      <IconButton
-        icon={<PlusCircleIcon />}
-        onClick={handleIncreaseWaterLevel}
-        disabled={isPending || waterLevel >= maxWaterPerDay}
-      />
+    <div className="z-10 flex gap-4">
       <IconButton
         icon={<MinusCircleIcon />}
         onClick={handleDecreaseWaterLevel}
         disabled={isPending || waterLevel <= 0}
       />
-      <EmojiIcon waterLevel={waterLevel} maxWaterPerDay={maxWaterPerDay} />
+      <IconButton
+        icon={<PlusCircleIcon />}
+        onClick={handleIncreaseWaterLevel}
+        disabled={isPending || waterLevel >= maxWaterPerDay}
+      />
     </div>
   )
 }

@@ -3,8 +3,8 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import { gsap } from "gsap"
 
-import { cn } from "@/lib/utils"
 import { Digit } from "./Digit"
+import { GlassContainer } from "@/components/GlassContainer"
 
 const SLIDE_DURATION_SECONDS = 0.3
 
@@ -82,17 +82,9 @@ export const CounterDigits = ({ digit }: { digit: string }) => {
   }, [currentDigit, nextDigit])
 
   return (
-    <div
-      className={cn(
-        "relative flex h-48 w-32 items-center justify-center overflow-hidden rounded-xl bg-blue-200/25 text-9xl font-semibold text-blue-50",
-        "text-shadow-[0_4px_10px_rgba(255,255,255,0.2)]",
-        "shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_12px_20px_rgba(15,23,42,0.2)]",
-        "backdrop-blur-xl",
-      )}
-      aria-label={`Digit ${digit}`}
-    >
+    <GlassContainer aria-label={`Digit ${digit}`}>
       <Digit ref={currentDigitRef} digit={currentDigit} />
       {nextDigit && <Digit ref={nextDigitRef} digit={nextDigit} />}
-    </div>
+    </GlassContainer>
   )
 }

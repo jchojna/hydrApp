@@ -13,6 +13,7 @@ export const Digit = ({ digit, ref }: DigitProps) => {
       ref={ref}
       className={cn(
         "absolute top-0 left-0 flex h-full w-full items-center justify-center",
+        "text-9xl font-medium text-blue-50",
       )}
     >
       <span className="leading-none">{digit}</span>

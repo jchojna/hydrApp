@@ -2,8 +2,6 @@
 
 import { useEffect, useState } from "react"
 
-import { Controls } from "./Controls"
-import { Logo } from "@/components/Logo"
 import { Sidebar } from "@/components/Sidebar"
 import { cn } from "@/lib/utils"
 import { Output } from "./Output"
@@ -11,6 +9,7 @@ import { waves } from "@/app/background"
 import { Ruler } from "@/app/[lng]/dashboard/components/ruler"
 import { ArchiveEntry, ArchivePageInfo, UserSettings } from "@/lib/types"
 import { SettingsProvider, useSettings } from "@/providers/SettingsContext"
+import { Header } from "./header"
 
 type DashboardProps = {
   waterLevel: number
@@ -74,27 +73,20 @@ function DashboardContent({
             "w-0 md:w-[calc(100%-400px)] lg:w-[calc(100%-500px)]",
         )}
       >
-        <header
-          className={cn(
-            "absolute top-0 left-0 flex w-full items-center justify-center p-8",
-          )}
-        >
-          <Logo className="w-[200px]" />
-        </header>
         <Ruler
           waterLevel={optimisticWaterLevel}
           averageWaterLevel={averageWaterLevel}
         />
         <div
           className={cn(
-            "relative flex h-full w-full items-center justify-center",
+            "relative flex h-full w-full flex-col items-center p-2",
           )}
         >
-          <Output waterLevel={optimisticWaterLevel} />
-          <Controls
+          <Header
             waterLevel={optimisticWaterLevel}
             onWaterLevelChange={setOptimisticWaterLevel}
           />
+          <Output waterLevel={optimisticWaterLevel} />
         </div>
       </div>
       <Sidebar
