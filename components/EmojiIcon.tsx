@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils"
 import { getColorFromRange } from "../app/[lng]/dashboard/utils/getColorFromRange"
 import { getScoreLevel } from "../app/[lng]/dashboard/utils/getScoreLevel"
-import { EMOJI_GREEN_COLOR, EMOJI_RED_COLOR } from "@/lib/constants"
+import { EMOJI_GOOD_COLOR, EMOJI_BAD_COLOR } from "@/lib/constants"
 
 interface EmojiIconProps {
   waterLevel: number
@@ -17,8 +17,8 @@ export const EmojiIcon = ({
   const Emoji = getScoreLevel(waterLevel, maxWaterPerDay).emoji
   const color = getColorFromRange(
     waterLevel / maxWaterPerDay,
-    EMOJI_RED_COLOR,
-    EMOJI_GREEN_COLOR,
+    EMOJI_BAD_COLOR,
+    EMOJI_GOOD_COLOR,
   )
 
   return <Emoji className={cn("w-10", className)} color={color} />

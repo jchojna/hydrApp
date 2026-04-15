@@ -6,8 +6,6 @@ import { useQuery } from "@tanstack/react-query"
 import { cn } from "@/lib/utils"
 
 import { getStatsDataAction } from "@/actions/stats"
-import { BurgerCircleIcon } from "@/assets/svg/icons/burger-circle"
-import { IconButton } from "./IconButton"
 import {
   Accordion,
   AccordionContent,
@@ -25,7 +23,6 @@ import { ChevronDown } from "lucide-react"
 
 interface SidebarProps {
   isOpen: boolean
-  setIsOpen: (isOpen: boolean) => void
   archiveEntries: ArchiveEntry[]
   archivePageInfo: ArchivePageInfo
   averageWaterLevel: number
@@ -42,7 +39,6 @@ const AccordionHeader = ({ title }: { title: string }) => {
 
 export const Sidebar = ({
   isOpen,
-  setIsOpen,
   archiveEntries,
   archivePageInfo,
   averageWaterLevel,
@@ -71,13 +67,6 @@ export const Sidebar = ({
 
   return (
     <div className="absolute top-0 right-0 z-10">
-      <div className="relative z-50 p-8">
-        <IconButton
-          icon={<BurgerCircleIcon />}
-          className={cn(isOpen && "rotate-180 transform")}
-          onClick={() => setIsOpen(!isOpen)}
-        />
-      </div>
       <div
         className={cn(
           "fixed top-0 right-0 flex h-full w-full translate-x-full flex-col items-center overflow-auto bg-blue-800 py-[calc((100vh-400px)/2)] transition-transform duration-300 md:max-w-[400px] lg:max-w-[500px]",

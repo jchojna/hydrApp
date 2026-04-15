@@ -85,13 +85,14 @@ function DashboardContent({
           <Header
             waterLevel={optimisticWaterLevel}
             onWaterLevelChange={setOptimisticWaterLevel}
+            isSidebarOpen={isSidebarOpen}
+            onSidebarOpenChange={setIsSidebarOpen}
           />
           <Output waterLevel={optimisticWaterLevel} />
         </div>
       </div>
       <Sidebar
         isOpen={isSidebarOpen}
-        setIsOpen={setIsSidebarOpen}
         archiveEntries={archiveEntries}
         archivePageInfo={archivePageInfo}
         averageWaterLevel={averageWaterLevel}

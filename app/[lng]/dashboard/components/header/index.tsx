@@ -4,13 +4,22 @@ import { Controls } from "../Controls"
 import { EmojiIcon } from "@/components/EmojiIcon"
 import { useSettings } from "@/providers/SettingsContext"
 import { GlassContainer } from "@/components/GlassContainer"
+import { BurgerCircleIcon } from "@/assets/svg/icons/burger-circle"
+import { IconButton } from "@/components/IconButton"
 
 type HeaderProps = {
   waterLevel: number
   onWaterLevelChange: (waterLevel: number) => void
+  isSidebarOpen: boolean
+  onSidebarOpenChange: (isOpen: boolean) => void
 }
 
-export const Header = ({ waterLevel, onWaterLevelChange }: HeaderProps) => {
+export const Header = ({
+  waterLevel,
+  onWaterLevelChange,
+  isSidebarOpen,
+  onSidebarOpenChange,
+}: HeaderProps) => {
   const {
     settings: { maxWaterPerDay },
   } = useSettings()
@@ -29,6 +38,11 @@ export const Header = ({ waterLevel, onWaterLevelChange }: HeaderProps) => {
       />
       <Logo className="w-[120px]" />
       <EmojiIcon waterLevel={waterLevel} maxWaterPerDay={maxWaterPerDay} />
+      <IconButton
+        icon={<BurgerCircleIcon />}
+        className={cn(isSidebarOpen && "rotate-180 transform")}
+        onClick={() => onSidebarOpenChange(!isSidebarOpen)}
+      />
     </GlassContainer>
   )
 }
