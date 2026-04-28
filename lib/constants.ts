@@ -49,8 +49,7 @@ export const SCORE_LEVELS = [
   },
 ]
 
-export const RULER_TICK_HEIGHT = 6
-export const RULER_TICK_WIDTH = 15
+export const RULER_TICK_HEIGHT = 24
 
 export const ARCHIVE_LIMIT = 7
 export const RANKING_ITEMS_PER_PAGE = 3

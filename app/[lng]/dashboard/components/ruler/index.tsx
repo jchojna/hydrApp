@@ -27,7 +27,7 @@ export const Ruler = ({
 
   return (
     <div
-      className="absolute top-[20%] left-0 hidden flex-col-reverse justify-between md:flex"
+      className="absolute left-0 hidden flex-col-reverse justify-between md:flex"
       style={{
         top: getRulerOffset(topOffset),
         bottom: getRulerOffset(bottomOffset),
