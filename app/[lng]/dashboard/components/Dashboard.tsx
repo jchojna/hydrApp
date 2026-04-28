@@ -70,7 +70,7 @@ function DashboardContent({
         className={cn(
           "relative h-full w-full overflow-hidden transition-[width] duration-300",
           isSidebarOpen &&
-            "w-0 md:w-[calc(100%-400px)] lg:w-[calc(100%-500px)]",
+            "w-full md:w-[calc(100%-400px)] lg:w-[calc(100%-500px)]",
         )}
       >
         <Ruler

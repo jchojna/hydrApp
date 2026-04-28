@@ -20,10 +20,10 @@ export const Output = ({ waterLevel }: OutputProps) => {
   )
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-4">
+    <div className="flex flex-1 flex-col items-center justify-center gap-10">
       <Today />
       <Counter value={waterLevel / glassVolume} />
-      <div className="text-sm text-blue-300">{scoreLevel.message}</div>
+      <div className="text-sm text-blue-100">{scoreLevel.message}</div>
     </div>
   )
 }

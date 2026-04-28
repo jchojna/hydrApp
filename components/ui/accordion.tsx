@@ -54,7 +54,7 @@ function AccordionContent({
   return (
     <AccordionPrimitive.Content
       data-slot="accordion-content"
-      className="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden bg-blue-600 text-sm"
+      className="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden bg-blue-700/30 text-sm"
       {...props}
     >
       <div className={cn("flex flex-col items-center gap-4 p-8", className)}>

@@ -20,6 +20,7 @@ import Settings from "@/app/settings"
 import { getRanking } from "@/lib/utils/getRanking"
 import { useSettings } from "@/providers/SettingsContext"
 import { ChevronDown } from "lucide-react"
+import { GlassContainer } from "./GlassContainer"
 
 interface SidebarProps {
   isOpen: boolean
@@ -30,7 +31,7 @@ interface SidebarProps {
 
 const AccordionHeader = ({ title }: { title: string }) => {
   return (
-    <AccordionTrigger className="text-blue-200">
+    <AccordionTrigger className="text-blue-100 transition-colors duration-200 hover:bg-blue-500/30">
       <ChevronDown className="pointer-events-none size-10 shrink-0 translate-y-0.5 text-inherit transition-transform duration-200" />
       <div className="font-mnedium w-full text-4xl">{title}</div>
     </AccordionTrigger>
@@ -66,54 +67,67 @@ export const Sidebar = ({
   const ranking = getRanking(data?.totals, maxWaterPerDay)
 
   return (
-    <div className="absolute top-0 right-0 z-10">
-      <div
-        className={cn(
-          "fixed top-0 right-0 flex h-full w-full translate-x-full flex-col items-center overflow-auto bg-blue-800 py-[calc((100vh-400px)/2)] transition-transform duration-300 md:max-w-[400px] lg:max-w-[500px]",
-          isOpen && "translate-x-0",
-        )}
-      >
-        <Accordion
-          type="multiple"
-          className="w-full"
-          value={openItems}
-          onValueChange={setOpenItems}
+    <div
+      className={cn(
+        "pointer-events-none fixed top-0 right-0 h-full w-full p-2 pt-20",
+        "md:max-w-[400px] md:p-2 lg:max-w-[500px]",
+      )}
+    >
+      <div className="h-full overflow-hidden">
+        <GlassContainer
+          className={cn(
+            "flex h-full w-full translate-x-full items-start overflow-auto rounded-2xl bg-blue-600/20 shadow-none",
+            "[-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+            "pointer-events-auto transition-transform duration-300",
+            isOpen && "translate-x-0",
+          )}
         >
-          {/* Archive */}
-          <AccordionItem value="archive">
-            <AccordionHeader title="Archive" />
-            <AccordionContent>
-              <Archive entries={archiveEntries} pageInfo={archivePageInfo} />
-            </AccordionContent>
-          </AccordionItem>
-          {/* Stats */}
-          <AccordionItem value="stats">
-            <AccordionHeader title="Stats" />
-            <AccordionContent>
-              <Stats
-                averageWaterLevel={averageWaterLevel}
-                records={data?.records}
-                ranking={ranking}
-                isLoading={isLoading}
-                error={error}
-              />
-            </AccordionContent>
-          </AccordionItem>
-          {/* Ranking */}
-          <AccordionItem value="ranking">
-            <AccordionHeader title="Ranking" />
-            <AccordionContent>
-              <Ranking ranking={ranking} isLoading={isLoading} error={error} />
-            </AccordionContent>
-          </AccordionItem>
-          {/* Settings */}
-          <AccordionItem value="settings">
-            <AccordionHeader title="Settings" />
-            <AccordionContent>
-              <Settings />
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+          <Accordion
+            type="multiple"
+            className="my-auto w-full"
+            value={openItems}
+            onValueChange={setOpenItems}
+          >
+            {/* Archive */}
+            <AccordionItem value="archive">
+              <AccordionHeader title="Archive" />
+              <AccordionContent>
+                <Archive entries={archiveEntries} pageInfo={archivePageInfo} />
+              </AccordionContent>
+            </AccordionItem>
+            {/* Stats */}
+            <AccordionItem value="stats">
+              <AccordionHeader title="Stats" />
+              <AccordionContent>
+                <Stats
+                  averageWaterLevel={averageWaterLevel}
+                  records={data?.records}
+                  ranking={ranking}
+                  isLoading={isLoading}
+                  error={error}
+                />
+              </AccordionContent>
+            </AccordionItem>
+            {/* Ranking */}
+            <AccordionItem value="ranking">
+              <AccordionHeader title="Ranking" />
+              <AccordionContent>
+                <Ranking
+                  ranking={ranking}
+                  isLoading={isLoading}
+                  error={error}
+                />
+              </AccordionContent>
+            </AccordionItem>
+            {/* Settings */}
+            <AccordionItem value="settings">
+              <AccordionHeader title="Settings" />
+              <AccordionContent>
+                <Settings />
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </GlassContainer>
       </div>
     </div>
   )

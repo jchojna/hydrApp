@@ -70,7 +70,7 @@ export const Entry = ({ entry, glassVolume, maxWaterPerDay }: EntryProps) => {
   return (
     <li
       className={cn(
-        "flex items-center gap-2 rounded-full bg-blue-500/50 px-3 py-1 text-blue-300",
+        "flex items-center gap-2 rounded-full bg-blue-200/20 px-3 py-1 text-blue-300",
         isEditing && "bg-blue-500",
       )}
     >

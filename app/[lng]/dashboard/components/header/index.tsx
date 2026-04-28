@@ -27,22 +27,24 @@ export const Header = ({
   return (
     <GlassContainer
       className={cn(
-        "flex h-auto w-auto gap-6 rounded-xl bg-blue-200/20 px-8 py-5 shadow-none",
-        "shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_6px_16px_rgba(15,23,42,0.15)]",
-        "backdrop-blur-xl",
+        "flex h-auto w-full justify-between gap-4 rounded-[60px] bg-blue-500/20 p-3 pl-10 shadow-none",
+        "transition-colors duration-300 hover:bg-blue-500/30",
+        "lg:w-auto lg:justify-center lg:gap-10",
       )}
     >
-      <Controls
-        waterLevel={waterLevel}
-        onWaterLevelChange={onWaterLevelChange}
-      />
       <Logo className="w-[120px]" />
-      <EmojiIcon waterLevel={waterLevel} maxWaterPerDay={maxWaterPerDay} />
-      <IconButton
-        icon={<BurgerCircleIcon />}
-        className={cn(isSidebarOpen && "rotate-180 transform")}
-        onClick={() => onSidebarOpenChange(!isSidebarOpen)}
-      />
+      <div className="flex items-center gap-3">
+        <Controls
+          waterLevel={waterLevel}
+          onWaterLevelChange={onWaterLevelChange}
+        />
+        <EmojiIcon waterLevel={waterLevel} maxWaterPerDay={maxWaterPerDay} />
+        <IconButton
+          icon={<BurgerCircleIcon />}
+          className={cn(isSidebarOpen && "rotate-180 transform")}
+          onClick={() => onSidebarOpenChange(!isSidebarOpen)}
+        />
+      </div>
     </GlassContainer>
   )
 }

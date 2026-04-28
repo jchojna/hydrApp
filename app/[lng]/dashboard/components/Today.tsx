@@ -9,9 +9,9 @@ export const Today = () => {
   })
 
   return (
-    <div className="flex flex-col items-center gap-2 font-bold">
-      <div className="text-4xl text-blue-100">{weekday}</div>
-      <div className="text-2xl text-blue-700">{date}</div>
+    <div className="flex flex-col items-center gap-1 font-bold">
+      <div className="text-4xl text-blue-100/80">{weekday}</div>
+      <div className="text-2xl text-blue-50">{date}</div>
     </div>
   )
 }

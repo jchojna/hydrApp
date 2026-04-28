@@ -67,7 +67,7 @@ export const Controls = ({ waterLevel, onWaterLevelChange }: ControlsProps) => {
   }
 
   return (
-    <div className="z-10 flex gap-4">
+    <div className="z-10 flex gap-3">
       <IconButton
         icon={<MinusCircleIcon />}
         onClick={handleDecreaseWaterLevel}
