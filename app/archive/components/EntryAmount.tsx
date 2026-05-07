@@ -10,7 +10,7 @@ export const EntryAmount = ({ amount, glassVolume }: EntryAmountProps) => {
     <div className="flex min-w-16 flex-col">
       {/* TODO: use brand type? */}
       <span className="text-sm text-blue-100">{amount} L</span>
-      <span className="text-xs text-blue-900">
+      <span className="text-xs font-medium text-blue-200">
         {/* TODO: use i18n pluralization */}
         {waterInGlasses.toFixed(0)} glass{waterInGlasses === 1 ? "" : "es"}
       </span>

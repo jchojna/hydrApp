@@ -11,7 +11,7 @@ type ArrowButtonProps = {
 const ArrowButton = ({ onClick, disabled, icon }: ArrowButtonProps) => {
   return (
     <Button
-      className="flex h-8 w-8 items-center justify-center rounded-full text-blue-300 hover:bg-blue-600 hover:text-blue-100"
+      className="flex h-8 w-8 items-center justify-center rounded-full text-blue-100 hover:bg-blue-300 hover:text-blue-50"
       variant="ghost"
       size="sm"
       onClick={onClick}
@@ -38,7 +38,7 @@ export const PaginationHeader = ({
   isPreviousPageDisabled,
 }: PaginationHeaderProps) => {
   return (
-    <div className="flex items-center justify-center gap-2 rounded-full bg-blue-700 p-1">
+    <div className="flex h-10 items-center justify-center gap-2 rounded-full bg-blue-300/50 p-1">
       {onPreviousPage && (
         <ArrowButton
           onClick={onPreviousPage}

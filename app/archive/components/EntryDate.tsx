@@ -4,6 +4,7 @@ type EntryDateProps = {
   date: string
 }
 
+// TODO: reuse for entry amount
 export const EntryDate = ({ date }: EntryDateProps) => {
   const parsedDate = parseDate(date)
   const weekday = new Intl.DateTimeFormat("en-US", {
@@ -20,7 +21,7 @@ export const EntryDate = ({ date }: EntryDateProps) => {
   return (
     <div className="flex flex-1 flex-col pl-2">
       <span className="text-sm text-blue-100">{formattedDate}</span>
-      <span className="text-xs text-blue-900">{weekday}</span>
+      <span className="text-xs font-medium text-blue-200">{weekday}</span>
     </div>
   )
 }

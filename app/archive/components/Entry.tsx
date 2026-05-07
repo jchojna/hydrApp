@@ -70,43 +70,58 @@ export const Entry = ({ entry, glassVolume, maxWaterPerDay }: EntryProps) => {
   return (
     <li
       className={cn(
-        "flex items-center gap-2 rounded-full bg-blue-200/20 px-3 py-1 text-blue-300",
-        isEditing && "bg-blue-500",
+        "flex items-center gap-2 rounded-full bg-blue-300/30 px-3 py-1 text-blue-300",
+        isEditing && "bg-blue-600",
       )}
     >
       <EntryDate date={entry.date} />
       <EntryAmount amount={editedWaterLevel} glassVolume={glassVolume} />
-      <div className="flex items-center gap-1">
+      <div
+        className={cn("flex items-center gap-1 transition-all duration-300")}
+      >
+        <IconButton
+          className={cn(
+            "h-6 w-0 text-blue-200 opacity-0 hover:text-blue-100",
+            isEditing && "w-6 opacity-100",
+          )}
+          icon={<ArrowDownIcon />}
+          onClick={handleDecreaseWaterLevel}
+          disabled={isSaving || editedWaterLevel <= 0}
+        />
+        <IconButton
+          className={cn(
+            "h-6 w-0 text-blue-200 opacity-0 hover:text-blue-100",
+            isEditing && "w-6 opacity-100",
+          )}
+          icon={<ArrowUpIcon />}
+          onClick={handleIncreaseWaterLevel}
+          disabled={isSaving || editedWaterLevel >= maxWaterPerDay}
+        />
+        <IconButton
+          className={cn(
+            "h-6 w-0 text-blue-200 opacity-0 hover:text-blue-100",
+            isEditing && "w-6 opacity-100",
+          )}
+          icon={<ArrowBackIcon />}
+          onClick={handleCancelEditing}
+          disabled={isSaving}
+        />
         {isEditing ? (
-          <>
-            <IconButton
-              className="h-6 w-6"
-              icon={<ArrowDownIcon />}
-              onClick={handleDecreaseWaterLevel}
-              disabled={isSaving || editedWaterLevel <= 0}
-            />
-            <IconButton
-              className="h-6 w-6"
-              icon={<ArrowUpIcon />}
-              onClick={handleIncreaseWaterLevel}
-              disabled={isSaving || editedWaterLevel >= maxWaterPerDay}
-            />
-            <IconButton
-              className="h-6 w-6"
-              icon={<ArrowBackIcon />}
-              onClick={handleCancelEditing}
-              disabled={isSaving}
-            />
-            <IconButton
-              className="h-6 w-6"
-              icon={<SaveIcon />}
-              onClick={handleSave}
-              disabled={isSaving}
-            />
-          </>
+          <IconButton
+            className={cn(
+              "h-6 w-0 text-blue-200 opacity-0 hover:text-blue-100",
+              isEditing && "w-6 opacity-100",
+            )}
+            icon={<SaveIcon />}
+            onClick={handleSave}
+            disabled={isSaving}
+          />
         ) : (
           <IconButton
-            className="h-6 w-6"
+            className={cn(
+              "h-6 w-6 text-blue-200 hover:text-blue-100",
+              isEditing && "w-0",
+            )}
             icon={<EditIcon />}
             onClick={() => {
               setEditedWaterLevel(entry.amount)

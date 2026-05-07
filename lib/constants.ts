@@ -55,7 +55,7 @@ export const ARCHIVE_LIMIT = 7
 export const RANKING_ITEMS_PER_PAGE = 3
 
 export const EMOJI_BAD_COLOR = "#c42349"
-export const EMOJI_GOOD_COLOR = "#082841"
+export const EMOJI_GOOD_COLOR = "#caecf8"
 
 export const MAX_USER_AGE = 100
 export const MAX_WATER_LIMIT = 5 // liters

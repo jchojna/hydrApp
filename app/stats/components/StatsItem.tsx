@@ -14,7 +14,7 @@ export const StatsItem = ({
   isLoading,
 }: StatsItemProps) => {
   return (
-    <div className="flex items-center justify-between gap-3 rounded-xl bg-blue-500/50 px-4 py-3">
+    <div className="flex items-center justify-between gap-3 rounded-xl bg-blue-300/30 px-4 py-3">
       <span className="text-sm text-blue-100">{label}</span>
       {isLoading ? (
         <StatsItemValuesPlaceholder />
