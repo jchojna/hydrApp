@@ -9,11 +9,10 @@ import { ArrowDownIcon } from "@/assets/svg/icons/arrow-down"
 import { ArrowUpIcon } from "@/assets/svg/icons/arrow-up"
 import { ArrowBackIcon } from "@/assets/svg/icons/arrow-back"
 import { SaveIcon } from "@/assets/svg/icons/save"
-import { cn } from "@/lib/utils"
+import { cn, parseDate } from "@/lib/utils"
 import { saveConsumptionAction } from "@/actions/consumption"
-import { EntryDate } from "./EntryDate"
-import { EntryAmount } from "./EntryAmount"
 import { clampWaterLevel } from "@/app/[lng]/dashboard/utils/clampWaterLevel"
+import { Text } from "@/components/Text"
 
 type EntryProps = {
   entry: ArchiveEntry
@@ -67,6 +66,23 @@ export const Entry = ({ entry, glassVolume, maxWaterPerDay }: EntryProps) => {
     })
   }
 
+  const parsedDate = parseDate(entry.date)
+  const weekday = new Intl.DateTimeFormat("en-US", {
+    weekday: "long",
+    timeZone: "UTC",
+  }).format(parsedDate)
+
+  const formattedDate = new Intl.DateTimeFormat("en-US", {
+    month: "long",
+    day: "numeric",
+    timeZone: "UTC",
+  }).format(parsedDate)
+
+  const waterInGlasses = editedWaterLevel / glassVolume
+  const glassLabel = `${waterInGlasses.toFixed(0)} glass${
+    waterInGlasses === 1 ? "" : "es"
+  }`
+
   return (
     <li
       className={cn(
@@ -74,8 +90,16 @@ export const Entry = ({ entry, glassVolume, maxWaterPerDay }: EntryProps) => {
         isEditing && "bg-blue-600",
       )}
     >
-      <EntryDate date={entry.date} />
-      <EntryAmount amount={editedWaterLevel} glassVolume={glassVolume} />
+      <Text
+        primary={formattedDate}
+        secondary={weekday}
+        className="flex-1 pl-2"
+      />
+      <Text
+        primary={`${editedWaterLevel} L`}
+        secondary={glassLabel}
+        className="min-w-16"
+      />
       <div
         className={cn("flex items-center gap-1 transition-all duration-300")}
       >
