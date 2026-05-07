@@ -5,6 +5,7 @@ import { useSettings } from "@/providers/SettingsContext"
 import { NumberEditor } from "../NumberEditor"
 import { Setting } from "../Setting"
 import { MAX_USER_AGE } from "@/lib/constants"
+import { Text } from "@/components/Text"
 
 export const AgeSetting = () => {
   const {
@@ -17,7 +18,7 @@ export const AgeSetting = () => {
       label="Age"
       value={age}
       renderValue={(nextValue) => (
-        <div className="text-right text-blue-200">{nextValue}</div>
+        <Text primary={nextValue} className="text-right" />
       )}
       renderEditor={({ value: draftValue, setValue, isSaving }) => (
         <NumberEditor

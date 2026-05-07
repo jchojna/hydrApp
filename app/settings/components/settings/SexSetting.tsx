@@ -11,6 +11,7 @@ import {
 import { useSettings } from "@/providers/SettingsContext"
 import { Setting } from "../Setting"
 import { USER_SEX_OPTIONS } from "@/lib/constants"
+import { Text } from "@/components/Text"
 
 export const SexSetting = () => {
   const {
@@ -23,7 +24,7 @@ export const SexSetting = () => {
       label="Sex"
       value={sex}
       renderValue={(nextValue) => (
-        <div className="text-right text-blue-200 capitalize">{nextValue}</div>
+        <Text primary={nextValue} className="text-right" />
       )}
       renderEditor={({ value: draftValue, setValue, isSaving }) => (
         <Select value={draftValue} onValueChange={setValue} disabled={isSaving}>

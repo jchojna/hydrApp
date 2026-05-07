@@ -7,6 +7,7 @@ import { clamp } from "@/lib/utils/clamp"
 import { Setting } from "../Setting"
 import { formatLitres } from "../../../../lib/utils/formatLitres"
 import { MAX_GLASS_VOLUME } from "@/lib/constants"
+import { Text } from "@/components/Text"
 
 export const GlassVolumeSetting = () => {
   const {
@@ -20,9 +21,7 @@ export const GlassVolumeSetting = () => {
       value={glassVolume}
       isDisabled
       renderValue={(nextValue) => (
-        <div className="text-right text-blue-200">
-          {formatLitres(nextValue)}
-        </div>
+        <Text primary={formatLitres(nextValue)} className="text-right" />
       )}
       renderEditor={({ value: draftValue, setValue, isSaving }) => (
         <div className="flex min-w-0 flex-col gap-1">

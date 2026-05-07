@@ -4,6 +4,7 @@ import { saveUserSettingAction } from "@/actions/settings"
 import { Input } from "@/components/ui/input"
 import { useSettings } from "@/providers/SettingsContext"
 import { Setting } from "../Setting"
+import { Text } from "@/components/Text"
 
 export const UsernameSetting = () => {
   const {
@@ -16,7 +17,7 @@ export const UsernameSetting = () => {
       label="Username"
       value={username}
       renderValue={(nextValue) => (
-        <div className="truncate text-right text-blue-200">{nextValue}</div>
+        <Text primary={nextValue} className="text-right" />
       )}
       renderEditor={({ value: draftValue, setValue, isSaving }) => (
         <Input

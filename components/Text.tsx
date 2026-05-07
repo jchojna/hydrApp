@@ -6,12 +6,12 @@ type BaseTextProps = {
 
 type TextProps =
   | (BaseTextProps & {
-      primary: string
-      secondary?: string
+      primary: string | number
+      secondary?: string | number
     })
   | (BaseTextProps & {
-      primary?: string
-      secondary: string
+      primary?: string | number
+      secondary?: string | number
     })
 
 export const Text = ({ primary, secondary, className }: TextProps) => {

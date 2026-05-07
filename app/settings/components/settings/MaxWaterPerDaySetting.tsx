@@ -6,6 +6,7 @@ import { NumberEditor } from "../NumberEditor"
 import { Setting } from "../Setting"
 import { formatLitres } from "../../../../lib/utils/formatLitres"
 import { MAX_WATER_LIMIT } from "@/lib/constants"
+import { Text } from "@/components/Text"
 
 export const MaxWaterPerDaySetting = () => {
   const {
@@ -19,9 +20,7 @@ export const MaxWaterPerDaySetting = () => {
       value={maxWaterPerDay}
       isDisabled
       renderValue={(nextValue) => (
-        <div className="text-right text-blue-200">
-          {formatLitres(nextValue)}
-        </div>
+        <Text primary={formatLitres(nextValue)} className="text-right" />
       )}
       renderEditor={({ value: draftValue, setValue, isSaving }) => (
         <NumberEditor

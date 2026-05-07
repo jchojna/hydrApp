@@ -5,6 +5,7 @@ import { ArrowBackIcon } from "@/assets/svg/icons/arrow-back"
 import { SaveIcon } from "@/assets/svg/icons/save"
 import { IconButton } from "@/components/IconButton"
 import { cn } from "@/lib/utils"
+import { Text } from "@/components/Text"
 
 type SettingProps<T> = {
   label: string
@@ -61,7 +62,7 @@ export const Setting = <T,>({
         isEditing && "bg-blue-500",
       )}
     >
-      <span className="min-w-0 flex-1 truncate">{label}</span>
+      <Text primary={label} className="min-w-0 flex-1 truncate" />
       <div className="min-w-0 flex-1">
         {isEditing
           ? renderEditor({

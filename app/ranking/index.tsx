@@ -3,6 +3,7 @@
 import { ErrorMessage } from "@/components/ErrorMessage"
 import { PaginationHeader } from "@/components/PaginationHeader"
 import { SidebarSection } from "@/components/SidebarSection"
+import { Text } from "@/components/Text"
 import usePagination from "@/hooks/usePagination"
 import { RANKING_ITEMS_PER_PAGE } from "@/lib/constants"
 import { RankingType } from "@/lib/utils/getRanking"
@@ -51,9 +52,9 @@ export default function Ranking({ ranking, isLoading, error }: RankingProps) {
                   <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-blue-300/20 text-sm font-semibold text-blue-100">
                     {rank}
                   </span>
-                  <span className="text-blue-100">{item.username}</span>
+                  <Text primary={item.username} />
                 </div>
-                <div className="text-blue-300">{item.points} points</div>
+                <Text primary={`${item.points} points`} />
               </li>
             )
           })
