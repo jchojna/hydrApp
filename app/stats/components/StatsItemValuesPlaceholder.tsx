@@ -1,5 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton"
 
+// TODO: should be Text placeholder component
 export const StatsItemValuesPlaceholder = () => {
   return (
     <div className="flex flex-col items-end justify-between gap-2">

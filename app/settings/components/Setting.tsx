@@ -3,9 +3,9 @@ import { ReactNode, useEffect, useState, useTransition } from "react"
 import { EditIcon } from "@/assets/svg/icons/edit"
 import { ArrowBackIcon } from "@/assets/svg/icons/arrow-back"
 import { SaveIcon } from "@/assets/svg/icons/save"
-import { IconButton } from "@/components/IconButton"
-import { cn } from "@/lib/utils"
+import { SidebarItemWrapper } from "@/components/SidebarItemWrapper"
 import { Text } from "@/components/Text"
+import { SidebarIconButton } from "@/components/SidebarIconButton"
 
 type SettingProps<T> = {
   label: string
@@ -56,12 +56,7 @@ export const Setting = <T,>({
   }
 
   return (
-    <li
-      className={cn(
-        "flex items-center gap-2 rounded-full bg-blue-500/50 px-3 py-1 text-blue-300",
-        isEditing && "bg-blue-500",
-      )}
-    >
+    <SidebarItemWrapper as="li" isEditMode={isEditing} className="pr-1.5">
       <Text primary={label} className="min-w-0 flex-1 truncate" />
       <div className="min-w-0 flex-1">
         {isEditing
@@ -73,36 +68,28 @@ export const Setting = <T,>({
           : renderValue(value)}
       </div>
       <div className="flex items-center gap-1">
-        {isEditing ? (
-          <>
-            <IconButton
-              className="h-6 w-6"
-              icon={<ArrowBackIcon />}
-              onClick={handleCancel}
-              disabled={isSaving}
-            />
-            <IconButton
-              className="h-6 w-6"
-              icon={<SaveIcon />}
-              onClick={handleSave}
-              disabled={isSaving}
-            />
-          </>
-        ) : (
-          <IconButton
-            className={cn(
-              "h-6 w-6",
-              isDisabled && "cursor-not-allowed opacity-50 hover:text-blue-300",
-            )}
-            icon={<EditIcon />}
-            onClick={() => {
-              if (isDisabled) return
-              setDraftValue(value)
-              setIsEditing(true)
-            }}
-          />
-        )}
+        <SidebarIconButton
+          isVisible={isEditing}
+          icon={<ArrowBackIcon />}
+          onClick={handleCancel}
+          disabled={isSaving}
+        />
+        <SidebarIconButton
+          isVisible={isEditing}
+          icon={<SaveIcon />}
+          onClick={handleSave}
+          disabled={isSaving}
+        />
+        <SidebarIconButton
+          icon={<EditIcon />}
+          disabled={isDisabled}
+          onClick={() => {
+            if (isDisabled) return
+            setDraftValue(value)
+            setIsEditing(true)
+          }}
+        />
       </div>
-    </li>
+    </SidebarItemWrapper>
   )
 }

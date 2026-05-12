@@ -1,4 +1,5 @@
 import { StatsItemValuesPlaceholder } from "./StatsItemValuesPlaceholder"
+import { SidebarItemWrapper } from "@/components/SidebarItemWrapper"
 import { Text } from "@/components/Text"
 
 type StatsItemProps = {
@@ -15,8 +16,8 @@ export const StatsItem = ({
   isLoading,
 }: StatsItemProps) => {
   return (
-    <div className="flex items-center justify-between gap-3 rounded-xl bg-blue-300/30 px-4 py-3">
-      <Text primary={label} />
+    <SidebarItemWrapper>
+      <Text primary={label} className="flex-1" />
       {isLoading ? (
         <StatsItemValuesPlaceholder />
       ) : (
@@ -26,6 +27,6 @@ export const StatsItem = ({
           className="text-right"
         />
       )}
-    </div>
+    </SidebarItemWrapper>
   )
 }

@@ -2,6 +2,7 @@
 
 import { ErrorMessage } from "@/components/ErrorMessage"
 import { PaginationHeader } from "@/components/PaginationHeader"
+import { SidebarItemWrapper } from "@/components/SidebarItemWrapper"
 import { SidebarSection } from "@/components/SidebarSection"
 import { Text } from "@/components/Text"
 import usePagination from "@/hooks/usePagination"
@@ -44,18 +45,13 @@ export default function Ranking({ ranking, isLoading, error }: RankingProps) {
             const rank = (page - 1) * RANKING_ITEMS_PER_PAGE + index + 1
 
             return (
-              <li
-                key={item.userId}
-                className="flex items-center justify-between gap-2 rounded-xl bg-blue-500/50 p-4"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-blue-300/20 text-sm font-semibold text-blue-100">
-                    {rank}
-                  </span>
-                  <Text primary={item.username} />
-                </div>
+              <SidebarItemWrapper as="li" key={item.userId} className="pl-1.5">
+                <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-blue-300/40 text-sm font-semibold text-blue-100">
+                  {rank}
+                </span>
+                <Text primary={item.username} className="flex-1" />
                 <Text primary={`${item.points} points`} />
-              </li>
+              </SidebarItemWrapper>
             )
           })
         ) : (

@@ -1,7 +1,7 @@
 import { ArrowDownIcon } from "@/assets/svg/icons/arrow-down"
 import { ArrowUpIcon } from "@/assets/svg/icons/arrow-up"
-import { IconButton } from "@/components/IconButton"
-import { Input } from "@/components/ui/input"
+import { SidebarIconButton } from "@/components/SidebarIconButton"
+import { Text } from "@/components/Text"
 import { clamp } from "@/lib/utils/clamp"
 
 export const NumberEditor = ({
@@ -21,29 +21,13 @@ export const NumberEditor = ({
 }) => {
   return (
     <div className="flex items-center justify-end gap-1">
-      <Input
-        type="number"
-        className="h-8 w-20 text-right"
-        value={value}
-        min={min}
-        max={max}
-        step={step}
-        disabled={isSaving}
-        onChange={(event) => {
-          const parsedValue = Number(event.target.value)
-          if (Number.isNaN(parsedValue)) return
-
-          onChange(clamp(parsedValue, min, max))
-        }}
-      />
-      <IconButton
-        className="h-6 w-6"
+      <Text primary={value} className="mr-3 min-w-0" />
+      <SidebarIconButton
         icon={<ArrowDownIcon />}
         onClick={() => onChange(clamp(value - step, min, max))}
         disabled={isSaving || value <= min}
       />
-      <IconButton
-        className="h-6 w-6"
+      <SidebarIconButton
         icon={<ArrowUpIcon />}
         onClick={() => onChange(clamp(value + step, min, max))}
         disabled={isSaving || value >= max}
