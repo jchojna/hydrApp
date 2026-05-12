@@ -24,21 +24,30 @@ export const SexSetting = () => {
       label="Sex"
       value={sex}
       renderValue={(nextValue) => (
-        <Text primary={nextValue} className="text-right" />
+        <Text
+          primary={nextValue}
+          className="animate-in fade-in text-right duration-300"
+        />
       )}
       renderEditor={({ value: draftValue, setValue, isSaving }) => (
-        <Select value={draftValue} onValueChange={setValue} disabled={isSaving}>
-          <SelectTrigger className="h-8 w-full rounded-full text-right capitalize">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {USER_SEX_OPTIONS.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="animate-in fade-in duration-300">
+          <Select
+            value={draftValue}
+            onValueChange={setValue}
+            disabled={isSaving}
+          >
+            <SelectTrigger className="h-8 w-full rounded-full text-right capitalize">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {USER_SEX_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       )}
       onSave={async (nextValue) => {
         const response = await saveUserSettingAction({

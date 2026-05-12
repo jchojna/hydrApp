@@ -17,12 +17,15 @@ export const UsernameSetting = () => {
       label="Username"
       value={username}
       renderValue={(nextValue) => (
-        <Text primary={nextValue} className="text-right" />
+        <Text
+          primary={nextValue}
+          className="animate-in fade-in text-right duration-300"
+        />
       )}
       renderEditor={({ value: draftValue, setValue, isSaving }) => (
         <Input
           value={draftValue}
-          className="h-8"
+          className="animate-in fade-in h-8 min-h-8 w-full duration-300"
           disabled={isSaving}
           onChange={(event) => setValue(event.target.value)}
         />

@@ -58,7 +58,7 @@ export const Setting = <T,>({
   return (
     <SidebarItemWrapper as="li" isEditMode={isEditing} className="pr-1.5">
       <Text primary={label} className="min-w-0 flex-1 truncate" />
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0 flex-2">
         {isEditing
           ? renderEditor({
               value: draftValue,

@@ -1,22 +1,9 @@
 "use client"
 
 import { useTransition } from "react"
-import { toast } from "sonner"
 
 import { signOutAction } from "@/actions/signOut"
-import { deleteAccountAction } from "@/actions/settings"
 import { Button } from "@/components/ui/button"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
 import { Toaster } from "@/components/ui/sonner"
 import {
   AgeSetting,
@@ -26,24 +13,14 @@ import {
   UsernameSetting,
 } from "./components/settings"
 import { SidebarSection } from "@/components/SidebarSection"
+import { DeleteAccountButton } from "./components/DeleteAccountButton"
 
 export default function Settings() {
   const [isSigningOut, startSignOutTransition] = useTransition()
-  const [isDeletingAccount, startDeleteAccountTransition] = useTransition()
 
   const handleSignOut = () => {
     startSignOutTransition(async () => {
       await signOutAction()
-    })
-  }
-
-  const handleDeleteAccount = () => {
-    startDeleteAccountTransition(async () => {
-      const response = await deleteAccountAction()
-
-      if (!response.success) {
-        toast.error(response.message)
-      }
     })
   }
 
@@ -65,37 +42,7 @@ export default function Settings() {
         >
           {isSigningOut ? "Signing out..." : "Sign Out"}
         </Button>
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button
-              className="bg-destructive/50 hover:bg-destructive flex-1 text-white"
-              disabled={isDeletingAccount}
-            >
-              {isDeletingAccount ? "Deleting..." : "Delete Account"}
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete account?</AlertDialogTitle>
-              <AlertDialogDescription>
-                This action cannot be undone. Your account and all related data
-                will be permanently deleted.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel disabled={isDeletingAccount}>
-                Cancel
-              </AlertDialogCancel>
-              <AlertDialogAction
-                variant="destructive"
-                onClick={handleDeleteAccount}
-                disabled={isDeletingAccount}
-              >
-                {isDeletingAccount ? "Deleting..." : "Delete Account"}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        <DeleteAccountButton />
       </div>
       <Toaster position="bottom-right" richColors closeButton />
     </SidebarSection>
