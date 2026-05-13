@@ -25,7 +25,7 @@ export const UsernameSetting = () => {
       renderEditor={({ value: draftValue, setValue, isSaving }) => (
         <Input
           value={draftValue}
-          className="animate-in fade-in h-8 min-h-8 w-full duration-300"
+          className="animate-in fade-in h-8 min-h-8 w-full border-none bg-blue-500/50 duration-300"
           disabled={isSaving}
           onChange={(event) => setValue(event.target.value)}
         />

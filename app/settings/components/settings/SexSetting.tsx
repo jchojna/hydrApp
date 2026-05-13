@@ -26,7 +26,7 @@ export const SexSetting = () => {
       renderValue={(nextValue) => (
         <Text
           primary={nextValue}
-          className="animate-in fade-in text-right duration-300"
+          className="animate-in fade-in text-right capitalize duration-300"
         />
       )}
       renderEditor={({ value: draftValue, setValue, isSaving }) => (
@@ -36,7 +36,7 @@ export const SexSetting = () => {
             onValueChange={setValue}
             disabled={isSaving}
           >
-            <SelectTrigger className="h-8 w-full rounded-full text-right capitalize">
+            <SelectTrigger className="w-full rounded-full border-none bg-blue-500/50">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
