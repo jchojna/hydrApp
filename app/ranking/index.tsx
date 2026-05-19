@@ -16,6 +16,7 @@ type RankingProps = {
 }
 
 // TODO: use isLoading to show loading state
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function Ranking({ ranking, isLoading, error }: RankingProps) {
   const {
     page,

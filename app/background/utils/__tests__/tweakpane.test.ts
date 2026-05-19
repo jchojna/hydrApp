@@ -22,11 +22,16 @@ describe("addTweakpane", () => {
     expect(addBindingOnFolder).toHaveBeenCalledTimes(WAVES_DATA.length * 4)
     expect(addBindingOnPane).toHaveBeenCalledTimes(2)
 
-    expect(addBindingOnPane).toHaveBeenNthCalledWith(1, WAVES_PARAMS, "rotation", {
-      min: 0,
-      max: 0.2,
-      step: 0.01,
-    })
+    expect(addBindingOnPane).toHaveBeenNthCalledWith(
+      1,
+      WAVES_PARAMS,
+      "rotation",
+      {
+        min: 0,
+        max: 0.2,
+        step: 0.01,
+      },
+    )
     expect(addBindingOnPane).toHaveBeenNthCalledWith(2, WAVES_PARAMS, "gap", {
       min: 0,
       max: 200,

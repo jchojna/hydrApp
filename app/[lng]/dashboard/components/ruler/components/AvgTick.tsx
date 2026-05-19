@@ -14,7 +14,10 @@ export const AvgTick = ({
   if (averageWaterLevel === null) return null
 
   const avgInGlasses = (averageWaterLevel / glassVolume).toFixed(1)
-  const normalizedAverage = Math.max(0, Math.min(averageWaterLevel / maxWaterPerDay, 1))
+  const normalizedAverage = Math.max(
+    0,
+    Math.min(averageWaterLevel / maxWaterPerDay, 1),
+  )
   const markerTopRatio = 1 - normalizedAverage
 
   const averageMarkerTopOffset = `calc(${markerTopRatio * 100}% - ${markerTopRatio * RULER_TICK_HEIGHT}px)`

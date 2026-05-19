@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest"
 
-import { MAX_GLASS_VOLUME, MAX_USER_AGE, MAX_WATER_LIMIT } from "@/lib/constants"
+import {
+  MAX_GLASS_VOLUME,
+  MAX_USER_AGE,
+  MAX_WATER_LIMIT,
+} from "@/lib/constants"
 
 import { normalizeUserSetting } from "../normalizeUserSetting"
 

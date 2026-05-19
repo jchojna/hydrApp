@@ -28,7 +28,7 @@ export default function DashboardErrorToasts({
   return (
     <>
       <Toaster position="bottom-right" richColors closeButton />
-      <div className="text-sm text-muted-foreground">
+      <div className="text-muted-foreground text-sm">
         Could not load dashboard data.
       </div>
     </>
