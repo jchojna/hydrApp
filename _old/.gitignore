@@ -1,0 +1,16 @@
+# dependencies
+node_modules
+bower_components
+
+figma
+
+# compiled output
+/dist
+/.tmp
+/.publish
+
+# System Files
+.DS_Store
+Thumbs.db
+
+package-lock.json

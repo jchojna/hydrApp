@@ -1,0 +1,101 @@
+"use client"
+
+import { useAuth } from "@/providers/AuthContext"
+import { formatDate, formatDatesRange, formatDays } from "@/lib/utils"
+import { ConsumptionRecord } from "@/lib/types"
+import { StatsItem } from "./components/StatsItem"
+import { getStreaks } from "@/lib/utils/getStreaks"
+import { clampWaterLevel } from "../[lng]/dashboard/utils/clampWaterLevel"
+import { RankingType } from "@/lib/utils/getRanking"
+import { useSettings } from "@/providers/SettingsContext"
+import { SidebarSection } from "@/components/SidebarSection"
+import { ErrorMessage } from "@/components/ErrorMessage"
+import { formatLitres } from "@/lib/utils/formatLitres"
+
+type StatsProps = {
+  averageWaterLevel: number
+  records?: ConsumptionRecord[]
+  ranking: RankingType
+  isLoading: boolean
+  error: Error | null
+}
+
+export default function Stats({
+  averageWaterLevel,
+  records,
+  ranking,
+  isLoading,
+  error,
+}: StatsProps) {
+  const { user } = useAuth()
+  const {
+    settings: { glassVolume, maxWaterPerDay },
+  } = useSettings()
+
+  const todayDate = formatDate(new Date())
+  const {
+    currentStreak,
+    longestStreak,
+    currentStreakRange,
+    lastLongestStreakRange,
+  } = getStreaks(todayDate, records)
+
+  const totalPoints =
+    records?.reduce((sum, record) => {
+      return (
+        sum +
+        clampWaterLevel(Number(record.amount), maxWaterPerDay) / maxWaterPerDay
+      )
+    }, 0) ?? 0
+
+  const rankNumber = ranking.findIndex((entry) => entry.userId === user?.id) + 1
+
+  const averageLitresValue = `${formatLitres(averageWaterLevel)}`
+  // TODO: use i18n pluralization
+  const averageGlassesValue = `${(averageWaterLevel / glassVolume).toFixed(1)} glass${
+    averageWaterLevel / glassVolume === 1 ? "" : "es"
+  }`
+
+  const currentRangeLabel = currentStreakRange
+    ? formatDatesRange(currentStreakRange.startDate, currentStreakRange.endDate)
+    : "-"
+  const longestRangeLabel = lastLongestStreakRange
+    ? formatDatesRange(
+        lastLongestStreakRange.startDate,
+        lastLongestStreakRange.endDate,
+      )
+    : "-"
+  const pointsLabel = `${totalPoints.toFixed(2)} points`
+  const rankLabel = !!rankNumber ? `#${rankNumber} position` : "-"
+
+  return (
+    <SidebarSection>
+      {error && <ErrorMessage message={error.message} />}
+      <div className="flex flex-col gap-2">
+        <StatsItem
+          label="Average per day"
+          mainValue={averageLitresValue}
+          secondaryValue={averageGlassesValue}
+        />
+        <StatsItem
+          label="Current streak"
+          mainValue={formatDays(currentStreak)}
+          secondaryValue={currentRangeLabel}
+          isLoading={isLoading}
+        />
+        <StatsItem
+          label="Longest streak"
+          mainValue={formatDays(longestStreak)}
+          secondaryValue={longestRangeLabel}
+          isLoading={isLoading}
+        />
+        <StatsItem
+          label="Total points"
+          mainValue={pointsLabel}
+          secondaryValue={rankLabel}
+          isLoading={isLoading}
+        />
+      </div>
+    </SidebarSection>
+  )
+}

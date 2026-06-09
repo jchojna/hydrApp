@@ -1,0 +1,83 @@
+import { useCallback, useTransition } from "react"
+import { useQueryClient } from "@tanstack/react-query"
+
+import { PlusCircleIcon } from "@/assets/svg/icons/plus-circle"
+import { IconButton } from "@/components/IconButton"
+import { MinusCircleIcon } from "@/assets/svg/icons/minus-circle"
+import { waves } from "@/app/background"
+import { formatDate } from "@/lib/utils"
+import { saveConsumptionAction } from "@/actions/consumption"
+import { clampWaterLevel } from "../utils/clampWaterLevel"
+import { useSettings } from "@/providers/SettingsContext"
+
+interface ControlsProps {
+  waterLevel: number
+  onWaterLevelChange: (waterLevel: number) => void
+}
+
+export const Controls = ({ waterLevel, onWaterLevelChange }: ControlsProps) => {
+  const {
+    settings: { glassVolume, maxWaterPerDay },
+  } = useSettings()
+  const [isPending, startTransition] = useTransition()
+  const previousWaterLevel = waterLevel
+  const queryClient = useQueryClient()
+
+  const handleWaterLevelChange = useCallback(
+    (newWaterLevel: number) => {
+      const todayDate = formatDate(new Date())
+      onWaterLevelChange(newWaterLevel)
+      waves?.setWaterLevel(newWaterLevel)
+
+      startTransition(async () => {
+        const response = await saveConsumptionAction({
+          amount: newWaterLevel,
+          date: todayDate,
+        })
+
+        if (!response.success) {
+          onWaterLevelChange(previousWaterLevel)
+          waves?.setWaterLevel(previousWaterLevel)
+          return
+        }
+        queryClient.invalidateQueries({ queryKey: ["stats"] })
+      })
+    },
+    [onWaterLevelChange, previousWaterLevel, queryClient],
+  )
+
+  const handleIncreaseWaterLevel = () => {
+    const newWaterLevel = clampWaterLevel(
+      waterLevel + glassVolume,
+      maxWaterPerDay,
+    )
+    if (newWaterLevel === waterLevel) return
+
+    handleWaterLevelChange(newWaterLevel)
+  }
+
+  const handleDecreaseWaterLevel = () => {
+    const newWaterLevel = clampWaterLevel(
+      waterLevel - glassVolume,
+      maxWaterPerDay,
+    )
+    if (newWaterLevel === waterLevel) return
+
+    handleWaterLevelChange(newWaterLevel)
+  }
+
+  return (
+    <div className="z-10 flex gap-3">
+      <IconButton
+        icon={<MinusCircleIcon />}
+        onClick={handleDecreaseWaterLevel}
+        disabled={isPending || waterLevel <= 0}
+      />
+      <IconButton
+        icon={<PlusCircleIcon />}
+        onClick={handleIncreaseWaterLevel}
+        disabled={isPending || waterLevel >= maxWaterPerDay}
+      />
+    </div>
+  )
+}
