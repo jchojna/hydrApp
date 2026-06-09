@@ -41,15 +41,14 @@ export const getSession = cache(async () => {
 
     return payload ? { userId: payload.userId } : null
   } catch (error) {
-    // Handle the specific prerendering error
+    // Preserve Next.js dynamic-render signal from cookies() so routes
+    // using session reads are correctly treated as dynamic.
     if (
       error instanceof Error &&
-      error.message.includes("During prerendering, `cookies()` rejects")
+      "digest" in error &&
+      error.digest === "DYNAMIC_SERVER_USAGE"
     ) {
-      console.log(
-        "Cookies not available during prerendering, returning null session",
-      )
-      return null
+      throw error
     }
 
     console.error("Error getting session:", error)
