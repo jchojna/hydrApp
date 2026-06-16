@@ -1,16 +1,16 @@
-import { HTMLInputTypeAttribute } from "react"
+import { type ComponentProps } from "react"
 
 import { Input } from "@/components/ui/input"
-import { FieldGroup, FieldLabel } from "@/components/ui/field"
+import { FieldGroup } from "@/components/ui/field"
 import { AuthFormField } from "@/lib/auth/validation"
 import { ErrorMessage } from "./ErrorMessage"
+import { FormLabel } from "./FormLabel"
 
 type FormInputProps = {
   id: AuthFormField
   label: string
-  type: HTMLInputTypeAttribute
   errorMessage?: string
-}
+} & Omit<ComponentProps<typeof Input>, "id">
 
 export const FormInput = ({
   id,
@@ -21,9 +21,7 @@ export const FormInput = ({
 }: FormInputProps) => {
   return (
     <FieldGroup className="flex w-full flex-col gap-2">
-      <FieldLabel htmlFor="email" className="text-blue-500">
-        {label}
-      </FieldLabel>
+      <FormLabel id={id} label={label} />
       <Input id={id} type={type} aria-invalid={!!errorMessage} {...props} />
       {errorMessage && <ErrorMessage message={errorMessage} />}
     </FieldGroup>

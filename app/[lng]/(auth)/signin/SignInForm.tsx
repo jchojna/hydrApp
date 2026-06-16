@@ -13,6 +13,7 @@ import {
 } from "@/lib/auth/validation"
 import { AuthForm } from "@/app/[lng]/(auth)/components/AuthForm"
 import { FormInput } from "@/components/FormInput"
+import { PasswordInput } from "@/components/PasswordInput"
 import { useT } from "next-i18next/client"
 
 export default function SignInForm() {
@@ -69,10 +70,9 @@ export default function SignInForm() {
             errorMessage={errors.email?.message}
             {...register(AuthFormField.email)}
           />
-          <FormInput
+          <PasswordInput
             id={AuthFormField.password}
             label={t("app.auth.fields.password")}
-            type="password"
             errorMessage={errors.password?.message}
             {...register(AuthFormField.password)}
           />
