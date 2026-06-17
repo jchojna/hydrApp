@@ -16,11 +16,11 @@ export const Logo = ({ className }: LogoProps) => {
         className,
       )}
     >
-      <svg className="w-full text-blue-600" viewBox="0 0 512 135">
+      <svg className="w-full text-blue-700" viewBox="0 0 512 135">
         <path d={LOGO.partA.path} fill="currentColor" />
       </svg>
       <svg
-        className="absolute h-full w-full text-blue-100"
+        className="absolute h-full w-full text-blue-500"
         viewBox="0 0 512 135"
       >
         <path d={LOGO.partB.path} fill="currentColor" />

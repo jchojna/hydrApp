@@ -36,7 +36,7 @@ export const PasswordInput = ({
         <IconButton
           type="button"
           onClick={() => setIsPasswordVisible((visible) => !visible)}
-          className="absolute top-1/2 right-1 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-blue-600 text-blue-200 hover:text-blue-100"
+          className="absolute top-1/2 right-1 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-blue-400/30 text-blue-500 hover:bg-blue-200 hover:text-blue-600"
           aria-label={isPasswordVisible ? "Hide password" : "Show password"}
           icon={isPasswordVisible ? <EyeOff size={20} /> : <Eye size={20} />}
         />
