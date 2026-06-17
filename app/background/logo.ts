@@ -11,7 +11,7 @@ export class Logo {
     this.isLogoVisible = true
   }
 
-  public drawLogo = (width: number, height: number) => {
+  public drawLogo = (width: number, height: number, translateY: number = 0) => {
     if (!this.isLogoVisible) return
 
     const targetWidth = Math.min(width * 0.6, 520)
@@ -22,7 +22,7 @@ export class Logo {
     const y = Math.max(16, height * 0.55 - logoHeight / 2)
 
     this.context.save()
-    this.context.translate(x, y)
+    this.context.translate(x, y + translateY)
     this.context.scale(scale, scale)
     this.context.fillStyle = LOGO.partA.color
     this.context.fill(this.logoPathA)
