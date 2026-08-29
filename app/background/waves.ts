@@ -1,23 +1,28 @@
 import { WAVES_DATA, WAVES_PARAMS } from "./utils/constants"
 import { WaveData } from "./types"
 import { easeOutCubic, getAnimatedTransitionValue } from "./utils/animation"
-import { Logo } from "./logo"
 
 // TODO: improve this class as in animated grid class
 export class Waves {
   private context: CanvasRenderingContext2D
   private swingStartedAt: number | null = null
+  private entryStartedAt: number | null = null
   private maxWaterPerDay: number
   private readonly swingDurationMs = 2000
+  private readonly entryAnimationDurationMs = 1800
+  private readonly entryAnimationStaggerMs = 150
+  private readonly floatAmplitudePx = 30
+  private readonly floatSpeed = 0.0015
   private readonly swingStrength = 0.5
   private readonly minWaterLevelOffset = 0.1
   private readonly maxWaterLevelOffset = 0.05
+  private readonly introWaterLevel = 0.75
   private readonly waterLevelTransitionDurationMs = 1000
-  private waterLevel = 1 - this.minWaterLevelOffset
-  private renderedWaterLevel = 1 - this.minWaterLevelOffset
-  private waterLevelTransitionFrom = 1 - this.minWaterLevelOffset
+  private readonly fadeOutWaterLevelMultiplier = 1.2
+  private waterLevel = this.introWaterLevel
+  private renderedWaterLevel = this.introWaterLevel
+  private waterLevelTransitionFrom = this.introWaterLevel
   private waterLevelTransitionStartedAt: number | null = null
-  public logo: Logo
 
   constructor(
     private canvas: HTMLCanvasElement,
@@ -26,14 +31,18 @@ export class Waves {
     this.canvas = canvas
     this.context = canvas.getContext("2d") as CanvasRenderingContext2D
     this.maxWaterPerDay = maxWaterPerDay
-    this.logo = new Logo(this.context)
 
     if (!this.context) {
       throw new Error("Failed to get canvas context")
     }
   }
 
-  private drawWaves = (wave: WaveData, index: number, t: number) => {
+  private drawWaves = (
+    wave: WaveData,
+    index: number,
+    t: number,
+    translateY: number = 0,
+  ) => {
     const width = this.canvas.clientWidth
     const height = this.canvas.clientHeight
     const offset = 100
@@ -50,6 +59,7 @@ export class Waves {
     const rotation = this.getRotation(t, wave.phaseOffset)
 
     this.context.save()
+    this.context.translate(0, translateY)
     this.context.translate(pivotX, pivotY)
     this.context.rotate(rotation)
     this.context.translate(-pivotX, -pivotY)
@@ -64,6 +74,55 @@ export class Waves {
     this.context.fillStyle = wave.color
     this.context.fill()
     this.context.restore()
+  }
+
+  private getEntryOffset = (
+    layer: number,
+    timestamp: number,
+    delayMs: number = 0,
+  ) => {
+    if (this.entryStartedAt === null) return 0
+
+    const elapsed =
+      timestamp -
+      this.entryStartedAt -
+      layer * this.entryAnimationStaggerMs -
+      delayMs
+    if (elapsed >= this.entryAnimationDurationMs) return 0
+
+    const progress = Math.max(
+      0,
+      Math.min(1, elapsed / this.entryAnimationDurationMs),
+    )
+    const easedProgress = easeOutCubic(progress)
+    const offscreenOffset = this.canvas.clientHeight * 1.15
+    const peakOffset = -this.floatAmplitudePx
+
+    return offscreenOffset + (peakOffset - offscreenOffset) * easedProgress
+  }
+
+  private getFloatOffset = (
+    layer: number,
+    timestamp: number,
+    speed: number = this.floatSpeed,
+    delayMs: number = 0,
+    entryDelayMs: number = 0,
+  ) => {
+    if (this.entryStartedAt === null) return 0
+
+    const elapsedAfterEntry =
+      timestamp -
+      this.entryStartedAt -
+      layer * this.entryAnimationStaggerMs -
+      entryDelayMs -
+      this.entryAnimationDurationMs
+
+    if (elapsedAfterEntry < 0) return 0
+
+    const delayedElapsed = elapsedAfterEntry - delayMs
+    if (delayedElapsed < 0) return -this.floatAmplitudePx
+
+    return -Math.cos(delayedElapsed * speed) * this.floatAmplitudePx
   }
 
   private getRotation = (timestamp: number, phaseOffset: number) => {
@@ -139,7 +198,7 @@ export class Waves {
   }
 
   public fadeOut = () => {
-    this.setWaterLevel(-0.2)
+    this.setWaterLevel(this.maxWaterPerDay * this.fadeOutWaterLevelMultiplier)
   }
 
   private drawFrame = (timestamp: number) => {
@@ -149,11 +208,31 @@ export class Waves {
       this.canvas.clientWidth,
       this.canvas.clientHeight,
     )
-    this.drawWaves(WAVES_DATA[0], 3, timestamp)
-    this.drawWaves(WAVES_DATA[1], 2, timestamp)
-    this.logo.drawLogo(this.canvas.clientWidth, this.canvas.clientHeight)
-    this.drawWaves(WAVES_DATA[2], 1, timestamp)
-    this.drawWaves(WAVES_DATA[3], 0, timestamp)
+
+    this.drawWaves(
+      WAVES_DATA[0],
+      3,
+      timestamp,
+      this.getEntryOffset(0, timestamp) + this.getFloatOffset(0, timestamp),
+    )
+    this.drawWaves(
+      WAVES_DATA[1],
+      2,
+      timestamp,
+      this.getEntryOffset(1, timestamp) + this.getFloatOffset(1, timestamp),
+    )
+    this.drawWaves(
+      WAVES_DATA[2],
+      1,
+      timestamp,
+      this.getEntryOffset(3, timestamp) + this.getFloatOffset(3, timestamp),
+    )
+    this.drawWaves(
+      WAVES_DATA[3],
+      0,
+      timestamp,
+      this.getEntryOffset(4, timestamp) + this.getFloatOffset(4, timestamp),
+    )
 
     requestAnimationFrame(this.drawFrame)
   }
@@ -170,6 +249,7 @@ export class Waves {
 
   public start() {
     this.resizeCanvas()
+    this.entryStartedAt = performance.now()
     requestAnimationFrame(this.drawFrame)
   }
 }

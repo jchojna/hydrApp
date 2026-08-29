@@ -13,6 +13,7 @@ import {
 } from "@/lib/auth/validation"
 import { AuthForm } from "@/app/[lng]/(auth)/components/AuthForm"
 import { FormInput } from "@/components/FormInput"
+import { PasswordInput } from "@/components/PasswordInput"
 
 export default function SignUpForm() {
   const router = useRouter()
@@ -68,17 +69,15 @@ export default function SignUpForm() {
             errorMessage={errors.email?.message}
             {...register(AuthFormField.email)}
           />
-          <FormInput
+          <PasswordInput
             id={AuthFormField.password}
             label="Password"
-            type="password"
             errorMessage={errors.password?.message}
             {...register(AuthFormField.password)}
           />
-          <FormInput
+          <PasswordInput
             id={AuthFormField.confirmPassword}
             label="Confirm Password"
-            type="password"
             errorMessage={errors.confirmPassword?.message}
             {...register(AuthFormField.confirmPassword)}
           />

@@ -1,25 +1,9 @@
-"use client"
+import { redirect } from "next/navigation"
 
-import { useCallback } from "react"
-import { useRouter } from "next/navigation"
+import { getCurrentUser } from "@/lib/dal/user"
 
-import { waves } from "../background"
-import { Button } from "@/components/ui/button"
-import { useT } from "next-i18next/client"
+export default async function Home() {
+  const currentUser = await getCurrentUser()
 
-export default function Home() {
-  const router = useRouter()
-  const { t } = useT()
-
-  const handleStart = useCallback(() => {
-    waves?.logo.hideLogo()
-    waves?.fadeOut()
-    router.push("/signin")
-  }, [router])
-
-  return (
-    <div>
-      <Button onClick={handleStart}>{t("app.home.startButton")}</Button>
-    </div>
-  )
+  redirect(currentUser ? "/dashboard" : "/signin")
 }
