@@ -17,6 +17,8 @@ import { ReactQueryProvider } from "@/providers/ReactQueryProvider"
 
 initServerI18next(i18nConfig)
 
+export const dynamic = "force-dynamic"
+
 export async function generateStaticParams() {
   return generateI18nStaticParams()
 }
