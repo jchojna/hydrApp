@@ -44,7 +44,7 @@ export default function SignInForm() {
         return
       }
 
-      router.push("/")
+      router.push("/dashboard")
     } catch {
       setApiError(defaultErrorMessage)
       console.error(defaultErrorMessage)

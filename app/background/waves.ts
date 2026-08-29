@@ -1,7 +1,6 @@
 import { WAVES_DATA, WAVES_PARAMS } from "./utils/constants"
 import { WaveData } from "./types"
 import { easeOutCubic, getAnimatedTransitionValue } from "./utils/animation"
-import { Logo } from "./logo"
 
 // TODO: improve this class as in animated grid class
 export class Waves {
@@ -12,19 +11,18 @@ export class Waves {
   private readonly swingDurationMs = 2000
   private readonly entryAnimationDurationMs = 1800
   private readonly entryAnimationStaggerMs = 150
-  private readonly logoMovementDelayMs = 350
   private readonly floatAmplitudePx = 30
   private readonly floatSpeed = 0.0015
   private readonly swingStrength = 0.5
   private readonly minWaterLevelOffset = 0.1
   private readonly maxWaterLevelOffset = 0.05
-  private readonly introWaterLevel = 0.7
+  private readonly introWaterLevel = 0.75
   private readonly waterLevelTransitionDurationMs = 1000
+  private readonly fadeOutWaterLevelMultiplier = 1.2
   private waterLevel = this.introWaterLevel
   private renderedWaterLevel = this.introWaterLevel
   private waterLevelTransitionFrom = this.introWaterLevel
   private waterLevelTransitionStartedAt: number | null = null
-  public logo: Logo
 
   constructor(
     private canvas: HTMLCanvasElement,
@@ -33,7 +31,6 @@ export class Waves {
     this.canvas = canvas
     this.context = canvas.getContext("2d") as CanvasRenderingContext2D
     this.maxWaterPerDay = maxWaterPerDay
-    this.logo = new Logo(this.context)
 
     if (!this.context) {
       throw new Error("Failed to get canvas context")
@@ -201,7 +198,7 @@ export class Waves {
   }
 
   public fadeOut = () => {
-    this.setWaterLevel(-0.2)
+    this.setWaterLevel(this.maxWaterPerDay * this.fadeOutWaterLevelMultiplier)
   }
 
   private drawFrame = (timestamp: number) => {
@@ -211,6 +208,7 @@ export class Waves {
       this.canvas.clientWidth,
       this.canvas.clientHeight,
     )
+
     this.drawWaves(
       WAVES_DATA[0],
       3,
@@ -222,18 +220,6 @@ export class Waves {
       2,
       timestamp,
       this.getEntryOffset(1, timestamp) + this.getFloatOffset(1, timestamp),
-    )
-    this.logo.drawLogo(
-      this.canvas.clientWidth,
-      this.canvas.clientHeight,
-      this.getEntryOffset(2, timestamp, this.logoMovementDelayMs) +
-        this.getFloatOffset(
-          2,
-          timestamp,
-          this.floatSpeed,
-          0,
-          this.logoMovementDelayMs,
-        ),
     )
     this.drawWaves(
       WAVES_DATA[2],
