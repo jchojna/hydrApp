@@ -8,7 +8,7 @@ type FormLabelProps = {
 
 export const FormLabel = ({ id, label }: FormLabelProps) => {
   return (
-    <FieldLabel htmlFor={id} className="text-blue-500">
+    <FieldLabel htmlFor={id} className="text-blue-50">
       {label}
     </FieldLabel>
   )

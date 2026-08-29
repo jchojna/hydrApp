@@ -39,16 +39,21 @@ export const DeleteAccountButton = () => {
           {isDeletingAccount ? "Deleting..." : "Delete Account"}
         </Button>
       </AlertDialogTrigger>
-      <AlertDialogContent>
+      <AlertDialogContent className="border-none bg-blue-200">
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete account?</AlertDialogTitle>
-          <AlertDialogDescription>
+          <AlertDialogTitle className="text-blue-800">
+            Delete account?
+          </AlertDialogTitle>
+          <AlertDialogDescription className="text-blue-700">
             This action cannot be undone. Your account and all related data will
             be permanently deleted.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isDeletingAccount}>
+          <AlertDialogCancel
+            className="border-none bg-blue-100 text-blue-800"
+            disabled={isDeletingAccount}
+          >
             Cancel
           </AlertDialogCancel>
           <AlertDialogAction

@@ -42,19 +42,19 @@ export const AuthForm = ({
         {renderInputs()}
         {apiError && <ErrorMessage message={apiError} />}
         <Button
-          className="w-full bg-blue-600 text-blue-100 hover:bg-blue-700 hover:text-blue-50"
+          className="w-full bg-blue-700 text-blue-100 hover:bg-blue-800 hover:text-blue-50"
           type="submit"
           disabled={isSubmitting}
         >
           {isSubmitting ? submittingLabel : submitLabel}
         </Button>
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-blue-600 md:text-base">
+          <span className="text-sm font-medium text-blue-100 md:text-base">
             {alternatePrompt}
           </span>
           <Link
             href={alternateHref}
-            className="text-sm font-semibold text-blue-100 underline md:text-base"
+            className="text-sm font-semibold text-blue-50 underline md:text-base"
           >
             {alternateLabel}
           </Link>
