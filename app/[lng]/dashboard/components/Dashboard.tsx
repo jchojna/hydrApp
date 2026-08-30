@@ -49,8 +49,14 @@ function DashboardContent({
   const {
     settings: { maxWaterPerDay },
   } = useSettings()
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean | null>(null)
   const [optimisticWaterLevel, setOptimisticWaterLevel] = useState(waterLevel)
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen((open) =>
+      open === null ? !window.matchMedia("(min-width: 768px)").matches : !open,
+    )
+  }
 
   useEffect(() => {
     setOptimisticWaterLevel(waterLevel)
@@ -69,8 +75,8 @@ function DashboardContent({
       <div
         className={cn(
           "relative h-full w-full overflow-hidden transition-[width] duration-300",
-          isSidebarOpen &&
-            "w-full md:w-[calc(100%-400px)] lg:w-[calc(100%-500px)]",
+          isSidebarOpen !== false &&
+            "md:w-[calc(100%-400px)] lg:w-[calc(100%-500px)]",
         )}
       >
         <Ruler
@@ -86,7 +92,7 @@ function DashboardContent({
             waterLevel={optimisticWaterLevel}
             onWaterLevelChange={setOptimisticWaterLevel}
             isSidebarOpen={isSidebarOpen}
-            onSidebarOpenChange={setIsSidebarOpen}
+            onToggleSidebar={toggleSidebar}
           />
           <Output waterLevel={optimisticWaterLevel} />
         </div>

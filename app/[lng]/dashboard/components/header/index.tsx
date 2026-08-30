@@ -10,15 +10,15 @@ import { IconButton } from "@/components/IconButton"
 type HeaderProps = {
   waterLevel: number
   onWaterLevelChange: (waterLevel: number) => void
-  isSidebarOpen: boolean
-  onSidebarOpenChange: (isOpen: boolean) => void
+  isSidebarOpen: boolean | null
+  onToggleSidebar: () => void
 }
 
 export const Header = ({
   waterLevel,
   onWaterLevelChange,
   isSidebarOpen,
-  onSidebarOpenChange,
+  onToggleSidebar,
 }: HeaderProps) => {
   const {
     settings: { maxWaterPerDay },
@@ -28,7 +28,7 @@ export const Header = ({
     <GlassContainer
       className={cn(
         "flex h-auto w-full justify-between gap-4 rounded-[60px] bg-blue-500/20 p-3 pl-10 shadow-none",
-        "transition-colors duration-300 hover:bg-blue-500/30",
+        "transition-all duration-300 hover:bg-blue-500/30 hover:p-8 hover:pl-14",
         "lg:w-auto lg:justify-center lg:gap-10",
       )}
     >
@@ -41,8 +41,11 @@ export const Header = ({
         <EmojiIcon waterLevel={waterLevel} maxWaterPerDay={maxWaterPerDay} />
         <IconButton
           icon={<BurgerCircleIcon />}
-          className={cn(isSidebarOpen && "rotate-180 transform")}
-          onClick={() => onSidebarOpenChange(!isSidebarOpen)}
+          className={cn(
+            isSidebarOpen !== false && "md:rotate-180",
+            isSidebarOpen === true && "rotate-180 transform",
+          )}
+          onClick={onToggleSidebar}
         />
       </div>
     </GlassContainer>

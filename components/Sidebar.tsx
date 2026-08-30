@@ -23,7 +23,7 @@ import { ChevronDown } from "lucide-react"
 import { GlassContainer } from "./GlassContainer"
 
 interface SidebarProps {
-  isOpen: boolean
+  isOpen: boolean | null
   archiveEntries: ArchiveEntry[]
   archivePageInfo: ArchivePageInfo
   averageWaterLevel: number
@@ -79,7 +79,8 @@ export const Sidebar = ({
             "flex h-full w-full translate-x-full items-start overflow-auto rounded-2xl bg-blue-600/20 shadow-none",
             "[-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
             "pointer-events-auto transition-transform duration-300",
-            isOpen && "translate-x-0",
+            isOpen !== false && "md:translate-x-0",
+            isOpen === true && "translate-x-0",
           )}
         >
           <Accordion

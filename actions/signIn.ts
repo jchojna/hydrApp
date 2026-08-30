@@ -5,17 +5,17 @@ import { createSession } from "@/lib/auth/session"
 import { getUserByEmail } from "@/lib/dal/user"
 import { ActionResponse } from "@/lib/types"
 import { SignInInput } from "@/lib/auth/validation"
-import { unauthorizedActionResponse } from "@/lib/errors"
 
 export async function signInAction(
   input: SignInInput,
 ): Promise<ActionResponse> {
   try {
     const user = await getUserByEmail(input.email)
-    if (!user) return unauthorizedActionResponse
+    const isPasswordValid = user
+      ? await verifyPassword(input.password, user.password)
+      : false
 
-    const isPasswordValid = await verifyPassword(input.password, user.password)
-    if (!isPasswordValid) {
+    if (!user || !isPasswordValid) {
       return {
         success: false,
         message: "Invalid email or password",

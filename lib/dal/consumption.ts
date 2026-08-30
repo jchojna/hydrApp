@@ -87,7 +87,9 @@ export async function getUsersTotalConsumptionAmounts(): Promise<
         userId: usersTable.id,
         username: usersTable.username,
         email: usersTable.email,
-        totalAmount: sql<string>`coalesce(sum(least(${consumptionTable.amount}, ${usersTable.max_water_per_day})), 0)`,
+        // LEAST ignores NULLs in Postgres, so coalesce first — otherwise a user
+        // with no consumption rows is treated as having drunk their daily max.
+        totalAmount: sql<string>`coalesce(sum(least(coalesce(${consumptionTable.amount}, 0), ${usersTable.max_water_per_day})), 0)`,
       })
       .from(usersTable)
       .leftJoin(consumptionTable, eq(consumptionTable.user_id, usersTable.id))
