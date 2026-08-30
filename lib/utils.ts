@@ -16,8 +16,9 @@ export const obscureEmail = (email: string) => {
 
   const localPart = trimmedEmail.slice(0, atIndex)
   const domainPart = trimmedEmail.slice(atIndex)
+  const visibleLocal = localPart.slice(0, 1)
 
-  return `${localPart}***${domainPart}`
+  return `${visibleLocal}***${domainPart}`
 }
 
 export const parseDate = (date: string) => {

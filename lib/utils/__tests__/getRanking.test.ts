@@ -45,7 +45,7 @@ describe("getRanking", () => {
       },
       {
         userId: "b-user",
-        username: "john***@example.com",
+        username: "j***@example.com",
         points: "1.00",
       },
     ])
