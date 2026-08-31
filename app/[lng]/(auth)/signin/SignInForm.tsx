@@ -28,8 +28,8 @@ export default function SignInForm() {
   } = useForm<SignInInput>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: "test@test.com",
+      password: "password",
     },
   })
 
